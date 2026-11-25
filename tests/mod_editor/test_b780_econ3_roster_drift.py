@@ -66,7 +66,7 @@ class SiteTests(unittest.TestCase):
         cls.after, cls.receipt = economy.apply(cls.retail)
 
     def test_revision_seven_applies(self):
-        self.assertIn(economy.REVISION, (7, 8))           # b81: revision 8 (practice squads) keeps every revision-7 site
+        self.assertIn(economy.REVISION, (7, 8, 9, 10))     # b81: revisions 8 (practice squads) and 10 keep every revision-7 site
         self.assertEqual(self.receipt["revision"], economy.REVISION)
         self.assertEqual(economy.status(self.after), "applied")
         call = next(s.patched for s in economy.sites() if s.va == economy.DRAFT_NEED_MINIMUM)

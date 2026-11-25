@@ -28,7 +28,7 @@ def legacy_image(retail: bytes, revision: int = 2) -> bytes:
     edits.update(old.WINDOWS)
     edits[old.ROOKIE_TABLE_VA] = old.ROOKIE_TABLE
     edits[0x13EF17] = bytes.fromhex("c70578c2e300") + struct.pack("<I", economy.GAME_CAP)
-    edits[0x4FE7A0] = struct.pack("<f", economy.CAP_GROWTH)
+    edits[0x4FE7A0] = struct.pack("<f", economy.PREVIOUS_CAP_GROWTH)   # b81 revision 10: 1.065 since
     edits[0x2BACCA] = bytes.fromhex("6a01")
     edits[0x247BC6] = _jump(b"\xe8", 0x247BC6, old.SYMBOLS["economy_reconcile"], 5)
     edits[0x322BB0] = _jump(b"\xe9", 0x322BB0, old.SYMBOLS["economy_fill_gate"], 6)

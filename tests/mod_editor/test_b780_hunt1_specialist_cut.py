@@ -68,7 +68,7 @@ def with_revision_five_gate(payload: bytes) -> bytes:
 
 class SiteTests(unittest.TestCase):
     def test_the_release_guard_is_revision_six_and_reads_back(self):
-        self.assertIn(economy.REVISION, (6, 7, 8))     # b780 econ3: revision 7 keeps the guard's call (its pick moved); b81: 8 too
+        self.assertIn(economy.REVISION, (6, 7, 8, 9, 10))     # b780 econ3: revision 7 keeps the guard's call (its pick moved); b81: 8 too
         site = next(s for s in economy.sites() if s.va == economy.VETERAN_CUT_RELEASE)
         self.assertEqual(site.patched[:1], b"\xe8")
         target = (economy.VETERAN_CUT_RELEASE + 5 + struct.unpack_from("<i", site.patched, 1)[0]) & 0xFFFFFFFF

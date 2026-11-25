@@ -19,8 +19,12 @@ BUILD_CAPTION = "2026 franchise economy (experimental, real-dollar display)"
 REAL_CAP_DOLLARS = 301_200_000
 DOLLAR_SCALE = 4
 GAME_CAP = REAL_CAP_DOLLARS // (1000 * DOLLAR_SCALE)
-# DESIGN: repeat the observed change as a scenario, not an official forecast.
-CAP_GROWTH = 301_200_000 / 279_200_000
+# DESIGN: repeat the observed change as a scenario, not an official forecast (revisions 1 to 9).
+PREVIOUS_CAP_GROWTH = 301_200_000 / 279_200_000
+# b81 economy revision 10 (coordinator ruling 5, 11/25): the real long-run growth, not one year's ratio. Official caps
+# $120.0M (2011), $155.27M (2016), $301.2M (2026): compound 6.33% a year 2011-2026, 6.85% 2016-2026 (data file
+# revision_10.cap_growth). A franchise keeps its stored cap and grows at this rate from its next rollover.
+CAP_GROWTH = 1.065
 SOURCE = "https://www.nfl.com/news/2026-nfl-free-agency-questions-answers"
 PINS = {
     0x322eb0: "d73c5eb6d2ca06e132366d3b28297358d7d92b19330a75660c6a45b84379515d",
@@ -324,7 +328,70 @@ for _va, _digest in SQUAD_WINDOWS.items():
 SQUAD_EXPIRE = 0x247B79
 PINS[SQUAD_EXPIRE] = "9fc06df982b634efc45adf0d757738512d523c30cbabb7f2c067cbcd01b75ad0"
 REVISION_8_NEW = frozenset({SQUAD_GATE, SQUAD_EXPIRE}) | frozenset(SQUAD_WINDOWS)
-REVISION = 8
+# b81 economy revision 10 (economy lane DESIGN.txt; coordinator rulings 2026-11-25). The ten-season panel 68001-68004
+# (8b180ed5): from 2031 every CPU club sat at 96-100% of the cap (real median room 2.9%), up to 17 starter-grade free
+# agents a league were unsigned at week 18, 5-6 year deals were 22% of the active book (real 0.8%). Code in
+# tools/franchise_economy/runtime.c (revision-10 block): a price by rank on the real market curve, falling free-agent
+# asks, the prove-it ask over the clubs that can sign him, lengths from the real mix of age and price, a cap reserve,
+# cap casualties before re-signing, restructures once, over-cap releases by value lost, kickers and punters compete in
+# camp, cap growth 1.065. New sites: the retail "years wanted" routine 0x322690 (rewritten; its four callers keep its
+# entry), 22 unreferenced retail functions (dead_code.py), the CPU offer's random -1..+2 years at 0x3241A3 (now 0; the
+# RNG call stays), the re-signing stage's call at 0x248426 (cap casualties first). Rewritten: the windows below and the
+# rollover's reconcile call (0x247BC6: the cap by value first). A revision-8 image (and every older one) reads "legacy"
+# and upgrades in place. (Revision 9 is the team-building lane's economy_room_for_signing; merged when it lands.)
+YEARS_WINDOW = 0x322690
+OFFER_JITTER = 0x3241A3             # mov esi, eax; and esi, 3; dec esi (the offer's years jitter) in 0x324180
+OFFER_JITTER_PATCHED = bytes.fromhex("31f690909090")   # xor esi, esi (jitter 0; the RNG call before it still runs)
+RESIGN_STAGE = 0x248426             # call 0x323720 (the re-signing stage) in the stage action 0x2480B0
+ROLLOVER_RECONCILE = 0x247BC6       # the rollover's call of the reconcile (revision 1 on)
+R10_WINDOW_PINS = {                 # retail sha256 of each window the revision takes
+    0x322690: "6c05c4b9b81c9daa33f857035a8a548b1124bd3d94c4b73a35adf01ab65476b5",   # years: the years-wanted routine
+    0x5DE10: "a416917f31c92569edf3815ddf7ca6b45072b946cb4fc26c6350573d715c6b77",
+    0x87DC0: "45a9bbfd6e95ec93b537a9c1e244b67a37563d649d1e5a2510bc3101874a16fc",
+    0x8E150: "3529c20c04a95443cf43885f8996b4c98e743f642d4ef162bf01e29fdc26c4d5",
+    0x975A0: "96b6ae806f961c2bf4d3e028933f2e52f0ae8fa13df76861eea06a45ea968d47",
+    0xC4930: "127819bc6f1abd7c225adec557875003abed239718d54d48942591d34aecd995",
+    0xF3300: "c3ee5ae4a10a7911e72f7d66bbe50a29f1a4cd31b765e7b7bde390abb3e5c580",
+    0x10D210: "3b2184a737175e41cb2d84d2cf477cc00f3c4267fb63585136ab44c319d3dae8",
+    0x118A40: "d92be35b5891db2d12dff50f25dd9917e60fb56f910ce0d1bd32e5052992f5cc",
+    0x12E110: "3b2184a737175e41cb2d84d2cf477cc00f3c4267fb63585136ab44c319d3dae8",
+    0x1B6CB0: "d35f07fdd5baddf5f04e3f4c10749daf1dbf575710e0605cd0ab16a654af3994",
+    0x224420: "7e7909c8240985deaa3d49bc783f54a950ff50c52cdf541678b9a8bb23172f27",
+    0x25DEE0: "9996390e48cfdec438cba431c2d1d4e398acb6ff8e1286c558c950f385de7e65",
+    0x2B3F40: "b26ec31dcc429c0e710a078ebaa0ace0ec593dcac4e0e67e4df2c6c756a39817",
+    0x31EFA0: "dbcf86c6d0030d21b618b3efa31718932ab0acda6e5f24407a7710c053f35fd9",
+    0x328CE0: "204c8f57ec690b184b44a1fab8a088a3ff6ec34b0b287a35949470c76a9364f1",
+    0x332940: "3b2184a737175e41cb2d84d2cf477cc00f3c4267fb63585136ab44c319d3dae8",
+    0x347F40: "3b2184a737175e41cb2d84d2cf477cc00f3c4267fb63585136ab44c319d3dae8",
+    0x351D60: "3b2184a737175e41cb2d84d2cf477cc00f3c4267fb63585136ab44c319d3dae8",
+    0x39C3F0: "aef02c320b3b1e737e0f3faa0e0ce41f3865c77d8b33da34f467f5d46f154917",
+    0x3C8E00: "584184aca675af2dde2bfaf929b08597ffc0baba86dcea8864daf7a8d5eceb8f",
+    0x3C98C0: "704783e70d8408dea647fbe7a4263b62990516b5aa6287e5a1297886b136f9d4",
+    0x3D3390: "ef8bfbaf8b64e1013530787507f9869e3a56deabe6b8cdf9a1c7462d4cfae140",
+}
+PINS.update(R10_WINDOW_PINS)
+PINS[OFFER_JITTER] = "fa53102234cdfb47e76212cf24faf309c148be7f525d793ad1ee97a9052f9e49"
+PINS[RESIGN_STAGE] = "618dd3590e6d39655c05657a34d3e9158ff05eda2240f73b70f81e07de18746f"
+R10_WINDOWS = frozenset(R10_WINDOW_PINS)
+REVISION_10_NEW = R10_WINDOWS | frozenset({OFFER_JITTER, RESIGN_STAGE})
+PREVIOUS_REVISION_9 = {             # the sites revision 10 rewrites, as revision 8 installed them (sha256)
+    0x264AC0: "419c4e81aba466572026513a360f881beea64cc5e80d2644a10d9583dc76c8a6",   # roster_o
+    0x2BD440: "9b65660baaaaeaa82a1c1c3163c4f67759ce3251e1465a26540282fff305a0ac",   # value
+    0x2BFBE0: "0a4b68da7e3ba0f3eae9cec5e43c983b22f5975d76606be5b965f8b60a21df9d",   # reconcile
+    0x3228A0: "f64823e1bc2b7976a307d1fa7103e3b448edcc6ea9c0e3b849bc02330b8881e8",   # contracts
+    0x322980: "397efccab209199156ef3a880a298dc8b452625a5db250298a36640beb35239b",   # rookie
+    0x323870: "d5aa27422755cdfb03be6b2def6083ad9f063c5a70a9f404df6d050ab7564b69",   # week
+    0x396F50: "78088dfad28c4c33e6f5932d97b3a2b6e0d9b214453798731aac6824614996ff",   # roster_a
+    0x3B9F60: "d8db30b3c38a8a5b7e93c9533e5fa249be222da60a4133ad0e4fc9cf6d33dc11",   # roster_b
+    0x3BA4B0: "67db7d4fcec3ba0a73e3c33cf34d0b2b50058cddcff3526fb87ddd1027149930",   # roster_d
+    0x3C0920: "b02dc9268ebbd9dde22520cd2e80a8ad089f52717643c4ddb48f6f235fe0fe23",   # roster_n
+    0x3D2890: "747220b79cf18345d7d75d1dec3c3a8a37d8ae4417783a5fea99f4b52e29b181",   # roster_c
+    0x3E21D0: "2d46d0c4db3ec3835afc5e911d2e99c1b3970eeccf2852893a2d97a4a919128b",   # roster_l
+    0x4FE7A0: "04cfe59789ad7c9171644dfdd638696a6400fc67ec07633830e89ffe75d6c28a",   # cap growth 1.0788
+    ROLLOVER_RECONCILE: "93bcf088d60a02096f8e9e588f0e0897189d4d145f3f47edcde91f78312acf5b",   # call economy_reconcile
+    0x323BB3: "f8c0693c7061677d6267125e0be1a8f4304d7d675cac935604dfbed77edf511d",   # the offer gate's jump (economy_offer_gate moved with economy_contract)
+}
+REVISION = 10
 # b81 economy revision 10, part 1 (coordinator ruling 6, 11/25): the draft class position mix (window roster_f's
 # class_counts) moves from K 9 / P 9 to K 4 / P 4 per 450, the ten slots two each to WR, CB, T, DT and DE (runtime.c).
 # Every image built since b779 ag1 (beta 79 / v0.8, beta 80 / v0.9, every beta 81 disc so far) carries the 9/9 window,
@@ -360,17 +427,19 @@ class Site:
 
 
 def sites(revision: int = REVISION) -> tuple[Site, ...]:
-    if revision not in (1, 2, 3, 4, 5, 6, 7, 8):
+    if revision not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
         raise EconomyError("unknown economy revision")
     windows = {va: code for va, code in WINDOWS.items()
                if (revision >= 3 or va not in REVISION_3_SITES) and (revision >= 4 or va not in REVISION_4_SITES)
-               and (revision >= 7 or va not in REVISION_7_NEW) and (revision >= 8 or va not in REVISION_8_NEW)}
+               and (revision >= 7 or va not in REVISION_7_NEW) and (revision >= 8 or va not in REVISION_8_NEW)
+               and (revision >= 10 or va not in R10_WINDOWS)}
     replacements = {**windows, ROOKIE_TABLE_VA: ROOKIE_TABLE,
                     0x13EF17: bytes.fromhex("c70578c2e300") + struct.pack("<I", GAME_CAP),
-                    0x4FE7A0: struct.pack("<f", CAP_GROWTH),
+                    0x4FE7A0: struct.pack("<f", CAP_GROWTH if revision >= 10 else PREVIOUS_CAP_GROWTH),
                     # Apply surplus to both sides of a trade, keeping legality checks.
                     0x2BACCA: bytes.fromhex("6a01")}
-    replacements[0x247BC6] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_reconcile"] - 0x247BC6 - 5)
+    reconcile = SYMBOLS["economy_rollover_reconcile" if revision >= 10 else "economy_reconcile"]
+    replacements[ROLLOVER_RECONCILE] = b"\xe8" + struct.pack("<i", reconcile - ROLLOVER_RECONCILE - 5)
     for address, symbol in ((0x322BB0, "economy_fill_gate"), (0x323BB3, "economy_offer_gate")):
         replacements[address] = b"\xe9" + struct.pack("<i", SYMBOLS[symbol] - address - 5) + b"\x90"
     replacements[0x322EB0] = b"\xe9" + struct.pack("<i", SYMBOLS["economy_renew_gate"] - 0x322EB0 - 5) + b"\x90\x90"
@@ -405,6 +474,9 @@ def sites(revision: int = REVISION) -> tuple[Site, ...]:
         replacements[VETERAN_CUT_RELEASE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_vet_release"] - VETERAN_CUT_RELEASE - 5)
     if revision >= 7:
         replacements[DRAFT_NEED_MINIMUM] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_draft_min"] - DRAFT_NEED_MINIMUM - 5)
+    if revision >= 10:
+        replacements[OFFER_JITTER] = OFFER_JITTER_PATCHED
+        replacements[RESIGN_STAGE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_resign_stage"] - RESIGN_STAGE - 5)
     if revision >= 8:
         replacements[SQUAD_GATE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_gate"] - SQUAD_GATE - 5)
         replacements[SQUAD_EXPIRE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_expire"] - SQUAD_EXPIRE - 5)
@@ -432,8 +504,32 @@ def _standalone_status(payload: bytes) -> str:
         return "legacy" if state == "applied" else state
     try:
         image = XbeImage(payload)
+        new = {_site_state(image, site) for site in sites() if site.va in REVISION_10_NEW}
+        rewritten = {}
+        for site in sites():
+            if site.va in PREVIOUS_REVISION_9:
+                state = _site_state(image, site)
+                if state != "applied" and hashlib.sha256(image.read(site.va, len(site.patched))).hexdigest() == \
+                        PREVIOUS_REVISION_9[site.va]:
+                    state = "revision9"
+                rewritten[site.va] = state
+        if new == {"applied"} and set(rewritten.values()) == {"applied"}:
+            return _status_before_10(payload, frozenset(rewritten))
+        if new == {"retail"} and "applied" not in rewritten.values():
+            state = _status_before_10(payload, frozenset(va for va, st in rewritten.items() if st == "revision9"))
+            return "legacy" if state in ("applied", "legacy") else state
+        return "foreign"
+    except (ValueError, struct.error, IndexError):
+        return "foreign"
+
+
+def _status_before_10(payload: bytes, assume: frozenset) -> str:
+    """The revision-8 rules, revision 10's new sites left out and the sites in `assume` (its rewritten sites, applied or as
+    revision 8 left them) counted as applied."""
+    try:
+        image = XbeImage(payload)
         eight = {_site_state(image, site) for site in sites() if site.va in REVISION_8_NEW}
-        rest = _status_before_8(payload)
+        rest = _status_before_8(payload, assume)
         if eight == {"applied"}:
             return rest if rest == "applied" else "foreign"
         if eight == {"retail"}:
@@ -443,7 +539,7 @@ def _standalone_status(payload: bytes) -> str:
         return "foreign"
 
 
-def _status_before_8(payload: bytes) -> str:
+def _status_before_8(payload: bytes, assume: frozenset = frozenset()) -> str:
     """The revision-7 rules (revision 8's new sites left out). b780 econ3 (revision 7): an image with every revision-7 site applied reads
     as the rules below read the rest of it; an image with none of them (the new windows and the draft-need call
     retail, the rewritten windows as revision 6 or an older revision left them) reads "legacy" where those rules read
@@ -453,7 +549,7 @@ def _status_before_8(payload: bytes) -> str:
         seven = {}
         for site in sites():
             if site.va in REVISION_7_SITES and site.va not in REVISION_8_NEW:
-                state = _site_state(image, site)
+                state = "applied" if site.va in assume else _site_state(image, site)
                 if state == "foreign" and site.va in PREVIOUS_REVISION_6 and hashlib.sha256(
                         image.read(site.va, len(site.patched))).hexdigest() == PREVIOUS_REVISION_6[site.va]:
                     state = "revision6"
@@ -461,9 +557,9 @@ def _status_before_8(payload: bytes) -> str:
         new = {seven[va] for va in REVISION_7_NEW}
         rewritten = {seven[va] for va in PREVIOUS_REVISION_6}
         if new == {"applied"} and rewritten == {"applied"}:
-            return _status_before_7(image, frozenset())
+            return _status_before_7(image, assume)
         if new == {"retail"} and "applied" not in rewritten:
-            state = _status_before_7(image, frozenset(va for va, st in seven.items() if st == "revision6"))
+            state = _status_before_7(image, assume | frozenset(va for va, st in seven.items() if st == "revision6"))
             return "legacy" if state in ("applied", "legacy") else state
         return "foreign"
     except (ValueError, struct.error, IndexError):
@@ -479,7 +575,7 @@ def _status_before_7(image: XbeImage, revision_6: frozenset) -> str:
     try:
         states = {}
         for site in sites():
-            if site.va in REVISION_7_NEW or site.va in REVISION_8_NEW:
+            if site.va in REVISION_7_NEW or site.va in REVISION_8_NEW or site.va in REVISION_10_NEW:
                 continue
             state = "applied" if site.va in revision_6 else _site_state(image, site)
             if state == "foreign" and site.va in PREVIOUS and \

@@ -49,48 +49,46 @@ unsigned FAST economy_offer_room(u8 *offer);
 unsigned club_level(u8 *team, unsigned pos, float him, unsigned busy);
 void economy_need(int *need, u8 *team, unsigned want);
 int FAST economy_vet_short(u8 *team);
+/* b81 economy revision 10 (defined at the end) */
+unsigned FAST economy_years(u8 *p);
+int FAST economy_reserve(u8 *team);
+int FAST economy_usable_room(u8 *team);
+int FAST economy_fill_budget(u8 *team);
+void FAST economy_camp(u8 *team, void *menu);
+void FAST economy_clear_cap(u8 *team);
+u8 *FAST economy_vet_pick(u8 *team, u8 *proposed);
 
 static unsigned maximum(unsigned a, unsigned b) { return a > b ? a : b; }
 static unsigned minimum(unsigned a, unsigned b) { return a < b ? a : b; }
 
 static unsigned economy_floor(unsigned pro);
 
+/* b81 economy revision 10: the price is a rank on the real market curve (price_of, below), not a cube of the overall;
+ * the surplus (trades), floor_apy and the 60,000 clamp are as before; a free agent asks economy_ask. The old body's
+ * 540 bytes stay this routine's: the linker pads up to economy_floor, so economy_floor, economy_penalty and
+ * economy_cap keep their addresses (the team-building owner calls economy_cap). */
+unsigned floor_of(unsigned pro);
+unsigned price_of(u8 *p, unsigned aging);
+unsigned economy_ask(u8 *p, unsigned value, unsigned floor);
 SECTION(".value") unsigned FAST economy_value(u8 *p, unsigned floor_apy,
                                               unsigned surplus, unsigned aging, unsigned years) {
     unsigned pos = p[0x35], pro = p[0x25] & 31;
     if (pos >= 17) return 0;
-    float ovr = n_rating(p, 0);
-    float quality = (ovr - 0.45f) / 0.55f;
-    if (!(quality > 0.0f)) quality = 0.0f;
-    if (quality > 1.0f) quality = 1.0f;
-    float value = market[pos] * quality * quality * quality;
-    value *= *(u32 *)0xe3c278 / 75300.0f;
-    if (aging && pro > decline_after[pos]) {
-        float age = 1.0f - (pro - decline_after[pos]) * 0.08f;
-        if (age < 0.25f) age = 0.25f;
-        value *= age;
-    }
-    unsigned floor = economy_floor(pro);
-    if (value < floor) value = (float)floor;
+    unsigned floor = floor_of(pro), value = price_of(p, aging);
+    if (value < floor) value = floor;
     if (surplus && (p[0x24] & 15) && (p[0x27] & 15)) {
-        unsigned salary = n_salary(p);
-        salary += *(u16 *)(p + 10) * (p[0x26] >> 4) / (p[0x27] & 15);
-        value += (value - salary) * minimum(years, 4) * 0.5f;
-        if (value < 1.0f) value = 1.0f;
+        int salary = (int)n_salary(p) + *(u16 *)(p + 10) * (p[0x26] >> 4) / (p[0x27] & 15);
+        int v = (int)value + ((int)value - salary) * (int)minimum(years, 4) / 2;
+        value = v < 1 ? 1u : (unsigned)v;
     }
     if (floor_apy && (p[0x27] & 15)) {
         unsigned apy = *(u16 *)(p + 10) * 10u / (p[0x27] & 15);
-        if (value < apy) value = (float)apy;
+        if (value < apy) value = apy;
     }
     /* Callers truncate to AX. Never wrap an expensive player to near zero. */
-    if (value > 60000.0f) value = 60000.0f;
-    /* b778 fa2: after two unsigned weeks a high-overall free agent asks no more
-     * than the best room on the table (never below his minimum). */
-    if (PROVE_IT_FREE_AGENT(p) && n_rating(p, 1) > PROVE_IT) {
-        unsigned best = economy_best_room(p, 0);
-        if (value > best) value = (float)maximum(best, floor);
-    }
-    return (unsigned)value;
+    if (value > 60000) value = 60000;
+    if (!(p[0x24] & 15) && !(p[0x27] & 15)) value = economy_ask(p, value, floor);
+    return value;
 }
 
 /* DESIGN: the CBA minimum salary for a player's years of service, grown with the season index. */
@@ -101,6 +99,10 @@ SECTION(".penalty") static unsigned economy_floor(unsigned pro) {
 SECTION(".contracts") void FAST economy_contract(u8 *p, unsigned low, unsigned high, unsigned floor_apy) {
     unsigned years = minimum(maximum(low, 1), 7);
     if (high >= years) years += n_rand(RNG) % (minimum(high, 7) - years + 1);
+    /* b81 revision 10: the CPU's own ranges (renewals and extensions 2-6 at 0x322ECE, fills 2-4 / 5-6 at 0x322D98) take
+     * the real length of his age and price (the draw above still runs: the RNG stream is unchanged); the user's screens
+     * (1-4, 1-5) and MyCareer (1-1) keep theirs. */
+    if (low >= 2 && high > low) years = economy_years(p);
     if (PROVE_IT_FREE_AGENT(p)) years = 1;   /* b778 fa2: a prove-it deal */
     unsigned salary = economy_value(p, floor_apy, 0, 1, years);
     unsigned value = (salary * years + 9) / 10;
@@ -230,7 +232,7 @@ SECTION(".offer_room") unsigned FAST economy_offer_room(u8 *offer) {
                       (value, kind, bonus, 0, years);
     charge += ((unsigned (FAST *)(unsigned, unsigned, unsigned))0xe6020)(value, bonus, years);
     ((void (FAST *)(u8 *))0xc3f00)(team);
-    if (*(u32 *)(team + 0x124) + charge > (unsigned)economy_cap(team, 1, 0)) return 0;
+    if ((int)(*(u32 *)(team + 0x124) + charge) > economy_cap(team, 1, 0) - economy_reserve(team)) return 0;   /* b81 r10 */
     p[0x26] = kind | bonus << 4;
     return 1;
 }
@@ -264,6 +266,7 @@ SECTION(".roster_d") unsigned FAST economy_renew_room(u8 *p, u8 *team) {
     int room = economy_cap(team, 1, 0) - *(u32 *)(team + 0x124);
     p[0x24] = remaining;
     ((void (FAST *)(u8 *))0xc3f00)(team);
+    if ((*(u16 *)(p + 0x28) >> 10) & 7) room -= economy_reserve(team);   /* b81 r10: a depth-chart starter may use it */
     return room >= (int)economy_value(p, !!(remaining & 15), 0, 1, 0) + 10;
 }
 
@@ -300,7 +303,8 @@ SECTION(".roster_e") static unsigned charge(unsigned value, unsigned kind, unsig
 SECTION(".roster_b") int FAST economy_restructure(u8 *p, unsigned apply) {
     unsigned left = p[0x24] & 15, len = p[0x27] & 15, value = *(u16 *)(p + 10);
     unsigned kind = p[0x26] & 15, bonus = p[0x26] >> 4, owed = 0;
-    if (left < 2 || left > len || kind > 7 || bonus > 9) return 0;
+    /* b81 r10: 3+ years left, and never a deal already restructured (curve 6, bonus 2): the money owed moves once */
+    if (left < 3 || left > len || kind > 7 || bonus > 9 || p[0x26] == (6 | 2 << 4)) return 0;
     /* Never a contract the retail veteran cut calls overpaid (base > 2.1 x market value). */
     if (n_salary(p) * 10 > economy_value(p, 0, 0, 1, left) * 21) return 0;
     for (unsigned i = len - left; i < len; ++i) owed += charge(value, kind, bonus, i, len);
@@ -314,17 +318,9 @@ SECTION(".roster_b") int FAST economy_restructure(u8 *p, unsigned apply) {
     return saving;
 }
 
-/* Restructure the contract that makes the most room, at least $1M real. */
-SECTION(".roster_b") static unsigned restructure_best(u8 *team) {
-    u8 *best = 0;
-    int most = 250;
-    for (unsigned i = 0; i < team[0x11c]; ++i) {
-        int saving = economy_restructure(((u8 **)team)[i], 0);
-        if (saving > most) { most = saving; best = ((u8 **)team)[i]; }
-    }
-    if (best) economy_restructure(best, 1);
-    return best != 0;
-}
+/* Restructure the contract that makes the most room (b81 revision 10: moved to window .r10_rbest, where a club holding
+ * three restructured deals restructures no more). */
+unsigned restructure_best(u8 *team);
 
 unsigned FAST economy_camp_limit(void);   /* b780 b4-economy (D10): defined at the end of roster_m */
 void FAST economy_cover(u8 *team, void *menu);   /* b780 hunt1: defined after roster_h's rodata (naked, fastcall ECX/EDX) */
@@ -380,7 +376,7 @@ SECTION(".roster_a") static void fill(u8 *team, void *menu, float chance, unsign
     for (unsigned pos = 0; pos < 17; ++pos)
         while (need[pos] < 0) {
             ++need[pos];
-            int budget = n_human(team) ? ROOM(team) : 0xffff;
+            int budget = n_human(team) ? ROOM(team) : economy_fill_budget(team);   /* b81 r10: the reserve */
             if (!floor) {
                 if (n_frand(RNG) < chance) n_cpu_sign(team, pos, budget, menu);
                 continue;
@@ -402,6 +398,8 @@ SECTION(".roster_a") static void fill(u8 *team, void *menu, float chance, unsign
  * one well-paid player, then refills with minimum salaries. */
 SECTION(".roster_a") static void upkeep(u8 *team, void *menu) {
     if (*(u32 *)0xe576a4 >= 8) economy_cover(team, menu);   /* b780 hunt1: in season a hurt K or P is covered */
+    economy_clear_cap(team);    /* b81 r10: over the cap, restructure once, then release by value lost */
+    economy_camp(team, menu);   /* b81 r10: kickers and punters compete in camp */
     for (unsigned attempt = 0; attempt < 12; ++attempt) {
         trim(team, 0);
         fill(team, menu, 1.0f, 0, 1);
@@ -432,7 +430,7 @@ SECTION(".roster_c") unsigned FAST economy_best_room(u8 *p, u8 **club) {
         if (!CPU(team)) continue;
         /* b780 econ3 (revision 7): the start/play level and the club's busy and full tests (club_level, roster_n). */
         level = club_level(team, pos, him, club && count >= 53);
-        int room = ROOM(team) - 10;
+        int room = economy_usable_room(team);   /* b81 r10: never the club's reserve */
         if (count < FLOOR_PLAYERS) room -= (int)((FLOOR_PLAYERS - 1 - count) * least);
         if (level && room > 0 && (level > tier || (level == tier && room > best))) {
             tier = level; best = room;
@@ -859,12 +857,11 @@ SECTION(".roster_n") int FAST economy_vet_short(u8 *team) {
  * only when no backup clears it; when no single release clears it, the least value lost again, backups first (the cut
  * proposes again while the club is short). The proposal itself only says the club has an overpaid veteran. */
 SECTION(".roster_n") u8 *FAST economy_vet_pick(u8 *team, u8 *proposed) {
-    int over = economy_vet_short(team);
+    int over = (u32)proposed < 0x10000u ? (int)(u32)proposed : economy_vet_short(team);   /* b81 r10: trim's overage */
     unsigned (FAST *worth)(u8 *, unsigned, unsigned, unsigned, unsigned) =
         (unsigned (FAST *)(u8 *, unsigned, unsigned, unsigned, unsigned))(0x2BFB6C + *(int *)0x2BFB68);
     unsigned olb = league_has_olb(), least = 0;
     u8 *best = 0;
-    (void)proposed;
     if (over <= 0) return 0;
     for (unsigned i = 0; i < team[0x11c]; ++i) {
         u8 *q = ((u8 **)team)[i];
@@ -1056,4 +1053,281 @@ SECTION(".roster_t") void FAST economy_squad_gate(void) {
         }
 done:
     n_next_class();
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * b81 economy revision 10 (economy lane DESIGN.txt; coordinator rulings 2026-11-25). The ten-season panel 68001-68004
+ * (8b180ed5): from 2031 every CPU club sat at 96-100% of the cap (real median room 2.9%, 7 of 32 clubs at 7.6%+), up to
+ * 17 starter-grade free agents per league were unsigned at week 18, 5-6 year deals were 22% of the active book (real
+ * 0.8%) and 30 kickers and punters rated 80+ sat unsigned. Causes (DESIGN.txt 2): the price followed absolute ratings
+ * (the CPU rosters at economy_value cost 1.03 of the cap in 2026 and 1.38 in 2033); every signing path spent to the last
+ * dollar; restructured deals were restructured again (3.3 -> 9.7 a club); no club ever cut an overpaid veteran to make
+ * room; lengths ignored age and price; the in-season prove-it ask counted the room of full clubs no one could sign with.
+ * Revision 10:
+ * - price: a player's rank at his position group among every rostered man, on the real market curve (OverTheCap, the
+ *   k-th best-paid active player's share of the cap) x 0.80, the aging rule by age, the minimum. Rating inflation moves
+ *   no price (data/nfl2k5_franchise_economy.json revision_10.price);
+ * - a free agent's ask falls with the weeks he goes unsigned; the prove-it clamp counts only clubs that could sign him;
+ * - lengths: one draw from the real length mix of the player's age band and price tier, used by the CPU's offers, the
+ *   player's own wish (0x322690, so the offer and his consent agree), renewals, extensions and fills;
+ * - a cap reserve per CPU club drawn from the real in-season room; FA offers, non-starter renewals, native fills above
+ *   four minimums and prove-it signings must leave it;
+ * - before the re-signing stage a CPU club short of its reserve + 2% of the cap releases up to three overpaid 30+ (or
+ *   past their position's decline age) veterans; a deal is restructured once, with 3+ years left, 3 a club at most; an
+ *   over-the-cap trim releases by value lost (the veteran cut's own ranking) instead of the lowest-rated man;
+ * - kickers and punters compete in camp.
+ * A club a person owns is never touched by the new rules (ruling 7), whatever its "CPU manages" setting.
+ * ------------------------------------------------------------------------------------------------------------------- */
+#define STAGE (*(u32 *)0xE576A4)
+#define SEASON (*(u32 *)0xE576B8)
+#define CAP (*(u32 *)0xE3C278)
+#define ROSTER_ROOT (*(u8 **)0xB72918)
+#define TEAM_INDEX(t) ((u32)((t) - *(u8 **)(ROSTER_ROOT + 0x1c)) / 500u)
+#define HEALTHY(p) (!((p)[0x23] & 0x80))      /* no injury bit, as the trim, the gate and economy_cover read it */
+#define CHARGE(q) (n_salary(q) + n_prorated(*(u16 *)((q) + 10), (q)[0x26] >> 4, (q)[0x27] & 15))
+#define CAMP_EDGE 0.04f                         /* four points of 0x246D80 */
+/* Code space: economy_value's own 540 bytes (economy_value, price_of, share_e4), the retail routine 0x322690 (the
+ * player's years wanted; economy_years) and unreferenced retail functions (assemble.py R10_WINDOWS, one or two routines
+ * or tables each). A club a person owns never reaches the new rules (ruling 7: n_human, "CPU manages" or not). */
+
+/* Twice his rank among every rostered man of his position group (club active lists; 0x246D80 unboosted):
+ * 2 + 2 x (rated above him) + (level with him). */
+SECTION(".r10_rank_club") unsigned rank_club(u8 *team, u8 *p, unsigned g, float him) {
+    unsigned n2 = 0;
+    for (unsigned i = 0; i < team[0x11c]; ++i) {
+        u8 *q = ((u8 **)team)[i];
+        if (q == p || q[0x35] >= 17 || price_group[q[0x35]] != g) continue;
+        float s = n_rating(q, 0);
+        n2 += s > him ? 2 : s == him;
+    }
+    return n2;
+}
+
+SECTION(".r10_rank") unsigned rank_twice(u8 *p) {
+    unsigned g = price_group[p[0x35]], n2 = 2;
+    float him = n_rating(p, 0);
+    for (unsigned t = 0; t < n_teams(); ++t) n2 += rank_club(n_team(t), p, g, him);
+    return n2;
+}
+
+/* Age in the season being played, as past_age reads it. */
+SECTION(".r10_age") int age_of(u8 *p) {
+    unsigned season = *(unsigned *)0x247AC7 + SEASON + 1;
+    return (int)((season - ((*(unsigned *)(p + 24) >> 21) & 127)) % 100);
+}
+
+/* The CBA minimum for his years of service (economy_floor is static to its window). */
+SECTION(".r10_age") unsigned floor_of(unsigned pro) {
+    return (minimums[minimum(pro, 7)] + minimum(SEASON, 4) * 45 + 3) / 4;
+}
+
+/* The market curve at twice-rank `rank2`, in 1/10000 of the cap (knots in 0.1% units, linear between them). */
+SECTION(".r10_value") unsigned share_e4(unsigned g, unsigned rank2) {
+    const u8 *v = g < 5 ? price_curve_a + g * PRICE_KNOTS : g < 10 ? price_curve_b + (g - 5) * PRICE_KNOTS
+                                                                  : price_curve_c + (g - 10) * PRICE_KNOTS;
+    unsigned i = 0, r0, r1;
+    while (i + 2 < PRICE_KNOTS && 2u * price_ranks[i + 1] < rank2) ++i;
+    r0 = 2u * price_ranks[i]; r1 = 2u * price_ranks[i + 1];
+    if (rank2 <= r0) return v[i] * 10u;
+    if (rank2 >= r1) return v[i + 1] * 10u;
+    return (v[i] * 10u * (r1 - rank2) + v[i + 1] * 10u * (rank2 - r0)) / (r1 - r0);
+}
+
+/* His price in game $1000 before the minimum: the curve x the cap, then 8% a year past his position's decline age
+ * (never below a quarter) when `aging`. */
+SECTION(".r10_value") unsigned price_of(u8 *p, unsigned aging) {
+    unsigned pos = p[0x35], v = share_e4(price_group[pos], rank_twice(p)) * (CAP / 100) / 100;
+    int over = age_of(p) - decline_age[pos];
+    if (aging && over > 0) v = v * (over >= 10 ? 64u : 256u - 20u * (unsigned)over) >> 8;
+    return v;
+}
+
+/* A free agent's ask before the prove-it clamp: his price falling with the weeks he has gone unsigned (+0x25 bits
+ * 5-7), at most half of it from the camp stage on, a quarter of it in season, never below his minimum. */
+SECTION(".r10_ask") unsigned ask_of(u8 *p, unsigned value, unsigned floor) {
+    unsigned weeks = p[0x25] >> 5, ask = weeks ? value * ask_decay[weeks - 1] >> 8 : value;
+    if (STAGE >= 8) ask = value >> 2;
+    else if (STAGE >= 6 && ask > value >> 1) ask = value >> 1;
+    return ask < floor ? floor : ask;
+}
+
+/* After two unsigned weeks a man rated over 70 asks no more than the most room a club that could sign him now has left
+ * (Noah 10/22: "take the best deal on the table after a week or two of no one signing them"). economy_best_room with a
+ * club pointer: a full club is busy, as in the signing pass itself (the old clamp counted full clubs too, so his ask
+ * could exceed every open club's room and he never signed: 10-16 starter-grade men a league by 2033). */
+SECTION(".r10_clamp") unsigned economy_ask(u8 *p, unsigned value, unsigned floor) {
+    unsigned ask = ask_of(p, value, floor);
+    if (PROVE_IT_FREE_AGENT(p) && n_rating(p, 1) > PROVE_IT) {
+        u8 *club = 0;
+        unsigned best = economy_best_room(p, &club);
+        if (ask > best) ask = maximum(best, floor);
+    }
+    return ask;
+}
+
+/* His price tier: under 0.5, 1, 2, 5 or 10% of the cap, or more (0..5). */
+SECTION(".r10_tier") unsigned years_tier(u8 *p) {
+    unsigned v = price_of(p, 1), cap = CAP;
+    return v * 200 < cap ? 0 : v * 100 < cap ? 1 : v * 50 < cap ? 2 : v * 20 < cap ? 3 : v * 10 < cap ? 4 : 5;
+}
+
+/* His age band and price tier's cumulative length draw (revision_10.lengths; 1 to 4 years, then 5). */
+SECTION(".r10_cell") const u8 *years_cell(u8 *p) {
+    int a = age_of(p);
+    return years_cum + 4 * (6 * (a <= 25 ? 0 : a <= 29 ? 1 : a <= 32 ? 2 : 3) + years_tier(p));
+}
+
+/* Retail 0x322690 (the years a player wants, EDI = player; called by the CPU's offer 0x324180, by his consent 0x3232A0
+ * twice and at 0x32368B) now answers here: a draw from the real length mix of his age and price, by a hash of his record
+ * and the season (no RNG: his offer and his consent agree, as retail's index draw did). 1 to 5 years. */
+SECTION(".years") __attribute__((naked)) void economy_years_entry(void) {
+    __asm__("mov %edi, %ecx\njmp economy_years\n");
+}
+
+SECTION(".r10_years") unsigned FAST economy_years(u8 *p) {
+    if (!p) return (unsigned)-1;
+    if (p[0x35] >= 17) return 1;
+    const u8 *cum = years_cell(p);
+    u32 h = ((((u32)p - *(u32 *)(ROSTER_ROOT + 4)) ^ (SEASON * 0x9E3779B9u)) * 2654435761u) >> 24;
+    unsigned years = 1;
+    while (years < 5 && h >= cum[years - 1]) ++years;
+    return years;
+}
+
+/* The room a CPU club keeps in hand this league year (ruling 4): a share of the cap drawn per club and season from the
+ * real in-season room (revision_10.reserve), half of it in season (it is there for in-season signings); 0 for a club a
+ * person owns. */
+SECTION(".r10_reserve") int FAST economy_reserve(u8 *team) {
+    if (n_human(team)) return 0;
+    unsigned pm = reserve_pm[(TEAM_INDEX(team) * 0x9E3779B1u ^ SEASON * 0x85EBCA6Bu) >> 29];
+    int r = (int)(CAP / 1000 * pm);
+    return STAGE >= 8 ? r >> 1 : r;
+}
+
+SECTION(".r10_usable") int FAST economy_usable_room(u8 *team) {
+    return ROOM(team) - 10 - economy_reserve(team);
+}
+
+/* A native fill's budget for a CPU club: its usable room, but always four minimums (a club fills its depth). */
+SECTION(".r10_budget") int FAST economy_fill_budget(u8 *team) {
+    int room = economy_usable_room(team), least = (int)(4 * floor_of(0));
+    return room > least ? room : least;
+}
+
+/* Restructure the contract that makes the most room, at least $1M real (moved from roster_b, unchanged: economy_restructure
+ * itself now refuses a deal already restructured or with fewer than 3 years left). */
+SECTION(".r10_rbest") unsigned restructure_best(u8 *team) {
+    u8 *best = 0;
+    int most = 250;
+    for (unsigned i = 0; i < team[0x11c]; ++i) {
+        int saving = economy_restructure(((u8 **)team)[i], 0);
+        if (saving > most) { most = saving; best = ((u8 **)team)[i]; }
+    }
+    if (best) economy_restructure(best, 1);
+    return best != 0;
+}
+
+/* Over the cap, a CPU club restructures (once per deal), then releases by value lost with the veteran cut's own
+ * ranking (economy_vet_pick given the overage: the least price lost among men whose charge clears it, depth-chart
+ * starters last), not the lowest-rated man the trim would take. Called by upkeep and at the rollover before the trim. */
+SECTION(".r10_clear") void FAST economy_clear_cap(u8 *team) {
+    if (n_human(team)) return;
+    for (unsigned k = 0; k < 8; ++k) {
+        n_recount(team);
+        int over = -ROOM(team);
+        u8 *q;
+        if (over <= 0) return;
+        if (restructure_best(team)) continue;
+        if (!(q = economy_vet_pick(team, (u8 *)(u32)over))) return;
+        n_release(team, q, 1, 1);
+    }
+}
+
+/* The rollover's reconcile (0x247BC6) comes here: the cap first, then the trim as before. */
+SECTION(".r10_rollover") void FAST economy_rollover_reconcile(u8 *team) {
+    economy_clear_cap(team);
+    economy_reconcile(team);
+}
+
+/* A veteran the club could cut for room (ruling 4): not a QB (the quarterback room's), K or P; under contract; above the
+ * smart cut's minimum at his position (cut_rows row 2; LB with the OLB minimum, the product's one-pool scheme); 30 or older, or past
+ * his position's decline age. */
+SECTION(".r10_cuttable") unsigned cuttable(u8 *team, u8 *q) {
+    unsigned pos = q[0x35], floor;
+    int a;
+    if (pos < 3 || pos >= 17 || !(q[0x24] & 15)) return 0;
+    floor = cut_rows[2][pos] + (pos == 11 ? cut_rows[2][10] : 0);   /* the one-pool scheme: LB holds the OLB minimum */
+    if (n_at_position(team, pos) <= floor) return 0;
+    a = age_of(q);
+    return a >= 30 || a > decline_age[pos];
+}
+
+/* How far a cuttable veteran is paid above his price, in game $1000: when this season's base salary (0xE6380, as the
+ * restructure's and the veteran cut's overpaid tests read it) is at least 1.5 x his price + 0.5% of the cap, the salary
+ * less the price; else 0. */
+SECTION(".r10_overpay") int overpay(u8 *team, u8 *q) {
+    if (!cuttable(team, q)) return 0;
+    int salary = (int)n_salary(q), price = (int)economy_value(q, 0, 0, 1, q[0x24] & 15);
+    return 2 * salary >= 3 * price + (int)(CAP / 100) ? salary - price : 0;
+}
+
+/* The club's most overpaid cuttable veteran, or 0. */
+SECTION(".r10_most") u8 *most_overpaid(u8 *team) {
+    u8 *best = 0;
+    int most = 0;
+    for (unsigned i = 0; i < team[0x11c]; ++i) {
+        int over = overpay(team, ((u8 **)team)[i]);
+        if (over > most) { most = over; best = ((u8 **)team)[i]; }
+    }
+    return best;
+}
+
+/* A CPU club short of its reserve + 2% of the cap releases its most overpaid veteran, up to three. */
+SECTION(".r10_casualty") void casualties(u8 *team) {
+    for (unsigned k = 0; k < 3; ++k) {
+        u8 *q;
+        n_recount(team);
+        if (economy_usable_room(team) + 10 >= (int)(CAP / 50) || !(q = most_overpaid(team))) return;
+        n_release(team, q, 1, 1);
+    }
+}
+
+/* The re-signing stage (0x248426: call 0x323720, ECX = the menu) comes here first. Ruling 4 (the owner: "clubs that make
+ * moves to stay relevant"): real clubs cut before free agency. Then the native re-signing stage. */
+SECTION(".r10_resign") void FAST economy_resign_stage(void *menu) {
+    for (unsigned t = 0; t < n_teams(); ++t)
+        if (!n_human(n_team(t))) casualties(n_team(t));
+    ((void (FAST *)(void *))0x323720)(menu);
+}
+
+/* The best-rated healthy man at `pos` in a list of player pointers (a club's active list or the free-agent list). */
+SECTION(".r10_best") u8 *best_at(u8 **list, unsigned n, unsigned pos) {
+    u8 *best = 0;
+    float top = 0;
+    for (unsigned i = 0; i < n; ++i) {
+        u8 *q = list[i];
+        if (q[0x35] != pos || !HEALTHY(q)) continue;
+        float r = n_rating(q, 0);
+        if (!best || r > top) { best = q; top = r; }
+    }
+    return best;
+}
+
+/* Camp competition (stage 6, from upkeep): for K, then P, a CPU club whose best healthy one rates 4+ below the best
+ * healthy free agent signs one (0x322BB0: the best-rated free agent at the position whose ask fits its usable room, but
+ * always four minimums) and releases the one it had. Kickers and punters change clubs; none retires for it (Noah 10/28:
+ * no player retires because he is an unsigned free agent). */
+/* The club's best healthy man at `pos` when the best healthy free agent there rates 4+ above him, else 0. */
+SECTION(".r10_camp_pick") u8 *camp_pick(u8 *team, unsigned pos) {
+    u32 *list = FA_LIST;
+    u8 *mine = best_at((u8 **)team, team[0x11c], pos), *fa = best_at((u8 **)list[1], list[0], pos);
+    return mine && fa && n_rating(fa, 0) >= n_rating(mine, 0) + CAMP_EDGE ? mine : 0;
+}
+
+SECTION(".r10_camp") void FAST economy_camp(u8 *team, void *menu) {
+    if (STAGE != 6 || n_human(team) || team[0x11c] >= 64) return;
+    for (unsigned pos = 1; pos <= 2; ++pos) {
+        u8 *mine = camp_pick(team, pos);
+        if (mine && n_cpu_sign(team, pos, economy_fill_budget(team), menu)) n_release(team, mine, 1, 1);
+    }
 }

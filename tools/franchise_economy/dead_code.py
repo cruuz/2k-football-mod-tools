@@ -62,6 +62,33 @@ WINDOWS = {  # start: (size, sha256 of the retail bytes)
     0x3E9A90: (142, "04343c196ca45460668f254456e50e0e97f8950c728aa6c52384a47339c1cb4f"),
     0x3E9CD0: (134, "5d5df93f0747d8134d1c4c2502c4350caea4f033b513626ad5d08f2325f90a84"),
     0x3220B0: (131, "91cf637d17206732620e7706abdb4f7fab2b0b4269de74921a0f05ae3eacde72"),
+    # b81 economy revision 10 (assemble.py R10_WINDOWS): 22 more retail functions no code, table or pointer reaches, from the
+    # team-building lane's decode-synchronised candidate list (its tools/team_building/dead_code.py boundary votes; clear of
+    # the reservation inventory and of every built beta 81 executable at 11/25 05:10), less the 30 it took; 0x2B3F40 and
+    # 0x2B3FB0 are adjacent and joined (0x2B3F40..0x2B4016). Re-checked here on the retail executable (economy lane
+    # r10/find_windows.py) and listed in coord/PAGES_AND_SEEDS.md.
+    0x5DE10: (84, "a416917f31c92569edf3815ddf7ca6b45072b946cb4fc26c6350573d715c6b77"),   # r10: r10_casualty
+    0x87DC0: (88, "45a9bbfd6e95ec93b537a9c1e244b67a37563d649d1e5a2510bc3101874a16fc"),   # r10: r10_rank
+    0x8E150: (83, "3529c20c04a95443cf43885f8996b4c98e743f642d4ef162bf01e29fdc26c4d5"),   # r10: r10_tab_a
+    0x975A0: (123, "96b6ae806f961c2bf4d3e028933f2e52f0ae8fa13df76861eea06a45ea968d47"),   # r10: r10_cuttable
+    0xC4930: (83, "127819bc6f1abd7c225adec557875003abed239718d54d48942591d34aecd995"),   # r10: r10_usable
+    0xF3300: (85, "c3ee5ae4a10a7911e72f7d66bbe50a29f1a4cd31b765e7b7bde390abb3e5c580"),   # r10: r10_rbest
+    0x10D210: (82, "3b2184a737175e41cb2d84d2cf477cc00f3c4267fb63585136ab44c319d3dae8"),   # r10: r10_tab_e
+    0x118A40: (100, "d92be35b5891db2d12dff50f25dd9917e60fb56f910ce0d1bd32e5052992f5cc"),   # r10: r10_reserve
+    0x12E110: (82, "3b2184a737175e41cb2d84d2cf477cc00f3c4267fb63585136ab44c319d3dae8"),   # r10: r10_tab_d
+    0x1B6CB0: (93, "d35f07fdd5baddf5f04e3f4c10749daf1dbf575710e0605cd0ab16a654af3994"),   # r10: r10_age
+    0x224420: (104, "7e7909c8240985deaa3d49bc783f54a950ff50c52cdf541678b9a8bb23172f27"),   # r10: r10_tab_c
+    0x25DEE0: (87, "9996390e48cfdec438cba431c2d1d4e398acb6ff8e1286c558c950f385de7e65"),   # r10: r10_tier
+    0x2B3F40: (214, "b26ec31dcc429c0e710a078ebaa0ace0ec593dcac4e0e67e4df2c6c756a39817"),   # r10: r10_camp, r10_overpay
+    0x31EFA0: (103, "dbcf86c6d0030d21b618b3efa31718932ab0acda6e5f24407a7710c053f35fd9"),   # r10: r10_clear
+    0x328CE0: (89, "204c8f57ec690b184b44a1fab8a088a3ff6ec34b0b287a35949470c76a9364f1"),   # r10: r10_best
+    0x332940: (82, "3b2184a737175e41cb2d84d2cf477cc00f3c4267fb63585136ab44c319d3dae8"),   # r10: r10_tab_b
+    0x347F40: (82, "3b2184a737175e41cb2d84d2cf477cc00f3c4267fb63585136ab44c319d3dae8"),   # r10: r10_resign
+    0x351D60: (82, "3b2184a737175e41cb2d84d2cf477cc00f3c4267fb63585136ab44c319d3dae8"),   # r10: r10_most
+    0x39C3F0: (81, "aef02c320b3b1e737e0f3faa0e0ce41f3865c77d8b33da34f467f5d46f154917"),   # r10: r10_ask
+    0x3C8E00: (107, "584184aca675af2dde2bfaf929b08597ffc0baba86dcea8864daf7a8d5eceb8f"),   # r10: r10_camp_pick
+    0x3C98C0: (108, "704783e70d8408dea647fbe7a4263b62990516b5aa6287e5a1297886b136f9d4"),   # r10: r10_rank_club
+    0x3D3390: (81, "ef8bfbaf8b64e1013530787507f9869e3a56deabe6b8cdf9a1c7462d4cfae140"),   # r10: r10_cell
 }
 
 

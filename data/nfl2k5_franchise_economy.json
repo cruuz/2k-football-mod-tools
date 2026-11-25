@@ -1988,5 +1988,624 @@
     "chart_to_player_units": 2,
     "future_pick_discount": 0.75,
     "growth": "Repeat the observed 2025-to-2026 ratio as a scenario, not a forecast"
+  },
+  "revision_10": {
+    "evidence": "DESIGN (b81 economy lane DESIGN.txt; coordinator rulings 2026-11-25); real yardsticks PROVED by economy/ec_real.py",
+    "price": {
+      "rule": "price = price_scale x market_curve[group](rank) x cap; rank = 1 + rostered men of the group rated above him + half of those level with him (0x246D80 unboosted, whole points); then the aging rule and the minimum",
+      "price_scale": 0.8,
+      "groups": [
+        "QB",
+        "K",
+        "P",
+        "WR",
+        "CB",
+        "S",
+        "HB",
+        "FB",
+        "TE",
+        "LB",
+        "C",
+        "G",
+        "T",
+        "DT",
+        "DE"
+      ],
+      "position_group": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        5,
+        6,
+        7,
+        8,
+        9,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "ranks": [
+        1,
+        2,
+        3,
+        5,
+        8,
+        12,
+        16,
+        24,
+        32,
+        48,
+        64,
+        96,
+        128,
+        192
+      ],
+      "market_curve_capshare": {
+        "QB": [
+          0.245,
+          0.235,
+          0.234,
+          0.227,
+          0.215,
+          0.19,
+          0.075,
+          0.039,
+          0.022,
+          0.009,
+          0.005,
+          0.003,
+          0.003,
+          0.003
+        ],
+        "K": [
+          0.025,
+          0.023,
+          0.023,
+          0.022,
+          0.019,
+          0.014,
+          0.005,
+          0.004,
+          0.003,
+          0.003,
+          0.003,
+          0.003,
+          0.003,
+          0.003
+        ],
+        "P": [
+          0.017,
+          0.015,
+          0.014,
+          0.014,
+          0.012,
+          0.01,
+          0.007,
+          0.004,
+          0.003,
+          0.003,
+          0.003,
+          0.003,
+          0.003,
+          0.003
+        ],
+        "WR": [
+          0.144,
+          0.14,
+          0.133,
+          0.118,
+          0.116,
+          0.104,
+          0.096,
+          0.072,
+          0.054,
+          0.025,
+          0.014,
+          0.006,
+          0.005,
+          0.004
+        ],
+        "CB": [
+          0.112,
+          0.11,
+          0.108,
+          0.103,
+          0.094,
+          0.079,
+          0.064,
+          0.056,
+          0.041,
+          0.019,
+          0.013,
+          0.006,
+          0.005,
+          0.003
+        ],
+        "S": [
+          0.09,
+          0.084,
+          0.082,
+          0.071,
+          0.061,
+          0.047,
+          0.044,
+          0.027,
+          0.022,
+          0.01,
+          0.007,
+          0.005,
+          0.004,
+          0.001
+        ],
+        "HB": [
+          0.075,
+          0.074,
+          0.074,
+          0.073,
+          0.048,
+          0.041,
+          0.035,
+          0.021,
+          0.015,
+          0.007,
+          0.005,
+          0.004,
+          0.003,
+          0.003
+        ],
+        "FB": [
+          0.013,
+          0.013,
+          0.012,
+          0.007,
+          0.004,
+          0.004,
+          0.004,
+          0.004,
+          0.004,
+          0.004,
+          0.004,
+          0.004,
+          0.004,
+          0.004
+        ],
+        "TE": [
+          0.068,
+          0.068,
+          0.062,
+          0.056,
+          0.047,
+          0.041,
+          0.035,
+          0.027,
+          0.019,
+          0.011,
+          0.007,
+          0.004,
+          0.004,
+          0.004
+        ],
+        "LB": [
+          0.089,
+          0.075,
+          0.067,
+          0.06,
+          0.054,
+          0.045,
+          0.039,
+          0.03,
+          0.027,
+          0.012,
+          0.008,
+          0.005,
+          0.004,
+          0.001
+        ],
+        "C": [
+          0.09,
+          0.07,
+          0.061,
+          0.058,
+          0.037,
+          0.02,
+          0.016,
+          0.007,
+          0.005,
+          0.004,
+          0.003,
+          0.003,
+          0.003,
+          0.003
+        ],
+        "G": [
+          0.096,
+          0.091,
+          0.086,
+          0.083,
+          0.078,
+          0.063,
+          0.055,
+          0.042,
+          0.027,
+          0.011,
+          0.006,
+          0.004,
+          0.001,
+          0.001
+        ],
+        "T": [
+          0.11,
+          0.11,
+          0.105,
+          0.102,
+          0.09,
+          0.083,
+          0.08,
+          0.072,
+          0.053,
+          0.018,
+          0.014,
+          0.006,
+          0.004,
+          0.001
+        ],
+        "DT": [
+          0.126,
+          0.124,
+          0.117,
+          0.1,
+          0.096,
+          0.093,
+          0.084,
+          0.06,
+          0.048,
+          0.025,
+          0.015,
+          0.006,
+          0.004,
+          0.003
+        ],
+        "DE": [
+          0.167,
+          0.166,
+          0.161,
+          0.147,
+          0.127,
+          0.1,
+          0.091,
+          0.068,
+          0.053,
+          0.037,
+          0.019,
+          0.009,
+          0.005,
+          0.003
+        ]
+      },
+      "source": "nflverse historical_contracts.parquet (OverTheCap), each active player's latest deal, apy_cap_pct of the k-th best-paid at the position (OTC S = FS+SS, LB = OLB+ILB, LT/RT = T, LG/RG = G, IDL = DT, ED = DE); downloaded 2026-11-25; a missing rank repeats the last known one"
+    },
+    "aging": {
+      "decline_age": [
+        33,
+        35,
+        35,
+        28,
+        28,
+        29,
+        29,
+        26,
+        29,
+        29,
+        28,
+        28,
+        31,
+        31,
+        31,
+        30,
+        29
+      ],
+      "per_year_256": 20,
+      "floor_256": 64,
+      "note": "the decline_after_years_pro rule restated by age (a first-year player is about 22); to be replaced by the league-aging lane's D_TARGET turning ages when relayed"
+    },
+    "asks": {
+      "decay_256_by_unsigned_weeks": [
+        256,
+        218,
+        179,
+        141,
+        115,
+        90,
+        77,
+        64
+      ],
+      "camp_max_256": 128,
+      "season_256": 64,
+      "note": "a free agent's ask falls with the weeks he goes unsigned (+0x25 bits 5-7); from the camp stage (6) at most half his price; in season (stage 8+) a quarter of it; never below his minimum"
+    },
+    "lengths": {
+      "bands": [
+        "<=25",
+        "26-29",
+        "30-32",
+        "33+"
+      ],
+      "tiers": [
+        "<0.5%",
+        "0.5-1%",
+        "1-2%",
+        "2-5%",
+        "5-10%",
+        "10%+"
+      ],
+      "by_age_and_price": {
+        "<=25": {
+          "<0.5%": {
+            "length_pct": {
+              "1": 66.9,
+              "2": 30.9,
+              "3": 1.9,
+              "4": 0.3
+            },
+            "real_deals": 2088,
+            "borrowed_from": null
+          },
+          "0.5-1%": {
+            "length_pct": {
+              "1": 90.4,
+              "2": 9.6
+            },
+            "real_deals": 52,
+            "borrowed_from": null
+          },
+          "1-2%": {
+            "length_pct": {
+              "1": 69.0,
+              "2": 26.2,
+              "3": 4.8
+            },
+            "real_deals": 42,
+            "borrowed_from": null
+          },
+          "2-5%": {
+            "length_pct": {
+              "1": 10.6,
+              "2": 29.8,
+              "3": 44.7,
+              "4": 14.9
+            },
+            "real_deals": 47,
+            "borrowed_from": null
+          },
+          "5-10%": {
+            "length_pct": {
+              "1": 10.2,
+              "3": 32.2,
+              "4": 49.2,
+              "5": 8.5
+            },
+            "real_deals": 59,
+            "borrowed_from": null
+          },
+          "10%+": {
+            "length_pct": {
+              "3": 16.7,
+              "4": 56.7,
+              "5": 26.7
+            },
+            "real_deals": 30,
+            "borrowed_from": null
+          }
+        },
+        "26-29": {
+          "<0.5%": {
+            "length_pct": {
+              "1": 89.4,
+              "2": 10.2,
+              "3": 0.3,
+              "4": 0.0
+            },
+            "real_deals": 2735,
+            "borrowed_from": null
+          },
+          "0.5-1%": {
+            "length_pct": {
+              "1": 88.9,
+              "2": 9.9,
+              "3": 0.7,
+              "4": 0.5
+            },
+            "real_deals": 587,
+            "borrowed_from": null
+          },
+          "1-2%": {
+            "length_pct": {
+              "1": 56.6,
+              "2": 32.5,
+              "3": 9.9,
+              "4": 0.9
+            },
+            "real_deals": 332,
+            "borrowed_from": null
+          },
+          "2-5%": {
+            "length_pct": {
+              "1": 16.8,
+              "2": 26.1,
+              "3": 49.3,
+              "4": 7.1,
+              "5": 0.7
+            },
+            "real_deals": 268,
+            "borrowed_from": null
+          },
+          "5-10%": {
+            "length_pct": {
+              "1": 9.5,
+              "2": 11.5,
+              "3": 37.8,
+              "4": 32.4,
+              "5": 8.8
+            },
+            "real_deals": 148,
+            "borrowed_from": null
+          },
+          "10%+": {
+            "length_pct": {
+              "1": 2.7,
+              "3": 29.7,
+              "4": 45.9,
+              "5": 18.9,
+              "6": 2.7
+            },
+            "real_deals": 37,
+            "borrowed_from": null
+          }
+        },
+        "30-32": {
+          "<0.5%": {
+            "length_pct": {
+              "1": 99.1,
+              "2": 0.6,
+              "3": 0.3
+            },
+            "real_deals": 333,
+            "borrowed_from": null
+          },
+          "0.5-1%": {
+            "length_pct": {
+              "1": 91.1,
+              "2": 6.0,
+              "3": 1.2,
+              "4": 1.8
+            },
+            "real_deals": 336,
+            "borrowed_from": null
+          },
+          "1-2%": {
+            "length_pct": {
+              "1": 59.4,
+              "2": 32.0,
+              "3": 5.5,
+              "4": 3.1
+            },
+            "real_deals": 128,
+            "borrowed_from": null
+          },
+          "2-5%": {
+            "length_pct": {
+              "1": 28.6,
+              "2": 45.5,
+              "3": 20.8,
+              "4": 3.9,
+              "5": 1.3
+            },
+            "real_deals": 77,
+            "borrowed_from": null
+          },
+          "5-10%": {
+            "length_pct": {
+              "1": 7.1,
+              "2": 28.6,
+              "3": 54.8,
+              "4": 7.1,
+              "5": 2.4
+            },
+            "real_deals": 42,
+            "borrowed_from": null
+          },
+          "10%+": {
+            "length_pct": {
+              "1": 7.1,
+              "2": 28.6,
+              "3": 54.8,
+              "4": 7.1,
+              "5": 2.4
+            },
+            "real_deals": 42,
+            "borrowed_from": "5-10%"
+          }
+        },
+        "33+": {
+          "<0.5%": {
+            "length_pct": {
+              "1": 100.0
+            },
+            "real_deals": 77,
+            "borrowed_from": null
+          },
+          "0.5-1%": {
+            "length_pct": {
+              "1": 94.6,
+              "2": 3.1,
+              "3": 1.6,
+              "4": 0.8
+            },
+            "real_deals": 129,
+            "borrowed_from": null
+          },
+          "1-2%": {
+            "length_pct": {
+              "1": 68.9,
+              "2": 27.9,
+              "3": 3.3
+            },
+            "real_deals": 61,
+            "borrowed_from": null
+          },
+          "2-5%": {
+            "length_pct": {
+              "1": 62.5,
+              "2": 25.0,
+              "3": 12.5
+            },
+            "real_deals": 40,
+            "borrowed_from": null
+          },
+          "5-10%": {
+            "length_pct": {
+              "1": 62.5,
+              "2": 25.0,
+              "3": 12.5
+            },
+            "real_deals": 40,
+            "borrowed_from": "2-5%"
+          },
+          "10%+": {
+            "length_pct": {
+              "1": 62.5,
+              "2": 25.0,
+              "3": 12.5
+            },
+            "real_deals": 40,
+            "borrowed_from": "2-5%"
+          }
+        }
+      },
+      "source": "nflverse historical_contracts contract_history, deals signed 2022-2025 of types UFA, SFA, ERFA, RFA, Extension, Franchise, Transition; age from nflverse players.csv birth_date (economy/real.txt R3)"
+    },
+    "reserve": {
+      "permille": [
+        20,
+        25,
+        30,
+        35,
+        40,
+        50,
+        85,
+        130
+      ],
+      "source": "OverTheCap in-season cap space read 2026-11-25 (median 2.9% of the cap, 7 of 32 clubs at 7.6%+, p10 1.3%, most 13.2%) plus about 1% for in-season minimum signings (159 a league-season)"
+    },
+    "cap_growth": {
+      "factor": 1.065,
+      "source": "official caps 2011 $120.0M, 2016 $155.27M, 2019 $188.2M, 2024 $255.4M (en.wikipedia.org/wiki/Salary_cap, read 2026-11-25), 2026 $301.2M (this file's cap source): compound 6.33% a year 2011-2026, 6.85% 2016-2026 (coordinator ruling 5)"
+    }
   }
 }
