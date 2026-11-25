@@ -98,12 +98,13 @@ SECTION(".tb_c") void tb_insert(u8 *scale, u8 *n, u32 v) {
     (*n)++;
 }
 
-/* One pool of one club: its need seats into the league scale; for the own club the weakest (0: a seat empty). */
+/* One pool of one club: its need seats into the league scale (an empty need seat rates 0 there too, header
+   1fbb90087); for the own club the weakest. */
 SECTION(".tb_r") void tb_pool(struct view *x, u8 **m, u32 pool, u32 own) {
     u32 seats = TN_NEED_SEATS[pool], weak = 255, wpro = 0;
     for (u32 k = 0; k < seats; k++) {
         u32 r = m[k] ? tb_points(m[k]) : 0;
-        if (m[k]) tb_insert(x->scale[pool], &x->n[pool], r);
+        tb_insert(x->scale[pool], &x->n[pool], r);
         if (r < weak) weak = r, wpro = m[k] ? m[k][0x25] & 31 : 0;
     }
     if (own && seats) x->weak[pool] = (u8)weak, x->wpro[pool] = (u8)wpro;
@@ -140,12 +141,14 @@ SECTION(".tb_f") void tb_view(struct view *x, u8 *team) {
     tb_young(x, team);
 }
 
+/* A rating's percentile on a pool's league scale (the header's tn_percentile: mid-rank, the men rated below plus half
+   of those tied, in 256ths; coordinator ruling 11/25, header 1fbb90087). */
 SECTION(".tb_s") u32 tb_pct(struct view *x, u32 pool, u32 r) {
     return tn_percentile(x->scale[pool], x->n[pool], r);
 }
 
 /* The weakest need-seat man of a pool, one season ahead (the economy's decline_after line, at most 4 points). */
-SECTION(".tb_s") u32 tb_ahead(struct view *x, u32 pool) {
+SECTION(".tb_sa") u32 tb_ahead(struct view *x, u32 pool) {
     u32 weak = x->weak[pool], over = x->wpro[pool] + 1u, line = tb_decline_after[pool], drop;
     drop = over > line ? over - line : 0;
     if (drop > 4) drop = 4;

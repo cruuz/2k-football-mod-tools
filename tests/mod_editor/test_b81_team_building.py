@@ -282,6 +282,99 @@ class Studio(unittest.TestCase):
             self.assertEqual(target.read_bytes(), before)
 
 
+class UpdateRoutes(unittest.TestCase):
+    """Coordinator 11/25: the v0.9 update route and the single-setting edit offer CPU team building."""
+
+    def test_v09_update_plan_and_cli(self):
+        from unittest import mock
+        from mod_editor.core import mod_build as build
+        from tools import nfl2k5_modpack as cli
+        self.assertIn("team_building", build.V09_UPDATE_CHOICES)
+        plan = build.v09_disc_update("a.iso", "b.iso", team_building=True)
+        self.assertIs(plan.team_building, True)
+        self.assertIs(build.v09_disc_update("a.iso", "b.iso", backfield_cards=True).team_building, False)
+        with self.assertRaises(ValueError):
+            build.v09_disc_update("a.iso", "b.iso", team_building="yes")
+        with mock.patch.object(build, "build", return_value={}) as run, \
+                mock.patch("sys.stdout", new_callable=__import__("io").StringIO):
+            self.assertEqual(cli.main(["update-v09", "--source", "a.iso", "--out", "b.iso", "--team-building", "--json"]), 0)
+        self.assertIs(run.call_args.args[0].team_building, True)
+
+    def test_single_setting_edit_plan_and_cli(self):
+        from unittest import mock
+        from mod_editor.core import mod_build as build
+        from tools import nfl2k5_modpack as cli
+        plan = build.team_building_disc_edit("built.iso", "copy.iso")
+        self.assertIs(type(plan), build._InstalledTeamBuildingEdit)
+        self.assertTrue(plan.team_building and build._only_team_building_changes(plan))
+        self.assertFalse(build._only_team_building_changes(build.BuildPlan("built.iso", "copy.iso", team_building=True)))
+        with mock.patch.object(build, "build", return_value={}) as run, \
+                mock.patch("sys.stdout", new_callable=__import__("io").StringIO):
+            self.assertEqual(cli.main(["edit-team-building", "--source", "a.iso", "--out", "b.iso", "--json"]), 0)
+        self.assertIs(type(run.call_args.args[0]), build._InstalledTeamBuildingEdit)
+
+    def test_edit_payload_upgrades_the_economy_then_installs(self):
+        from mod_editor.core import mod_build as build
+        payload = _fixture(STANDARD_XBE)
+        patched, economy_receipt, receipt = build._team_building_edit_payload(payload)
+        self.assertEqual(_tb().status(patched), "applied")
+        self.assertEqual(patched, _tb().apply(_with_economy_9(payload))[0])
+        self.assertEqual(economy_receipt is not None, payload != _with_economy_9(payload))
+        if RETAIL_XBE.is_file():
+            with self.assertRaises(ValueError):
+                build._team_building_edit_payload(RETAIL_XBE.read_bytes())
+
+    def test_single_setting_edit_preflight_on_a_built_disc(self):
+        """Preflight on the reviewed private standard disc writes nothing and reports the executable it would write."""
+        import hashlib
+        from mod_editor.core import mod_build as build
+        disc = Path(os.environ.get("NFL2K5_B81_REVIEWED_TEST_DISC", "") or "missing")
+        if not disc.is_file():
+            self.skipTest("the reviewed private standard disc is absent")
+        target = ROOT / "never-written-team-building.xiso.iso"
+        receipt = build.preflight_plan(build.team_building_disc_edit(str(disc), str(target)))
+        self.assertFalse(target.exists())
+        source = build._xbe_bytes(disc)
+        expected = build._team_building_edit_payload(source)[0]
+        self.assertEqual(receipt["team_building_source_update"]["result_sha256"], hashlib.sha256(expected).hexdigest())
+
+    def test_v09_update_preflight_carries_team_building(self):
+        from unittest import mock
+        from mod_editor.core import mod_build as build
+        import tempfile
+        disc = Path(os.environ.get("NFL2K5_V09_XISO", "") or "missing")
+        if not disc.is_file():
+            self.skipTest("the released v0.9 disc is absent")
+        source = build._xbe_bytes(disc)
+        release = build._v09_reference(disc, source)
+        with tempfile.TemporaryDirectory() as folder:
+            plan = build.v09_disc_update(str(disc), str(Path(folder) / "copy.iso"), team_building=True)
+            with mock.patch("mod_editor.core.modpack.hash_file", return_value=release["image_sha256"]):
+                receipt = build._update_v09_disc(plan, lambda *_: None, preflight=True, project=False)
+        self.assertIn("team_building", receipt["v09_update"])
+        self.assertIn("franchise_economy", receipt["v09_update"])
+
+
+class MidRank(unittest.TestCase):
+    """Coordinator 11/25 and header 1fbb90087: the scale holds every club's need-seat starters (an empty seat rates 0),
+    the percentile is the mid-rank, so a tie at the quarter line is not a hole."""
+
+    def test_a_tie_at_the_line_is_not_a_hole(self):
+        tb = _tb()
+        scale = [70] * 10 + [80] * 16 + [90] * 38             # 64 values; 80 sits across the quarter line
+        self.assertEqual(tb.percentile(scale, 80), (2 * 10 + 16) * 128 // 64)
+        self.assertGreaterEqual(tb.percentile(scale, 80), tb.HOLE)
+        self.assertLess(tb.percentile(scale, 79), tb.HOLE)
+
+    def test_an_empty_need_seat_rates_zero_on_the_scale(self):
+        tb = _tb()
+        roster = [m for m in club(0) if m.pos != P["CB"]] + [man("CB", 82, 0)]   # one present corner: one seat empty
+        v = tb.view(league(roster), 0)
+        self.assertEqual(v.weak[P["CB"]], 0)
+        self.assertEqual(len(v.scale[P["CB"]]), 64)
+        self.assertEqual(v.scale[P["CB"]][0], 0)
+
+
 def code_economy_cap():
     from mod_editor.core import nfl2k5_franchise_economy_code as economy
     return economy.SYMBOLS["economy_cap"]

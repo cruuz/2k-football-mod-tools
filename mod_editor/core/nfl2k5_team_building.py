@@ -270,8 +270,8 @@ def view(clubs: Sequence[Sequence[Man]], own: int) -> View:
             for j in range(k):
                 m = men[pool][j] if j < len(men[pool]) else None
                 r = m.points if m else 0
-                if m and len(v.scale[pool]) < 64:
-                    v.scale[pool].append(r)
+                if len(v.scale[pool]) < 64:
+                    v.scale[pool].append(r)          # an empty need seat rates 0 on the scale (header 1fbb90087)
                 if r < weak:
                     weak, wpro = r, (m.pro if m else 0)
             if i == own and k:
@@ -289,6 +289,11 @@ def view(clubs: Sequence[Sequence[Man]], own: int) -> View:
     return v
 
 
+def percentile(scale: Sequence[int], rating: int) -> int:
+    """tb_pct: the header's mid-rank percentile in 256ths (nfl2k5_team_need.percentile, header 1fbb90087)."""
+    return tn.percentile(scale, rating)
+
+
 def ahead(v: View, pool: int, decline_after: Sequence[int]) -> int:
     over = v.wpro[pool] + 1
     drop = min(AGE_DROP_MAX, over - decline_after[pool]) if over > decline_after[pool] else 0
@@ -298,7 +303,7 @@ def ahead(v: View, pool: int, decline_after: Sequence[int]) -> int:
 def key(v: View, pool: int, rnd: int, decline_after: Sequence[int]) -> int:
     if not tn.NEED_SEATS[pool] or v.drafted[pool]:
         return 255
-    pct = tn.percentile(v.scale[pool], ahead(v, pool, decline_after))
+    pct = percentile(v.scale[pool], ahead(v, pool, decline_after))
     n = len(v.scale[pool])
     if pct >= HOLE or (rnd < 2 and v.young[pool] > (v.scale[pool][n // 2] if n else 0)):
         return 255
@@ -321,7 +326,7 @@ def new_score(v: View, pos: int, cand: int, deficit: int, jitter: int = 0) -> in
     from . import nfl2k5_team_building_code as code
     pool = tn.POOL[pos]
     weak = v.weak[pool]
-    pct = tn.percentile(v.scale[pool], weak)
+    pct = percentile(v.scale[pool], weak)
     up = cand >= weak + MARGIN
     if up and pct < HOLE:
         return 100000 + (HOLE - pct) * (2 + tn.PREMIUM[pool])
@@ -337,5 +342,5 @@ def decline_after() -> list[int]:
 
 
 __all__ = ["TeamBuildingError", "STUDIO_LABEL", "HEAD_CALL_VA", "WISH_JUMP_VA", "apply", "as_draft_ai", "entries",
-           "needs_met", "restore", "status", "Man", "View", "seats", "view", "key", "order", "new_score",
+           "needs_met", "restore", "status", "Man", "View", "seats", "view", "key", "order", "new_score", "percentile",
            "decline_after"]
