@@ -71,6 +71,8 @@ typedef unsigned char u8;
 #define CANCEL ((void (FC *)(u32, u32, u32, u32))0x002BB660)   /* (offer, new kind, clear A, clear B), ret 8 */
 #define RELEASE ((void (FC *)(u32, u32, u32, u32))0x002BD900)  /* (club, player, to the list, log), ret 8 */
 #define PENDING ((void (__attribute__((stdcall)) *)(u32))0x002BC900)   /* the pending scan (menu), ret 4 */
+#define PRUNE ((void (*)(void))0x002BB9A0)             /* the board's pruner: cancels offers naming a man with no
+                                                          contract years or a status (IR, squad), slots 1..14 */
 
 #define LEAGUE_ROOT 0x00B72918u
 #define STAGE 0x00E576A4u
@@ -724,6 +726,7 @@ static u32 post(struct posted *out, u32 stage, u32 round2, u32 *exhausted) {
                 if (victim) {
                     u32 vpool = pool_of(victim), vrow = row_of(victim);
                     RELEASE(x->team, victim, 1, 1);
+                    PRUNE();                                      /* the native release never touches the board */
                     close_gap(x->team, vpool, vrow);              /* S9: the native release leaves his row empty */
                     ct_counters.releases++;
                 }

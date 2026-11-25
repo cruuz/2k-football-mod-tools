@@ -511,6 +511,24 @@ class CpuTradesImage(unittest.TestCase):
         self.assertEqual(c["posted"], c["executed"] + c["cancelled"] + c["gone"])
         self.assertEqual(c["stories_forced"], c["executed"])                  # S7: every executed trade of ours
 
+    def test_each_make_room_release_runs_the_board_pruner_right_after(self):
+        """The native release (0x2BD900) never touches the trade board; the economy lane found offers naming a released
+        man that outlived his signing elsewhere. Our make-room release calls the board's own pruner 0x2BB9A0 right
+        after it (before anything can sign him): one pruner call from our page per release, each straight after it."""
+        x, m = self.x, self.x.m
+        x.install(7)
+        calls = []
+        last_release = []
+        hook = lambda pc, tag: (lambda uc, address, size, user: calls.append((tag, m.get(m.reg("ESP")))))
+        m.uc.hook_add(m.u.UC_HOOK_CODE, hook(0, "prune"), begin=0x2BB9A0, end=0x2BB9A0)
+        m.uc.hook_add(m.u.UC_HOOK_CODE, hook(0, "release"), begin=0x2BD900, end=0x2BD900)
+        x.run()
+        ours = [(tag, back) for tag, back in calls if VA <= back < VA + _code().CODE_BYTES]
+        releases = self.counters()["releases"]
+        self.assertGreater(releases, 0)
+        self.assertEqual([tag for tag, _b in ours], ["release", "prune"] * releases)
+        del last_release
+
     def test_the_post_trade_charge_is_what_the_buyer_pays(self):
         """M1: the buyer's payroll rises by the predicted charge (0x2BB360's contract) for every executed trade."""
         x, m = self.x, self.x.m
