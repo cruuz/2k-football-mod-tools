@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "90f1cf96fe7dd7d84d46dcc38d0f08e97eafb20fc6c5ca87480256620f8fc6fd",
+    "mod_editor/gui/build_panel_qt.py": "489737b9b59b84abf929d8be9e524f1ba2136b066f754bb8c689b699191e3983",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "2c658a513d0c8abc17f29038ad47a4513c60667ccc860865dc1379d03b74eeed",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "1e29191fb9537c14f5e846d49ed68397107851b6bb43dcb16e3975d4d88800d8",
     "mod_editor/gui/beta62_options.py": "009c389062334a451c15c8e9b312c02e5521b1516bc706c2a48b127ecbcfa858",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "90f1cf96fe7dd7d84d46dcc38d0f08e97eafb20fc6c5ca87480256620f8fc6fd",
+    "mod_editor/gui/build_panel_qt.py": "489737b9b59b84abf929d8be9e524f1ba2136b066f754bb8c689b699191e3983",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "2c658a513d0c8abc17f29038ad47a4513c60667ccc860865dc1379d03b74eeed",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "1e29191fb9537c14f5e846d49ed68397107851b6bb43dcb16e3975d4d88800d8",
@@ -2093,6 +2093,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_injured_reserve_code",            # b780 IR1
         "mod_editor.core.nfl2k5_injured_reserve_save",            # b780 IR1
         "mod_editor.core.nfl2k5_sim_realism",                     # b779-sim2 r4
+        "mod_editor.core.nfl2k5_sim_outcomes",                    # b81 game outcomes
         "mod_editor.core.nfl2k5_coach_carousel",                  # b780-c6
         "mod_editor.core.nfl2k5_standings_records",               # b780-j1
         "mod_editor.core.nfl2k5_standings_records_code",          # b780-j1

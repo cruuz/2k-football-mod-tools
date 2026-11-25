@@ -314,6 +314,7 @@ from mod_editor.core import nfl2k5_history_pool as _history_pool  # noqa: E402  
 from mod_editor.core import nfl2k5_sim_cb_tackles as _sim_cb_tackles  # noqa: E402
 from mod_editor.core import nfl2k5_sim_rb_injuries as _sim_rb_injuries  # noqa: E402  b779-sim2
 from mod_editor.core import nfl2k5_sim_realism as _sim_realism  # noqa: E402  b779-sim2 r4
+from mod_editor.core import nfl2k5_sim_outcomes as _sim_outcomes  # noqa: E402  b81 game outcomes (same option)
 from mod_editor.core import nfl2k5_sim_qb_injuries as _sim_qb_injuries  # noqa: E402  b81 slice 2: installed revision
 from mod_editor.core import nfl2k5_coach_carousel as _coach_carousel  # noqa: E402  b780-c6
 from mod_editor.core import nfl2k5_standings_records as _standings_records  # noqa: E402  b780-j1
@@ -379,7 +380,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("history_pool", _history_pool.BUILD_CAPTION, _history_pool.HELP_TEXT),  # b780 hist1
                  ("sim_cb_tackles", _sim_cb_tackles.BUILD_CAPTION, _sim_cb_tackles.HELP_TEXT),  # b778-cb1
                  ("sim_rb_injuries", _sim_rb_injuries.BUILD_CAPTION, _sim_rb_injuries.HELP_TEXT),  # b779-sim2
-                 ("sim_realism", _sim_realism.BUILD_CAPTION, _sim_realism.HELP_TEXT),  # b779-sim2 r4
+                 ("sim_realism", _sim_realism.BUILD_CAPTION, _sim_realism.HELP_TEXT + " " + _sim_outcomes.HELP_TEXT),  # b779-sim2 r4; b81 game outcomes
                  ("coach_carousel", _coach_carousel.BUILD_CAPTION, _coach_carousel.HELP_TEXT),  # b780-c6
                  ("standings_records", _standings_records.BUILD_CAPTION, _standings_records.HELP_TEXT),  # b780-j1
                  ("audible_legend", _audible_legend.BUILD_CAPTION, _audible_legend.HELP_TEXT),  # b780-p3

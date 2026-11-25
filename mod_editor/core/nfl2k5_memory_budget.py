@@ -141,6 +141,7 @@ OWNER_BYTES = {
     "helmet_side_numbers": (space.HELMET_SIDES_SIZE, 0, 0, 0, 0),  # b81 helmet sides: route 5 -> set E, one fixed page
     "franchise_ownership": (space.FRANCHISE_OWNERSHIP_SIZE, 0, 0, 0, 0),
     "injured_reserve": (6144, 0, 0, 0, 5312),  # Modern IR, franchise ownership checks and the 32-club IR store.
+    "sim_outcomes": (space.SIM_OUTCOMES_SIZE, 0, 0, 0, 0),  # b81 game outcomes: one fixed page, with Simulated realism
 }
 
 # Keep the calibrated release layout for comparisons against the actual RC executable.
@@ -159,6 +160,9 @@ INFRASTRUCTURE = ("xbe_space_directory", "boot_logo", "moment_context")
 def _modern(value):
     return value not in (None, False, "", "retail", 0)
 
+
+# b81 game outcomes: one fixed page at space.SIM_OUTCOMES_VA (after the modern jersey numbers page)
+LEGACY_REQUESTS["sim_outcomes"] = (("code", 4096, 4096),)
 
 # owner -> the plan fields that install it (any of them); INFRASTRUCTURE rides with any space owner
 OWNER_FIELDS = {
@@ -498,6 +502,8 @@ def owners(opts: dict, target_mb: int = 64) -> list:
               and (opts.get("qb_room") is not None or (target_mb == 128 and qb_room_needs_met(opts.get))))
     if (target_mb == 128 and injuries) or piece3:
         out.append("qb_room")
+    if on(opts, "sim_realism"):     # b81 game outcomes: the simulated-outcomes page rides with Simulated season realism
+        out.append("sim_outcomes")
     return out + list(INFRASTRUCTURE) if out else out
 
 
@@ -534,6 +540,9 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     if "helmet_side_numbers" in found:  # b81 helmet sides: its fixed page after the quarterback trades page
         last = space.HELMET_SIDES_VA + space.HELMET_SIDES_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "sim_outcomes" in found:  # b81 game outcomes: its fixed page after the modern jersey numbers page
+        last = space.SIM_OUTCOMES_VA + space.SIM_OUTCOMES_SIZE - space.POOL_VA
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     return RETAIL_RESIDENT + LEGACY_SPACE + SCALEOUT_V3 + pool + extra
 
