@@ -305,6 +305,20 @@ def without_cover(payload: bytes, roster_a: bytes) -> bytes:
     return bytes(out)
 
 
+def cover_off(payload: bytes) -> bytes:
+    """``payload`` with the in-season cover returning at once (its first byte ``ret``; economy_cover is naked fastcall,
+    no stack arguments) and the rest of the upkeep as built. b81 economy r10: the released upkeep spliced in by
+    without_cover calls the economy's own helpers at their revision 4-9 addresses (0x2BFBEF, 0x3BA083), which revision
+    10 moved, so that hybrid faults in a season; turning the cover off in place keeps the claim independent of layout."""
+    from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+    out = bytearray(payload)
+    at = XbeImage(payload).offset(economy.SYMBOLS["economy_cover"], 1)
+    out[at] = 0xC3
+    for section in _sections(bytes(out)):
+        out[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(out), section)
+    return bytes(out)
+
+
 def released_roster_a() -> bytes | None:
     import os
     for name in ("NFL2K5_V08_XBE", "NFL2K5_B780_RC_XBE"):
@@ -326,8 +340,7 @@ class InSeasonCoverTests(unittest.TestCase):
     def setUpClass(cls):
         cls.after, _ = economy.apply(retail_bytes())
         cls.body = retail_roster()
-        roster_a = released_roster_a()
-        cls.before = without_cover(cls.after, roster_a) if roster_a is not None else None
+        cls.before = cover_off(cls.after)
 
     def season(self, payload, *, hurt=True, size=53, stage=8, direct=False):
         from tools.franchise_economy.probe import start
@@ -401,8 +414,6 @@ class InSeasonCoverTests(unittest.TestCase):
         self.assertEqual((got["healthy"], got["signed"].count(K)), (0, 0))
 
     def test_before_the_cover_the_club_kept_only_its_hurt_kicker(self):
-        if self.before is None:
-            self.skipTest("no released v0.8 / v0.9 RC executable in this scratch")
         got = self.season(self.before)
         self.assertEqual((got["count"], got["healthy"], got["signed"].count(K)), (53, 0, 0))
 
