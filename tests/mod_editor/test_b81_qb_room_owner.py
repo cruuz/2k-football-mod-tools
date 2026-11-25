@@ -477,21 +477,22 @@ class PreviousRevisionTests(unittest.TestCase):
     # Combined calibration levers (merge queue item 15): re-pinned once more; every rebuild differs from its
     # practice-squad-merge rebuild exactly where the injury option's executable differs (the QB bank's tables for
     # QB_CHANCE_SCALE 1.06, the scoring site's breakaway stop 68, the registry hash and digests).
-    # Economy revision 10 (with team building's revision 9): re-pinned. Every rebuild differs from the same rebuild on
+    # Economy revision 10 (with team building's revision 9 and its 6c5a4ec17 review fixes, and the hole rule on the
+    # mid-rank header): re-pinned. Every rebuild differs from the same rebuild on
     # 3647cabab only inside the economy's own sites (revisions 9 and 10) plus two section digests (40 bytes). The
     # earlier values were D1D2 5d471c14, REVIEW_67 08087d17, REVIEW_64 c22d95b6, FLOOR 55e52233 / 8652889e,
     # STAGE_3A 5b3c065a / 0af4c40f, HANDOVER 61724296 / 58e85935 (3647cabab's revision 9 had already moved them).
-    D1D2_SHA = "a714f327a9b85afbe67455dcd3fce8095d2b3462f4ae40ddaae1916cc4896894"
-    REVIEW_67_SHA = "1dbca5baa92e1b80cf9394616142a50f733fe404f66547d846d0df3880e58b06"
-    REVIEW_64_SHA = "86d59df2e50a237de0157998dddc6d0386b4626e15f0a037fea903b992fc29d5"
-    FLOOR_SHA = "b2022c6cd200456693e926049a86535081bbb80403fdf429f7e81857c778e71f"
-    FLOOR_EMPTY_SHA = "844ee39147d7c634d501ee54e412aba7f11342d26accff516e1d602ca6eb531b"
-    STAGE_3A_SHA = "b747dd4b8a736d1c7a1a33a4040ccdf62d7e4bfc12862111dfcbca20ec2df6a0"
-    STAGE_3A_EMPTY_SHA = "566fe395e5b274a5d6656238f3f813767b6f25b333344121d6156748aaa0d90b"
+    D1D2_SHA = "983646c7c09ac6b1cdc2612a5230488a1678b0411b8030db0aedfb5ab08ca78f"
+    REVIEW_67_SHA = "b63daa1ed71b2b182959cc737331cd1c1b9ca6c31fc217f0538ebfcbe988123c"
+    REVIEW_64_SHA = "a1fb2a9ae233272c70a83404c6816b8663f90589f5c6e5055ef2e0a90716670e"
+    FLOOR_SHA = "021c80ae95fb930c3baaf11fef66408533b5daaa05d95ade0cea2c7a0657e0ec"
+    FLOOR_EMPTY_SHA = "9e4bb87829a9317d90dedca3b67889f0354bb98c7384a4bc5d5fb6c47b586f9e"
+    STAGE_3A_SHA = "9f8c3b0c4536b4e0d7ac43316246315377bd4ae0b54ce6caf91263cb11f8d782"
+    STAGE_3A_EMPTY_SHA = "e740e925f3176d4b39c4594b6c87cf660551e8c7bf83b3053979887bdde5496f"
     # b2672e398's page (C21/C23 freeze it as "previous"): the P5 and P6-5ff panels ran f5270f4d (67) and 35ce7727 (64)
     # on slice 1 alone; rebuilt here at the merged head.
-    HANDOVER_67_SHA = "950df4fb819a9abec1b9e4a9ade27d4498d4c48ec6300ae5104892e697e5a24d"
-    HANDOVER_64_SHA = "0dd9a21fa8d50fbd6406c5db55ef938199748bf93d08d7dfefc8eed67b0ffaca"
+    HANDOVER_67_SHA = "07491c53a328f8c923786fd930f4702e5ee8ec223f11505edb1dac70ecc1ca53"
+    HANDOVER_64_SHA = "ae441f3c8d7f714e9ffab0bb2f807e0afaa69e87dd29cb6a42f4009354c5c289"
 
     @classmethod
     def setUpClass(cls):

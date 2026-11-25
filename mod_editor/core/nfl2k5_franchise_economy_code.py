@@ -1,7 +1,7 @@
 """DESIGN: generated original code; reproduce with tools/franchise_economy/assemble.py."""
 
 WINDOWS = {
-    0x2bd440: (  # value: 1080/1082 bytes
+    0x2bd440: (  # value: 1076/1082 bytes
         bytes.fromhex(
             "5531c089e557565383ec08807935108955f00f87c60000008a412589ce83e01f50e87498efff5aff"
             "750c5689c7e84e0100005939c70f43c7837d080089c358745bf646240f7455f646270f744f89f1e8"
@@ -29,7 +29,7 @@ WINDOWS = {
             "240100006a0089c1e8f2feffff8b4df089c3e851b2e5ff29c339de7f928a45ef8b7de8c1e0040a45"
             "ee884726b8010000008d65f45b5e5f5dc3900c0e0e0707080805080807070a0a0a0908007503ed03"
             "33047904bf04bf04bf04140501000002020101010001000201020202020000000001020304050607"
-            "08090b0b0c0d0e0f106690900012934700ff7f470000003f3333333f000000400ad7233d8fc2f53c"
+            "08090b0b0c0d0e0f106690900012934700ff7f470000003f3333333f000000400ad7233d"
         ).ljust(1082, b"\xcc")
     ),
     0x3228a0: (  # contracts: 211/215 bytes
@@ -479,57 +479,83 @@ WINDOWS = {
             "b80c0000000f4ed856e81aabe8ff8d65f801d85b5e8d0485204422005dc3"
         ).ljust(81, b"\xcc")
     ),
-    0x121900: (  # r10_121900: 84/84 bytes
+    0x121900: (  # r10_121900: 78/84 bytes
         bytes.fromhex(
-            "5531c089e55331db83ec14d9450c8945f08945f48945f8d955e8d95dece8be32faff39c3731a89d9"
-            "43e82233faff8d55e852ff750850e825b2140083c40cebdd8b45f88b5dfcc1e0023b45f4c90f92c0"
-            "0fb6c0c3"
+            "5531d289e5575653508b5d088955f08b7d10393b7430837d0c017605397b04742557e809f72b0089"
+            "c68d45f050ff750c53e84a3af4ff83c41083c00339c672068b45f0893c838d65f45b5e5f5dc3"
         ).ljust(84, b"\xcc")
     ),
-    0x17a480: (  # r10_17a480: 61/84 bytes
+    0x17a480: (  # r10_17a480: 77/84 bytes
         bytes.fromhex(
-            "5531c0ba0100000089e556538b5d088b4d0c80bb1c010000340f97c089c6e8ddc80c005650d91c24"
-            "8b450c0fb640355053e861a60e008d65f85b5e5dc3"
+            "5589e55756538b7d0c0fb647350fb6b048d82b0056ff7508e8932017005789c3e88b6b26008d5303"
+            "83c40c89c131c039d172125356e876bd0d005a5983f83f0f96c00fb6c08d65f45b5e5f5dc3"
         ).ljust(84, b"\xcc")
     ),
-    0x256230: (  # r10_256230: 107/109 bytes
+    0x256230: (  # r10_256230: 93/109 bytes
         bytes.fromhex(
-            "5589e5575631f653508b7d088b5d140fb6871c01000039c67349837b080074438b0cb7ff7510ff75"
-            "0c51894df0e86e00180083c40c85c074278b4df031d2e80d0bffffd903ff4b08ff430cdff17602d9"
-            "13d9430431c0dff1ddd80f97c001431046ebac8d65f45b5e5f5dc3"
+            "5589e55331db83ec108b450c8945ec31c08945f08945f48945f8e891e9e6ff39c3731a89d943e8f5"
+            "e9e6ff8d55ec52ff750850e8786ae9ff83c40cebdd8b4df8b80001000085c9740f8b45f031d201c0"
+            "0345f4c1e007f7f18b5dfcc9c3"
         ).ljust(109, b"\xcc")
     ),
-    0x26cb60: (  # r10_26cb60: 52/84 bytes
+    0x26cb60: (  # r10_26cb60: 73/84 bytes
         bytes.fromhex(
-            "5589e55731ff56538b5d0c8b75100fb68334d82b0089460856574753ff7508e8ac96feff83c41083"
-            "ff0875ec8d65f45b5e5f5dc3"
+            "5589e55756538b7d0c31db8b45080fb6801c01000039c373288b45088b34985756e86ae70e005a59"
+            "85c074120fb68734d82b005650ff7510ff551483c40c43ebca8d65f45b5e5f5dc3"
         ).ljust(84, b"\xcc")
     ),
-    0x2ec530: (  # r10_2ec530: 42/84 bytes
+    0x2ec530: (  # r10_2ec530: 66/84 bytes
         bytes.fromhex(
-            "5531d289e58b4d0ce843a8f5ff508b450cd91c240fb640350fb68048d82b0050ff7508e8d84a0f00"
-            "c9c3"
+            "5589e55756538d5dec83ec0c8b750c53560fb6be34d82b00ff7508e8638ed7ff68001912005356ff"
+            "7508e80106f8ff8d55e8525753e8168ed7ff8d65f45b5e5f5dc3"
         ).ljust(84, b"\xcc")
     ),
     0x2ee400: (  # r10_2ee400: 85/85 bytes
         bytes.fromhex(
             "5589e55756538b5d088b7d1489d9e81d65ddff3945107f3589c63947047d2e89d9e80a08e5ff85c0"
-            "7523ff750c53e84dc0e8ff5a5985c07414ff750c53e8eee0ffff5a5985c07405897704891f8d65f4"
+            "7523ff750c53e85dc7daff5a5985c07414ff750c53e83ec0e8ff5a5985c07405897704891f8d65f4"
             "5b5e5f5dc3"
         ).ljust(85, b"\xcc")
     ),
-    0x3d62d0: (  # r10_3d62d0: 70/83 bytes
+    0x3d62d0: (  # r10_3d62d0: 79/83 bytes
         bytes.fromhex(
-            "5531c989e58b55080fb642353c1077320fb68048d82b003b450c7526668b422866c1e80a83e00739"
-            "45107516f7422400000070750d8b422031c9c1e8163c020f96c189c85dc3"
+            "5589e556538b5d108b5508668b43288b3266c1e80a83e00785f6740f668b4e2866c1e90a83e10739"
+            "c87307897204891aeb198b4a0485c9740f668b492866c1e90a83e10739c87303895a045b5e5dc3"
         ).ljust(83, b"\xcc")
     ),
-    0x3e1030: (  # r10_3e1030: 103/104 bytes
+    0x3e1030: (  # r10_3e1030: 97/104 bytes
         bytes.fromhex(
-            "5531c089e55383ec148b5d0cd945108945f08945f48945f88d45e85053ff7508d955e8d95dece805"
-            "bbe8ff83c40c31c0837df400742cd945e8d90574d82b00d8c1d94510dff1ddd8721650d91c2453e8"
-            "7c08d4ff5a5985c00f95c00fb6c0eb02ddd88b5dfcc9c3"
+            "5531d289e553518b4d08e8415de6ffd95df88b55f889d3c1eb1785d2783d0fb6db83fb7676350fba"
+            "e21eb864000000722c81e2ffff7f00b99500000081ca0000800029d96bc264ba01000000d3e2b996"
+            "00000029d901d0d3e8eb0231c05a5b5dc3"
         ).ljust(104, b"\xcc")
+    ),
+    0xecce0: (  # r10_ecce0: 89/91 bytes
+        bytes.fromhex(
+            "5589e557568d45ec31f65383ec088b7d0c8b5d105057ff7508e8b586f7ff0fb6bf34d82b0083c40c"
+            "39fe73258d45ec5650e810e626008b13595939d08353040039c20f94c0ff430c460fb6c0014308eb"
+            "d78d65f45b5e5f5dc3"
+        ).ljust(91, b"\xcc")
+    ),
+    0x9ab90: (  # r10_9ab90: 61/84 bytes
+        bytes.fromhex(
+            "5531c0ba0100000089e556538b5d088b4d0c80bb1c010000340f97c089c6e8cdc11a005650d91c24"
+            "8b450c0fb640355053e8519f1c008d65f85b5e5dc3"
+        ).ljust(84, b"\xcc")
+    ),
+    0x35b2f0: (  # r10_35b2f0: 83/84 bytes
+        bytes.fromhex(
+            "5531c989e58b55080fb642353c1077220fb68048d82b003b450c7516f7422400000070750d8b4220"
+            "31c9c1e8163c020f96c189c85dc35589e58b45088b550c8b049085c074098945085de9f15c080031"
+            "c05dc3"
+        ).ljust(84, b"\xcc")
+    ),
+    0x65380: (  # r10_65380: 86/86 bytes
+        bytes.fromhex(
+            "5589e556be000100005331db3b5d0c741953ff7508e88c5f2f005a5939f073078b551089c6891a43"
+            "ebe28d65f889f05b5e5dc35531d289e58b4510895004891068d0623d0050ff750cff7508e88f7720"
+            "0083c410c9c3"
+        ).ljust(86, b"\xcc")
     ),
 }
 ROOKIE_TABLE_VA = 0x521598
@@ -541,4 +567,4 @@ ROOKIE_TABLE = bytes.fromhex(
     "fc567100fd5671000000000000000000000000000000000000000000000000000000000000000000"
     "000000000000000000000000000000000000000000000000"
 )
-SYMBOLS = {'economy_usable_room': 805168, 'economy_reserve': 1149504, 'economy_draft_min': 2509504, 'economy_full': 2509529, 'economy_offer_both': 2509747, 'economy_camp': 2834240, 'economy_pick': 2861856, 'economy_txn_years': 2861978, 'economy_value': 2872384, 'economy_floor': 2872924, 'economy_penalty': 2872975, 'economy_cap': 2873047, 'economy_offer_room': 2873174, 'economy_reconcile': 2882528, 'economy_room_for_signing': 2982640, 'economy_hole_first': 2982645, 'economy_money': 3270016, 'economy_fill_gate': 3270149, 'economy_clear_cap': 3272608, 'economy_years_entry': 3286672, 'economy_years': 3286681, 'economy_contract': 3287200, 'economy_offer_gate': 3287383, 'economy_rookie': 3287424, 'economy_week': 3291248, 'economy_after': 3291698, 'economy_stage6': 3291714, 'economy_resign_stage': 3440448, 'economy_class_free': 3678720, 'economy_class_position': 3678801, 'economy_class_slot': 3678877, 'economy_renew_gate': 3765744, 'economy_expire': 3765821, 'economy_fa_retire': 3765897, 'economy_class_topup': 3825440, 'economy_floor_protected': 3825551, 'economy_cover': 3825552, 'economy_restructure': 3907424, 'economy_ask': 3907725, 'economy_fill_room': 3908784, 'economy_renew_room': 3908855, 'economy_clubs': 3908986, 'economy_rollover_reconcile': 3909108, 'economy_vet_short': 3934496, 'economy_vet_pick': 3934554, 'economy_best_room': 4008080, 'economy_need': 4008325, 'economy_fill_budget': 4008398, 'economy_camp_limit': 4045923, 'economy_vet_release': 4045943, 'economy_smart_cut': 4071888, 'economy_squad_expire': 4102800, 'economy_squad_gate': 4103376, 'economy_preseason_gate': 4317856}
+SYMBOLS = {'economy_usable_room': 805168, 'economy_reserve': 1149504, 'economy_hole_p': 1549440, 'economy_league_pct': 2449968, 'economy_draft_min': 2509504, 'economy_full': 2509529, 'economy_offer_both': 2509747, 'economy_camp': 2834240, 'economy_pick': 2861856, 'economy_txn_years': 2861978, 'economy_value': 2872384, 'economy_floor': 2872924, 'economy_penalty': 2872975, 'economy_cap': 2873047, 'economy_offer_room': 2873174, 'economy_reconcile': 2882528, 'economy_room_for_signing': 2982640, 'economy_hole_first': 2982645, 'economy_weakest': 3065136, 'economy_money': 3270016, 'economy_fill_gate': 3270149, 'economy_clear_cap': 3272608, 'economy_years_entry': 3286672, 'economy_years': 3286681, 'economy_contract': 3287200, 'economy_offer_gate': 3287383, 'economy_rookie': 3287424, 'economy_week': 3291248, 'economy_after': 3291698, 'economy_stage6': 3291714, 'economy_resign_stage': 3440448, 'economy_class_free': 3678720, 'economy_class_position': 3678801, 'economy_class_slot': 3678877, 'economy_renew_gate': 3765744, 'economy_expire': 3765821, 'economy_fa_retire': 3765897, 'economy_class_topup': 3825440, 'economy_floor_protected': 3825551, 'economy_cover': 3825552, 'economy_restructure': 3907424, 'economy_ask': 3907725, 'economy_fill_room': 3908784, 'economy_renew_room': 3908855, 'economy_clubs': 3908986, 'economy_rollover_reconcile': 3909108, 'economy_vet_short': 3934496, 'economy_vet_pick': 3934554, 'economy_best_room': 4008080, 'economy_need': 4008325, 'economy_fill_budget': 4008398, 'economy_camp_limit': 4045923, 'economy_vet_release': 4045943, 'economy_points': 4067376, 'economy_smart_cut': 4071888, 'economy_squad_expire': 4102800, 'economy_squad_gate': 4103376, 'economy_preseason_gate': 4317856}

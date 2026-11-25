@@ -1348,53 +1348,114 @@ SECTION(".r10_camp") void FAST economy_camp(u8 *team, void *menu) {
 /* ---- b81 economy revision 10: prove-it hole priority (coordinator 11/25: the team-building lane's DESIGN 3.4, which it
  * could not build without the economy's windows). When the prove-it pass has found a club for a long-unsigned man,
  * a club with a hole at his position that can also sign him gets first call: the one of them with the most room.
- * A hole is the shared team-need rule (tools/common/team_need.h, coordinator ruling N1, as the team-building lane reads
- * it; each owner compiles its own copy): the club's need seats at the pool are its first TN_NEED_SEATS present men of the
- * pool in depth-row order; the weakest of them rates 3+ points below him and fewer than a quarter of the league's need
- * seats there rate below it (the team-building lane's P1). Quarterbacks (the quarterback room's), K, P and FB (no need
- * seats) keep the old choice. A club a person owns never gets the call. ---- */
+ * A hole is the shared team-need rule (tools/common/team_need.h, coordinator ruling N1 and its 11/25 header ruling; each
+ * owner compiles its own copy) exactly as team building's free-agency wish reads it (tb_new_score): a club's need seats
+ * at the pool are its first TN_NEED_SEATS present men of the pool by depth row (ties: roster order), an empty seat
+ * rating 0; ratings are 0x246D80(p, 0) in whole points (tn_points); he is HOLE_MARGIN points or more above the club's
+ * weakest seat, and that seat's mid-rank on the league scale (every club's need seats, empties 0: tn_percentile) is
+ * in the bottom quarter. The club's own seats first take an unseated present man HOLE_MARGIN above the weakest (review
+ * S1, tb_bench: a signing appends a man without the depth sort, so a hole just filled would read as open again).
+ * Quarterbacks (the quarterback room's), K, P and FB (no need seats) keep the old choice. A club a person owns never
+ * gets the call. ---- */
 #include "team_need.h"
-#define HOLE_MARGIN 0.03f                       /* three points of 0x246D80 */
-struct seats { float weak, line; unsigned left, n, below; };
+#define HOLE_MARGIN 3u                          /* points: team building's MARGIN */
+#define HOLE_LINE (TN_SCALE / 4u)               /* team building's HOLE: a mid-rank below it is the bottom quarter */
+struct scale { unsigned v, below, equal, n; };
 struct pick { u8 *club; int most; };
 
-/* A present man of `pool` in depth row `row` (team_need.h). */
-SECTION(".r10_seat_ok") unsigned seat_ok(u8 *q, unsigned pool, unsigned row) {
-    return q[0x35] < 17 && TN_POOL[q[0x35]] == pool && tn_row(q) == row && tn_present(q);
+/* 0x246D80(p, 0) in whole points (team building's tb_points). */
+SECTION(".r10_pts") unsigned economy_points(u8 *p) {
+    union { float f; unsigned u; } v;
+    v.f = n_rating(p, 0);
+    return tn_points(v.u);
 }
 
-/* The men of depth row `row` at `pool` while seats are open: the weakest kept, those under s->line counted. */
-SECTION(".r10_seat_row") void seat_row(u8 *team, unsigned pool, unsigned row, struct seats *s) {
-    for (unsigned i = 0; i < team[0x11c] && s->left; ++i) {
-        u8 *q = ((u8 **)team)[i];
-        if (!seat_ok(q, pool, row)) continue;
-        float r = n_rating(q, 0);
-        --s->left;
-        ++s->n;
-        if (r < s->weak) s->weak = r;
-        s->below += r < s->line;
+/* A present man of `pool`. */
+SECTION(".r10_pool_man") unsigned pool_man(u8 *o, unsigned pool) {
+    return o[0x35] < 17 && TN_POOL[o[0x35]] == pool && tn_present(o);
+}
+
+static inline unsigned row_or_none(u8 *p) { return p ? tn_row(p) : 8u; }
+
+/* Seat o among m's first two present men by depth row, ties in roster order (team building's tb_seat). */
+SECTION(".r10_seat_in") void seat_in(u8 **m, unsigned seats __attribute__((unused)), u8 *o) {
+    unsigned r = tn_row(o);
+    if (r < row_or_none(m[0])) m[1] = m[0], m[0] = o;
+    else if (r < row_or_none(m[1])) m[1] = o;
+}
+
+/* f(m, the pool's need seats, o) for each present man o of `pool` on the club, in roster order. */
+typedef void each_fn(u8 **m, unsigned seats, u8 *o);
+SECTION(".r10_each") void each_man(u8 *team, unsigned pool, u8 **m, each_fn *f) {
+    for (unsigned i = 0; i < team[0x11c]; ++i) {
+        u8 *o = ((u8 **)team)[i];
+        if (pool_man(o, pool)) f(m, TN_NEED_SEATS[pool], o);
     }
 }
 
-/* A club's need seats at `pool`, row by row. */
-SECTION(".r10_seats") void club_seats(u8 *team, unsigned pool, struct seats *s) {
-    s->left = TN_NEED_SEATS[pool];
-    for (unsigned row = 0; row < 8; ++row) seat_row(team, pool, row, s);
+/* A club's first two present men of `pool` (team building's tb_seats); the first TN_NEED_SEATS are its need seats. */
+SECTION(".r10_club_seats") void club_seats(u8 *team, unsigned pool, u8 **m) {
+    m[0] = m[1] = 0;
+    each_man(team, pool, m, seat_in);
 }
 
-/* Fewer than a quarter of the league's need seats at `pool` rate below `line`. */
-SECTION(".r10_quarter") unsigned bottom_quarter(unsigned pool, float line) {
-    struct seats l = {line, line, 0, 0, 0};
-    for (unsigned t = 0; t < n_teams(); ++t) club_seats(n_team(t), pool, &l);
-    return 4 * l.below < l.n;
+/* Need seat k in points, an empty seat 0. */
+SECTION(".r10_seat_pts") unsigned seat_pts(u8 **m, unsigned k) {
+    return m[k] ? economy_points(m[k]) : 0;
 }
 
-/* The club has a hole at `pool` that a man rated `him` fills: its weakest need seat 3+ points below him, and in the
- * league's bottom quarter of those seats. */
-SECTION(".r10_hole") unsigned hole(u8 *team, unsigned pool, float him) {
-    struct seats s = {him, him, 0, 0, 0};
-    club_seats(team, pool, &s);
-    return s.n && him >= s.weak + HOLE_MARGIN && bottom_quarter(pool, s.weak);
+/* One club's need seats at `pool` counted against s->v: rated below it, equal to it, all. */
+SECTION(".r10_count") void count_club(u8 *team, unsigned pool, struct scale *s) {
+    u8 *m[2];
+    club_seats(team, pool, m);
+    for (unsigned k = 0; k < TN_NEED_SEATS[pool]; ++k) {
+        unsigned r = seat_pts(m, k);
+        s->below += r < s->v;
+        s->equal += r == s->v;
+        ++s->n;
+    }
+}
+
+/* The mid-rank of `v` on the league scale at `pool` (every club's need seats, empties 0), in 256ths: the header's
+ * tn_percentile, (below + equal / 2) / n. */
+SECTION(".r10_league") unsigned economy_league_pct(unsigned pool, unsigned v) {
+    struct scale s = {v, 0, 0, 0};
+    for (unsigned t = 0; t < n_teams(); ++t) count_club(n_team(t), pool, &s);
+    return s.n ? (2 * s.below + s.equal) * (TN_SCALE / 2u) / s.n : TN_SCALE;
+}
+
+/* The weakest of m's `seats` need seats in points; *w its index. */
+SECTION(".r10_low") unsigned low_seat(u8 **m, unsigned seats, unsigned *w) {
+    unsigned low = 256;
+    for (unsigned k = 0; k < seats; ++k) {
+        unsigned r = seat_pts(m, k);
+        if (r < low) low = r, *w = k;
+    }
+    return low;
+}
+
+/* Review S1 for one man (team building's tb_bench_man): unseated and HOLE_MARGIN or more above the weakest seat, he
+ * takes it. */
+SECTION(".r10_bench") void bench_man(u8 **m, unsigned seats, u8 *o) {
+    unsigned w = 0;
+    if (o == m[0] || (seats > 1 && o == m[1])) return;
+    if (economy_points(o) >= low_seat(m, seats, &w) + HOLE_MARGIN) m[w] = o;
+}
+
+/* The club's weakest need seat at `pool` in points, after review S1 over its present men in roster order. */
+SECTION(".r10_weakest") unsigned economy_weakest(u8 *team, unsigned pool) {
+    u8 *m[2];
+    unsigned seats = TN_NEED_SEATS[pool], w;
+    club_seats(team, pool, m);
+    each_man(team, pool, m, bench_man);
+    return low_seat(m, seats, &w);
+}
+
+/* The club has a hole at his pool that he fills: HOLE_MARGIN points above its weakest need seat, and that seat's mid-rank
+ * on the league scale in the bottom quarter (tn_percentile: (below + equal / 2) / n in 256ths). */
+SECTION(".r10_hole") unsigned economy_hole_p(u8 *team, u8 *p) {
+    unsigned pool = TN_POOL[p[0x35]], weak = economy_weakest(team, pool);
+    return economy_points(p) >= weak + HOLE_MARGIN && economy_league_pct(pool, weak) < HOLE_LINE;
 }
 
 /* `team`, if it can sign him now and pay `ask` with more usable room than k->most (not a person's club, not busy or full
@@ -1403,13 +1464,9 @@ SECTION(".r10_level") unsigned level_ok(u8 *team, u8 *p) {
     return club_level(team, p[0x35], n_rating(p, 1), team[0x11c] >= 53);
 }
 
-SECTION(".r10_hole_p") unsigned hole_p(u8 *team, u8 *p) {
-    return hole(team, TN_POOL[p[0x35]], n_rating(p, 0));
-}
-
 SECTION(".r10_could") void hole_pick(u8 *team, u8 *p, unsigned ask, struct pick *k) {
     int room = economy_usable_room(team);
-    if (room >= (int)ask && room > k->most && !n_human(team) && level_ok(team, p) && hole_p(team, p)) {
+    if (room >= (int)ask && room > k->most && !n_human(team) && level_ok(team, p) && economy_hole_p(team, p)) {
         k->most = room;
         k->club = team;
     }

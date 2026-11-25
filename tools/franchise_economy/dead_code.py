@@ -92,14 +92,18 @@ WINDOWS = {  # start: (size, sha256 of the retail bytes)
     0x3C8E00: (107, "584184aca675af2dde2bfaf929b08597ffc0baba86dcea8864daf7a8d5eceb8f"),   # r10: r10_camp_pick
     0x3C98C0: (108, "704783e70d8408dea647fbe7a4263b62990516b5aa6287e5a1297886b136f9d4"),   # r10: r10_rank_club
     0x3D3390: (81, "ef8bfbaf8b64e1013530787507f9869e3a56deabe6b8cdf9a1c7462d4cfae140"),   # r10: r10_cell
-    0x121900: (84, "620b4d0a07b0b475b62112680a330be15cedca91e299e04259496609d67192e3"),   # r10: r10_quarter (the prove-it hole priority)
-    0x17A480: (84, "e71b40560481d14dbbcac0bef95159c3b3c82c239a10be6f5607305e3efab317"),   # r10: r10_level (the prove-it hole priority)
-    0x256230: (109, "7e3e4d4ef768950751781e7d6d63d8d5cd5575cb4c732cb4597f9aa8486f5999"),   # r10: r10_seat_row (the prove-it hole priority)
-    0x26CB60: (84, "a416917f31c92569edf3815ddf7ca6b45072b946cb4fc26c6350573d715c6b77"),   # r10: r10_seats (the prove-it hole priority)
-    0x2EC530: (84, "30a455cfe830fe4df653d6caa045e11678ac1110fb2e8151320a4f510b3a93ed"),   # r10: r10_hole_p (the prove-it hole priority)
+    0x121900: (84, "620b4d0a07b0b475b62112680a330be15cedca91e299e04259496609d67192e3"),   # r10: r10_bench (the prove-it hole priority)
+    0x17A480: (84, "e71b40560481d14dbbcac0bef95159c3b3c82c239a10be6f5607305e3efab317"),   # r10: r10_hole (the prove-it hole priority)
+    0x256230: (109, "7e3e4d4ef768950751781e7d6d63d8d5cd5575cb4c732cb4597f9aa8486f5999"),   # r10: r10_league (the prove-it hole priority)
+    0x26CB60: (84, "a416917f31c92569edf3815ddf7ca6b45072b946cb4fc26c6350573d715c6b77"),   # r10: r10_each (the prove-it hole priority)
+    0x2EC530: (84, "30a455cfe830fe4df653d6caa045e11678ac1110fb2e8151320a4f510b3a93ed"),   # r10: r10_weakest (the prove-it hole priority)
     0x2EE400: (85, "156528052eb0fae5ea043bb10762a9115728e51758c77004a6c981f794137247"),   # r10: r10_could (the prove-it hole priority)
-    0x3D62D0: (83, "d6dfaf369d58832c4c1da8418eca627611b2fc7d39696725075a14ac9fd2b86c"),   # r10: r10_seat_ok (the prove-it hole priority)
-    0x3E1030: (104, "48b4ba8ad1e9a274bd48ee6a33f75102dada6b2aaea72cc1ba3724f2b80067a1"),   # r10: r10_hole (the prove-it hole priority)
+    0x3D62D0: (83, "d6dfaf369d58832c4c1da8418eca627611b2fc7d39696725075a14ac9fd2b86c"),   # r10: r10_seat_in (the prove-it hole priority)
+    0x3E1030: (104, "48b4ba8ad1e9a274bd48ee6a33f75102dada6b2aaea72cc1ba3724f2b80067a1"),   # r10: r10_pts (the prove-it hole priority)
+    0xECCE0: (91, "092083c0c58dc5b42a6d95061454d491fc4b13a54eb5bd32a837c25ceea3f85d"),   # r10: r10_count (the prove-it hole priority)
+    0x9AB90: (84, "9a80ce598a961cfcafea31f99e3c87f2450a8329f51d6c8891a33888e6e325f0"),   # r10: r10_level (the prove-it hole priority)
+    0x35B2F0: (84, "041631f61249f34975cf1985aefd7f7f0ecb3b283325b0ee2ed538c2d96c5409"),   # r10: r10_pool_man + r10_seat_pts (the prove-it hole priority)
+    0x65380: (86, "03b6f083b6e429bc9f815643fb668887d33154b97bc77e11c07a53ab1e451e25"),   # r10: r10_low + r10_club_seats (the prove-it hole priority)
 }
 
 

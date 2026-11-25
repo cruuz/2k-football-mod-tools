@@ -385,6 +385,10 @@ R10_WINDOW_PINS = {                 # retail sha256 of each window the revision 
     0x2EE400: "156528052eb0fae5ea043bb10762a9115728e51758c77004a6c981f794137247",   # the prove-it hole priority
     0x3D62D0: "d6dfaf369d58832c4c1da8418eca627611b2fc7d39696725075a14ac9fd2b86c",   # the prove-it hole priority
     0x3E1030: "48b4ba8ad1e9a274bd48ee6a33f75102dada6b2aaea72cc1ba3724f2b80067a1",   # the prove-it hole priority
+    0xECCE0: "092083c0c58dc5b42a6d95061454d491fc4b13a54eb5bd32a837c25ceea3f85d",   # the prove-it hole priority (team_need.h mid-rank ruling)
+    0x9AB90: "9a80ce598a961cfcafea31f99e3c87f2450a8329f51d6c8891a33888e6e325f0",   # the prove-it hole priority (team_need.h mid-rank ruling)
+    0x35B2F0: "041631f61249f34975cf1985aefd7f7f0ecb3b283325b0ee2ed538c2d96c5409",   # the prove-it hole priority (team_need.h mid-rank ruling)
+    0x65380: "03b6f083b6e429bc9f815643fb668887d33154b97bc77e11c07a53ab1e451e25",   # the prove-it hole priority (team_need.h mid-rank ruling)
 }
 PINS.update(R10_WINDOW_PINS)
 PINS[OFFER_JITTER] = "fa53102234cdfb47e76212cf24faf309c148be7f525d793ad1ee97a9052f9e49"

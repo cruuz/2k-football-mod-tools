@@ -275,6 +275,86 @@ class NativeTests(unittest.TestCase):
             for q, raw in saved.items():
                 self.m.uc.mem_write(q + 0x38, raw)
 
+    def _mirror_holes(self, pools, him):
+        """(native, mirror) hole answers for every club and pool: economy_hole_p against team building's Python mirror
+        of the shared rule (nfl2k5_team_building.view: need seats by depth row, empty seats 0, review S1's bench step;
+        the header's mid-rank percentile; HOLE and MARGIN), on the league as it stands in memory."""
+        from mod_editor.core import nfl2k5_team_building as tb, nfl2k5_team_need as tn
+        point = lambda q: self.m.call(SYM["economy_points"], args=(q,), budget=5_000_000)
+        league = []
+        for t in range(32):
+            men = []
+            for q in self.roster(t):
+                rec = bytes(self.m.uc.mem_read(q, 84))
+                men.append(tb.Man(q, rec[0x35], point(q), tn.row(rec), rec[0x25] & 31, tn.present(rec)))
+            league.append(men)
+        native, mirror = [], []
+        for pos in pools:
+            p = self.synthetic(pos=pos, rating=him, weeks=7)
+            mine, pool = point(p), tn.POOL[pos]
+            for t in range(32):
+                v = tb.view(league, t)
+                weak = v.weak[pool]
+                mirror.append(mine >= weak + tb.MARGIN and tb.percentile(v.scale[pool], weak) < tb.HOLE)
+                native.append(bool(self.m.call(SYM["economy_hole_p"], args=(self.team(t), p), budget=200_000_000)))
+        return native, mirror
+
+    def _rate(self, q, value):
+        self.m.uc.mem_write(q + 0x38, bytes([value] * (84 - 0x38)))
+
+    def test_the_hole_is_team_buildings_rule(self):
+        # Coordinator ruling N1 and the 11/25 header ruling (team building 713152903, 6c5a4ec17): one need rule. The
+        # economy's prove-it hole equals team building's own reading of it (its Python mirror) for every club and pool:
+        # the retail league, then an empty need seat (out three weeks: not present), an unseated better man (review S1:
+        # he takes the seat, so the hole closes), and a tie at the quarter line (the mid-rank: not a hole; the
+        # strictly-below count the first hole code used said it was).
+        pools = (3, 4, 5, 6, 7, 9, 11, 12, 13, 14, 15, 16)
+        native, mirror = self._mirror_holes(pools, 75)
+        self.assertEqual(native, mirror)
+        self.assertTrue(any(mirror) and not all(mirror))
+        cpu = [t for t in range(32) if t not in self.human]
+        x = cpu[0]
+        wr = [q for q in self.roster(x) if self.m.uc.mem_read(q + 0x35, 1)[0] == 3]
+        fs = {t: [q for q in self.roster(t) if self.m.uc.mem_read(q + 0x35, 1)[0] == 5] for t in range(32)}
+        saved = {q: bytes(self.m.uc.mem_read(q, 84)) for q in wr + [q for t in fs for q in fs[t]]}
+        try:
+            for q in wr:                                        # every receiver of club x out three weeks
+                self.m.put(q + 0x20, (self.m.get(q + 0x20) & ~(255 << 22)) | 3 << 22)
+            native, mirror = self._mirror_holes((3,), 75)
+            self.assertEqual(native, mirror)
+            self.assertTrue(native[x])
+            for q, raw in saved.items():
+                self.m.uc.mem_write(q, raw)
+            # x's two receiver seats one weak, one strong, the rest as weak as the weak seat: a hole; then its
+            # last-listed receiver, moved to the overflow row (an unsorted signing), rated well above that seat: he
+            # takes it (review S1) and the hole closes
+            row = lambda q: self.m.uc.mem_read(q + 0x28, 2)[0] | self.m.uc.mem_read(q + 0x29, 1)[0] << 8
+            seats = sorted(wr[:-1], key=lambda q: (row(q) >> 10 & 7, wr.index(q)))[:2]
+            for q in wr:
+                self._rate(q, 30)                               # 0 points
+            self._rate(seats[1], 85)
+            last = wr[-1]
+            self.m.uc.mem_write(last + 0x28, struct.pack("<H", (row(last) & 0xE3FF) | 7 << 10))
+            self._rate(last, 31)                                # not three points above the seat: the hole stays
+            native, mirror = self._mirror_holes((3,), 75)
+            self.assertEqual(native, mirror)
+            self.assertTrue(native[x])
+            self._rate(last, 95)
+            native, mirror = self._mirror_holes((3,), 75)
+            self.assertEqual(native, mirror)
+            self.assertFalse(native[x])
+            for q, raw in saved.items():
+                self.m.uc.mem_write(q, raw)
+            for t in range(32):                                 # free safeties: 4 clubs low, 10 (x among them) tied
+                for q in fs[t]:
+                    self._rate(q, 40 if t in cpu[1:5] else 50 if t in cpu[5:14] or t == x else 80)
+            native, mirror = self._mirror_holes((5,), 75)
+            self.assertEqual(native, mirror)
+            self.assertFalse(native[x])
+        finally:
+            for q, raw in saved.items():
+                self.m.uc.mem_write(q, raw)
+
     def test_a_kicker_four_points_better_wins_the_job_in_camp(self):
         t = next(t for t in range(32) if t not in self.human and
                  sum(self.m.uc.mem_read(q + 0x35, 1)[0] == 1 for q in self.roster(t)) == 1)
