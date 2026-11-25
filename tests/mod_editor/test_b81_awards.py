@@ -1,4 +1,4 @@
-"""Job b81-awards: the season award vote and the 24-man All-Pro team (and the code of the uninstalled credit, R1).
+"""Job b81-awards: the season award vote and the 24-man All-Pro team.
 
 EXPERIMENTAL / UNWITNESSED in game. Static checks run everywhere. The native classes map the retail USA ``default.xbe``
 with the honors owner (which now installs ``nfl2k5_awards``) and run the real code under Unicorn:
@@ -7,13 +7,11 @@ with the honors owner (which now installs ``nfl2k5_awards``) and run the real co
   two seasons the owner reported (a 15-interception linebacker and a 15-interception corner named MVP over a 40-touchdown
   quarterback): failing first on c4406481b, where the champions owner's "otherworldly" rule gives both the MVP;
 * the All-Pro team: 24 men in the AP shape, nine through the retail best-at-position slots, fifteen written here;
-* the credit code (design R1; its site 0x134DF1 is NOT installed in beta 81: in simulated games the live records hold no
-  per-player INT / sack / tackle counters at merge time, see nfl2k5_awards): on synthetic records of the shape the retail
-  getters read, totals per club kept, only defenders who played credited, whole sacks to one man, the gates, determinism
-  and the position shares over many games. Kept for the LATER redesign; nothing in an installed executable calls it.
+* beta 81 ships no defensive credit (design R1 found inert in simulated games; see nfl2k5_awards): the club merge
+  FUN_00134DD0 stays retail.
 
-Boundaries: team records come from substituted record routines (as in the champions tests); the derived ratings the
-credit reads (0x246A80) and the overall (0x246D80) are supplied per player. The full simulated seasons are the lane's
+Boundaries: team records come from substituted record routines (as in the champions tests); the overall (0x246D80)
+is supplied per player. The full simulated seasons are the lane's
 paired panel (REVIEW_ME.txt), not here.
 """
 from __future__ import annotations
@@ -39,7 +37,7 @@ from mod_editor.core import nfl2k5_rdata_sites as rdata  # noqa: E402
 from mod_editor.core import nfl2k5_xbe_space as space  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage  # noqa: E402
 from tests.mod_editor.test_b779_hn1_champions import LeagueMachine  # noqa: E402
-from tests.mod_editor.test_nfl2k5_honors import AWARDS, CLASS, HAVE_UC, LEAGUE_MODE, Machine, _retail, word  # noqa: E402
+from tests.mod_editor.test_nfl2k5_honors import AWARDS, CLASS, HAVE_UC, LEAGUE_MODE, _retail, word  # noqa: E402
 
 POS = awards.P
 FIELD = {"pass_yds": 8, "pass_td": 9, "pass_int": 10, "rush_yds": 2, "rush_td": 3, "rec": 12, "rec_yds": 13, "rec_td": 14,
@@ -68,15 +66,15 @@ class StaticTests(unittest.TestCase):
         for offset, kind, symbol, _value in runtime.RELOCATIONS:
             self.assertIn(kind, (1, 2))
             self.assertEqual(symbol, "code")
-        for entry in ("awards_vote_entry", "awards_credit_entry", "awards_vote", "awards_credit"):
+        for entry in ("awards_vote_entry", "awards_vote"):
             self.assertIn(entry, runtime.LABELS)
+        self.assertFalse([name for name in runtime.LABELS if "credit" in name])   # no R1 code ships
 
     def test_sites_are_jumps_into_the_entries_over_the_retail_bytes(self):
         at = awards.labels()
         rows = {label: (va, before, after) for label, va, before, after in awards.sites()}
-        self.assertEqual(list(rows), ["vote"])          # beta 81: the vote only; the credit site is not installed
+        self.assertEqual(list(rows), ["vote"])          # beta 81: the vote only
         self.assertEqual(rows["vote"][:2], (0x116E5A, bytes.fromhex("5e5d83c41c")))
-        self.assertEqual(awards.CREDIT_SITE[:3], ("credit", 0x134DF1, bytes.fromhex("8bd88a871c010000")))
         for label, entry in (("vote", "awards_vote_entry"),):
             va, before, after = rows[label]
             self.assertEqual((after[0], len(after)), (0xE9, len(before)))
@@ -119,13 +117,6 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(table("oroy_ref", 17), tuple(awards.OROY_REF.get(i, 0) for i in range(17)))
         self.assertEqual(table("role_weight", 17), tuple(awards.ROLE_WEIGHT.get(i, 0) for i in range(17)))
         self.assertEqual(table("ap_size", 15), tuple(n for _c, n in awards.ALL_PRO))
-        self.assertEqual(table("power", 3), tuple(awards.CREDIT_POWER[k] for k in ("interceptions", "sacks", "tackles")))
-        self.assertEqual(table("category", 3), tuple(awards.CREDIT_CATEGORY[k] for k in ("interceptions", "sacks", "tackles")))
-        shares = re.search(r"static const u16 share\[4\]\[R_N\] = \{(.*?)\};", text, re.S).group(1)
-        rows = [tuple(int(x) for x in row.split(",")) for row in re.findall(r"\{([^}]*)\}", shares)]
-        self.assertEqual(rows, [awards.CREDIT_SHARES[k] for k in ("interceptions", "sacks", "tackles_with_cb", "tackles")])
-        for row in rows:
-            self.assertEqual(sum(row), 1000)
         self.assertEqual(awards.ALL_PRO_SIZE, 24)
 
     @unittest.skipUnless(shutil.which("gcc") and shutil.which("ld"), "GNU gcc/binutils needed to rebuild the template")
@@ -354,166 +345,6 @@ class NativeVoteTests(unittest.TestCase):
 
 
 @unittest.skipUnless(HAVE_UC, "unicorn required")
-class NativeCreditTests(unittest.TestCase):
-    """FUN_00134DD0's club: live records at the side-0 array 0xB30C4C (0x54 each, count byte 0xB30980), each with a
-    holder at +0x30 pointing to the stats object: +0 played, +0x1C/+0x20 interceptions, +0x24/+0x28 half sacks,
-    +0x2C/+0x30 tackles (float flag, pointer to a record whose byte +4 is the count)."""
-
-    LIVE0, COUNT0 = 0xB30C4C, 0xB30980
-    GAME_MODE, STAGE, WEEK = 0xE5FF80, 0xE576A4, 0xE576B4
-
-    @classmethod
-    def setUpClass(cls):
-        retail = _retail()
-        if retail is None:
-            raise unittest.SkipTest("retail XBE pin differs")
-        cls.patched, _ = honors.apply(retail)
-        cls.at = awards.labels()
-
-    def setUp(self):
-        self.m = Machine(self.patched)
-        self.ratings = {}
-        NativeVoteTests._float_hook(self.m, 0x246A80, self._rating, pop=4)
-
-    def _rating(self, m):
-        cat = m.get(m.reg("ESP") + 4)
-        return self.ratings.get((m.reg("ECX"), cat), 0.7)
-
-    def club(self, men, stage=8, mode=4, league=2, week=3):
-        """men: (pos, played, ints, half sacks, tackles, (v9, v4, v11)). Returns (club, [(player, int, sack, tkl)])."""
-        m = self.m
-        heap = m.HEAP
-        club = heap + 0x100
-        out = []
-        for i, (pos, played, ints, sacks, tackles, ratings) in enumerate(men):
-            player = heap + 0x1000 + i * 0x54
-            m.uc.mem_write(player, bytes(0x54))
-            m.put8(player + 0x35, POS[pos])
-            m.put(club + 4 * i, player)
-            live = self.LIVE0 + i * 0x54
-            m.uc.mem_write(live, bytes(0x54))
-            holder, stats = heap + 0x8000 + i * 16, heap + 0x9000 + i * 0x40
-            m.put(live + 0x30, holder)
-            m.put(holder, stats)
-            m.uc.mem_write(stats, bytes(0x40))
-            m.put(stats, 1 if played else 0)
-            counters = []
-            for flag, ptr, value in ((0x1C, 0x20, ints), (0x24, 0x28, sacks), (0x2C, 0x30, tackles)):
-                rec = heap + 0xA000 + i * 0x40 + flag
-                m.uc.mem_write(rec, bytes(8))
-                m.put8(rec + 4, value)
-                m.uc.mem_write(stats + flag, struct.pack("<f", 1.0))
-                m.put(stats + ptr, rec)
-                counters.append(rec + 4)
-            for cat, value in zip((9, 4, 11), ratings):
-                self.ratings[(player, cat)] = value
-            out.append((player, counters))
-        m.put8(self.COUNT0, len(men))
-        m.put8(0xB30B74, 0)
-        team = heap + 0x4000
-        m.put8(team + 0x11C, len(men))
-        m.put(LEAGUE_MODE, league)
-        m.put(self.GAME_MODE, mode)
-        m.put(self.STAGE, stage)
-        m.put(self.WEEK, week)
-        return club, team, out
-
-    def counts(self, rows):
-        return [tuple(self.m.uc.mem_read(c, 1)[0] for c in counters) for _p, counters in rows]
-
-    def run_credit(self, club, team):
-        self.m.call(self.at["awards_credit"], ecx=team, edx=club, stack=(self.LIVE0,))
-
-    DEFENCE = [("CB", 1, 3, 0, 4, (0.85, 0.5, 0.7)), ("CB", 1, 0, 0, 3, (0.8, 0.5, 0.7)), ("FS", 1, 0, 0, 6, (0.8, 0.5, 0.75)),
-               ("SS", 1, 0, 0, 7, (0.78, 0.55, 0.78)), ("ILB", 1, 2, 4, 12, (0.88, 0.8, 0.95)),
-               ("ILB", 1, 0, 2, 9, (0.7, 0.75, 0.85)), ("DE", 1, 0, 1, 3, (0.4, 0.9, 0.7)), ("DE", 1, 0, 0, 2, (0.4, 0.85, 0.7)),
-               ("DT", 1, 0, 1, 3, (0.3, 0.8, 0.7)), ("DT", 0, 0, 0, 0, (0.3, 0.8, 0.7)),
-               ("WR", 1, 0, 0, 1, (0.7, 0.3, 0.4)), ("QB", 1, 0, 0, 0, (0.5, 0.3, 0.4))]
-
-    def test_totals_are_kept_and_only_defenders_who_played_are_credited(self):
-        club, team, rows = self.club(self.DEFENCE)
-        before = self.counts(rows)
-        self.run_credit(club, team)
-        after = self.counts(rows)
-        defenders = [i for i, row in enumerate(self.DEFENCE) if row[0] not in ("WR", "QB") and row[1]]
-        for k in range(3):
-            self.assertEqual(sum(after[i][k] for i in defenders), sum(before[i][k] for i in defenders), k)
-        self.assertEqual(after[9], (0, 0, 0))                       # the DT who did not play
-        self.assertEqual(after[10:], before[10:])                   # offence keeps the engine's line
-
-    def test_a_counter_two_men_share_is_left_alone(self):
-        club, team, rows = self.club(self.DEFENCE)
-        m = self.m
-        holder_a, holder_b = m.get(self.LIVE0 + 0 * 0x54 + 0x30), m.get(self.LIVE0 + 1 * 0x54 + 0x30)
-        stats_a, stats_b = m.get(holder_a), m.get(holder_b)
-        m.put(stats_b + 0x20, m.get(stats_a + 0x20))                     # both corners point at one interception record
-        shared = m.get(stats_a + 0x20) + 4
-        before = m.uc.mem_read(shared, 1)[0]
-        others = sum(self.counts(rows)[i][0] for i in range(2, 9))
-        self.run_credit(club, team)
-        self.assertEqual(m.uc.mem_read(shared, 1)[0], before)
-        self.assertEqual(sum(self.counts(rows)[i][0] for i in range(2, 9)), others)
-
-    def test_whole_sacks_go_to_one_man_and_a_lone_half_last(self):
-        men = [list(r) for r in self.DEFENCE]
-        men[4][3], men[5][3], men[6][3], men[8][3] = 3, 0, 0, 0          # three half sacks in all
-        club, team, rows = self.club([tuple(r) for r in men])
-        self.run_credit(club, team)
-        sacks = [c[1] for c in self.counts(rows)]
-        self.assertEqual(sum(sacks), 3)
-        self.assertIn(sorted(s for s in sacks if s), ([1, 2], [3]))
-
-    def test_the_gates(self):
-        for label, kwargs in (("not a franchise", dict(league=1)), ("a played game", dict(mode=5)),
-                              ("preseason", dict(stage=7))):
-            with self.subTest(label):
-                self.setUp()
-                club, team, rows = self.club(self.DEFENCE, **kwargs)
-                before = self.counts(rows)
-                self.run_credit(club, team)
-                self.assertEqual(self.counts(rows), before)
-
-    def test_the_same_game_gives_the_same_credit_and_another_week_another(self):
-        results = []
-        for week in (3, 3, 4):
-            self.setUp()
-            club, team, rows = self.club(self.DEFENCE, week=week)
-            self.run_credit(club, team)
-            results.append(self.counts(rows))
-        self.assertEqual(results[0], results[1])
-        self.assertNotEqual(results[0], results[2])
-
-    def test_position_shares_over_many_games_follow_the_table(self):
-        got = collections.defaultdict(collections.Counter)
-        role = {"CB": "CB", "FS": "S", "SS": "S", "ILB": "LB", "DE": "DE", "DT": "DT"}
-        men = [("CB", 1, 2, 0, 8, (0.85, 0.5, 0.7)), ("CB", 1, 0, 0, 0, (0.8, 0.5, 0.7)), ("FS", 1, 0, 0, 0, (0.8, 0.5, 0.75)),
-               ("SS", 1, 0, 0, 0, (0.78, 0.55, 0.78)), ("ILB", 1, 0, 8, 12, (0.88, 0.8, 0.95)),
-               ("ILB", 1, 0, 0, 0, (0.7, 0.75, 0.85)), ("DE", 1, 0, 0, 0, (0.4, 0.9, 0.7)), ("DE", 1, 0, 0, 0, (0.4, 0.85, 0.7)),
-               ("DT", 1, 0, 0, 0, (0.3, 0.8, 0.7)), ("DT", 1, 0, 0, 0, (0.3, 0.8, 0.7))]
-        for week in range(300):
-            self.setUp()
-            club, team, rows = self.club(men, week=week)
-            self.run_credit(club, team)
-            for (pos, *_r), counts in zip(men, self.counts(rows)):
-                for k, name in enumerate(("interceptions", "sacks", "tackles")):
-                    got[name][role[pos]] += counts[k]
-        for k, name in enumerate(("interceptions", "sacks", "tackles")):
-            total = sum(got[name].values())
-            weights = awards.credit_weights([(role[pos], ratings[k]) for pos, *_x, ratings in men], name, cb_bonus=False)
-            want = collections.Counter()
-            for (pos, *_x), w in zip(men, weights):
-                want[role[pos]] += w
-            for r, share in want.items():
-                with self.subTest(stat=name, role=r):
-                    self.assertAlmostEqual(got[name][r] / total, share, delta=0.04)
-        self.assertLess(got["interceptions"]["LB"] / sum(got["interceptions"].values()), 0.2)
-
-    def test_with_the_cornerback_owner_the_corners_take_less_of_the_engine_tackles(self):
-        self.assertEqual(self.m.uc.mem_read(0x1334C3, 1)[0], 0x8B)       # this image has no cornerback owner
-        self.assertGreater(awards.CREDIT_SHARES["tackles"][0], awards.CREDIT_SHARES["tackles_with_cb"][0])
-
-
-@unittest.skipUnless(_retail() is not None, "pinned USA XBE required")
 class InstallTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -547,9 +378,8 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(honors.apply(upgraded)[0], upgraded)
 
     def test_the_club_merge_stays_retail(self):
-        # beta 81 ships the vote only: FUN_00134DD0 (the credit's site 0x134DF1) is not touched by this owner
-        label, va, before, _entry, _op, length = awards.CREDIT_SITE
-        self.assertEqual(XbeImage(self.patched).read(va, length), before)
+        # beta 81 ships the vote only: FUN_00134DD0 (design R1's site 0x134DF1) is not touched by this owner
+        self.assertEqual(XbeImage(self.patched).read(0x134DF1, 8), bytes.fromhex("8bd88a871c010000"))
         self.assertEqual(XbeImage(self.patched).read(0x134DD0, 0x35), XbeImage(self.retail).read(0x134DD0, 0x35))
 
     def test_a_single_foreign_site_is_refused(self):

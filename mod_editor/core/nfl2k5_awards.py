@@ -34,14 +34,12 @@ What this owner does (one fixed page, ``nfl2k5_xbe_space.AWARDS_VA``, code only)
     All-Pro: QB, HB, FB, three WR, TE, two T, two G, C, two DE, two DT, two LB, two CB, two S, K, P (24). The first of each
     retail category takes its best-at-position slot (the honors owner records those); the other fifteen get history field 104
     here (Franchise only, regular class). The return-man slot is cleared.
-* The defensive credit (design R1, the same page holds its code: ``awards_credit`` / ``awards_credit_entry``) is NOT
-  installed in beta 81. It re-drew a club's interceptions, sacks and tackles in the live game records before the merge
-  at 0x134DF1, but the paired panel (lane REVIEW_ME.txt) showed it changes nothing: in a simulated game the live stats
-  objects carry no per-player INT / sack / tackle counters at merge time ([s+0x20], [s+0x28], [s+0x30] are null in all
-  521 records with the stat flag set, 40 club-games), so the merge's getters (0x24F060, 0x24EF90, 0x24EED0) take their
-  null path (when [0xAC13D8] is set) to the query 0x287530 -> 0x240FB0. A credit that works has to re-attribute the records that
-  query reads (likely the play log; unconfirmed) or the season history; see the lane LATER.txt. Its twin
-  (``credit_weights``, ``CREDIT_SHARES``) stays for that work.
+* No defensive credit in beta 81. The design's R1 re-drew a club's interceptions, sacks and tackles in the live game
+  records before the merge (0x134DF1); its paired panel changed nothing because a simulated game keeps no per-player
+  INT / sack / tackle counters there ([s+0x20], [s+0x28], [s+0x30] null in all 521 records with the stat flag set, 40
+  club-games): the merge's getters 0x24F060 / 0x24EF90 / 0x24EED0 take their null path (when [0xAC13D8] is set) to the
+  query 0x287530 -> 0x240FB0. The fix for beta 82 re-credits the records that query reads (lane LATER.txt); no credit
+  code ships here.
 
 Installed with the honors owner (one toggle; ``nfl2k5_honors.apply``). Not witnessed in game; the rule is proven on the
 stored seasons (native == twin, 40 of 40) and in a paired season panel (games byte for byte the control's).
@@ -75,10 +73,7 @@ P = {name: i for i, name in enumerate(POSITIONS)}
 SITE_TABLE = (
     ("vote", 0x00116E5A, bytes.fromhex("5e5d83c41c"), "awards_vote_entry", 0xE9, 5),
 )
-# Design R1's credit site (not installed in beta 81; see the module docstring): FUN_00134DD0, before one club's merge.
-CREDIT_SITE = ("credit", 0x00134DF1, bytes.fromhex("8bd88a871c010000"), "awards_credit_entry", 0xE9, 8)
 AWARD_CALL, AWARD_TAIL = 0x00116E55, 0x00116E5F     # the champions owner's call site and the honors owner's tail
-CB_SITE = 0x001334C3                                 # read by the (uninstalled) credit: retail 0x8B unless the corner owner hooks it
 
 # Retail routines the runtime calls or reads, pinned by SHA-256 of their retail bytes (own sites masked; the two
 # neighbouring award sites are masked to retail whatever another owner put there, and checked by opcode instead).
@@ -256,12 +251,6 @@ AP_CATEGORY = {P["QB"]: "QB", P["K"]: "K", P["P"]: "P", P["WR"]: "WR", P["CB"]: 
                P["HB"]: "HB", P["FB"]: "FB", P["TE"]: "TE", P["OLB"]: "LB", P["ILB"]: "LB", P["C"]: "C", P["G"]: "G",
                P["T"]: "T", P["DT"]: "DT", P["DE"]: "DE"}
 RETAIL_SLOTS = ("QB", "HB", "WR", "TE", "T", "DE", "LB", "CB", "K")     # +0x5830 + 8 * i: QB RB/FB WR TE OL DL LB DB K
-# nflverse 2021-2025 role shares (thousandths) the credit draws by: CB, S, LB, DE, DT
-CREDIT_SHARES = {"interceptions": (410, 380, 155, 30, 25), "sacks": (35, 65, 220, 430, 250),
-                 "tackles_with_cb": (120, 240, 300, 190, 150), "tackles": (220, 220, 270, 160, 130)}
-CREDIT_POWER = {"interceptions": 2, "sacks": 2, "tackles": 5}
-CREDIT_CATEGORY = {"interceptions": 9, "sacks": 4, "tackles": 11}
-BEST_COVER_SHARE = 0.10
 
 
 def _pos0(v):
@@ -398,36 +387,6 @@ def all_pro(players, record) -> dict:
     return {c: [q for _s, q in table[c]] for c, _n in ALL_PRO}
 
 
-def credit_weights(defenders, stat, cb_bonus=True):
-    """The credit's draw weights for one club-game: ``defenders`` = [(role, rating)] of the men who played (role in CB S LB
-    DE DT, rating = the stat's derived attribute 0..1); returns the probability of each man per unit. Native floats are
-    single precision with x87 intermediates, so the twin matches the native draw in distribution, not bit for bit."""
-
-    key = "tackles_with_cb" if stat == "tackles" and cb_bonus else stat
-    roles = ("CB", "S", "LB", "DE", "DT")
-    share = dict(zip(roles, CREDIT_SHARES[key]))
-    power = CREDIT_POWER[stat]
-    v = [max(r, 0.05) ** power for _role, r in defenders]
-    role_sum = {}
-    for (role, _r), x in zip(defenders, v):
-        role_sum[role] = role_sum.get(role, 0.0) + x
-    present = sum(share[r] for r in role_sum)
-    if not present:
-        return [0.0] * len(defenders)
-    w = [share[role] / present * x / role_sum[role] for (role, _r), x in zip(defenders, v)]
-    if stat == "interceptions":
-        backs = [i for i, (role, _r) in enumerate(defenders) if role in ("CB", "S")]
-        if backs:
-            top = backs[0]
-            for i in backs:
-                if v[i] > v[top]:
-                    top = i
-            w = [x * (1 - BEST_COVER_SHARE) for x in w]
-            w[top] += BEST_COVER_SHARE
-    total = sum(w)
-    return [x / total for x in w]
-
-
 __all__ = ["OWNER", "REQUESTS", "HELP_TEXT", "CODE_SIZE", "CODE_VA", "AwardsError", "code_for", "labels", "sites", "status",
            "owned_state", "applied_sites", "read_settings", "reservations", "install", "apply", "guard_digests",
-           "choose_awards", "all_pro", "credit_weights", "offense_points", "defense_points", "CREDIT_SHARES"]
+           "choose_awards", "all_pro", "offense_points", "defense_points"]

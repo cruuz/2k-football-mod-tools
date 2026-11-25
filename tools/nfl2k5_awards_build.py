@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rebuild the season award vote and defensive credit runtime (job b81-awards) with GNU gcc/binutils; development use only.
+"""Rebuild the season award vote runtime (job b81-awards) with GNU gcc/binutils; development use only.
 
 EXPERIMENTAL / UNWITNESSED. The generated ``mod_editor/core/nfl2k5_awards_code.py`` is checked in, so Studio users
 never need a compiler. The ELF32 tables are read with the standard library. ``--check`` fails if the checked-in
@@ -20,7 +20,7 @@ FLAGS = ["-m32", "-Oz", "-ffreestanding", "-fno-builtin", "-fno-strict-aliasing"
          "-fno-stack-protector", "-fno-asynchronous-unwind-tables", "-fno-unwind-tables", "-fomit-frame-pointer",
          "-fno-jump-tables", "-mpreferred-stack-boundary=2", "-mno-sse", "-mno-mmx", "-Wall", "-Wextra", "-Werror"]
 EXTERNAL = {}  # no relocation outside the blob itself
-ENTRIES = ("awards_vote_entry", "awards_credit_entry", "awards_vote", "awards_credit")
+ENTRIES = ("awards_vote_entry", "awards_vote")
 
 
 def generate(source: Path = SOURCE) -> str:

@@ -794,8 +794,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_letter_grades_progress.py": "5088c0b6a545b95efae98f906b5c4c2e030774b22f87a35fd08a2c1c80b31a90",
         "mod_editor/core/nfl2k5_honors.py": "689c879603388b9859827be814ffc6290f88d941d4bd96f906ddff71cc2c48ce",
         "mod_editor/core/nfl2k5_honors_code.py": "5f74c634876b93f5a6fb37073b742d2248f7118f6074651473459791caccef59",
-        "mod_editor/core/nfl2k5_awards.py": "77c0ad4a9d8d0ca430c94a9b1a2d2866b4df102c4be7140b6e4713c5f14dd2a6",  # b81 awards: the award vote and defensive credit (installed by the honors owner)
-        "mod_editor/core/nfl2k5_awards_code.py": "7fb5ddf1824a5a0d6ebf6e94d6574077a8776e3ca0fad9b6e4913cb950eafa16",  # b81 awards: its generated page
+        "mod_editor/core/nfl2k5_awards.py": "9f8a60ca8981a4ffe498f0d01d1049c80c7aa55e2f2d84a13c0b625e67c941d7",  # b81 awards: the award vote and defensive credit (installed by the honors owner)
+        "mod_editor/core/nfl2k5_awards_code.py": "9bee63ce1c31ec82aa3b76e565323321c2f9aff904a632aa50757f478eb28f06",  # b81 awards: its generated page
         "mod_editor/core/nfl2k5_champions.py": "f0291e02e9794d2421b588150e294a5898bc20d5e621eceeed0ed7eec3dcc682",
         "mod_editor/core/nfl2k5_champions_code.py": "d0b7c4b07d849a24fda938e120cf7c6d4f15f0b589ac20183ecde61fb7fa463a",
         "mod_editor/core/nfl2k5_champions_code_b779.py": "c9a7e5bffface03b6ad23a030c652ef4398f8ac2ed26c249b8e815c2056c4407",  # b780 n6: frozen beta-79 runtime

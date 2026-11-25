@@ -1,10 +1,10 @@
-/* Season award vote, a 24-man All-Pro team and defensive credit in simulated games (job b81-awards). EXPERIMENTAL /
+/* Season award vote and a 24-man All-Pro team (job b81-awards). EXPERIMENTAL /
    UNWITNESSED.
 
    Freestanding i386 code for the fixed-page owner nfl2k5_awards, built by tools/nfl2k5_awards_build.py into
    mod_editor/core/nfl2k5_awards_code.py; no retail bytes live here and the owner keeps no writable memory. Game routines
    are called through their fixed retail addresses; the only relocations are this blob's own labels. The plain-Python
-   twin of every rule is mod_editor/core/nfl2k5_awards.py (choose_awards, all_pro, credit_weights).
+   twin of every rule is mod_editor/core/nfl2k5_awards.py (choose_awards, all_pro).
 
    THE VOTE (site 0x116E5A, after the retail award pass and the champions owner's vote, before the honors owner records
    the slots). Replaces the five player awards and the best-at-position slots:
@@ -21,13 +21,8 @@
            retail category goes into the ten best-at-position slots (+0x5830..; the return-man slot is cleared) so the
            honors owner records them; the other fifteen get history field 104 here (Franchise only, regular class).
 
-   THE CREDIT (site 0x134DF1, inside FUN_00134DD0 before one club's players are merged into their careers). In a simulated
-   Franchise game (league mode 2, game mode 4, regular season or playoffs) the club's credited interceptions, sacks and
-   tackles (each defender's live game line, [[live+0x30]] +0x20 / +0x28 / +0x30 -> byte +4) are drawn again, one at a
-   time, among the club's defenders who played, by the real position shares of the stat (nflverse 2021-2025) and within a
-   position by the game's own derived ratings (0x246A80 categories 9, 4, 11). The club's totals, the play-by-play and the
-   score do not change; the draw uses its own generator seeded from the game, never the game's 0x48B90 stream. The merge
-   that follows copies the new lines into the box score's source and the careers. */
+   The defensive credit (design R1) is not part of beta 81: simulated games keep no per-player defensive counters in
+   the live records it re-drew (see mod_editor/core/nfl2k5_awards.py). */
 
 typedef unsigned int u32;
 typedef int i32;
@@ -53,19 +48,11 @@ typedef unsigned char u8;
 #define WINS       ((u32 (FC *)(u32))0x000C7720)
 #define LOSSES     ((u32 (FC *)(u32))0x000C7750)
 #define TIES       ((u32 (FC *)(u32))0x000C7780)
-#define CATEGORY   ((float (FC *)(u32, u32, u32))0x00246A80)  /* derived attribute: ecx player, edx 1, [esp] category */
 #define OVERALL    ((float (FC *)(u32, u32))0x00246D80)       /* the position overall, 0..1 */
-#define LIVE_NEXT  ((u32 (FC *)(u32))0x00061B90)
 
 #define AWARDS 0x00E5A2F0u          /* season object; slots {player*, team*} */
 #define CLASS 0x00BD7F98u
 #define LEAGUE_MODE 0x00E576A0u
-#define STAGE 0x00E576A4u
-#define GAME_MODE 0x00E5FF80u
-#define WEEK 0x00E576B4u
-#define CELL 0x00E576BCu
-#define SEASONS 0x00E576B8u
-#define CB_SITE 0x001334C3u         /* the cornerback tackle owner's hook: retail 8B 45 30 */
 
 enum { P_QB, P_K, P_P, P_WR, P_CB, P_FS, P_SS, P_HB, P_FB, P_TE, P_OLB, P_ILB, P_C, P_G, P_T, P_DT, P_DE };
 
@@ -306,142 +293,4 @@ void awards_vote(void) {
                 HIST_SET(v.ap[c][k].player, 104, 1);
         }
     CLASS_SET(saved);
-}
-
-/* ---- the credit ---------------------------------------------------------------------------------------------- */
-enum { R_CB, R_S, R_LB, R_DE, R_DT, R_N };
-#define MAXD 40
-
-typedef struct { u32 role; float v[3]; volatile u8 *at[3]; } Man;
-
-/* role shares in thousandths: interceptions (by coverage, cat 9), sacks (pass rush, cat 4), tackles (cat 11) with and
-   without the cornerback owner's own per-game corner bonus */
-static const u16 share[4][R_N] = {
-    {410, 380, 155, 30, 25},
-    {35, 65, 220, 430, 250},
-    {120, 240, 300, 190, 150},
-    {220, 220, 270, 160, 130},
-};
-static const u8 power[3] = {2, 2, 5};
-static const u8 category[3] = {9, 4, 11};
-
-static u32 role_of(u32 pos) {
-    switch (pos) {
-    case P_CB: return R_CB;
-    case P_FS: case P_SS: return R_S;
-    case P_OLB: case P_ILB: return R_LB;
-    case P_DE: return R_DE;
-    case P_DT: return R_DT;
-    }
-    return R_N;
-}
-
-static u32 rng_next(u32 *x) {
-    u32 v = *x;
-    v ^= v << 13;
-    v ^= v >> 17;
-    v ^= v << 5;
-    return *x = v;
-}
-
-static volatile u8 *counter(u32 s, u32 flag, u32 ptr) {
-    if (!(G(s + flag) & 0x7FFFFFFF))
-        return 0;
-    u32 p = G(s + ptr);
-    return p ? (volatile u8 *)(p + 4) : 0;
-}
-
-void FC awards_credit(u32 team, u32 club, u32 first) {
-    if (G(LEAGUE_MODE) != 2 || G(GAME_MODE) != 4 || (G(STAGE) != 8 && G(STAGE) != 9))
-        return;
-    Man men[MAXD];
-    u32 n = 0, count = GB(team + 0x11C), rec = first, total[3] = {0, 0, 0};
-    for (u32 i = 0; i < count && rec && n < MAXD; i++, rec = LIVE_NEXT(rec)) {
-        u32 player = G(club + 4 * i), holder = G(rec + 0x30);
-        u32 s = holder ? G(holder) : 0;
-        if (!player || !s || !G(s))
-            continue;
-        u32 role = role_of(GB(player + 0x35));
-        if (role == R_N)
-            continue;
-        Man *m = &men[n++];
-        m->role = role;
-        m->at[0] = counter(s, 0x1C, 0x20);
-        m->at[1] = counter(s, 0x24, 0x28);
-        m->at[2] = counter(s, 0x2C, 0x30);
-        for (u32 k = 0; k < 3; k++) {
-            for (u32 j = 0; j + 1 < n; j++)              /* a counter two men share is left alone */
-                if (m->at[k] && men[j].at[k] == m->at[k]) {
-                    if (men[j].at[k] && total[k] >= *men[j].at[k])
-                        total[k] -= *men[j].at[k];
-                    men[j].at[k] = 0;
-                    m->at[k] = 0;
-                }
-            float r = CATEGORY(player, 1, category[k]);
-            float x = r > 0.05f ? r : 0.05f, y = 1.0f;
-            for (u32 e = 0; e < power[k]; e++)
-                y *= x;
-            m->v[k] = y;
-            if (m->at[k])
-                total[k] += *m->at[k];
-        }
-    }
-    u32 seed = 0x2545F491u ^ (G(WEEK) * 0x9E3779B1u) ^ (G(CELL) * 0x85EBCA77u) ^ (G(SEASONS) << 16) ^ club ^ (team << 3);
-    seed ^= seed >> 16;                                  /* murmur3's finaliser: nearby games get unrelated streams */
-    seed *= 0x85EBCA6Bu;
-    seed ^= seed >> 13;
-    seed *= 0xC2B2AE35u;
-    seed ^= seed >> 16;
-    seed = seed ? seed : 1;
-    u32 cb_bonus = GB(CB_SITE) != 0x8B;
-    for (u32 k = 0; k < 3; k++) {
-        float weight[MAXD], role_sum[R_N] = {0, 0, 0, 0, 0}, shares = 0.0f, sum = 0.0f;
-        const u16 *sh = share[k == 2 && !cb_bonus ? 3 : k];
-        u32 present = 0, best = MAXD;
-        for (u32 i = 0; i < n; i++)
-            if (men[i].at[k]) {
-                role_sum[men[i].role] += men[i].v[k];
-                if (!(present & (1u << men[i].role)))
-                    shares += (float)sh[men[i].role];
-                present |= 1u << men[i].role;
-                if (k == 0 && men[i].role <= R_S && (best == MAXD || men[i].v[0] > men[best].v[0]))
-                    best = i;
-            }
-        if (!total[k] || shares <= 0.0f)
-            continue;
-        for (u32 i = 0; i < n; i++) {
-            float w = 0.0f;
-            if (men[i].at[k]) {
-                w = (float)sh[men[i].role] / shares * men[i].v[k] / role_sum[men[i].role];
-                if (k == 0 && best < MAXD)
-                    w *= 0.9f;
-                *men[i].at[k] = 0;
-            }
-            weight[i] = w;
-            sum += w;
-        }
-        if (k == 0 && best < MAXD) {
-            weight[best] += 0.1f;
-            sum += 0.1f;
-        }
-        u32 units = total[k], step = 1;
-        if (k == 1) {                                   /* half sacks: whole sacks go to one man, a lone half last */
-            step = 2;
-            units = total[k] / 2 + (total[k] & 1);
-        }
-        for (u32 u = 0; u < units; u++) {
-            float r = (float)(rng_next(&seed) >> 8) * (1.0f / 16777216.0f) * sum;
-            u32 pick = 0;
-            for (u32 i = 0; i < n; i++) {
-                if (weight[i] > 0.0f)
-                    pick = i;
-                r -= weight[i];
-                if (r < 0.0f && weight[i] > 0.0f)
-                    break;
-            }
-            u32 add = (k == 1 && u == units - 1 && (total[k] & 1)) ? 1 : step;
-            u32 now = *men[pick].at[k] + add;
-            *men[pick].at[k] = (u8)(now > 255 ? 255 : now);
-        }
-    }
 }
