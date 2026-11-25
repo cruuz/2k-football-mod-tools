@@ -150,7 +150,8 @@ position has a bunch of them every draft. The ugly faces should be very rare."):
    * now the row word counts a row's ordinary faces; its homely / ugly / extreme tail lies past them up to the next row's
      first id (T_ROWEND follows the last row; NICK0..BUCKETS moved down one or two bytes for it) and only a rare-face
      prospect, RAREK = 4 in 256, draws it, or the last third of the row's hanging faces.  Region D draws through pick
-     (region C, after gearsetup); 48 tries, the last 8 an overflow into the tail's homely half.  Measured the same way:
+     (region C, after gearsetup); 48 tries, the last 8 an overflow into the first half of the tail (mostly homely:
+     333 homely and 43 ugly-labelled faces, the ugly ones in 11 rows).  Measured the same way:
      1.4 % (about 3 in a class of 224), 1.2 to 1.6 % in every class as the league fills, every skin tone x build row
      under 3 % (the East / South rows, region D alone over 4,500 rare-surname prospects: 1.0 to 2.0 %, were 6 to 26 %),
      no face twice.  The plainest 5/16 of the ordinary faces keep the first-draw redraw, so plain faces stay at 11 %
@@ -489,9 +490,10 @@ ZONE_NUM, ZONE_SHIFT = 5, 4   # region D: a first draw in the last (5 * ordinary
 # tail.  The last (HANGING_RARE_NUM * hanging) >> 5 hanging-hair faces (where the row's homely and ugly hanging faces sit,
 # the native Dreads rule keeps hanging faces first) go the same way while more than LASTTRIES tries are left.  Of the
 # TRIES draws (a face a player already wears is drawn again), the last LASTTRIES take any face they draw, an ordinary
-# prospect's from his ordinary faces and the first half of the rare tail (its homely end): only a row whose ordinary
-# faces are all worn (a fully generated league: white, tone-3 and tone-4 heavy rows) then gives a homely face instead
-# of a face a player already wears.
+# prospect's from his ordinary faces and the first half of the rare tail (the review's order puts homely first, so
+# mostly homely: 333 homely and 43 ugly-labelled faces, the ugly ones in 11 of the 24 rows): only a row whose ordinary
+# faces are all worn (a fully generated league: white, tone-3 and tone-4 heavy rows) then gives one of those instead of
+# a face a player already wears.
 RAREK = 4
 TRIES, LASTTRIES = 48, 8                     # immediates in region D / pick (were 24 tries)
 HANGING_RARE_NUM = 11
@@ -743,10 +745,17 @@ def tables(firsts: Sequence[str], lasts: Sequence[str], bank: Mapping[str, Any],
     struct.pack_into("<H", out, T_RS0, rs0)
     struct.pack_into("<H", out, T_RFIRST0, rfirst0)
     out[T_TONES:T_TONES + 2] = bytes(RARE_TONES)
+    _write_rows(out, bank)
+    struct.pack_into("<H", out, T_CANARY, ord(firsts[0][0]))
+    return bytes(out)
+
+
+def _write_rows(out: bytearray, bank: Mapping[str, Any]) -> None:
+    """The 24 row words and the row end (b81 rookie-faces: a word counts the row's ordinary faces; its rare tail runs to
+    the next row's first id)."""
     require(len(bank["buckets"]) == ROWS, f"the bank needs {ROWS} rows")
     for b, row in enumerate(bank["buckets"]):
         require(row["count"] <= ROW_COUNT_MAX and row["hanging"] <= ROW_HANGING_MAX, f"row {b} is too large")
-        # b81 rookie-faces: the word counts the ordinary faces; the rare tail runs to the next row's first id
         ordinary = row["count"] - rare_tail(bank, b)
         require(row["hanging"] <= ordinary, f"row {b}: the rare tail reaches into the hanging faces")
         require(ordinary >= 1, f"row {b} needs an ordinary face")
@@ -755,8 +764,6 @@ def tables(firsts: Sequence[str], lasts: Sequence[str], bank: Mapping[str, Any],
         struct.pack_into("<HH", out, T_BUCKETS + 4 * b, row["start"], ordinary | row["hanging"] << 9)
     last = bank["buckets"][-1]
     struct.pack_into("<H", out, T_ROWEND, last["start"] + last["count"])
-    struct.pack_into("<H", out, T_CANARY, ord(firsts[0][0]))
-    return bytes(out)
 
 
 # ------------------------------------------------------------------------------------------------ XBE
@@ -827,6 +834,19 @@ def xbe_status(payload: bytes) -> str:
     previous = the b780 GEN1 revision (SOFTDRINK v0.9 and the beta-81 candidates before b81 rookie-faces, CODE_*_GEN1),
     the beta-79 / v0.8 region D (CODE_D_B779) or the first v0.9 release candidate's (CODE_D_B780RC), the last two with
     the b779-rf3 region C (CODE_C_RF3), the retail college bands, draft numbers and Franchise Show record name)."""
+    state = xbe_revision(payload)
+    return "previous" if state in PREVIOUS_REVISIONS else state
+
+
+PREVIOUS_REVISIONS = ("gen1", "b779")   # b780 GEN1 (v0.9, beta-81 candidates); beta-79 / v0.8 and the v0.9 RC
+
+
+def xbe_revision(payload: bytes) -> str:
+    """b81 rookie-faces: retail | applied | gen1 | b779 | foreign.  gen1 = the b780 GEN1 revision (released v0.9 and the
+    beta-81 candidates up to c4406481b): every span this release writes, with the older region D draw and table layout;
+    its region D calls HAIRPTR like this release's, so the rookie hair helper and MyCareer's draft-number companion accept
+    it.  b779 = beta-79 / v0.8 and the first v0.9 RC: retail college bands, draft numbers and Franchise Show name, and
+    0xCC padding where HAIRPTR sits (no hair helper)."""
     try:
         current = _retail_spans(payload)
     except (RookieFacesError, struct.error):
@@ -835,7 +855,7 @@ def xbe_status(payload: bytes) -> str:
         return "retail"
     d = current[TABLE_VA]
     hair_ok = lambda: _hair_ok(payload, struct.unpack_from("<I", d, len(d) - 4)[0])  # noqa: E731
-    for state, spans in (("applied", dict(_spans(bytes(TABLE_DATA)))), ("previous", _gen1_spans())):
+    for state, spans in (("applied", dict(_spans(bytes(TABLE_DATA)))), ("gen1", _gen1_spans())):
         if all(current[va] == data for va, data in spans.items() if va != TABLE_VA) and \
                 d[TABLE_DATA:-4] == spans[TABLE_VA][TABLE_DATA:-4]:
             return state if hair_ok() else "foreign"
@@ -848,7 +868,7 @@ def xbe_status(payload: bytes) -> str:
                 JERSEY_HOOK_VA: JERSEY_RETAIL}
     if (all(current[va] == data for va, data in previous.items())
             and d[TABLE_DATA:] in (pad(CODE_D_B779, tail), pad(CODE_D_B780RC, tail))):
-        return "previous"   # beta-79 / v0.8 (rare first name from the college's low bits) or the v0.9 RC (GEN1)
+        return "b779"   # beta-79 / v0.8 (rare first name from the college's low bits) or the v0.9 RC
     return "foreign"
 
 
@@ -890,9 +910,12 @@ def hair_status(payload: bytes) -> str:
 
 def apply_hair(payload: bytes) -> tuple[bytes, dict[str, Any]]:
     """b780 GEN1 Q81: reserve the rookie hair owner (a late allocator owner appended to the sealed scale-out image),
-    install the helper and table, and point HAIRPTR at it. Needs rookie faces applied; idempotent."""
+    install the helper and table, and point HAIRPTR at it. Needs rookie faces applied; idempotent.  b81 rookie-faces: a
+    GEN1 host (released v0.9, beta-81 candidates; its region D calls HAIRPTR the same way) is accepted as it was before
+    GEN1 read "previous"; the beta-79 / RC states have padding at HAIRPTR and are not."""
     from . import nfl2k5_xbe_space as space  # noqa: PLC0415
-    require(xbe_status(payload) == "applied", "rookie faces must be applied before the rookie hair helper")
+    host = xbe_revision(payload)
+    require(host in ("applied", "gen1"), "rookie faces must be applied before the rookie hair helper")
     if hair_status(payload) == "applied":
         return payload, {"state": "applied", "already_applied": True, "changed_bytes": 0}
     require(hair_status(payload) == "off", "HAIRPTR holds a foreign value")
@@ -911,9 +934,43 @@ def apply_hair(payload: bytes) -> tuple[bytes, dict[str, Any]]:
         if raw <= off < raw + rsize:
             buf[h + 36:h + 56] = hashlib.sha1(struct.pack("<I", rsize) + bytes(buf[raw:raw + rsize])).digest()  # nosec B324
     out = bytes(buf)
-    require(xbe_status(out) == "applied" and hair_status(out) == "applied", "rookie hair read-back failed")
+    require(xbe_revision(out) == host and hair_status(out) == "applied", "rookie hair read-back failed")
     return out, {"state": "applied", "owner": HAIR_OWNER, "va": hex(va), "bytes": HAIR_SIZE,
                  "faces_with_a_style": len(load_hair()), "changed_bytes": space.count_differing_bytes(before, out)}
+
+
+# The b780 GEN1 table layout (c4406481b): NICK0..CANARY one byte higher, BUCKETS at 0x68 with full row counts, no row end.
+GEN1_T_NICK0, GEN1_T_BUCKETS = 0x60, 0x68
+
+
+def upgrade_xbe(payload: bytes, bank: Mapping[str, Any] | None = None) -> tuple[bytes, dict[str, Any] | None]:
+    """b81 rookie-faces: the in-place routes (v0.9 update, sim-QB and gadget edits) carry this revision, as a full build
+    does.  A GEN1 executable is upgraded in place: its own name tables (from the disc's own pool) move to this layout,
+    the rows are rebuilt from the bank (they must be the bank's rows, so the disc's portrait record holds every face),
+    and xbe_apply writes this release's code, keeping the rookie hair pointer.  Any other state is returned unchanged
+    (receipt None): a single-setting route never adds rookie faces, and beta-79 / RC executables are not taken."""
+    if xbe_revision(payload) != "gen1":
+        return payload, None
+    bank = bank or load_bank()
+    old = xbe_tables(payload)
+    rows = [struct.unpack_from("<HH", old, GEN1_T_BUCKETS + 4 * b) for b in range(ROWS)]
+    if rows != [(r["start"], r["count"] | r["hanging"] << 9) for r in bank["buckets"]]:
+        return payload, None
+    table = table_from_gen1(old, bank)
+    out, receipt = xbe_apply(payload, table)
+    return out, {**receipt, "upgraded_from": "previous", "table_sha256": sha(table)}
+
+
+def table_from_gen1(old: bytes, bank: Mapping[str, Any]) -> bytes:
+    """A GEN1 table block in this release's layout: the same name tables, NICK0..CANARY moved down one byte, the rows
+    from the bank (ordinary counts and the row end).  Equals tables() for the pool the GEN1 build used."""
+    require(len(old) == TABLE_DATA, "the table block has the wrong size")
+    out = bytearray(TABLE_DATA)
+    out[:GEN1_T_NICK0] = old[:GEN1_T_NICK0]
+    out[T_NICK0:T_BUCKETS] = old[GEN1_T_NICK0:GEN1_T_NICK0 + T_BUCKETS - T_NICK0]
+    out[T_LASTBITS:] = old[T_LASTBITS:]
+    _write_rows(out, bank)
+    return bytes(out)
 
 
 def xbe_tables(payload: bytes) -> bytes:

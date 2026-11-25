@@ -44,8 +44,9 @@
 .set TRIES, 48            # b81 rookie-faces: 48 (was 24)
 .set RAREK, 4             # b81 rookie-faces: rare-face prospects, 4 in 256 (1.6 %)
 .set LASTTRIES, 8         # the last 8 tries take any face they draw, an ordinary prospect's from his ordinary faces and
-                          # the first half of the rare tail (its homely end): a row whose ordinary faces are all worn
-                          # (a fully generated league) gives a homely face before a face a player already wears
+                          # the first half of the rare tail (homely first, so mostly homely; it reaches some faces
+                          # labelled ugly in 11 rows): a row whose ordinary faces are all worn (a fully generated league)
+                          # gives one of those before a face a player already wears
 .set OUTK, 4            # heavy outlier: 4 in 256 prospects (1.6 %)
 .set OUTADD, 384
 .set BLUEK, 10           # blue-chip prospects: 10 in 256 (3.9 %)
@@ -348,7 +349,7 @@ pick:                               # b81 rookie-faces, region D's draw: ecx = t
     js 88f                          # a rare-face prospect draws from the whole row
     cmp bl, LASTTRIES + 1
     jnc 90f                         # an ordinary prospect from his ordinary faces, and in the last tries also from the
-    add eax, ecx                    # first half of the rare tail (its homely end)
+    add eax, ecx                    # first half of the rare tail (homely first)
     shr eax, 1
 88: xchg eax, ecx
 90: call rndmod

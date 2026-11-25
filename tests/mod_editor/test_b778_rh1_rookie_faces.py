@@ -634,6 +634,11 @@ class RetailXbe(unittest.TestCase):
         b779 = put(rc, rf.TABLE_VA + rf.TABLE_DATA, rf.CODE_D_B779 + b"\xcc" * (tail - len(rf.CODE_D_B779)))
         self.assertEqual(rf.xbe_status(b779), "previous")
         self.assertEqual(rf.xbe_apply(b779, table)[0], out, "b81 rookie-faces: beta-79 is upgraded in place too")
+        self.assertEqual((rf.xbe_revision(rc), rf.xbe_revision(b779), rf.xbe_revision(gen1)), ("b779", "b779", "gen1"))
+        with self.assertRaises(rf.RookieFacesError):      # padding where HAIRPTR sits: no rookie hair helper there
+            rf.apply_hair(b779)
+        self.assertEqual(rf.upgrade_xbe(b779), (b779, None), "the in-place routes take only the v0.9 revision")
+        self.assertEqual(rf.upgrade_xbe(out), (out, None))
         self.assertEqual(rf.xbe_status(put(rc, rf.NUMBER_VA, rf.NUMBER_PATCHED)), "foreign")    # one new span alone
         self.assertEqual(rf.xbe_status(put(out, rf.NUMBER_VA, rf.NUMBER_RETAIL)), "foreign")
         self.assertEqual(rf.xbe_status(put(out, rf.COLLEGE_VA, rf.COLLEGE_RETAIL)), "foreign")
@@ -865,6 +870,16 @@ class MyCareerContext(unittest.TestCase):
         self.assertEqual(mcm.status(both), "applied")
         self.assertEqual(mcm.status(self.write(career, [(rf.NUMBER_VA, rf.NUMBER_PATCHED)])), "foreign")  # flag alone
         self.assertEqual(mcm.status(self.write(both, [(rf.NUMBER_VA, b"\x6a\x02")])), "foreign")       # another byte
+        # b81 rookie-faces: the GEN1 revision (released v0.9, beta-81 candidates) reads "previous" now and writes the same
+        # draft-number byte; MyCareer must still read applied with it (the review's M1: it read foreign)
+        pad = lambda code, size: code + b"\xcc" * (size - len(code))  # noqa: E731
+        gen1 = self.write(both, [(rf.REGION_A, pad(rf.CODE_A_GEN1, rf.REGION_A_END - rf.REGION_A)),
+                                 (rf.REGION_B, pad(rf.CODE_B_GEN1, rf.REGION_B_END - rf.REGION_B)),
+                                 (rf.REGION_C, pad(rf.CODE_C_GEN1, rf.REGION_C_END - rf.REGION_C)),
+                                 (rf.TABLE_VA + rf.TABLE_DATA,
+                                  pad(rf.CODE_D_GEN1, rf.TABLE_END - rf.TABLE_VA - rf.TABLE_DATA - 4))])
+        self.assertEqual((rf.xbe_status(gen1), rf.xbe_revision(gen1)), ("previous", "gen1"))
+        self.assertEqual(mcm.status(gen1), "applied")
 
 class RookieHair(unittest.TestCase):
     """b780 GEN1 Q81: every generated rookie had hair style 0 (the template's), so a face with braids, a bun, a mullet,
@@ -1273,13 +1288,13 @@ class RareFaces(unittest.TestCase):
             repeats = sum(r["photo"] in self.used for r in res) + len(res) - len({r["photo"] for r in res})
             self.assertLessEqual(repeats, 1, f"full league {k}: a worn face only when none is left to find")
 
-    def test_a_worn_out_row_overflows_into_the_homely_half(self):
+    def test_a_worn_out_row_overflows_into_the_first_half_of_the_tail(self):
         """A row whose ordinary faces are all worn (a fully generated league's heavy rows): the last LASTTRIES draws take
-        the first half of the rare tail (homely first in the review's order) before a face a player already wears; the
-        ugly half stays for the rare-face prospects."""
+        the first half of the rare tail (homely first in the review's order; in 11 shipped rows it also reaches faces
+        labelled ugly) before a face a player already wears; the second half stays for the rare-face prospects."""
         bank = toy_bank()
         for row in bank["buckets"][:rf.BUCKETS]:
-            row["rare"] = 10                                         # faces 30..34 homely end, 35..39 ugly end
+            row["rare"] = 10                                         # faces 30..34 first half, 35..39 second half
         table = rf.tables(self.firsts, self.lasts, bank)
         lean_black = [6, 9, 12, 15]
         worn = [2200 + 40 * b + k for b in lean_black for k in range(30)]
@@ -1316,6 +1331,66 @@ class RareFaces(unittest.TestCase):
         self.assertEqual(sum(x != y for x, y in zip(rf.CODE_C, rf.CODE_C_GEN1)), 1)
         self.assertEqual(sum(x != y for x, y in zip(rf.CODE_A, rf.CODE_A_GEN1)), 3)       # NICK0 twice, NICKMASK
         self.assertEqual(sum(x != y for x, y in zip(rf.CODE_B, rf.CODE_B_GEN1)), 2)       # CANARY, NICK0
+
+
+class Immediates(unittest.TestCase):
+    """b81 rookie-faces (the review's N2): RAREK, TRIES, LASTTRIES and HANGING_RARE_NUM are code immediates; the module's
+    names must be the bytes region D and pick carry."""
+
+    def test_region_d_and_pick_carry_the_module_constants(self):
+        d, pick = rf.CODE_D.hex(), rf.CODE_C[len(rf.CODE_C_GEN1):].hex()
+        b = lambda value: f"{value:02x}"  # noqa: E731
+        self.assertEqual(d.count("3c" + b(rf.RAREK) + "6a" + b(rf.TRIES) + "5b18ff"), 1)     # cmp al,RAREK; push TRIES;
+        self.assertEqual(d.count("80fb" + b(rf.TRIES) + "750c"), 1)                         # pop ebx; sbb bh,bh / first draw
+        self.assertEqual(d.count("fecb75"), 1)                                              # dec bl; jnz
+        self.assertEqual(pick.count("80fb" + b(rf.LASTTRIES + 1) + "7305"), 1)             # last tries: overflow range
+        self.assertEqual(pick.count("b0" + b(rf.LASTTRIES) + "38d8"), 1)                   # last tries: keep any face
+        self.assertEqual(pick.count("6bc8" + b(rf.HANGING_RARE_NUM) + "c1e905"), 1)        # (11 * hanging) >> 5
+        self.assertEqual(rf.hanging_rare(46), 15)
+        self.assertLess(rf.LASTTRIES, rf.TRIES)
+        self.assertLessEqual(rf.TRIES, 127)                                                  # push imm8
+
+
+class RealUpgrades(unittest.TestCase):
+    """b81 rookie-faces on the real GEN1 executables (the review's M1 / S1): the released v0.9 and the beta-81 candidate
+    read "previous" (revision gen1); MyCareer and the rookie hair helper still accept them; upgrade_xbe gives the bytes a
+    build from the disc's own name pool writes, keeping the hair helper, and every Studio status but rookie faces is
+    unchanged by it."""
+
+    def cases(self):
+        out = []
+        released = os.environ.get("NFL2K5_V09_RELEASED_XBE")
+        stability = os.environ.get("NFL2K5_B81_STABILITY_FIXTURES")
+        if released and Path(released).is_file():
+            out.append(("v0.9", Path(released), None))
+        if stability and (Path(stability) / "default.xbe").is_file():
+            out.append(("bda1e4a4", Path(stability) / "default.xbe", Path(stability) / "rost.body"))
+        if not out:
+            self.skipTest("the released v0.9 or beta-81 candidate executable is absent")
+        return out
+
+    def test_gen1_executables(self):
+        from mod_editor.core import nfl2k5_my_career_mode as mcm
+        bank = rf.load_bank()
+        for name, path, body in self.cases():
+            with self.subTest(executable=name):
+                payload = path.read_bytes()
+                self.assertEqual((rf.xbe_status(payload), rf.xbe_revision(payload)), ("previous", "gen1"))
+                self.assertNotEqual(mcm.status(payload), "foreign")
+                self.assertTrue(rf.apply_hair(payload)[1]["already_applied"])
+                out, receipt = rf.upgrade_xbe(payload, bank)
+                self.assertEqual((rf.xbe_status(out), receipt["from"], receipt["upgraded_from"]),
+                                 ("applied", "previous", "previous"))
+                self.assertEqual(rf.hair_status(out), "applied")
+                self.assertEqual(rf.upgrade_xbe(out, bank), (out, None))
+                self.assertEqual(mcm.status(out), mcm.status(payload))
+                old = rf.xbe_tables(payload)
+                new = rf.xbe_tables(out)
+                self.assertEqual(new[:rf.T_NICK0], old[:rf.T_NICK0])
+                self.assertEqual(new[rf.T_LASTBITS:], old[rf.T_LASTBITS:])
+                if body is not None:
+                    firsts, lasts = rf.pool_names(body.read_bytes())
+                    self.assertEqual(new, rf.tables(firsts, lasts, bank), "the table a build from this disc's pool writes")
 
 
 @unittest.skipUnless(RETAIL_XBE and Path(RETAIL_XBE).is_file(), "set NFL2K5_RETAIL_XBE to the retail default.xbe")

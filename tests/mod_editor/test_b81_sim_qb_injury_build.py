@@ -99,15 +99,19 @@ class ProjectSettings(unittest.TestCase):
                     receipt = mod_build.preflight_plan(plan)
                     # b81 scoring: an in-place copy also gets the CPU kick-aim repair that rides with the kicking fixes.
                     # b81 history-pool: and this release's career history pool (both discs carry the v0.9 revision).
+                    # b81 rookie-faces: and rookie faces' current revision, before the pool (both carry GEN1).
                     from mod_editor.core import nfl2k5_cpu_kick_aim as aim
                     from mod_editor.core import nfl2k5_history_pool as history
+                    from mod_editor.core import nfl2k5_rookie_faces as faces
                     self.assertEqual(history.status(before), "previous")
-                    result = history.apply(aim.apply(current)[0])[0]
+                    self.assertEqual(faces.xbe_revision(before), "gen1")
+                    result = history.apply(faces.upgrade_xbe(aim.apply(current)[0])[0])[0]
+                    self.assertEqual(faces.xbe_status(result), "applied")
                     self.assertEqual(receipt["sim_qb_source_update"], {
                         "source_sha256": digest, "result_sha256": hashlib.sha256(result).hexdigest(),
                         "source_simulator": source_state, "simulator_upgraded": source_state == "legacy",
                         "settings": medical.read_settings(current), "pass_protection_upgraded": True,
-                        "history_pool_upgraded": True,
+                        "rookie_faces_upgraded": True, "history_pool_upgraded": True,
                         "settings": medical.read_settings(current),
                         "stability_reference": {"source": "disc roster", "roster_sha256": roster,
                                                 "starters": [list(row) for row in code.STABILITY_CALIBRATION],

@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "7a2880b6dbf6dbc832572bc8a97a50d8e3e43eac959ec5504f3649ab841c4639",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "382b9e9f4232a0569b4594d6e80010380c51d9218b7cf10c8544575f1632d87b",
+        "mod_editor/core/mod_build.py": "ee0d3090b1e6e73d4d6b3602b9b038cfd0dc4a691cdd3d33e4500e9bb2a2ef14",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -846,8 +846,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_my_career_advisory.py": "893e01173254d112593d5c8ad3cd3aaad5dd9edb3f6482357f2ad1bc534c21ac",
         "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
         "mod_editor/core/nfl2k5_my_career_events.py": "228a0b59d43b9b9c52e10ac93cc72072e772e694cc864c8e2e037c5d7c772460",
-        "mod_editor/core/nfl2k5_my_career_mode.py": "6bc271bc88b0d59bcd459bfcc4b149439ef02c0ab75448ec32620f1d4bc10411",
-        "mod_editor/core/nfl2k5_rookie_faces.py": "e5755eeef8de1ac08f370283f23e94035e59c6d6901a20771fd2cff637b707c0",  # b780-int (gen1mc): MyCareer's draft-signing context reads its draft-number byte
+        "mod_editor/core/nfl2k5_my_career_mode.py": "6fd593ae0f33ba92079472b630a34ddadf73d5d71007d8b47f43b1895bc3b425",
+        "mod_editor/core/nfl2k5_rookie_faces.py": "f7d2753f61257283d2ed396cf5c8bb794bf47506a338fd7511ccf9d0aeb81187",  # b780-int (gen1mc): MyCareer's draft-signing context reads its draft-number byte
         "mod_editor/core/nfl2k5_my_career_mode_code.py": "dbf9330b042795f057e5dfd92df680f6c004a97eae9f5218a3cd66cd13b5d489",
         "mod_editor/core/nfl2k5_my_career_home.py": "852747c8b6ae3b94bc61a3f0d8b7a3060bde155901667e71021a8346c291a0ab",
         "mod_editor/core/nfl2k5_my_career_mode_code_b779.py": "9774a72e254da1609e82a53d2d5b74701e1d2acec484b6588256fc9b256c0355",  # b780 n6: frozen beta-79 revision

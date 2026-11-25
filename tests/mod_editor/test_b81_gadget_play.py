@@ -408,8 +408,12 @@ class BuildWiringTests(unittest.TestCase):
         self.assertFalse(target.exists())
         expected, _ = gadget.apply(source, books)
         # b81 history-pool: the copy also carries this release's career history pool (the disc has the v0.9 revision)
-        upgraded, history = build._history_pool_upgrade(expected)
+        # b81 rookie-faces: and rookie faces' current revision first (the disc has GEN1)
+        upgraded, faces = build._rookie_faces_upgrade(expected)
+        upgraded, history = build._history_pool_upgrade(upgraded)
         self.assertEqual(receipt["gadget_source_update"]["result_sha256"], _sha(upgraded))
+        self.assertEqual(receipt["gadget_source_update"]["rookie_faces_upgraded"], faces is not None)
+        self.assertIsNotNone(faces)
         self.assertEqual(receipt["gadget_source_update"]["history_pool_upgraded"], history is not None)
         self.assertEqual(receipt["gadget_source_update"]["source_state"], "retail")
 
