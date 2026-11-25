@@ -931,7 +931,7 @@ class ProviderIntegrityTests(unittest.TestCase):
                 "data/nfl2k5_classic_teams/teams.json": "bbe46a3c6d87a9c7a8d2e1c95a63cece0495a7c069a132fd5253cd9ecca668ca",
                 "data/nfl2k5_classic_teams/manifest.json": "93e82081f2036b2196ae78ba9a71df138c205bae8e9269b596a60e2ea588de35",
                 "data/nfl2k5_classic_teams/appearance.json": "8b2607c2ceb4e70682991b0980736b3be9726fbdb1fbe440d812a48ef30b711c",
-                "data/nfl2k5_classic_teams/classic.json": "ece17df6bc8d6f555f84478b0989b87942378746cfb4e130479504fe2b290168",
+                "data/nfl2k5_classic_teams/classic.json": "8cb3f94e6b87329f2bfc1b40d1a1eeb49399a77741b63c6a3b251a0aff1ed6cd",
                 "data/nfl2k5_classic_teams/honours.json": "9430c474ede71ea59077476a01c051fc2675a032e864e84cf77312d25d52d184",
                 "data/nfl2k5_espn25_more_moments.json": "53b5667960d0720ab75d127804f152d9513d681648525b958228db16bf12bafd",
                 "data/nfl2k5_espn25_fields/source/nfl_2008.png": "1d0e8fe7f52a9ba3549e415e14c82bc70221a3ff9bfe6d934b4304be100eaec6",
