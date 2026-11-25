@@ -124,10 +124,13 @@ CLASS_III = {
                         "(band widths from the 2026 photographs), the swoosh from the exact pass's outline "
                         "(surf.swoosh_outline), 5 coverage levels; the old stripes and swoosh cleared by rule")
        for fam in ("DAL-sleeve-stripes", "CLE-sleeve-stripes-home", "CLE-sleeve-stripes-road")},
-    **{f"b81p2-NE-shoulder-stripe-{k}": ("shoulder stripe set drawn as one shape along the model's armhole seam by "
-                                         "work/BC/tools/paint_ne.py (2.8 cm stripes, ends at posed heights read off the "
-                                         "photographs), 4 coverage levels; the old pieces cleared by rule")
-       for k in ("breaks", "over-back")},
+    # b81-patriots-stripes (11/25, the owner: "one streamlined stripe that is straight, but has the same start point, but
+    # the end point shouldn't be shifted"): replaces the pass2 set (b81p2-NE-shoulder-stripe-breaks / -over-back)
+    "b81ps-NE-shoulder-stripe-straight": ("shoulder stripe set drawn round one smooth centre line on the posed model by "
+                                          "work/tools/paint_curve.py and centreline.py (the approved front line from the "
+                                          "same start, a straight back bar, a cubic join over the shoulder; 2.8 cm "
+                                          "stripes, ends at the approved posed heights), 4 coverage levels; the old set "
+                                          "cleared by rule"),
     **{f"b81p2-LAR-horn-{k}": ("shoulder horn drawn as one shape on the posed body by work/BC/tools/paint_lar.py (widths, "
                                "tip and curl from the 2026 photographs), 5 coverage levels; the old horn and the blue "
                                "back-yoke bars cleared by rule") for k in ("home", "road")},
