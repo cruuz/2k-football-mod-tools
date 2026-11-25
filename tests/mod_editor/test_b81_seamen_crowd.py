@@ -5,9 +5,10 @@ The owner (2026-11-25, playing the 11/20 private disc): "fans also wearing dolph
 Root cause (PROVED OFFLINE by static reading of the USA executable): every crowd loader formats its file name from the
 team's art code (+0x10C); the Seamen carry the Dolphins' "14", so the stands (14{h,a}{d,r}{n,s}.iff) and the cutaway
 sets (cgfair14, cgfoul14, ns14, tg14) were the Dolphins'. No crowd set on the disc is neutral. nfl2k5_classic_crowd adds
-twelve "SM" files drawn from the user's own Dolphins files in the Seamen's colours with no mark, and four helpers that
-load them for identity 230 at the four sites. Unicorn runs the helpers; the files are composed from the retail disc.
-Not a played game.
+fourteen "SM" files drawn from the user's own Dolphins files in the Seamen's colours with no mark (review S1: + the
+cheerleaders ch and the tunnel's inflatable helmet ih; review M1: the 's' stand packages, loaded at ESPN Stadium, the
+Seamen's home, carry the classic field's own end zones), and six helpers that load them for identity 230 at the six
+sites. Unicorn runs the helpers; the files are composed from the retail disc. Not a played game.
 """
 from __future__ import annotations
 
@@ -28,6 +29,23 @@ from tests.nfl2k5_supersim_draft_fixture import XBE  # noqa: E402
 HAVE_UC = importlib.util.find_spec("unicorn") is not None
 HAVE_CV2 = importlib.util.find_spec("cv2") is not None
 RETAIL = XBE.parent
+
+
+def _sat(rgba):
+    rgb = rgba[..., :3].astype(np.float64) / 255.0
+    mx, mn = rgb.max(axis=2), rgb.min(axis=2)
+    return np.where(mx > 0, (mx - mn) / np.maximum(mx, 1e-9), 0)
+
+
+def _warm(rgba):
+    """Visible orange-red texels (hue 0..36 or 350..360, saturation >= 0.6, value >= 0.2)."""
+    rgb = rgba[..., :3].astype(np.float64) / 255.0
+    mx, mn = rgb.max(axis=2), rgb.min(axis=2)
+    chroma = mx - mn
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    hue = np.where((chroma > 1e-9) & (mx == r), (60 * (g - b) / np.maximum(chroma, 1e-9)) % 360, 180.0)
+    sat = np.where(mx > 0, chroma / np.maximum(mx, 1e-9), 0)
+    return int((((hue <= 36) | (hue >= 350)) & (sat >= 0.6) & (mx >= 0.2) & (rgba[..., 3] > 0)).sum())
 
 
 def _hues(rgba):
@@ -51,15 +69,17 @@ def _hues(rgba):
 class DesignTests(unittest.TestCase):
     def test_the_redirect_names_the_seamen_and_their_files(self):
         self.assertEqual(crowd.IDENTITY, ct.own_name_identity())
-        self.assertEqual(len(crowd.FILES), 12)
+        self.assertEqual(len(crowd.FILES), 14)
         self.assertEqual({src for _n, src in crowd.FILES},
                          {f"14{s}{w}{e}.iff" for s in "ha" for w in "dr" for e in "ns"}
-                         | {"cgfair14.iff", "cgfoul14.iff", "ns14.iff", "tg14.iff"})
+                         | {"cgfair14.iff", "cgfoul14.iff", "ns14.iff", "tg14.iff", "ch14.iff", "ih14.iff"})
+        self.assertEqual([n for n, _v, _r in crowd.SITES], ["cutaway_set", "cutaway_cg", "stands_away", "stands_home",
+                                                             "helmet_home", "helmet_away"])
         self.assertTrue(all(n.replace("SM", "14") == src for n, src in crowd.FILES))
         code, labels = crowd.code_for(0x1600000)
         self.assertEqual(len(code), crowd.CODE_SIZE)
         self.assertEqual(code[:6], "SM".encode("utf-16le") + b"\0\0")
-        self.assertLessEqual(len(code.rstrip(b"\xcc")), 128)
+        self.assertLessEqual(len(code.rstrip(b"\xcc")), 256)
         for name, va, retail in crowd.SITES:
             hook = crowd.site_bytes(name, labels)
             self.assertEqual((len(hook), hook[0]), (len(retail), 0xE8))
@@ -175,14 +195,15 @@ class HelperTests(unittest.TestCase):
         uc.emu_start(va, 0x00A00000, count=64)
         return {k: uc.reg_read(r) for k, r in names.items()}, uc.reg_read(UC_X86_REG_ESP)
 
-    def test_cutaway_sets_move_only_ns_tg_and_cg_for_identity_230(self):
+    def test_cutaway_sets_move_only_ns_tg_ch_ih_and_cg_for_identity_230(self):
         uc, labels = self.machine()
         uc.mem_write(0x00908000, struct.pack("<I", self.TEAM))          # [ebx] = the team record
         uc.mem_write(self.TEAM + 0x10C, struct.pack("<I", 0x00920000))  # its art code text pointer
         for identity, moved in ((230, True), (14, False), (229, False), (231, False)):
             uc.mem_write(self.TEAM + 0x118, struct.pack("<H", identity))
-            for fmt, want in ((crowd.FORMAT_NS, moved), (crowd.FORMAT_TG, moved), (0x00E7AAAA, False),
-                              (crowd.FORMAT_CG, False)):
+            for fmt, want in ((crowd.FORMAT_NS, moved), (crowd.FORMAT_TG, moved), (crowd.FORMAT_CH, moved),
+                              (crowd.FORMAT_IH, moved), (0x00E7AAAA, False), (crowd.FORMAT_CG, False),
+                              (crowd.FORMAT_IH_TUNNEL, False)):
                 out, sp = self.call(uc, labels["cutaway_set"], ebx=0x00908000, ecx=fmt)
                 self.assertEqual(out["eax"], self.VA if want else 0x00920000, (identity, hex(fmt)))
                 self.assertEqual((out["edx"], out["ecx"], out["ebx"], sp), (self.TEAM, fmt, 0x00908000, 0x00A0F004))
@@ -190,6 +211,19 @@ class HelperTests(unittest.TestCase):
                 out, sp = self.call(uc, labels["cutaway_cg"], ebx=0x00908000, ecx=fmt)
                 self.assertEqual(out["edx"], self.VA if want else 0x00920000, (identity, hex(fmt)))
                 self.assertEqual((out["eax"], out["ecx"], sp), (self.TEAM, fmt, 0x00A0F004))
+
+    def test_the_tunnel_helmets_follow_each_match_context(self):
+        # 0x1257DD (after call 0x61C50, the home context) loads EDX, 0x1257FF (after 0x61C60, away) loads ECX
+        uc, labels = self.machine()
+        ctx = 0x00908000
+        uc.mem_write(ctx + 0x10C, struct.pack("<I", 0x00950000))
+        for identity in (230, 14, 229, 0):
+            uc.mem_write(ctx + 0x118, struct.pack("<H", identity))
+            want = self.VA if identity == 230 else 0x00950000
+            out, sp = self.call(uc, labels["helmet_home"], eax=ctx, ecx=0x1234, ebx=0x4321)
+            self.assertEqual((out["edx"], out["eax"], out["ecx"], out["ebx"], sp), (want, ctx, 0x1234, 0x4321, 0x00A0F004))
+            out, sp = self.call(uc, labels["helmet_away"], eax=ctx, edx=0x5678, ebx=0x4321)
+            self.assertEqual((out["ecx"], out["eax"], out["edx"], out["ebx"], sp), (want, ctx, 0x5678, 0x4321, 0x00A0F004))
 
     def test_stands_follow_each_match_context(self):
         uc, labels = self.machine()
@@ -226,7 +260,7 @@ class RetailTests(unittest.TestCase):
         self.assertEqual(crowd.apply_xbe(after)[1]["status"], "already_applied")
         self.assertEqual(ct.xbe_status(after), "applied")
         self.assertEqual(space.status(after), "applied")
-        self.assertEqual(len(receipt["edits"]), 4)
+        self.assertEqual(len(receipt["edits"]), 6)
         before_rows = [a for a in space.layout(payload)["allocations"] if a["owner"] != space.DIRECTORY_OWNER]
         after_rows = [a for a in space.layout(after)["allocations"] if a["owner"] != space.DIRECTORY_OWNER]
         for row in before_rows:
@@ -237,7 +271,8 @@ class RetailTests(unittest.TestCase):
             call = image.read(va, 5)
             self.assertEqual(call[0], 0xE8)
             target = va + 5 + struct.unpack("<i", call[1:])[0]
-            self.assertTrue(space.CLASSIC_CROWD_VA <= target < space.CLASSIC_CROWD_VA + 128, name)
+            self.assertTrue(space.CLASSIC_CROWD_VA <= target < space.CLASSIC_CROWD_VA + 256, name)
+            self.assertEqual(target, crowd.code_for(space.CLASSIC_CROWD_VA)[1][name], name)
         # an owner appended after the crowd (as the rookie hair and offset toss steps append theirs) lands exactly where
         # it lands without the crowd page, and every other row is the same in both; the page itself stays put
         probe = ("nfl2k5_xs1_probe_code", "code", 9000, 16)
@@ -250,7 +285,7 @@ class RetailTests(unittest.TestCase):
         self.assertEqual([a["va"] for a in later_rows if a["owner"] == crowd.OWNER], [space.CLASSIC_CROWD_VA])
         self.assertEqual(crowd.xbe_status(later), "applied")
 
-    def test_the_twelve_files_are_the_dolphins_files_in_seamen_colours_with_no_mark(self):
+    def test_the_fourteen_files_are_the_dolphins_files_in_seamen_colours_with_no_mark(self):
         from nfl_txtr import decode_chunk, parse_chunks, parse_texture, texture_to_rgba
         from mod_editor.core import nfl2k5_historic_styles as hs
         from mod_editor.core import nfl2k5_kit_fixes_2026 as fixes
@@ -275,17 +310,36 @@ class RetailTests(unittest.TestCase):
                 self.assertEqual(len(data), len(retail[name]))                       # every span refit in place
                 made, was = textures(data), textures(retail[name])
                 self.assertEqual(set(made), set(was))
-                touched = set(crowd.PICTURES) | set(crowd.CLEAR) | set(crowd.PAINTED_HEADS)
+                touched = (set(crowd.PICTURES) | set(crowd.CLEAR) | set(crowd.PAINTED_HEADS) | set(crowd.DECALS)
+                           | set(crowd.RECOLOURED) | set(crowd.PAINTED_OUT))
                 for tex, rgba in made.items():
-                    if tex.startswith("endzone_") or tex in ("48", "49", "50", "51", "52", "53", "54", "55", "56", "57"):
+                    if tex.startswith("endzone_"):
+                        # review M1: the 's' packages (ESPN Stadium, the Seamen's home) carry the classic field's own
+                        # end zones: home endzone_south_*, away endzone_north_*; the 'n' packages carry none
+                        self.assertEqual(name[-5], "s", (name, tex))
+                        self.assertEqual(tex.split("_")[1], "south" if name.startswith("SMh") else "north", name)
+                        want = crowd._end_zone(tex).astype(int)
+                        self.assertLess(float(np.abs(rgba.astype(int) - want).mean()), 4.0, (name, tex))
+                        self.assertFalse(np.array_equal(rgba, was[tex]), (name, tex))
+                        continue
+                    if tex in ("48", "49", "50", "51", "52", "53", "54", "55", "56", "57"):
                         continue
                     if not name.startswith(("SMh", "SMa")) and tex not in touched:
                         self.assertTrue(np.array_equal(rgba, was[tex]), (name, tex))       # untouched: retail
                         continue
                     aqua, orange = _hues(rgba)
                     self.assertLessEqual(orange, max(8, _hues(was[tex])[1] // 50), (name, tex))
-                    if tex in crowd.CLEAR:
+                    if tex in crowd.CLEAR or tex in crowd.DECALS:
                         self.assertFalse(rgba[..., 3].any(), tex)
+                    if tex in crowd.WARM:                           # review S1: no orange-red left on the uniforms
+                        self.assertEqual(_warm(rgba), 0, (name, tex))
+                        self.assertGreater(_warm(was[tex]), 1000, (name, tex))
+                    if tex in crowd.PAINTED_OUT:                    # review S1: nothing saturated left in the marks
+                        for box in crowd.PAINTED_OUT[tex]:
+                            inside = crowd.mark_mask(was[tex], box)
+                            self.assertGreater(int(inside.sum()), 100, box)
+                            sat = _sat(rgba)
+                            self.assertEqual(int((sat[inside] > 0.35).sum()), 0, box)
         # the faces keep their lips and skin: only the paint moved
         heads = textures(dict(files)["nsSM.iff"])["head01"].astype(int), textures(retail["nsSM.iff"])["head01"].astype(int)
         top = crowd.HEAD_FACE_TOP

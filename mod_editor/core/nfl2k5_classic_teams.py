@@ -665,9 +665,11 @@ def resolve_kit(choice, code, spares, has_kit):
 
 
 # b81-seamen: the team play-by-play id (team +0x154, Finn facts TEAM_AND_HISTORY: the match handler 0x138200 hands it
-# to the speech archive check 0x67390 and uses 99 when the archive has no line for it). A template's id names its
-# franchise in the booth; a team of its own (the Seamen ride the Dolphins' 1984 template, id 14) takes the game's own
-# fallback, 99, so the booth never calls them Miami or the Dolphins.
+# to the speech archive check 0x67390 and returns 99 when the "lines" archive has no cue for it). A template's id names
+# its franchise in the booth; a team of its own (the Seamen ride the Dolphins' 1984 template, id 14) takes 99, a
+# play-by-play id with no team line: no team-keyed array of the "lines" or "teams" SPCI holds 99 (review, 11/25), so the
+# booth uses its generic calls (the team-name resolver 0x1398E0 falls back to 997/998), as for a created team. In the
+# retail roster 99 is also the "Los Angeles DreamTeam" row's id; nothing recorded is keyed to it.
 GENERIC_ANNOUNCER = 0x63
 
 

@@ -81,6 +81,12 @@ class AppendixTests(unittest.TestCase):
         names = [c["name"] for c in receipt["components"]]
         self.assertEqual(names[33], "sbSEh0")
         self.assertEqual(receipt["texture_count"], 35)
+        # the memory model charges exactly this appendix (review M2): 332,544 B without the panel (the v0.9 anchor),
+        # + sbSEh0 5,280 B rounded to the heap's 128 B -> 337,920 B
+        from mod_editor.core import nfl2k5_memory_budget as mb
+        self.assertEqual(receipt["native_heap_bytes"], mb.RESOURCE_BYTES["scorebug_runtime"])
+        self.assertEqual(receipt["native_heap_bytes"] - mb.ANCHOR_RESOURCE_BYTES["scorebug_runtime"],
+                         (5_280 + 127) // 128 * 128)                          # the panel's span (checked below)
         count, appended, _growth = sprite.probe_sizes()
         self.assertEqual((count, appended), (35, len(data)))
         at = sum(c["size"] for c in receipt["components"][:33])

@@ -1496,6 +1496,7 @@ class BuildPanel(QWidget):
         self.classic_crowd_check = self._option(
             r, "classic_crowd", classic_crowd.UI_LABEL, classic_crowd.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        self.classic_teams_check.toggled.connect(lambda _on: self._sync_classic_crowd())   # review N4
         self._espn25_plan_cache: tuple[tuple[str, int, int] | None, str] = (None, "")
         from mod_editor.core import nfl2k5_weather as weather
         from mod_editor.core import nfl2k5_weather_haze as haze
@@ -3062,6 +3063,7 @@ class BuildPanel(QWidget):
         gate(self.historic_rosters_2026_check, "historic_rosters_2026", needs_image=True)
         gate(self.classic_teams_check, "classic_teams", needs_image=True)  # b775-ct1
         gate(self.classic_crowd_check, "classic_crowd", needs_image=True)  # b81-seamen
+        self._sync_classic_crowd()
         self._sync_keep_olb(self.position_pools_check.isChecked())
         gate(self.depth_roles_check, "depth_roles", needs_image=True)
         gate(self.depth_chart_rows_check, "depth_chart_rows", needs_image=True)
@@ -3406,6 +3408,18 @@ class BuildPanel(QWidget):
             if not star_on and not installed:
                 text += " Player tags are selected, but the star display is off."
         self.star_players_label.setText(text)
+
+    def _sync_classic_crowd(self) -> None:
+        """b81-seamen review N4: the Seamen's crowd is built only with the classic teams; say so on its row."""
+        crowd = getattr(self, "classic_crowd_check", None)
+        if crowd is None or not crowd.isEnabled():
+            return
+        if self.classic_teams_check.isChecked():
+            crowd.setToolTip("")
+            self._set_badge("classic_crowd", "EXPERIMENTAL / UNWITNESSED")
+        else:
+            crowd.setToolTip("Built only with Classic teams in Quick Game: without them this option is skipped.")
+            self._set_badge("classic_crowd", "Needs Classic teams (skipped without them)")
 
     def _sync_keep_olb(self, pools_on: bool) -> None:
         # Beta 65: the EDGE-only pools build always certifies the rosters, so the

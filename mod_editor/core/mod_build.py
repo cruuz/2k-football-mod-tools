@@ -287,7 +287,7 @@ class BuildPlan:
     cpu_scrambles: str = "retail"
     historic_teams_quick_game: bool = False  # b76-h1: Quick Game Team Select steps on into the 75 historic teams; experimental
     classic_teams: bool = False  # b775-ct1: with historic teams in Quick Game, the list runs on into every Anniversary team-season and 25 classic teams; experimental
-    # b81-seamen (the owner 11/25: "fans also wearing dolphins gear"): the classic Seamen's own crowd. Twelve files drawn
+    # b81-seamen (the owner 11/25: "fans also wearing dolphins gear"): the classic Seamen's own crowd. Fourteen files drawn
     # from the user's own Dolphins crowd files (teal and black, no Dolphins marks) and a redirect in one fixed allocator
     # page (nfl2k5_classic_crowd) that loads them for the Seamen. Needs the classic teams. EXPERIMENTAL / UNWITNESSED.
     classic_crowd: bool = False
@@ -9132,7 +9132,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError("the classic teams failed their read-back on the copy")
         if plan.classic_crowd:
             # b81-seamen (the owner 11/25: "fans also wearing dolphins gear"): the Seamen's own crowd, right after the
-            # classic teams: twelve files from the user's own Dolphins crowd files and the redirect in its fixed page
+            # classic teams: fourteen files from the user's own Dolphins crowd files and the redirect in its fixed page
             with _optional(receipt, target, progress, "classic_crowd"):
                 crowd = _core_module("nfl2k5_classic_crowd")
                 if crowd is None:
@@ -9143,6 +9143,12 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 receipt["result"]["classic_crowd"] = crowd.image_status(target, retail)
                 if receipt["result"]["classic_crowd"] != "applied":
                     raise ValueError("the Seamen's crowd failed its read-back on the copy")
+    if plan.classic_crowd and not (plan.classic_teams and plan.historic_teams_quick_game and is_image):
+        # b81-seamen review N4: the option rides the classic teams; say why it did nothing
+        note = ("The Seamen's own crowd was skipped: it is built only with Classic teams in Quick Game "
+                "(and historic teams in Quick Game) on a disc image.")
+        progress(note, 0, 0)
+        receipt.setdefault("user_notes", []).append(note)
     if is_image and (plan.espn25_rosters or plan.espn25_more_moments or (plan.classic_teams and plan.historic_teams_quick_game)):
         _step("moment_scans")
         # b776-fs1 (Noah 10/18): after every roster writer, the retail face scans the 2026 league overwrote are copied

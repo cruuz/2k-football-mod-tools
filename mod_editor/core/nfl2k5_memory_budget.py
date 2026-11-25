@@ -224,7 +224,9 @@ SCALEOUT_FIELDS = ("camera", "franchise_autosave", "weekly_prep", "weekly_prep_c
 
 # --- disc resources the options add to the main heap (inventory of the RC disc against retail, decoded charges) ------
 RESOURCE_BYTES = {
-    "scorebug_runtime": 332_544,   # gamedata.iff: 34 appended TXTR and the grown HUD scene (BK: 331,264 + 1,280)
+    # b81-seamen: + the classic Seamen's panel sbSEh0 (5,280 B -> 5,376 B of heap), appended with every sprite scorebug
+    # (nfl2k5_scorebug_sprite.appendix loops over CLASSIC_PANELS): 35 TXTR, sprite.appendix(...)["native_heap_bytes"]
+    "scorebug_runtime": 337_920,   # gamedata.iff: 35 appended TXTR and the grown HUD scene (BK: 331,264 + 1,280 + 5,376)
     "scorebug": 67_584,            # global.iff: five appended TXTR (the HUD fonts; attribution INFERRED)
     # b81 helmet-sides: the growth also carries helmet number set E (hi_head +2,176, lo_body +2,560; receipt of
     # nfl2k5_hair_styles.grow_scene on the USA scenes)
@@ -232,7 +234,8 @@ RESOURCE_BYTES = {
     "kick_meter_2026": 6_784,      # gamedata.iff: the kick meter FONT
 }
 #: what the measured RC disc (ANCHOR) carried where it differs from today's charge: its hair growth had no set E
-ANCHOR_RESOURCE_BYTES = {"hair_styles": 84_736}
+#: (and its scorebug appendix had 34 TXTR: no Seamen panel)
+ANCHOR_RESOURCE_BYTES = {"hair_styles": 84_736, "scorebug_runtime": 332_544}
 
 # --- the roster block ---------------------------------------------------------------------------------------------------
 ROSTER_RETAIL = 0x91000 + 0x80       # 594,048 B in the main heap (BK, K1 lab)

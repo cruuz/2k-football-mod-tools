@@ -2,32 +2,45 @@
 
 The owner (2026-11-25, playing the 11/20 private disc): "fans also wearing dolphins gear". Every crowd loader formats
 its file name from the team's art code (+0x10C), and the classic Seamen ride the Dolphins' code 14, so the stands
-(``14{h,a}{d,r}{n,s}.iff``: the crowd strips and the sideline staff's ``coachshirt``) and the fan cutaways
-(``cgfair14``, ``cgfoul14``, ``ns14``, ``tg14``) were the Dolphins'. No crowd set on the disc is neutral: every code's
-cutaway sets carry a logo (the clubs', the NFL shield, the conferences', the created teams', ESPN's).
+(``14{h,a}{d,r}{n,s}.iff``: the crowd strips and the sideline staff's ``coachshirt``), the fan cutaways (``cgfair14``,
+``cgfoul14``, ``ns14``, ``tg14``), the cheerleaders (``ch14``) and the tunnel's inflatable helmet (``ih14``) were the
+Dolphins'. No crowd set on the disc is neutral: every code's cutaway sets carry a logo (the clubs', the NFL shield,
+the conferences', the created teams', ESPN's).
 
-This owner gives the Seamen their own crowd, in their colours (teal, black, white) with no mark at all:
+This owner gives the Seamen their own, in their colours (teal, black, white) with no Dolphins mark:
 
-* twelve new files under the art code ``SM`` (``SM{h,a}{d,r}{n,s}.iff``, ``cgfairSM``, ``cgfoulSM``, ``nsSM``, ``tgSM``),
-  each a copy of the Dolphins' retail file read from the user's own disc, with its textures recoloured: the Dolphins'
-  aqua becomes the Seamen teal and their orange (and navy) becomes black, each texel keeping its shade
-  (``recolour``). The clothing, sign, plate, foam finger, box and face-paint pictures the 2026 fans art draws for Miami
-  are drawn for the Seamen without their marks (``data/nfl2k5_classic_teams/crowd``, tools/b77/ss2_crowd.py: the
-  same recolour, every logo and word inpainted to plain cloth); the eight painted chest letters (D-O-L-P-H-I-N-S) are
-  left clear; heads, digits, cement and chairs keep the retail bytes;
-* a redirect in the executable: four helpers in a late read-only owner, called at the four places that read the art
-  code for a crowd file (PROVED OFFLINE by static reading of the USA executable):
+* fourteen new files under the art code ``SM`` (``SM{h,a}{d,r}{n,s}.iff``, ``cgfairSM``, ``cgfoulSM``, ``nsSM``,
+  ``tgSM``, ``chSM``, ``ihSM``), each a copy of the Dolphins' retail file read from the user's own disc, with its
+  textures recoloured: the Dolphins' aqua becomes the Seamen teal and their orange (and navy) becomes black, each texel
+  keeping its shade (``recolour``; the cheerleaders' uniforms, with no skin, take every orange-red). The clothing,
+  sign, plate, foam finger, box and face-paint pictures the 2026 fans art draws for Miami are drawn for the Seamen
+  without their marks (``data/nfl2k5_classic_teams/crowd``, tools/b77/ss2_crowd.py: the same recolour, every logo and
+  word inpainted to plain cloth); the eight painted chest letters (D-O-L-P-H-I-N-S) and the cheerleaders' logo decal
+  are left clear; the inflatable helmet's two dolphin logos and its "Dolphins" plate word are refilled from the helmet
+  around them at build time (``paint_out``, on the user's own texels); heads, digits, cement and chairs keep the
+  retail bytes;
+* the 's' stand packages (picked by venue code 48 alone, 0x62D68: ESPN Stadium, the Seamen's home) carry the classic
+  field's own authored end zones (home ``endzone_south_*``, away ``endzone_north_*``, from
+  ``data/nfl2k5_classic_teams/field``), because the field swap at 0x9C5DE binds the field's end zones to the first
+  loaded textures of those names (review M1);
+* a redirect in the executable: six helpers in one fixed allocator page (nfl2k5_xbe_space.CLASSIC_CROWD_VA,
+  0x1532000), called at the six places that read the art code for these files (PROVED OFFLINE by static reading of
+  the USA executable):
 
   - 0x12F2EC (``mov edx,[ebx]; mov eax,[edx+0x10C]``): a cutaway's one-argument texture set; ECX holds its format,
-    and only the ``ns%s.iff`` (0xE76BE4) and ``tg%s.iff`` (0xE77FB0) formats move (the trainer set ``tr%s.iff`` stays);
+    and only ``ns%s.iff`` (0xE76BE4), ``tg%s.iff`` (0xE77FB0), ``ch%s.iff`` (0xE770F4) and ``ih%s.iff`` (0xE7704C)
+    move (the trainer set ``tr%s.iff`` and the Super Bowl newspaper ``np%s.iff`` stay);
   - 0x12F304 (``mov eax,[ebx]; mov edx,[eax+0x10C]``): the two-argument ``cg%s%s.iff`` set (0xE76A68);
   - 0x62D86 (``mov eax,[0xB30B64]``) and 0x62DAD (``mov edx,[0xB30970]``): the away (``%sa%c%c.iff``) and home
-    (``%sh%c%c.iff``) stand packages, from the match contexts 0xB30A58 and 0xB30864.
+    (``%sh%c%c.iff``) stand packages, from the match contexts 0xB30A58 and 0xB30864;
+  - 0x1257DD (``mov edx,[eax+0x10C]``, after call 0x61C50) and 0x1257FF (``mov ecx,[eax+0x10C]``, after 0x61C60): the
+    tunnel's home and away inflatable helmets (``ih%s.iff`` 0xE73AE0).
 
   Each helper replays the read and, when the team's identity (+0x118, the byte the superfan selector 0x81760 also
   reads) is the Seamen's (230), returns the ``SM`` text instead. Every other team reads its own code as before.
 
-Installed by the classic teams stage together with their files, and only with them.
+Its own build setting (``classic_crowd``, on in the experimental preset) and optional step, right after the classic
+teams, which it needs.
 """
 from __future__ import annotations
 
@@ -37,6 +50,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 ART_DIR = ROOT / "data/nfl2k5_classic_teams/crowd"
+# b81-seamen review M1: the 's' stand packages are picked by venue code 48 alone (0x62D68: venue file name "48" -> 's'),
+# and ESPN Stadium is the Seamen's home. Their end zone textures (home endzone_south_*, away endzone_north_*, P8 256x128,
+# five mips) replace the field's end zones by name (the swap at 0x9C5DE binds endzone_S_L -> endzone_south_left ... to the
+# first loaded TXTR), so they carry the classic field's own authored strips: the Seamen's end zone in every s48 game.
+FIELD_DIR = ROOT / "data/nfl2k5_classic_teams/field"
+END_ZONE_PARTS = ("left", "middle", "right")              # 256-texel thirds of the 768x128 strip, as classic_field
 OWNER = "nfl2k5_classic_crowd"
 CODE = "SM"                                   # the Seamen's own crowd code (file names only)
 SOURCE_CODE = "14"                            # the Dolphins' files the Seamen's crowd is drawn from
@@ -46,13 +65,20 @@ BLACK = (34, 34, 36)                          # the black cloth at full light
 AQUA_REF_VALUE = 151 / 255                    # the Dolphins' aqua (#008E97) at full light
 ORANGE_REF_VALUE = 244 / 255                  # the Dolphins' orange (#F4581F)
 STANDS = tuple(f"{side}{weather}{event}" for side in "ha" for weather in "dr" for event in "ns")
-CUTAWAYS = ("cgfair{}", "cgfoul{}", "ns{}", "tg{}")
+CUTAWAYS = ("cgfair{}", "cgfoul{}", "ns{}", "tg{}", "ch{}", "ih{}")   # review S1: + the cheerleaders, the tunnel helmet
 FILES = tuple([(f"{CODE}{s}.iff", f"{SOURCE_CODE}{s}.iff") for s in STANDS]
               + [(c.format(CODE) + ".iff", c.format(SOURCE_CODE) + ".iff") for c in CUTAWAYS])
 PICTURES = ("tshirt", "jersey", "sweatshirt", "varsity", "puffyjacket", "hardhat", "crowdsign", "foamfinger", "boxlogo",
             "fanplate", "head03")
 CLEAR = tuple(f"noshirtns{n:02d}" for n in range(1, 9))     # the painted chest letters
-RECOLOURED = ("coachshirt",) + tuple(f"p{n:03d}" for n in range(1, 17))
+DECALS = ("uniformlogo",)
+WARM = ("uniformfair", "uniformfoul")          # no skin or lips: recolour(warm=True)                     # the cheerleaders' Dolphins logo decal (on transparency): cleared
+RECOLOURED = ("coachshirt", "uniformfair", "uniformfoul") + tuple(f"p{n:03d}" for n in range(1, 17))
+# review S1: the tunnel's inflatable helmet (ihSM): recoloured, and its marks painted out from the helmet around them
+# (two dolphin logos and the "Dolphins" plate word; boxes in texels of the retail 256x256 texture, each holding the
+# whole mark: its saturated texels grown by MARK_GROW are refilled by diffusion from their neighbours)
+PAINTED_OUT = {"inflatablehelmet": ((48, 42, 101, 109), (48, 147, 101, 214), (202, 65, 245, 78))}
+MARK_GROW = 3
 PAINTED_HEADS = ("head01", "head02")          # the Dolphins' face paint (head03 is a picture)
 HEAD_FACE_TOP = 32                            # rows above this hold the ear, teeth and lips
 
@@ -62,9 +88,10 @@ class ClassicCrowdError(ValueError):
 
 
 UI_LABEL = "The Seamen's own crowd (classic teams)"
-HELP_TEXT = ("EXPERIMENTAL / UNWITNESSED. When the 2006 Seamen play, the fans in the stands and the crowd cutaways wear "
-             "Seamen teal, black and white with no Dolphins marks, instead of the Dolphins' crowd they share a slot "
-             "with. Made from your own disc's Dolphins crowd files. Needs the classic teams option.")
+HELP_TEXT = ("EXPERIMENTAL / UNWITNESSED. When the 2006 Seamen play, the fans in the stands, the crowd cutaways, the "
+             "cheerleaders and the tunnel's inflatable helmet wear Seamen teal, black and white with no Dolphins marks, "
+             "and ESPN Stadium (their home) shows their own end zones, instead of the Dolphins' sets they share a slot "
+             "with. Made from your own disc's Dolphins files. Built only with the Classic teams in Quick Game option.")
 
 
 def require(ok, message):
@@ -78,10 +105,11 @@ def sha(data):
 
 # -- colour ---------------------------------------------------------------------------------------------------------
 
-def recolour(rgba):
+def recolour(rgba, *, warm=False):
     """The Dolphins' aqua becomes the Seamen teal and their orange and navy become black, each texel keeping its shade
     (its HSV value against the colour's full-light value); every other texel (white, greys, skin, the transparent
-    key) stays. ``rgba`` is an (h, w, 4) uint8 array; returns a new one."""
+    key) stays. ``rgba`` is an (h, w, 4) uint8 array; returns a new one. ``warm``: a texture with no skin or lips (the
+    cheerleaders' uniforms, review S1) takes every saturated orange-red down to hue 0 and into its shading as well."""
     import numpy as np
     a = np.asarray(rgba, np.uint8)
     rgb = a[..., :3].astype(np.float64) / 255.0
@@ -100,6 +128,8 @@ def recolour(rgba):
     aqua = (hue >= 160) & (hue <= 205) & (sat >= 0.30) & (value >= 0.10)
     # bright, fully saturated orange only: red lips (hue < 12), skin and hair in shadow (lower value or saturation) stay
     orange = (hue >= 12) & (hue <= 36) & (sat >= 0.72) & (value >= 0.55)
+    if warm:
+        orange = ((hue <= 36) | (hue >= 350)) & (sat >= 0.60) & (value >= 0.20)
     navy = (hue > 205) & (hue <= 250) & (sat >= 0.45) & (value < 0.55)
     out = a.copy().astype(np.float64)
     teal = np.asarray(TEAL, np.float64)[None, :]
@@ -118,15 +148,21 @@ REQUESTS = ((OWNER, "code", CODE_SIZE, CODE_SIZE),)  # = nfl2k5_xbe_space.CLASSI
 # teams step moves no owner and no later owner can take it. A code owner in the late order moved v3 addresses, and a
 # read-only owner after the classic block pushed v3 sets into the pool (test_nfl2k5_allocator_pool, 11/25).
 FORMAT_CG, FORMAT_NS, FORMAT_TG = 0xE76A68, 0xE76BE4, 0xE77FB0     # cg%s%s.iff, ns%s.iff, tg%s.iff (UTF-16)
+FORMAT_CH, FORMAT_IH = 0xE770F4, 0xE7704C     # review S1: the cutaway sets ch%s.iff (cheerleaders), ih%s.iff (helmet)
+FORMAT_IH_TUNNEL = 0xE73AE0                   # the tunnel loader's own ih%s.iff (0x1257EC, 0x12580E)
 HOME_CODE, AWAY_CODE = 0xB30970, 0xB30B64                          # the match contexts' +0x10C (0xB30864, 0xB30A58)
 HOME_ID, AWAY_ID = 0xB3097C, 0xB30B70                              # their +0x118
 # (name, site VA, retail bytes): each site becomes "call helper" and NOP padding to the retail length
 SITES = (("cutaway_set", 0x12F2EC, bytes.fromhex("8b138b820c010000")),    # mov edx,[ebx]; mov eax,[edx+0x10C]
          ("cutaway_cg", 0x12F304, bytes.fromhex("8b038b900c010000")),     # mov eax,[ebx]; mov edx,[eax+0x10C]
          ("stands_away", 0x62D86, bytes.fromhex("a1640bb300")),           # mov eax,[0xB30B64]
-         ("stands_home", 0x62DAD, bytes.fromhex("8b157009b300")))         # mov edx,[0xB30970]
+         ("stands_home", 0x62DAD, bytes.fromhex("8b157009b300")),         # mov edx,[0xB30970]
+         # review S1: the tunnel's inflatable helmets, after call 0x61C50 (home context) / 0x61C60 (away context)
+         ("helmet_home", 0x1257DD, bytes.fromhex("8b900c010000")),        # mov edx,[eax+0x10C]
+         ("helmet_away", 0x1257FF, bytes.fromhex("8b880c010000")))        # mov ecx,[eax+0x10C]
 # The retail formats and context fields the helpers depend on (read once, pinned): the three format strings.
-FORMAT_TEXTS = ((FORMAT_CG, "cg%s%s.iff"), (FORMAT_NS, "ns%s.iff"), (FORMAT_TG, "tg%s.iff"))
+FORMAT_TEXTS = ((FORMAT_CG, "cg%s%s.iff"), (FORMAT_NS, "ns%s.iff"), (FORMAT_TG, "tg%s.iff"), (FORMAT_CH, "ch%s.iff"),
+                (FORMAT_IH, "ih%s.iff"), (FORMAT_IH_TUNNEL, "ih%s.iff"))
 
 
 def _u32(value):
@@ -134,7 +170,7 @@ def _u32(value):
 
 
 def code_for(va):
-    """(the 128 owned bytes, {helper name: VA}). Offset 0: "SM" (UTF-16, NUL); then the four helpers. Each replays the
+    """(the page's bytes, {helper name: VA}). Offset 0: "SM" (UTF-16, NUL); then the six helpers (177 B). Each replays the
     site's own read(s) and, when the team's identity byte is the Seamen's, returns the SM text instead; flags are free at
     every site (the next instructions set or ignore them) and no other register changes."""
     text = va
@@ -146,10 +182,14 @@ def code_for(va):
         labels[name] = va + len(out)
         out.extend(body)
 
-    # cutaway_set: EBX -> team pointer; ECX = the set's format; only ns/tg move (the trainer set tr%s stays)
+    # cutaway_set: EBX -> team pointer; ECX = the set's format; ns/tg/ch/ih move (the trainer set tr%s and the Super
+    # Bowl newspaper np%s stay)
     sub = b"\xb8" + _u32(text) + b"\xc3"                               # mov eax, SM ; ret
-    tail = (b"\x81\xf9" + _u32(FORMAT_NS) + b"\x74\x08"                 # cmp ecx,ns ; je sub
-            + b"\x81\xf9" + _u32(FORMAT_TG) + b"\x75" + bytes([len(sub) - 1]))   # cmp ecx,tg ; jne ret
+    tail = b""
+    moved = (FORMAT_NS, FORMAT_TG, FORMAT_CH, FORMAT_IH)
+    for k, fmt in enumerate(moved[:-1]):                                 # cmp ecx,fmt ; je sub
+        tail += b"\x81\xf9" + _u32(fmt) + b"\x74" + bytes([8 * (len(moved) - 1 - k)])   # over the pairs left
+    tail += b"\x81\xf9" + _u32(moved[-1]) + b"\x75" + bytes([len(sub) - 1])   # cmp ecx,ih ; jne ret
     helper("cutaway_set", b"\x8b\x13" + b"\x8b\x82\x0c\x01\x00\x00"     # mov edx,[ebx] ; mov eax,[edx+0x10C]
            + b"\x80\xba\x18\x01\x00\x00" + bytes([IDENTITY])           # cmp byte [edx+0x118], 230
            + b"\x75" + bytes([len(tail) + len(sub) - 1]) + tail + sub)  # jne ret
@@ -166,7 +206,16 @@ def code_for(va):
     sub = b"\xba" + _u32(text) + b"\xc3"
     helper("stands_home", b"\x8b\x15" + _u32(HOME_CODE) + b"\x80\x3d" + _u32(HOME_ID) + bytes([IDENTITY])
            + b"\x75" + bytes([len(sub) - 1]) + sub)
-    require(len(out) <= 128, "helpers exceed their 128 bytes")
+    # review S1: the tunnel's inflatable helmets: EAX is the match context 0x61C50 / 0x61C60 returned
+    sub = b"\xba" + _u32(text) + b"\xc3"                               # mov edx, SM ; ret
+    helper("helmet_home", b"\x8b\x90\x0c\x01\x00\x00"                  # mov edx,[eax+0x10C]
+           + b"\x80\xb8\x18\x01\x00\x00" + bytes([IDENTITY])           # cmp byte [eax+0x118], 230
+           + b"\x75" + bytes([len(sub) - 1]) + sub)
+    sub = b"\xb9" + _u32(text) + b"\xc3"                               # mov ecx, SM ; ret
+    helper("helmet_away", b"\x8b\x88\x0c\x01\x00\x00"                  # mov ecx,[eax+0x10C]
+           + b"\x80\xb8\x18\x01\x00\x00" + bytes([IDENTITY])
+           + b"\x75" + bytes([len(sub) - 1]) + sub)
+    require(len(out) <= 256, "helpers exceed their 256 bytes")
     return bytes(out).ljust(CODE_SIZE, b"\xcc"), labels
 
 
@@ -224,7 +273,7 @@ def xbe_status(payload):
 
 
 def apply_xbe(payload):
-    """Install the helpers (reserving the owner when the first space pass did not) and point the four sites at them.
+    """Install the helpers (reserving the owner when the first space pass did not) and point the six sites at them.
     Replay is a no-op."""
     from . import nfl2k5_xbe_space as space
     from .nfl2k5_bump_strength import _sections, section_digest
@@ -263,11 +312,11 @@ def apply_xbe(payload):
 
 # -- the files -------------------------------------------------------------------------------------------------------
 
-def _palette_recolour(decoded, at):
+def _palette_recolour(decoded, at, warm=False):
     """The 256-entry B,G,R,A palette at ``decoded[at:at+1024]`` recoloured in place."""
     import numpy as np
     bgra = np.frombuffer(bytes(decoded[at:at + 1024]), np.uint8).reshape(1, 256, 4)
-    rgba = recolour(bgra[..., [2, 1, 0, 3]])
+    rgba = recolour(bgra[..., [2, 1, 0, 3]], warm=warm)
     decoded[at:at + 1024] = np.ascontiguousarray(rgba[..., [2, 1, 0, 3]]).tobytes()
 
 
@@ -287,6 +336,71 @@ def _a1r5g5b5_lut():
         back = lambda x: np.minimum(31, (x * 31 + 127) // 255)  # noqa: E731
         _LUT = ((v & 0x8000) | (back(out[:, 0]) << 10) | (back(out[:, 1]) << 5) | back(out[:, 2])).astype(np.uint16)
     return _LUT
+
+
+def _end_zone(name):
+    """The authored piece for ``endzone_<north|south>_<part>``: its third of the classic field's strip."""
+    import numpy as np
+    from PIL import Image
+    _prefix, end, part = name.split("_")
+    require(end in ("north", "south") and part in END_ZONE_PARTS, f"{name}: not an end zone texture")
+    with Image.open(FIELD_DIR / f"endzone_{end[0].upper()}.png") as image:
+        strip = np.asarray(image.convert("RGBA"), np.uint8)
+    require(strip.shape == (128, 768, 4), "end-zone art size")
+    k = END_ZONE_PARTS.index(part)
+    return strip[:, k * 256:(k + 1) * 256]
+
+
+def mark_mask(retail, box, grow=MARK_GROW):
+    """The texels of the mark in ``box`` (x0, y0, x1, y1): its saturated texels, grown by ``grow`` (the dark outline
+    and the anti-aliased edge), inside the box grown by ``grow``."""
+    import numpy as np
+    rgb = retail[..., :3].astype(np.float64) / 255.0
+    mx, mn = rgb.max(axis=2), rgb.min(axis=2)
+    sat = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1e-9), 0)
+    h, w = sat.shape
+    x0, y0, x1, y1 = box
+    mask = np.zeros((h, w), bool)
+    mask[y0:y1, x0:x1] = sat[y0:y1, x0:x1] > 0.35
+    for _ in range(grow):
+        m = mask.copy()
+        m[1:] |= mask[:-1]
+        m[:-1] |= mask[1:]
+        m[:, 1:] |= mask[:, :-1]
+        m[:, :-1] |= mask[:, 1:]
+        mask = m
+    limit = np.zeros_like(mask)
+    limit[max(0, y0 - grow):min(h, y1 + grow), max(0, x0 - grow):min(w, x1 + grow)] = True
+    return mask & limit
+
+
+def paint_out(retail, recoloured, boxes, grow=MARK_GROW, rounds=1500):
+    """``recoloured`` with each box's mark (mark_mask of the RETAIL texels) refilled from the texels around it: the
+    mean of the ring around the mark, relaxed to the average of each texel's four neighbours (a harmonic fill, the
+    helmet's own shading carried in). Plain colour work: nothing is drawn."""
+    import numpy as np
+    out = recoloured.astype(np.float64).copy()
+    h, w = out.shape[:2]
+    for box in boxes:
+        mask = mark_mask(retail, box, grow)
+        ys, xs = np.nonzero(mask)
+        if not len(ys):
+            continue
+        wy0, wy1 = max(0, ys.min() - 2), min(h, ys.max() + 3)
+        wx0, wx1 = max(0, xs.min() - 2), min(w, xs.max() + 3)
+        win, m = out[wy0:wy1, wx0:wx1, :3], mask[wy0:wy1, wx0:wx1]
+        ring = np.zeros_like(m)
+        ring[1:] |= m[:-1]
+        ring[:-1] |= m[1:]
+        ring[:, 1:] |= m[:, :-1]
+        ring[:, :-1] |= m[:, 1:]
+        ring &= ~m
+        win[m] = win[ring].mean(axis=0)
+        inner = m[1:-1, 1:-1]
+        for _ in range(rounds):
+            avg = (win[:-2, 1:-1] + win[2:, 1:-1] + win[1:-1, :-2] + win[1:-1, 2:]) / 4.0
+            win[1:-1, 1:-1][inner] = avg[inner]
+    return np.clip(np.rint(out), 0, 255).astype(np.uint8)
 
 
 def _picture(name):
@@ -332,7 +446,25 @@ def _texture_span(span, kind, stands):
                 continue
             return new, f"recolour {name} face ({cap} colours)"
         raise ClassicCrowdError(f"classic crowd: {name} does not fit its retail span")
-    if not stands and name in (PICTURES + CLEAR):
+    if not stands and name in PAINTED_OUT:
+        # review S1: the user's own helmet texture, recoloured, its marks refilled from the helmet around them
+        mm = fans._mm()
+        row = dict(width=texture.width, height=texture.height, mip_levels=1, pixel_offset=texture.pixel_offset,
+                   palette_offset=texture.palette_offset, mapped_material_names=[name])
+        require(texture.format_name == "P8" and texture.mip_levels == 1 and (texture.width, texture.height) == (256, 256),
+                f"{name}: not the retail 256x256 one-level P8 texture")
+        retail = mm.read_p8(decoded, chunk.system_bytes, row)[0]
+        rgba = paint_out(retail, recolour(retail), PAINTED_OUT[name])
+        for cap in fans.PALETTE_LADDER:
+            edited = bytearray(decoded)
+            mm.write_p8(edited, chunk.system_bytes, row, rgba, maximum=int(cap))
+            try:
+                new, _fit = fans._refit(span, bytes(edited))
+            except fans.ModernFansError:
+                continue
+            return new, f"recolour {name}, marks painted out ({cap} colours)"
+        raise ClassicCrowdError(f"classic crowd: {name} does not fit its retail span")
+    if not stands and name in (PICTURES + CLEAR + DECALS):
         mm = fans._mm()
         row = dict(width=texture.width, height=texture.height, mip_levels=1, pixel_offset=texture.pixel_offset,
                    palette_offset=texture.palette_offset, mapped_material_names=[name])
@@ -340,7 +472,7 @@ def _texture_span(span, kind, stands):
         # the 2026 fans art keeps a few retail details (KEEP_RECTS) and lays face paint over the retail head; here those
         # retail pixels are the Dolphins', so they are recoloured first (the fans writer's own compose would keep them)
         retail = recolour(mm.read_p8(decoded, chunk.system_bytes, row)[0])
-        if name in CLEAR:
+        if name in CLEAR + DECALS:
             rgba = np.zeros_like(retail)
         else:
             rgba = _picture(name).copy()
@@ -362,9 +494,27 @@ def _texture_span(span, kind, stands):
     if name not in RECOLOURED and not stands:
         return None, None
     if name.startswith("endzone_"):
-        return None, None                             # the Super Bowl packages' end zones (left as they are)
+        if not stands:
+            return None, None
+        # review M1: the Seamen's own end zone (see FIELD_DIR); the whole mip chain from the authored third
+        require(texture.format_name == "P8" and (texture.width, texture.height) == (256, 128),
+                f"{name}: not the retail 256x128 P8 end zone")
+        mm = fans._mm()
+        row = dict(width=texture.width, height=texture.height, mip_levels=texture.mip_levels,
+                   pixel_offset=texture.pixel_offset, palette_offset=texture.palette_offset,
+                   mapped_material_names=[name])
+        piece = np.ascontiguousarray(_end_zone(name))
+        for cap in fans.PALETTE_LADDER:
+            edited = bytearray(decoded)
+            mm.write_p8(edited, chunk.system_bytes, row, piece, maximum=int(cap))
+            try:
+                new, _fit = fans._refit(span, bytes(edited))
+            except fans.ModernFansError:
+                continue
+            return new, f"end zone {name} ({cap} colours)"
+        raise ClassicCrowdError(f"classic crowd: {name} does not fit its retail span")
     if texture.format_name == "P8":
-        _palette_recolour(edited, chunk.system_bytes + texture.palette_offset)
+        _palette_recolour(edited, chunk.system_bytes + texture.palette_offset, warm=name in WARM)
     elif texture.format_name == "A1R5G5B5":
         texels = np.frombuffer(bytes(edited[chunk.system_bytes:]), np.uint16)
         edited[chunk.system_bytes:] = _a1r5g5b5_lut()[texels].tobytes()
@@ -409,7 +559,7 @@ def compose_files(source_get):
     if key not in _MEMO:
         files, receipts = [], {}
         for name, src, data in sources:
-            made, done = compose_file(data, stands=not src.startswith(("cg", "ns", "tg")))
+            made, done = compose_file(data, stands=not src.startswith(("cg", "ns", "tg", "ch", "ih")))
             files.append((name, made))
             receipts[name] = dict(source=src, sha256=sha(made), changed=done)
         _MEMO[key] = (files, receipts)
@@ -439,7 +589,7 @@ def _present(path, files):
 
 
 def image_status(path, source):
-    """'retail' (no redirect, none of the twelve files), 'applied' (the redirect and the twelve files, each the compile
+    """'retail' (no redirect, none of the fourteen files), 'applied' (the redirect and the fourteen files, each the compile
     of the user's own retail Dolphins crowd files), else 'foreign'. Needs the classic teams applied first."""
     from . import nfl2k5_classic_teams as classic
     from . import nfl2k5_espn25_rosters as e
@@ -457,8 +607,8 @@ def image_status(path, source):
 
 
 def apply_to_image(path, source):
-    """The Seamen's own crowd on a disc whose classic teams are applied: the twelve files appended to the archive, then
-    the redirect in the executable (its fixed page, the four sites). Replay is a no-op."""
+    """The Seamen's own crowd on a disc whose classic teams are applied: the fourteen files appended to the archive, then
+    the redirect in the executable (its fixed page, the six sites). Replay is a no-op."""
     from . import nfl2k5_classic_teams as classic
     from . import nfl2k5_espn25_rosters as e
     from . import nfl2k5_historic_rosters as seasons_bank

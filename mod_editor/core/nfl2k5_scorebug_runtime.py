@@ -65,7 +65,8 @@ ROOT_PAUSE_MENU = 0x4E9078
 # nfl2k5_scorebug_sprite_code_r15 and _r16. Revision 15 also had the Gamecast panel jump (0x8C465) in place.
 EARLIER_CODE_SIZE, EARLIER_REVISIONS = 5920, (18, 17, 16, 15)
 # b81-seamen: revision 19 names the classic Seamen's own panel (identity 230 -> "sbSEh0") in the engine's logo(); its body
-# grows 21 bytes inside the same 6,336-byte allocation (6,335 used). Revisions 18 and 17 sit in that allocation with the
+# grows 1 byte (logo() rewritten compactly) inside the same 6,336-byte allocation: 6,327 used, 9 spare (revision 18:
+# 6,326). Revisions 18 and 17 sit in that allocation with the
 # frozen revision 18 engine (nfl2k5_scorebug_sprite_code_r18) and read "previous", as 16 and 15 do.
 FULL_SIZE_REVISIONS = (None, 18, 17)
 GAMECAST_PANEL_OFF_R15 = (0x8C465, GAMECAST_PANEL_GATE[1], bytes.fromhex("e91805000090"), "sb play-call bar off (0x8C450)")
