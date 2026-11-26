@@ -175,7 +175,9 @@ class BytesTests(unittest.TestCase):
             with self.subTest(owner=name):
                 self.assertNotEqual(before, "foreign")
                 self.assertEqual(before, after)
-        self.assertGreaterEqual(sum(1 for state in seen.values() if state == "applied"), 20)
+        # b81 league-aging: v0.8's progression and weekly progression now read "legacy" (an earlier release of each
+        # owner, upgraded in place by this release); carried either way
+        self.assertGreaterEqual(sum(1 for state in seen.values() if state in ("applied", "legacy")), 20)
 
     def test_composes_with_the_neighbouring_throw_owners_in_both_orders(self):
         from mod_editor.core import nfl2k5_qb_accuracy as accuracy

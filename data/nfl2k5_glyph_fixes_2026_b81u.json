@@ -410,19 +410,20 @@
    "texture": "57"
   },
   {
-   "after_sha256": "36f2db8d96857bf7647a4c673b2be014423018e6d475953c04b2ae771aa25d3b",
+   "after_sha256": "1b44ae42247d3db4b913585f5ddb8c062fbbe23ce9088bff7649909f9831b54d",
    "before_sha256": "6921f4167eba3d2135b3d6695c771a8d338198870c13a4cd2756c2ed1c3bbeeb",
    "chunk": 43,
    "defects": [
     "b81u-ARI-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 7616,
-   "note": "the road name letters in the club's cut-corner face at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17)",
+   "note": "the road name letters in the club's cut-corner face at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 469664,
    "png": "ARI_00A0_names.png",
-   "png_sha256": "3e9ebb153c98e87789d4af4fe38536fd0f63cb951ecd496e37113066d9e156f8",
+   "png_sha256": "c8dd32e3df3797b645191583efe042172e6d1e8da652ad50765ec2846cc9fcf2",
    "reference": [
     "ARZ/2026-09-20_SEA_alternate-desert/helmet_back_0302.jpg",
     "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
@@ -438,11 +439,12 @@
    "chunk": 44,
    "defects": [
     "b81u-ARI-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the road name letters in the club's cut-corner face at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17)",
+   "note": "the road name letters in the club's cut-corner face at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 477280,
    "reference": [
     "ARZ/2026-09-20_SEA_alternate-desert/helmet_back_0302.jpg",
@@ -485,20 +487,21 @@
    ]
   },
   {
-   "after_sha256": "fe7b0a2bd370cf10ca4b883f7c0a159106d07faad276b480cfb1738602063e7b",
+   "after_sha256": "df30f79937008dc88e95a2967dea9f615887643380d47e51140128e52861b449",
    "before_sha256": "84800d4c0fb585834035159a2b1c0fa71c3e4d3f12622b1409874561d2dcd706",
    "chunk": 43,
    "defects": [
     "b81u-ARI-nameplate-weight",
     "b81u-ARI-black-alt-nameplate-colour",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 7472,
-   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; red on this black alternate, as the real names (WILSON, McBRIDE), not white; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17)",
+   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; red on this black alternate, as the real names (WILSON, McBRIDE), not white; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 467440,
    "png": "ARI_00A0_names.png",
-   "png_sha256": "3e9ebb153c98e87789d4af4fe38536fd0f63cb951ecd496e37113066d9e156f8",
+   "png_sha256": "c8dd32e3df3797b645191583efe042172e6d1e8da652ad50765ec2846cc9fcf2",
    "reference": [
     "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
     "ARZ/2026-10-11_DET_alternate-black/jersey_back_0141.jpg",
@@ -515,11 +518,12 @@
    "defects": [
     "b81u-ARI-nameplate-weight",
     "b81u-ARI-black-alt-nameplate-colour",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; red on this black alternate, as the real names (WILSON, McBRIDE), not white; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17)",
+   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; red on this black alternate, as the real names (WILSON, McBRIDE), not white; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 474912,
    "reference": [
     "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
@@ -902,19 +906,20 @@
    "texture": "an57"
   },
   {
-   "after_sha256": "9e7777359c9f894161504230c4ffa71c6925f9fe511c3fbe1467d105336fad99",
+   "after_sha256": "bae6218c7c490fc551303d6a3f8e12fa5d872a9a899639f867c3082fec9d07f8",
    "before_sha256": "84800d4c0fb585834035159a2b1c0fa71c3e4d3f12622b1409874561d2dcd706",
    "chunk": 43,
    "defects": [
     "b81u-ARI-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 7472,
-   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17)",
+   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 461856,
    "png": "ARI_00H0_names.png",
-   "png_sha256": "4a9dfcfbb5130175d671d38ea92c314a079d4c4b88d0eb90ed620971f9dc8084",
+   "png_sha256": "2307808e6e9fcc58fcd029283e043a565e7d098823ba853f40259387dfcd1485",
    "reference": [
     "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
     "ARZ/2026-10-11_DET_alternate-black/jersey_back_0141.jpg",
@@ -930,11 +935,12 @@
    "chunk": 44,
    "defects": [
     "b81u-ARI-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17)",
+   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 469328,
    "reference": [
     "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
@@ -977,20 +983,21 @@
    ]
   },
   {
-   "after_sha256": "fe7b0a2bd370cf10ca4b883f7c0a159106d07faad276b480cfb1738602063e7b",
+   "after_sha256": "df30f79937008dc88e95a2967dea9f615887643380d47e51140128e52861b449",
    "before_sha256": "84800d4c0fb585834035159a2b1c0fa71c3e4d3f12622b1409874561d2dcd706",
    "chunk": 43,
    "defects": [
     "b81u-ARI-nameplate-weight",
     "b81u-ARI-black-alt-nameplate-colour",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 7472,
-   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; red on this black alternate, as the real names (WILSON, McBRIDE), not white; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17)",
+   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; red on this black alternate, as the real names (WILSON, McBRIDE), not white; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 467440,
    "png": "ARI_00A0_names.png",
-   "png_sha256": "3e9ebb153c98e87789d4af4fe38536fd0f63cb951ecd496e37113066d9e156f8",
+   "png_sha256": "c8dd32e3df3797b645191583efe042172e6d1e8da652ad50765ec2846cc9fcf2",
    "reference": [
     "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
     "ARZ/2026-10-11_DET_alternate-black/jersey_back_0141.jpg",
@@ -1007,11 +1014,12 @@
    "defects": [
     "b81u-ARI-nameplate-weight",
     "b81u-ARI-black-alt-nameplate-colour",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; red on this black alternate, as the real names (WILSON, McBRIDE), not white; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17)",
+   "note": "the home and black-alternate name letters in the club's cut-corner face at the real weight; red on this black alternate, as the real names (WILSON, McBRIDE), not white; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.18 (ALLGEIER 0.20, McBRIDE 0.18, WINGARD 0.17); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 474912,
    "reference": [
     "ARZ/2026-11-15_LAR_primary-home/jersey_back_0444.jpg",
@@ -1054,19 +1062,20 @@
    ]
   },
   {
-   "after_sha256": "c45de787f4e67c3a470107d260a16189bcb3da92d2ae5a0cb2abb3f11f1c89e1",
+   "after_sha256": "4b897c151f99efe00ad943fb4af64f246b0cba771e5623306835daf40b719e87",
    "before_sha256": "880987630f62a2e5ab23e3ed9f5a95cc35ea1c3b60bad714465c564e58972c5b",
    "chunk": 43,
    "defects": [
     "b81u-ATL-1966-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 8736,
-   "note": "the 1966 throwback name letters at the real weight, white with a 1-texel red edge; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 4 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (PENIX JR 0.16, LINDSTROM 0.22); A 1 texel wider, Q 1 texel wider so its counter stays open",
+   "note": "the 1966 throwback name letters at the real weight, white with a 1-texel red edge; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 4 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (PENIX JR 0.16, LINDSTROM 0.22); A 1 texel wider, Q 1 texel wider so its counter stays open; b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 7-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 479712,
    "png": "ATL_01A9_names.png",
-   "png_sha256": "ef7150b4981adffaa52ab28979e503446a460778c46cad619a375aaacf347773",
+   "png_sha256": "c41e417dac423b3f045c06bbd63050ec9e7d6376e298ce8f1339276d591584d6",
    "reference": [
     "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg",
     "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg"
@@ -1076,16 +1085,17 @@
    "texture": "names"
   },
   {
-   "after_sha256": "9fcfac598174668675792f275da50b727c4683bb13439c2486313ba186bb1e5a",
+   "after_sha256": "921ab48f9b2a291e2ad8cfc23fb1190c66dec2d0b442a9666a4cf73c5ee1fff3",
    "before_sha256": "105da59158fe270e101fc0288ca1e0c9177c3bab1a5dff82fc1b94fd418b4e3c",
    "chunk": 44,
    "defects": [
     "b81u-ATL-1966-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the 1966 throwback name letters at the real weight, white with a 1-texel red edge; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 4 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (PENIX JR 0.16, LINDSTROM 0.22); A 1 texel wider, Q 1 texel wider so its counter stays open",
+   "note": "the 1966 throwback name letters at the real weight, white with a 1-texel red edge; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 4 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (PENIX JR 0.16, LINDSTROM 0.22); A 1 texel wider, Q 1 texel wider so its counter stays open; b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 7-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 488448,
    "reference": [
     "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg",
@@ -1095,51 +1105,52 @@
    "selector": "01A9",
    "texture": "NAME",
    "widths": [
-    6,
-    8,
-    14,
-    13,
-    13,
-    13,
-    12,
-    12,
-    13,
-    13,
-    5,
-    12,
-    13,
-    12,
+    7,
+    9,
     15,
-    13,
-    13,
-    13,
+    14,
+    14,
     14,
     13,
     13,
-    12,
+    14,
+    14,
+    6,
     13,
+    14,
     13,
     16,
+    14,
+    14,
+    14,
+    15,
+    14,
+    14,
     13,
+    14,
+    14,
+    17,
+    14,
+    14,
     13,
-    12,
-    11
+    12
    ]
   },
   {
-   "after_sha256": "66991dfe9b629be25b64d15eead2fb1f382fdcbf4e8c56d4e1066378acdf5514",
+   "after_sha256": "2b8c3673255d8390cb4ebade93abed3ae9691467db2e7af3e46c7226f3cb5f48",
    "before_sha256": "4489c36e2967e4d07484140e9f9c019b52cfa4defad8bd90eab82d280aa6a1cc",
    "chunk": 43,
    "defects": [
     "b81u-ATL-1966-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 8784,
-   "note": "the 1966 throwback name letters at the real weight, white with a 1-texel red edge; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 4 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (PENIX JR 0.16, LINDSTROM 0.22); A 1 texel wider, Q 1 texel wider so its counter stays open",
+   "note": "the 1966 throwback name letters at the real weight, white with a 1-texel red edge; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 4 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (PENIX JR 0.16, LINDSTROM 0.22); A 1 texel wider, Q 1 texel wider so its counter stays open; b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 7-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 451872,
    "png": "ATL_01A9_names.png",
-   "png_sha256": "ef7150b4981adffaa52ab28979e503446a460778c46cad619a375aaacf347773",
+   "png_sha256": "c41e417dac423b3f045c06bbd63050ec9e7d6376e298ce8f1339276d591584d6",
    "reference": [
     "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg",
     "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg"
@@ -1149,16 +1160,17 @@
    "texture": "names"
   },
   {
-   "after_sha256": "9fcfac598174668675792f275da50b727c4683bb13439c2486313ba186bb1e5a",
+   "after_sha256": "921ab48f9b2a291e2ad8cfc23fb1190c66dec2d0b442a9666a4cf73c5ee1fff3",
    "before_sha256": "105da59158fe270e101fc0288ca1e0c9177c3bab1a5dff82fc1b94fd418b4e3c",
    "chunk": 44,
    "defects": [
     "b81u-ATL-1966-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the 1966 throwback name letters at the real weight, white with a 1-texel red edge; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 4 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (PENIX JR 0.16, LINDSTROM 0.22); A 1 texel wider, Q 1 texel wider so its counter stays open",
+   "note": "the 1966 throwback name letters at the real weight, white with a 1-texel red edge; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 4 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (PENIX JR 0.16, LINDSTROM 0.22); A 1 texel wider, Q 1 texel wider so its counter stays open; b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 7-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 460656,
    "reference": [
     "ATL/2026-10-25_SF_throwback-1966/jersey_back_0712.jpg",
@@ -1168,35 +1180,35 @@
    "selector": "01H9",
    "texture": "NAME",
    "widths": [
-    6,
-    8,
-    14,
-    13,
-    13,
-    13,
-    12,
-    12,
-    13,
-    13,
-    5,
-    12,
-    13,
-    12,
+    7,
+    9,
     15,
-    13,
-    13,
-    13,
+    14,
+    14,
     14,
     13,
     13,
-    12,
+    14,
+    14,
+    6,
     13,
+    14,
     13,
     16,
+    14,
+    14,
+    14,
+    15,
+    14,
+    14,
     13,
+    14,
+    14,
+    17,
+    14,
+    14,
     13,
-    12,
-    11
+    12
    ]
   },
   {
@@ -9416,19 +9428,20 @@
    "texture": "an52"
   },
   {
-   "after_sha256": "491c2e2de451a375816464b1be54f673c881cee2c5f8dc339d34944c8ae7adc7",
+   "after_sha256": "730ec89c362ca525179504ddbe38a89ca882e090dfb18c797d8b76e4677de2cf",
    "before_sha256": "45a9260dd9a6e67f45ed3fa9e865aa2781ea7a93ecbf9b0c3fb95c15591e23e5",
    "chunk": 43,
    "defects": [
     "b81u-BAL-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 7488,
-   "note": "the purple jersey name letters in a lighter condensed block at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.13 (HAMILTON 0.13, YOUNG 0.10, HENRY 0.24)",
+   "note": "the purple jersey name letters in a lighter condensed block at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.13 (HAMILTON 0.13, YOUNG 0.10, HENRY 0.24); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 510416,
    "png": "BAL_02H0_names.png",
-   "png_sha256": "7c92873ffa51961497ad79519d9f2da8928d379ca944c358d77cd4167e24dfef",
+   "png_sha256": "8b5bfff28269d2c5352d157e5d0211a74ebce98ee9fe0dd154475582346bc816",
    "reference": [
     "BAL/2026-10-11_ATL_primary-away/jersey_back_0336.jpg",
     "BAL/2026-11-16_LAC_alternate-darkness/jersey_back_0427.jpg",
@@ -9444,11 +9457,12 @@
    "chunk": 44,
    "defects": [
     "b81u-BAL-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the purple jersey name letters in a lighter condensed block at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.13 (HAMILTON 0.13, YOUNG 0.10, HENRY 0.24)",
+   "note": "the purple jersey name letters in a lighter condensed block at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.13 (HAMILTON 0.13, YOUNG 0.10, HENRY 0.24); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 517904,
    "reference": [
     "BAL/2026-10-11_ATL_primary-away/jersey_back_0336.jpg",
@@ -11445,19 +11459,20 @@
    "texture": "an52"
   },
   {
-   "after_sha256": "491c2e2de451a375816464b1be54f673c881cee2c5f8dc339d34944c8ae7adc7",
+   "after_sha256": "730ec89c362ca525179504ddbe38a89ca882e090dfb18c797d8b76e4677de2cf",
    "before_sha256": "45a9260dd9a6e67f45ed3fa9e865aa2781ea7a93ecbf9b0c3fb95c15591e23e5",
    "chunk": 43,
    "defects": [
     "b81u-BAL-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 7488,
-   "note": "the purple jersey name letters in a lighter condensed block at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.13 (HAMILTON 0.13, YOUNG 0.10, HENRY 0.24)",
+   "note": "the purple jersey name letters in a lighter condensed block at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.13 (HAMILTON 0.13, YOUNG 0.10, HENRY 0.24); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 507232,
    "png": "BAL_02H0_names.png",
-   "png_sha256": "7c92873ffa51961497ad79519d9f2da8928d379ca944c358d77cd4167e24dfef",
+   "png_sha256": "8b5bfff28269d2c5352d157e5d0211a74ebce98ee9fe0dd154475582346bc816",
    "reference": [
     "BAL/2026-10-11_ATL_primary-away/jersey_back_0336.jpg",
     "BAL/2026-11-16_LAC_alternate-darkness/jersey_back_0427.jpg",
@@ -11473,11 +11488,12 @@
    "chunk": 44,
    "defects": [
     "b81u-BAL-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the purple jersey name letters in a lighter condensed block at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.13 (HAMILTON 0.13, YOUNG 0.10, HENRY 0.24)",
+   "note": "the purple jersey name letters in a lighter condensed block at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.13 (HAMILTON 0.13, YOUNG 0.10, HENRY 0.24); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 514720,
    "reference": [
     "BAL/2026-10-11_ATL_primary-away/jersey_back_0336.jpg",
@@ -33036,19 +33052,20 @@
    "texture": "57"
   },
   {
-   "after_sha256": "acabb5363b303815008e1c085f033c9a45608c4ade293283667ad30fd77b80fd",
+   "after_sha256": "fc3ad8b92393371b32ab8a99ddc210e1a43467af6a2a6cca2011200c9b09698e",
    "before_sha256": "b2d7e5c10dcfb27a62cbe77885a34a5911f14d89022c9a17ce310e41d8163a81",
    "chunk": 43,
    "defects": [
     "b81u-IND-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 7600,
-   "note": "the road name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14)",
+   "note": "the road name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 25/64), strokes set to the measured real weight (stem/cap 0.14, about 3.4 of the 24 cap rows); widths = ink plus one clear column",
    "offset": 475856,
    "png": "IND_11A0_names.png",
-   "png_sha256": "067984292236ef1c3ac36e33977586e874f4bb5f0ad8b940d613d1e7a91c9708",
+   "png_sha256": "c149e9477a02f091dcc561a878e6cf6560821bddac59e13fdbf88309c4a341fa",
    "reference": [
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg"
@@ -33058,16 +33075,17 @@
    "texture": "names"
   },
   {
-   "after_sha256": "1ef2f047159942e8e9ac02e1c4db03f90deea14d5c78c1de30aee5f6c0f9c716",
+   "after_sha256": "50a374125b76cf177e86e3cbde694b27659c227d08eeb19cf636f6232b019983",
    "before_sha256": "027bb88a7548022f96e38448825b64dfc39ad4134835671023ceeda9940877d6",
    "chunk": 44,
    "defects": [
     "b81u-IND-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the road name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14)",
+   "note": "the road name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 25/64), strokes set to the measured real weight (stem/cap 0.14, about 3.4 of the 24 cap rows); widths = ink plus one clear column",
    "offset": 483456,
    "reference": [
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
@@ -33077,35 +33095,35 @@
    "selector": "11A0",
    "texture": "NAME",
    "widths": [
+    6,
+    8,
+    14,
+    13,
+    13,
+    14,
+    12,
+    12,
+    14,
+    13,
     5,
-    7,
-    13,
     12,
+    14,
     12,
-    13,
-    11,
-    11,
-    13,
-    12,
-    4,
-    11,
-    13,
-    11,
-    15,
-    13,
-    13,
-    12,
-    13,
-    12,
-    12,
-    12,
-    12,
-    13,
     16,
+    14,
+    14,
+    13,
+    14,
     13,
     13,
-    12,
-    10
+    13,
+    13,
+    14,
+    17,
+    13,
+    13,
+    13,
+    11
    ]
   },
   {
@@ -33389,19 +33407,20 @@
    "texture": "hn57"
   },
   {
-   "after_sha256": "39e1ed8fb020ee27c17888c0c951f8c80c26b0c00ad93230e8c6e6316c8d36de",
+   "after_sha256": "e43eb9bc9ab5ff946e3ac83f6710b58ab227507ba721fecc30e60b0cc835ebd4",
    "before_sha256": "a37b53e374f985f1e5c843b485c39f1e44a3d4d4fd812864a4fb3cefd8b9a7a2",
    "chunk": 43,
    "defects": [
     "b81u-IND-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 8032,
-   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14)",
+   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 25/64), strokes set to the measured real weight (stem/cap 0.14, about 3.4 of the 24 cap rows); widths = ink plus one clear column",
    "offset": 489936,
    "png": "IND_11A3_names.png",
-   "png_sha256": "18d1ebe9316a8d88bdbf5f55c1fcc6f673a8c3c02ba23ff5e3ce117cf81a1260",
+   "png_sha256": "a14b2f73bec7000d1eccc4bad36be3036b76fe23ef91061a52de6f1b55205306",
    "reference": [
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
@@ -33412,16 +33431,17 @@
    "texture": "names"
   },
   {
-   "after_sha256": "1ef2f047159942e8e9ac02e1c4db03f90deea14d5c78c1de30aee5f6c0f9c716",
+   "after_sha256": "50a374125b76cf177e86e3cbde694b27659c227d08eeb19cf636f6232b019983",
    "before_sha256": "027bb88a7548022f96e38448825b64dfc39ad4134835671023ceeda9940877d6",
    "chunk": 44,
    "defects": [
     "b81u-IND-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14)",
+   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 25/64), strokes set to the measured real weight (stem/cap 0.14, about 3.4 of the 24 cap rows); widths = ink plus one clear column",
    "offset": 497968,
    "reference": [
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
@@ -33432,51 +33452,52 @@
    "selector": "11A3",
    "texture": "NAME",
    "widths": [
+    6,
+    8,
+    14,
+    13,
+    13,
+    14,
+    12,
+    12,
+    14,
+    13,
     5,
-    7,
-    13,
     12,
+    14,
     12,
-    13,
-    11,
-    11,
-    13,
-    12,
-    4,
-    11,
-    13,
-    11,
-    15,
-    13,
-    13,
-    12,
-    13,
-    12,
-    12,
-    12,
-    12,
-    13,
     16,
+    14,
+    14,
+    13,
+    14,
     13,
     13,
-    12,
-    10
+    13,
+    13,
+    14,
+    17,
+    13,
+    13,
+    13,
+    11
    ]
   },
   {
-   "after_sha256": "39e1ed8fb020ee27c17888c0c951f8c80c26b0c00ad93230e8c6e6316c8d36de",
+   "after_sha256": "e43eb9bc9ab5ff946e3ac83f6710b58ab227507ba721fecc30e60b0cc835ebd4",
    "before_sha256": "a37b53e374f985f1e5c843b485c39f1e44a3d4d4fd812864a4fb3cefd8b9a7a2",
    "chunk": 43,
    "defects": [
     "b81u-IND-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 8032,
-   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14)",
+   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 25/64), strokes set to the measured real weight (stem/cap 0.14, about 3.4 of the 24 cap rows); widths = ink plus one clear column",
    "offset": 492272,
    "png": "IND_11A3_names.png",
-   "png_sha256": "18d1ebe9316a8d88bdbf5f55c1fcc6f673a8c3c02ba23ff5e3ce117cf81a1260",
+   "png_sha256": "a14b2f73bec7000d1eccc4bad36be3036b76fe23ef91061a52de6f1b55205306",
    "reference": [
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
@@ -33487,16 +33508,17 @@
    "texture": "names"
   },
   {
-   "after_sha256": "1ef2f047159942e8e9ac02e1c4db03f90deea14d5c78c1de30aee5f6c0f9c716",
+   "after_sha256": "50a374125b76cf177e86e3cbde694b27659c227d08eeb19cf636f6232b019983",
    "before_sha256": "027bb88a7548022f96e38448825b64dfc39ad4134835671023ceeda9940877d6",
    "chunk": 44,
    "defects": [
     "b81u-IND-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14)",
+   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 25/64), strokes set to the measured real weight (stem/cap 0.14, about 3.4 of the 24 cap rows); widths = ink plus one clear column",
    "offset": 500304,
    "reference": [
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
@@ -33507,51 +33529,52 @@
    "selector": "11A4",
    "texture": "NAME",
    "widths": [
+    6,
+    8,
+    14,
+    13,
+    13,
+    14,
+    12,
+    12,
+    14,
+    13,
     5,
-    7,
-    13,
     12,
+    14,
     12,
-    13,
-    11,
-    11,
-    13,
-    12,
-    4,
-    11,
-    13,
-    11,
-    15,
-    13,
-    13,
-    12,
-    13,
-    12,
-    12,
-    12,
-    12,
-    13,
     16,
+    14,
+    14,
+    13,
+    14,
     13,
     13,
-    12,
-    10
+    13,
+    13,
+    14,
+    17,
+    13,
+    13,
+    13,
+    11
    ]
   },
   {
-   "after_sha256": "028d422d153ca3529208eb09f5b166f5a38b6eed5ac0eaa83c2744189d51ce21",
+   "after_sha256": "a05e2fd23dfc35ad27ee373783cf87693379004fecce83b418b8f5241a84bf0c",
    "before_sha256": "9dea8d99d31e3a0cd22b43a4a1ea2b64eef8fcf66adafd30c2ececc251e38c40",
    "chunk": 43,
    "defects": [
     "b81u-IND-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 7472,
-   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14)",
+   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 25/64), strokes set to the measured real weight (stem/cap 0.14, about 3.4 of the 24 cap rows); widths = ink plus one clear column",
    "offset": 463072,
    "png": "IND_11A3_names.png",
-   "png_sha256": "18d1ebe9316a8d88bdbf5f55c1fcc6f673a8c3c02ba23ff5e3ce117cf81a1260",
+   "png_sha256": "a14b2f73bec7000d1eccc4bad36be3036b76fe23ef91061a52de6f1b55205306",
    "reference": [
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
@@ -33562,16 +33585,17 @@
    "texture": "names"
   },
   {
-   "after_sha256": "1ef2f047159942e8e9ac02e1c4db03f90deea14d5c78c1de30aee5f6c0f9c716",
+   "after_sha256": "50a374125b76cf177e86e3cbde694b27659c227d08eeb19cf636f6232b019983",
    "before_sha256": "027bb88a7548022f96e38448825b64dfc39ad4134835671023ceeda9940877d6",
    "chunk": 44,
    "defects": [
     "b81u-IND-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14)",
+   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 25/64), strokes set to the measured real weight (stem/cap 0.14, about 3.4 of the 24 cap rows); widths = ink plus one clear column",
    "offset": 470544,
    "reference": [
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
@@ -33582,35 +33606,35 @@
    "selector": "11H0",
    "texture": "NAME",
    "widths": [
+    6,
+    8,
+    14,
+    13,
+    13,
+    14,
+    12,
+    12,
+    14,
+    13,
     5,
-    7,
-    13,
     12,
+    14,
     12,
-    13,
-    11,
-    11,
-    13,
-    12,
-    4,
-    11,
-    13,
-    11,
-    15,
-    13,
-    13,
-    12,
-    13,
-    12,
-    12,
-    12,
-    12,
-    13,
     16,
+    14,
+    14,
+    13,
+    14,
     13,
     13,
-    12,
-    10
+    13,
+    13,
+    14,
+    17,
+    13,
+    13,
+    13,
+    11
    ]
   },
   {
@@ -33894,19 +33918,20 @@
    "texture": "hn57"
   },
   {
-   "after_sha256": "311787dc64b6e361cf7e5e57984c8f8777da124c81163948093a804938bde2e5",
+   "after_sha256": "2b223805c9de3c2949f2f5c4e513d5419e582b7c85ccf985331a1fb30d79df43",
    "before_sha256": "b6a6c00ed0000bcea656f55354c0ef62ee230205545bb97459cc1a97a504ed65",
    "chunk": 43,
    "defects": [
     "b81u-IND-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 7472,
-   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14)",
+   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 25/64), strokes set to the measured real weight (stem/cap 0.14, about 3.4 of the 24 cap rows); widths = ink plus one clear column",
    "offset": 474544,
    "png": "IND_11A3_names.png",
-   "png_sha256": "18d1ebe9316a8d88bdbf5f55c1fcc6f673a8c3c02ba23ff5e3ce117cf81a1260",
+   "png_sha256": "a14b2f73bec7000d1eccc4bad36be3036b76fe23ef91061a52de6f1b55205306",
    "reference": [
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
@@ -33917,16 +33942,17 @@
    "texture": "names"
   },
   {
-   "after_sha256": "1ef2f047159942e8e9ac02e1c4db03f90deea14d5c78c1de30aee5f6c0f9c716",
+   "after_sha256": "50a374125b76cf177e86e3cbde694b27659c227d08eeb19cf636f6232b019983",
    "before_sha256": "027bb88a7548022f96e38448825b64dfc39ad4134835671023ceeda9940877d6",
    "chunk": 44,
    "defects": [
     "b81u-IND-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14)",
+   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 25/64), strokes set to the measured real weight (stem/cap 0.14, about 3.4 of the 24 cap rows); widths = ink plus one clear column",
    "offset": 482016,
    "reference": [
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
@@ -33937,51 +33963,52 @@
    "selector": "11H3",
    "texture": "NAME",
    "widths": [
+    6,
+    8,
+    14,
+    13,
+    13,
+    14,
+    12,
+    12,
+    14,
+    13,
     5,
-    7,
-    13,
     12,
+    14,
     12,
-    13,
-    11,
-    11,
-    13,
-    12,
-    4,
-    11,
-    13,
-    11,
-    15,
-    13,
-    13,
-    12,
-    13,
-    12,
-    12,
-    12,
-    12,
-    13,
     16,
+    14,
+    14,
+    13,
+    14,
     13,
     13,
-    12,
-    10
+    13,
+    13,
+    14,
+    17,
+    13,
+    13,
+    13,
+    11
    ]
   },
   {
-   "after_sha256": "311787dc64b6e361cf7e5e57984c8f8777da124c81163948093a804938bde2e5",
+   "after_sha256": "2b223805c9de3c2949f2f5c4e513d5419e582b7c85ccf985331a1fb30d79df43",
    "before_sha256": "b6a6c00ed0000bcea656f55354c0ef62ee230205545bb97459cc1a97a504ed65",
    "chunk": 43,
    "defects": [
     "b81u-IND-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 7472,
-   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14)",
+   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 25/64), strokes set to the measured real weight (stem/cap 0.14, about 3.4 of the 24 cap rows); widths = ink plus one clear column",
    "offset": 478448,
    "png": "IND_11A3_names.png",
-   "png_sha256": "18d1ebe9316a8d88bdbf5f55c1fcc6f673a8c3c02ba23ff5e3ce117cf81a1260",
+   "png_sha256": "a14b2f73bec7000d1eccc4bad36be3036b76fe23ef91061a52de6f1b55205306",
    "reference": [
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
@@ -33992,16 +34019,17 @@
    "texture": "names"
   },
   {
-   "after_sha256": "1ef2f047159942e8e9ac02e1c4db03f90deea14d5c78c1de30aee5f6c0f9c716",
+   "after_sha256": "50a374125b76cf177e86e3cbde694b27659c227d08eeb19cf636f6232b019983",
    "before_sha256": "027bb88a7548022f96e38448825b64dfc39ad4134835671023ceeda9940877d6",
    "chunk": 44,
    "defects": [
     "b81u-IND-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14)",
+   "note": "the home and alternate name letters at the real lighter weight with open counters; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (BUCKNER 0.12, STEWART 0.14, TAYLOR 0.14); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 25/64), strokes set to the measured real weight (stem/cap 0.14, about 3.4 of the 24 cap rows); widths = ink plus one clear column",
    "offset": 485920,
    "reference": [
     "IND/2026-10-11_PIT_primary-away/jersey_back_0139.jpg",
@@ -34012,45 +34040,46 @@
    "selector": "11H4",
    "texture": "NAME",
    "widths": [
+    6,
+    8,
+    14,
+    13,
+    13,
+    14,
+    12,
+    12,
+    14,
+    13,
     5,
-    7,
-    13,
     12,
+    14,
     12,
-    13,
-    11,
-    11,
-    13,
-    12,
-    4,
-    11,
-    13,
-    11,
-    15,
-    13,
-    13,
-    12,
-    13,
-    12,
-    12,
-    12,
-    12,
-    13,
     16,
+    14,
+    14,
+    13,
+    14,
     13,
     13,
-    12,
-    10
+    13,
+    13,
+    14,
+    17,
+    13,
+    13,
+    13,
+    11
    ]
   },
   {
-   "after_sha256": "a87eb62d6411dee05ec4785535da508c83f754142edba8eb7504f3ad0c5825df",
+   "after_sha256": "e38bd8c39a0b666246d543d1efe0e5c0d910740644bdf17f77984b77b8fc06f8",
    "before_sha256": "b969b04fdeec67479dace8ffbe702b3df038ea704c5860d66d8c3a66ee693f53",
    "chunk": 43,
    "defects": [
     "b81u-JAX-road-nameplate-heavy",
     "b81u-JAX-road-nameplate-thin-his-design",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "derive": [
     {
@@ -34127,11 +34156,50 @@
        "0x1.da0fa67265c2bp+1"
       ]
      }
+    },
+    {
+     "box": 11,
+     "den": 64,
+     "fill": "#101010",
+     "level": 32,
+     "offsets": [
+      32,
+      64,
+      96,
+      128,
+      160,
+      192,
+      224,
+      256,
+      288,
+      320,
+      352,
+      384,
+      416,
+      448,
+      480,
+      512,
+      544,
+      576,
+      608,
+      640,
+      672,
+      704,
+      736,
+      768,
+      800,
+      832,
+      864,
+      896,
+      928
+     ],
+     "op": "smooth_letters",
+     "passes": 3
     }
    ],
    "kind": "names_derived",
    "length": 11344,
-   "note": "Noah 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 3 texels across and 3 rows, counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20)",
+   "note": "Owner 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 3 texels across and 3 rows, counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 500768,
    "reference": [
     "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
@@ -34140,7 +34208,7 @@
     "work/fix/DECISIONS/tools/jax_thin.py"
    ],
    "resource_size": 1547856,
-   "rgba_sha256": "245f2d996c0342c63440c5d9743a87e5781cbcdbf86e0d950bd1b84f39d24e16",
+   "rgba_sha256": "878ba569d41e3caab3c867f07bea61829279ea63f5ca62530fd29764777390f9",
    "selector": "12A0",
    "texture": "names"
   },
@@ -34151,11 +34219,12 @@
    "defects": [
     "b81u-JAX-road-nameplate-heavy",
     "b81u-JAX-road-nameplate-thin-his-design",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "Noah 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 3 texels across and 3 rows, counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20)",
+   "note": "Owner 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 3 texels across and 3 rows, counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 512112,
    "reference": [
     "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
@@ -34199,13 +34268,14 @@
    ]
   },
   {
-   "after_sha256": "bfca934d4fa99819abcb90338034af966f925b4a37aaf8027e4fff0e0002ac0b",
+   "after_sha256": "1b07a7b08a31d10774ff9026db49fcf9c8921916c48abc2ed59b6657da675374",
    "before_sha256": "247407e7eafffcc445c599c62f5ab3cff0f56e7143a90c808ec7d93643fa4be3",
    "chunk": 43,
    "defects": [
     "b81u-JAX-road-nameplate-heavy",
     "b81u-JAX-road-nameplate-thin-his-design",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "derive": [
     {
@@ -34282,11 +34352,50 @@
        "0x1.da0fa67265c2bp+1"
       ]
      }
+    },
+    {
+     "box": 11,
+     "den": 64,
+     "fill": "#101010",
+     "level": 32,
+     "offsets": [
+      32,
+      64,
+      96,
+      128,
+      160,
+      192,
+      224,
+      256,
+      288,
+      320,
+      352,
+      384,
+      416,
+      448,
+      480,
+      512,
+      544,
+      576,
+      608,
+      640,
+      672,
+      704,
+      736,
+      768,
+      800,
+      832,
+      864,
+      896,
+      928
+     ],
+     "op": "smooth_letters",
+     "passes": 3
     }
    ],
    "kind": "names_derived",
    "length": 11344,
-   "note": "Noah 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 3 texels across and 3 rows, counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20)",
+   "note": "Owner 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 3 texels across and 3 rows, counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 504640,
    "reference": [
     "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
@@ -34295,7 +34404,7 @@
     "work/fix/DECISIONS/tools/jax_thin.py"
    ],
    "resource_size": 1550288,
-   "rgba_sha256": "245f2d996c0342c63440c5d9743a87e5781cbcdbf86e0d950bd1b84f39d24e16",
+   "rgba_sha256": "878ba569d41e3caab3c867f07bea61829279ea63f5ca62530fd29764777390f9",
    "selector": "12A6",
    "texture": "names"
   },
@@ -34306,11 +34415,12 @@
    "defects": [
     "b81u-JAX-road-nameplate-heavy",
     "b81u-JAX-road-nameplate-thin-his-design",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "Noah 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 3 texels across and 3 rows, counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20)",
+   "note": "Owner 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 3 texels across and 3 rows, counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 515984,
    "reference": [
     "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
@@ -34354,19 +34464,20 @@
    ]
   },
   {
-   "after_sha256": "1e9fe32c3fbc3a263412cf5278af2f440e4b13d142e5e003b9d88d2e115dc6bf",
+   "after_sha256": "aa5c6f8ada8ae5dbfc74dbbc87d80e01c90426b4b471c4817c698309b634a828",
    "before_sha256": "7850ea82b5a382e518945d8f831050015c7a8f8864ad0e24261437938e641b97",
    "chunk": 43,
    "defects": [
     "b81u-JAX-home-nameplate-outline",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 11392,
-   "note": "the home name letters without the black outline the real white letters do not have, in the road face; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20)",
+   "note": "the home name letters without the black outline the real white letters do not have, in the road face; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 498144,
    "png": "JAX_12H0_names.png",
-   "png_sha256": "d143fe34ceca0e3cd387b6fd8774bcbb217947738d448566a4a7ae1360d85bcf",
+   "png_sha256": "888a4b693598b11afbaa94248b2aa20e796058e65fd52bd49526268fd2809f98",
    "reference": [
     "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
     "JAX/2026-10-11_PHI_primary-home/helmet_back_1047.jpg"
@@ -34376,16 +34487,17 @@
    "texture": "names"
   },
   {
-   "after_sha256": "944a98066aece69d846a4aa9201ccbe46df82715152b0da1f3915c4df45320f3",
+   "after_sha256": "8d7aa0365f884886097cc0d694504102d861671117a058e8cc749a165f641756",
    "before_sha256": "7da278b81854e1e828d865a5d1fb0552fcd529458698d56520c9c7972d67f4cc",
    "chunk": 44,
    "defects": [
     "b81u-JAX-home-nameplate-outline",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the home name letters without the black outline the real white letters do not have, in the road face; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20)",
+   "note": "the home name letters without the black outline the real white letters do not have, in the road face; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 509536,
    "reference": [
     "JAX/2026-10-11_PHI_primary-home/helmet_back_1355.jpg",
@@ -34395,45 +34507,46 @@
    "selector": "12H0",
    "texture": "NAME",
    "widths": [
-    6,
-    8,
-    14,
-    14,
-    14,
-    14,
-    14,
-    13,
-    14,
-    14,
     5,
-    12,
-    14,
-    14,
-    16,
-    14,
-    14,
-    14,
-    14,
-    14,
-    14,
-    14,
-    14,
-    14,
-    17,
-    14,
-    14,
+    7,
     13,
-    11
+    13,
+    13,
+    13,
+    13,
+    12,
+    13,
+    13,
+    4,
+    11,
+    13,
+    13,
+    15,
+    13,
+    13,
+    13,
+    13,
+    13,
+    13,
+    13,
+    13,
+    13,
+    16,
+    13,
+    13,
+    12,
+    10
    ]
   },
   {
-   "after_sha256": "bfca934d4fa99819abcb90338034af966f925b4a37aaf8027e4fff0e0002ac0b",
+   "after_sha256": "1b07a7b08a31d10774ff9026db49fcf9c8921916c48abc2ed59b6657da675374",
    "before_sha256": "247407e7eafffcc445c599c62f5ab3cff0f56e7143a90c808ec7d93643fa4be3",
    "chunk": 43,
    "defects": [
     "b81u-JAX-road-nameplate-heavy",
     "b81u-JAX-road-nameplate-thin-his-design",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "derive": [
     {
@@ -34510,11 +34623,50 @@
        "0x1.da0fa67265c2bp+1"
       ]
      }
+    },
+    {
+     "box": 11,
+     "den": 64,
+     "fill": "#101010",
+     "level": 32,
+     "offsets": [
+      32,
+      64,
+      96,
+      128,
+      160,
+      192,
+      224,
+      256,
+      288,
+      320,
+      352,
+      384,
+      416,
+      448,
+      480,
+      512,
+      544,
+      576,
+      608,
+      640,
+      672,
+      704,
+      736,
+      768,
+      800,
+      832,
+      864,
+      896,
+      928
+     ],
+     "op": "smooth_letters",
+     "passes": 3
     }
    ],
    "kind": "names_derived",
    "length": 11344,
-   "note": "Noah 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 3 texels across and 3 rows, counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20)",
+   "note": "Owner 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 3 texels across and 3 rows, counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 504640,
    "reference": [
     "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
@@ -34523,7 +34675,7 @@
     "work/fix/DECISIONS/tools/jax_thin.py"
    ],
    "resource_size": 1550288,
-   "rgba_sha256": "245f2d996c0342c63440c5d9743a87e5781cbcdbf86e0d950bd1b84f39d24e16",
+   "rgba_sha256": "878ba569d41e3caab3c867f07bea61829279ea63f5ca62530fd29764777390f9",
    "selector": "12H6",
    "texture": "names"
   },
@@ -34534,11 +34686,12 @@
    "defects": [
     "b81u-JAX-road-nameplate-heavy",
     "b81u-JAX-road-nameplate-thin-his-design",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "Noah 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 3 texels across and 3 rows, counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20)",
+   "note": "Owner 11/19 (decision 8, \"Thin them to match\"): his 10/22 letters (the strip the nameplate pass puts on these kits) kept in shape and brought to the measured weight of the real plates: every glyph keeps his silhouette (widths, round corners, the flat-topped A, his C, G, J, Q, R leg, hyphen and apostrophe) and its strokes come down to 3 texels across and 3 rows, counters open; each glyph starts on its cell (his A, M, V to Z sat a texel in) with a 1 texel gap (his mean advance 13.73, now 13.77: names fit the plate as before); black #101010 as the numbers; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.19 (LEWIS 0.19, STRIGGOW 0.18, THOMAS JR 0.20); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 515984,
    "reference": [
     "JAX/2026-10-04_CIN_primary-away/helmet_back_1406.jpg",
@@ -39582,19 +39735,20 @@
    "texture": "an57"
   },
   {
-   "after_sha256": "085237a01b5336f7cd68dafb967147535428e0fbd5c7f69533503711d2ebc55e",
+   "after_sha256": "367d7f12e0662e93eb36d918dd60f940e3a73f57f88085a6aeda460a063baa87",
    "before_sha256": "be4308143e3245dbf6ac1be0e8cafde38e748ea41867956d6cf89e8cef627287",
    "chunk": 43,
    "defects": [
     "b81u-NO-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 10288,
-   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (RUIZ 0.21, TYSON 0.14, SMYTH 0.06 blurred)",
+   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (RUIZ 0.21, TYSON 0.14, SMYTH 0.06 blurred); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 489904,
    "png": "NO_17A1_names.png",
-   "png_sha256": "b654602b173cb9cfbd30c29abcf77e7382e1d071f19073b7f2204a0b25bd8010",
+   "png_sha256": "5c7fd7414db7941ea7f5fdc3a31d5567f87d2d4978c70a03773626aeb140ee17",
    "reference": [
     "NO/2026-11-08_CLE_alternate-gameday-gold/jersey_back_1356.jpg",
     "NO/2026-10-05_ATL_primary-away/helmet_back_0226.jpg"
@@ -39604,16 +39758,17 @@
    "texture": "names"
   },
   {
-   "after_sha256": "3bc7f72dd4feea5a9ee7ce59522fb6a7ade27f8aac4af221f5d5631c5ad24b96",
+   "after_sha256": "89033e7224c1e9effae5f9a28e8f278fa6e3bd4f4ca164f5350333f3f32ef40f",
    "before_sha256": "d1578e3ebbca44efc7e58e0a0109b3bcfe9aa841607ae059b2d06869d6bbc7da",
    "chunk": 44,
    "defects": [
     "b81u-NO-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (RUIZ 0.21, TYSON 0.14, SMYTH 0.06 blurred)",
+   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (RUIZ 0.21, TYSON 0.14, SMYTH 0.06 blurred); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 500192,
    "reference": [
     "NO/2026-11-08_CLE_alternate-gameday-gold/jersey_back_1356.jpg",
@@ -39623,51 +39778,52 @@
    "selector": "17A1",
    "texture": "NAME",
    "widths": [
-    6,
-    8,
-    13,
-    12,
-    12,
-    13,
-    12,
-    11,
-    13,
-    12,
     5,
+    7,
+    12,
     11,
-    13,
     11,
+    12,
+    11,
+    10,
+    12,
+    11,
+    4,
+    10,
+    12,
+    10,
+    14,
+    12,
+    12,
+    11,
+    12,
+    11,
+    11,
+    11,
+    11,
+    12,
     15,
-    13,
-    13,
-    12,
-    13,
     12,
     12,
-    12,
-    12,
-    13,
-    16,
-    13,
-    13,
-    12,
-    10
+    11,
+    9
    ]
   },
   {
-   "after_sha256": "cf3af8542dc4225719003e59738621eb76dd74a20b16eaeac47c0e11bff92366",
+   "after_sha256": "7b03df303e89b659548d9b7e2f83f0c65e90f80fa20d637b8c57493ed18f315e",
    "before_sha256": "cf6e68c8058df79f55f93577b393e4ddee8c6c37ecde29f3d1da535704cf6876",
    "chunk": 43,
    "defects": [
     "b81u-NO-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 9200,
-   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (RUIZ 0.21, TYSON 0.14, SMYTH 0.06 blurred)",
+   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (RUIZ 0.21, TYSON 0.14, SMYTH 0.06 blurred); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 472896,
    "png": "NO_17A1_names.png",
-   "png_sha256": "b654602b173cb9cfbd30c29abcf77e7382e1d071f19073b7f2204a0b25bd8010",
+   "png_sha256": "5c7fd7414db7941ea7f5fdc3a31d5567f87d2d4978c70a03773626aeb140ee17",
    "reference": [
     "NO/2026-11-08_CLE_alternate-gameday-gold/jersey_back_1356.jpg",
     "NO/2026-10-05_ATL_primary-away/helmet_back_0226.jpg"
@@ -39677,16 +39833,17 @@
    "texture": "names"
   },
   {
-   "after_sha256": "3bc7f72dd4feea5a9ee7ce59522fb6a7ade27f8aac4af221f5d5631c5ad24b96",
+   "after_sha256": "89033e7224c1e9effae5f9a28e8f278fa6e3bd4f4ca164f5350333f3f32ef40f",
    "before_sha256": "105da59158fe270e101fc0288ca1e0c9177c3bab1a5dff82fc1b94fd418b4e3c",
    "chunk": 44,
    "defects": [
     "b81u-NO-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (RUIZ 0.21, TYSON 0.14, SMYTH 0.06 blurred)",
+   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (RUIZ 0.21, TYSON 0.14, SMYTH 0.06 blurred); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 482096,
    "reference": [
     "NO/2026-11-08_CLE_alternate-gameday-gold/jersey_back_1356.jpg",
@@ -39696,35 +39853,35 @@
    "selector": "17A8",
    "texture": "NAME",
    "widths": [
-    6,
-    8,
-    13,
-    12,
-    12,
-    13,
-    12,
-    11,
-    13,
-    12,
     5,
+    7,
+    12,
     11,
-    13,
     11,
+    12,
+    11,
+    10,
+    12,
+    11,
+    4,
+    10,
+    12,
+    10,
+    14,
+    12,
+    12,
+    11,
+    12,
+    11,
+    11,
+    11,
+    11,
+    12,
     15,
-    13,
-    13,
-    12,
-    13,
     12,
     12,
-    12,
-    12,
-    13,
-    16,
-    13,
-    13,
-    12,
-    10
+    11,
+    9
    ]
   },
   {
@@ -42948,19 +43105,20 @@
    "texture": "an57"
   },
   {
-   "after_sha256": "cf3af8542dc4225719003e59738621eb76dd74a20b16eaeac47c0e11bff92366",
+   "after_sha256": "7b03df303e89b659548d9b7e2f83f0c65e90f80fa20d637b8c57493ed18f315e",
    "before_sha256": "cf6e68c8058df79f55f93577b393e4ddee8c6c37ecde29f3d1da535704cf6876",
    "chunk": 43,
    "defects": [
     "b81u-NO-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 9200,
-   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (RUIZ 0.21, TYSON 0.14, SMYTH 0.06 blurred)",
+   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (RUIZ 0.21, TYSON 0.14, SMYTH 0.06 blurred); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 472896,
    "png": "NO_17A1_names.png",
-   "png_sha256": "b654602b173cb9cfbd30c29abcf77e7382e1d071f19073b7f2204a0b25bd8010",
+   "png_sha256": "5c7fd7414db7941ea7f5fdc3a31d5567f87d2d4978c70a03773626aeb140ee17",
    "reference": [
     "NO/2026-11-08_CLE_alternate-gameday-gold/jersey_back_1356.jpg",
     "NO/2026-10-05_ATL_primary-away/helmet_back_0226.jpg"
@@ -42970,16 +43128,17 @@
    "texture": "names"
   },
   {
-   "after_sha256": "3bc7f72dd4feea5a9ee7ce59522fb6a7ade27f8aac4af221f5d5631c5ad24b96",
+   "after_sha256": "89033e7224c1e9effae5f9a28e8f278fa6e3bd4f4ca164f5350333f3f32ef40f",
    "before_sha256": "105da59158fe270e101fc0288ca1e0c9177c3bab1a5dff82fc1b94fd418b4e3c",
    "chunk": 44,
    "defects": [
     "b81u-NO-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (RUIZ 0.21, TYSON 0.14, SMYTH 0.06 blurred)",
+   "note": "the white and gameday gold name letters as the real thin black block; the gold kits' widths follow their letters (M and W were cut); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.14 (RUIZ 0.21, TYSON 0.14, SMYTH 0.06 blurred); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 482096,
    "reference": [
     "NO/2026-11-08_CLE_alternate-gameday-gold/jersey_back_1356.jpg",
@@ -42989,35 +43148,35 @@
    "selector": "17H8",
    "texture": "NAME",
    "widths": [
-    6,
-    8,
-    13,
-    12,
-    12,
-    13,
-    12,
-    11,
-    13,
-    12,
     5,
+    7,
+    12,
     11,
-    13,
     11,
+    12,
+    11,
+    10,
+    12,
+    11,
+    4,
+    10,
+    12,
+    10,
+    14,
+    12,
+    12,
+    11,
+    12,
+    11,
+    11,
+    11,
+    11,
+    12,
     15,
-    13,
-    13,
-    12,
-    13,
     12,
     12,
-    12,
-    12,
-    13,
-    16,
-    13,
-    13,
-    12,
-    10
+    11,
+    9
    ]
   },
   {
@@ -59501,19 +59660,20 @@
    "texture": "an57"
   },
   {
-   "after_sha256": "2faa065819896ceec60a459c95984a1df9bf207999a734302b6fea2a5d1c3e45",
+   "after_sha256": "9310ec0f38b9603930f6fe3ae6ff60164249da7c4cb1c1d92cbfcb8aef185488",
    "before_sha256": "f5df0d4be6acec9e089a5efd81e9562ab11f32f01a4813d3c3e92c8bb7646487",
    "chunk": 43,
    "defects": [
     "b81u-NYG-vintage-nameplate-serif",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 6688,
-   "note": "the Vintage White name letters as the real slab serif, royal blue, no outline; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (LIKELY 0.14, RUNYAN 0.12, THOMAS 0.10); A 3 texels wider, R 1 texel wider so its counter stays open",
+   "note": "the Vintage White name letters as the real slab serif, royal blue, no outline; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (LIKELY 0.14, RUNYAN 0.12, THOMAS 0.10); A 3 texels wider, R 1 texel wider so its counter stays open; b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 7-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 473408,
    "png": "NYG_18A7_names.png",
-   "png_sha256": "abaf4243785a5f6f0b715323e91f713c118120c79dee39f9afe325f5a568c2a6",
+   "png_sha256": "5a8badf703068af8ba8713cc7f8d9b966ce39d4b5adbef3238db9ddba94a7745",
    "reference": [
     "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0342.jpg",
     "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0509.jpg",
@@ -59529,11 +59689,12 @@
    "chunk": 44,
    "defects": [
     "b81u-NYG-vintage-nameplate-serif",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the Vintage White name letters as the real slab serif, royal blue, no outline; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (LIKELY 0.14, RUNYAN 0.12, THOMAS 0.10); A 3 texels wider, R 1 texel wider so its counter stays open",
+   "note": "the Vintage White name letters as the real slab serif, royal blue, no outline; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (LIKELY 0.14, RUNYAN 0.12, THOMAS 0.10); A 3 texels wider, R 1 texel wider so its counter stays open; b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 7-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 480096,
    "reference": [
     "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0342.jpg",
@@ -76056,19 +76217,20 @@
    "texture": "an57"
   },
   {
-   "after_sha256": "2faa065819896ceec60a459c95984a1df9bf207999a734302b6fea2a5d1c3e45",
+   "after_sha256": "9310ec0f38b9603930f6fe3ae6ff60164249da7c4cb1c1d92cbfcb8aef185488",
    "before_sha256": "f5df0d4be6acec9e089a5efd81e9562ab11f32f01a4813d3c3e92c8bb7646487",
    "chunk": 43,
    "defects": [
     "b81u-NYG-vintage-nameplate-serif",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 6688,
-   "note": "the Vintage White name letters as the real slab serif, royal blue, no outline; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (LIKELY 0.14, RUNYAN 0.12, THOMAS 0.10); A 3 texels wider, R 1 texel wider so its counter stays open",
+   "note": "the Vintage White name letters as the real slab serif, royal blue, no outline; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (LIKELY 0.14, RUNYAN 0.12, THOMAS 0.10); A 3 texels wider, R 1 texel wider so its counter stays open; b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 7-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 473408,
    "png": "NYG_18A7_names.png",
-   "png_sha256": "abaf4243785a5f6f0b715323e91f713c118120c79dee39f9afe325f5a568c2a6",
+   "png_sha256": "5a8badf703068af8ba8713cc7f8d9b966ce39d4b5adbef3238db9ddba94a7745",
    "reference": [
     "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0342.jpg",
     "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0509.jpg",
@@ -76084,11 +76246,12 @@
    "chunk": 44,
    "defects": [
     "b81u-NYG-vintage-nameplate-serif",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the Vintage White name letters as the real slab serif, royal blue, no outline; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (LIKELY 0.14, RUNYAN 0.12, THOMAS 0.10); A 3 texels wider, R 1 texel wider so its counter stays open",
+   "note": "the Vintage White name letters as the real slab serif, royal blue, no outline; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (LIKELY 0.14, RUNYAN 0.12, THOMAS 0.10); A 3 texels wider, R 1 texel wider so its counter stays open; b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 7-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 480096,
    "reference": [
     "NYG/2026-11-08_PHI_throwback-vintage-white/jersey_back_0342.jpg",
@@ -78363,19 +78526,20 @@
    "texture": "an57"
   },
   {
-   "after_sha256": "a134ee380c2e05e64faa08413ea8d67c64b9c8e35c7cf0f982ac665c43eb249e",
+   "after_sha256": "8446f45d7113e4df50ca94119a0ce9146d903c7d34b1be044dc6ee395c643fe9",
    "before_sha256": "5f0f92ca30b522fd3aa1c4fcc1a78bed12108c3cfc073495176d44a4e49fb41c",
    "chunk": 43,
    "defects": [
     "b81u-NYJ-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 7584,
-   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (PHILLIPS 0.15, TAYLOR 0.09 turned)",
+   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (PHILLIPS 0.15, TAYLOR 0.09 turned); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 474848,
    "png": "NYJ_19A0_names.png",
-   "png_sha256": "a076b14e9f2a5c4c80124083477c1b176c58e6168d77a95e4bbc766586b86986",
+   "png_sha256": "77d3bd88536a23960be6ef0ee1505e58246d925b631dab8be6bbe6b096231657",
    "reference": [
     "NYJ/2026-10-04_CHI_primary-away/helmet_front_0212.jpg",
     "NYJ/2026-10-25_MIA_alternate-white-out/jersey_back_0440.jpg"
@@ -78390,11 +78554,12 @@
    "chunk": 44,
    "defects": [
     "b81u-NYJ-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (PHILLIPS 0.15, TAYLOR 0.09 turned)",
+   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (PHILLIPS 0.15, TAYLOR 0.09 turned); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 482432,
    "reference": [
     "NYJ/2026-10-04_CHI_primary-away/helmet_front_0212.jpg",
@@ -83620,19 +83785,20 @@
    "texture": "an57"
   },
   {
-   "after_sha256": "a134ee380c2e05e64faa08413ea8d67c64b9c8e35c7cf0f982ac665c43eb249e",
+   "after_sha256": "8446f45d7113e4df50ca94119a0ce9146d903c7d34b1be044dc6ee395c643fe9",
    "before_sha256": "5f0f92ca30b522fd3aa1c4fcc1a78bed12108c3cfc073495176d44a4e49fb41c",
    "chunk": 43,
    "defects": [
     "b81u-NYJ-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 7584,
-   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (PHILLIPS 0.15, TAYLOR 0.09 turned)",
+   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (PHILLIPS 0.15, TAYLOR 0.09 turned); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 455440,
    "png": "NYJ_19A0_names.png",
-   "png_sha256": "a076b14e9f2a5c4c80124083477c1b176c58e6168d77a95e4bbc766586b86986",
+   "png_sha256": "77d3bd88536a23960be6ef0ee1505e58246d925b631dab8be6bbe6b096231657",
    "reference": [
     "NYJ/2026-10-04_CHI_primary-away/helmet_front_0212.jpg",
     "NYJ/2026-10-25_MIA_alternate-white-out/jersey_back_0440.jpg"
@@ -83647,11 +83813,12 @@
    "chunk": 44,
    "defects": [
     "b81u-NYJ-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (PHILLIPS 0.15, TAYLOR 0.09 turned)",
+   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (PHILLIPS 0.15, TAYLOR 0.09 turned); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 463024,
    "reference": [
     "NYJ/2026-10-04_CHI_primary-away/helmet_front_0212.jpg",
@@ -91109,19 +91276,20 @@
    "texture": "an57"
   },
   {
-   "after_sha256": "a134ee380c2e05e64faa08413ea8d67c64b9c8e35c7cf0f982ac665c43eb249e",
+   "after_sha256": "8446f45d7113e4df50ca94119a0ce9146d903c7d34b1be044dc6ee395c643fe9",
    "before_sha256": "5f0f92ca30b522fd3aa1c4fcc1a78bed12108c3cfc073495176d44a4e49fb41c",
    "chunk": 43,
    "defects": [
     "b81u-NYJ-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 7584,
-   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (PHILLIPS 0.15, TAYLOR 0.09 turned)",
+   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (PHILLIPS 0.15, TAYLOR 0.09 turned); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 455440,
    "png": "NYJ_19A0_names.png",
-   "png_sha256": "a076b14e9f2a5c4c80124083477c1b176c58e6168d77a95e4bbc766586b86986",
+   "png_sha256": "77d3bd88536a23960be6ef0ee1505e58246d925b631dab8be6bbe6b096231657",
    "reference": [
     "NYJ/2026-10-04_CHI_primary-away/helmet_front_0212.jpg",
     "NYJ/2026-10-25_MIA_alternate-white-out/jersey_back_0440.jpg"
@@ -91136,11 +91304,12 @@
    "chunk": 44,
    "defects": [
     "b81u-NYJ-nameplate-weight",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (PHILLIPS 0.15, TAYLOR 0.09 turned)",
+   "note": "the white jersey name letters at the real lighter weight; green as the real names (PHILLIPS, TAYLOR); R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.12 (PHILLIPS 0.15, TAYLOR 0.09 turned); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 463024,
    "reference": [
     "NYJ/2026-10-04_CHI_primary-away/helmet_front_0212.jpg",
@@ -98422,19 +98591,20 @@
    "texture": "an57"
   },
   {
-   "after_sha256": "ca5f4f9a07263707ad885abf1d33ebf5e44e049a6c86cd9746a08c36ee4b1e2e",
+   "after_sha256": "8b28147183b4710d66eafb50e10203ff1bb03b1aca4acfc3a7a2e921e5903920",
    "before_sha256": "3c55fb34319af4f75d684d68c9a6cb3c1365ef4aa8c7fd7dbc6e06765751060f",
    "chunk": 43,
    "defects": [
     "b81u-TB-road-nameplate-colour",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "names_png",
    "length": 6832,
-   "note": "the road name letters black as the real names (DANIELS, OTTON), not red, at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.16 (DANIELS 0.18, OTTON 0.15)",
+   "note": "the road name letters black as the real names (DANIELS, OTTON), not red, at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.16 (DANIELS 0.18, OTTON 0.15); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 485504,
    "png": "TB_27A0_names.png",
-   "png_sha256": "3865b3c9a807267820d78b99a297046baaf10581e0d64e1cfdfa5f821aafc139",
+   "png_sha256": "c2facd55d6439c17b47faf18f6a1fa2e9604bcd94ee7ed3aefdad47e01046c57",
    "reference": [
     "TB/2026-10-04_GB_primary-away/helmet_back_0125.jpg",
     "TB/2026-10-04_GB_primary-away/helmet_back_1047.jpg"
@@ -98449,11 +98619,12 @@
    "chunk": 44,
    "defects": [
     "b81u-TB-road-nameplate-colour",
-    "b81u-R2-nameplate-weight-from-the-game"
+    "b81u-R2-nameplate-weight-from-the-game",
+    "b81n-nameplate-hard-edges"
    ],
    "kind": "name_widths",
    "length": 192,
-   "note": "the road name letters black as the real names (DANIELS, OTTON), not red, at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.16 (DANIELS 0.18, OTTON 0.15)",
+   "note": "the road name letters black as the real names (DANIELS, OTTON), not red, at the real weight; R2 (11/20; the 2-texel strokes read as hairlines in the game): weight set from emulator close-ups: stems 3 texels, bars 3 rows; on the player the stem is about 0.17 of the cap (0.165 to 0.18 in three emulator close-ups at 3 texels); real stem/cap 0.16 (DANIELS 0.18, OTTON 0.15); b81-nameplates (owner 11/25: the Colts last name font \"pixelated and not good ... not accurate\"): the letters keep this design and get smooth coverage edges (smooth_letters: 8x8 subtexels, three 11-subtexel box passes, cut at 32/64); widths = ink plus one clear column",
    "offset": 492336,
    "reference": [
     "TB/2026-10-04_GB_primary-away/helmet_back_0125.jpg",

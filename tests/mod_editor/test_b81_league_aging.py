@@ -9,7 +9,8 @@ W2 retirement (nfl2k5_progression, 0x2BCF90 and 0xACEDB0): position ages a year 
    damping, and an age rule for unsigned kickers and punters (from 29 plus 0-3 years of their own);
 W3 aging data: the growth years cut on the shared curves, the position tables on the real age clock (21 + years pro)
    with growth caps from 25 and quarterbacks growing at 25-28, the running-back production shift at 1,800 / 2,100;
-W4 the class generator rolls one grade per prospect (nfl2k5_rookie_faces region C), so a class has real stars.
+W4 the class generator rolls one grade per prospect (nfl2k5_rookie_faces region C), so a class has real stars; merged
+   on b81 rookie-faces (624ebc2c6) the roll is g + 0.25 (u - g) in the same slots, with the templates widened to match.
 Every b780 executable (v0.9, the b81 integration) reads legacy and upgrades in place.
 """
 from __future__ import annotations
@@ -311,8 +312,8 @@ class GradeRollTests(unittest.TestCase):
         cls.res = case.run_region(n=1200, seed=81)
 
     def test_one_grade_per_prospect(self):
-        """Every rating of a prospect sits within GRADEW / 2 of his grade (b779-rf3: each rating drew its own r), so
-        his ratings move together and a class has real stars and busts."""
+        """Every rating's r is g + GRADEW (u - g) = 0.75 g + 0.25 u for the prospect's one grade g (b779-rf3 and b81
+        rookie-faces: each rating drew its own r), so his ratings move together and a class has real stars and busts."""
         spreads, grades = [], []
         for r, g_bits in self.res:
             g = struct.unpack("<f", struct.pack("<i", g_bits))[0]
@@ -325,20 +326,86 @@ class GradeRollTests(unittest.TestCase):
                 lo, hi = (40, 80) if off % 2 else (20, 60)
                 x = (r[off] - lo) / (hi - lo)
                 pos.append(x)
-                self.assertLessEqual(abs(x - min(1.0, max(0.0, g))), 0.35 / 2 + 0.03, (g, off, r[off]))
+                self.assertTrue(0.75 * g - 0.03 <= x <= 0.75 * g + 0.25 + 0.03, (g, off, r[off]))
             spreads.append(statistics.mean(pos))
-        self.assertGreater(statistics.pstdev(spreads), 0.22)     # one draw per rating: about 0.06
+        self.assertGreater(statistics.pstdev(spreads), 0.19)     # 0.75 sd(g) = 0.22; one draw per rating: about 0.06
         self.assertTrue(all(0.0 <= g < 1.0 for g in grades))
-        blue = sum(1 for g in grades if g >= 0.5) / len(grades)
-        self.assertTrue(0.48 < blue < 0.58, blue)                 # 1/2 + the blue-chips' 10 in 256 / 2
+        upper = sum(1 for g in grades if g >= 0.5) / len(grades)
+        self.assertTrue(0.44 < upper < 0.56, upper)               # no blue-chip draw (the rare-face pick took its bytes)
+
+    def test_the_weight_is_the_retail_quarter(self):
+        """GRADEW is a retail .rdata literal (0.25f, read by 186 retail sites), not a byte this release writes."""
+        payload = _retail()
+        off = pg._offset(payload, 0x4E696C)
+        self.assertEqual(struct.unpack_from("<f", payload, off)[0], 0.25)
+        self.assertIn(struct.pack("<I", 0x4E696C), rf.CODE_C)
 
     def test_region_c_upgrade(self):
         pad = lambda code: code + b"\xcc" * (rf.REGION_C_END - rf.REGION_C - len(code))  # noqa: E731
-        self.assertNotEqual(pad(rf.CODE_C), pad(rf.CODE_C_B780))
-        self.assertLessEqual(len(rf.CODE_C), rf.REGION_C_END - rf.REGION_C)
-        # only the two slots changed in the b780 range; everything after them keeps its address
-        diff = [i for i in range(len(rf.CODE_C_B780)) if rf.CODE_C[i] != rf.CODE_C_B780[i]]
-        self.assertTrue(diff and 0xA7 <= min(diff) and max(diff) <= 0xCB, (hex(min(diff)), hex(max(diff))))
+        self.assertNotEqual(pad(rf.CODE_C), pad(rf.CODE_C_FACES))
+        self.assertEqual(len(rf.CODE_C), len(rf.CODE_C_FACES))
+        # only the two slots (0xA2..0xCB) and the loop's call to qrand (one displacement byte at 0x2B) changed against
+        # b81 rookie-faces; everything after the slots keeps its address
+        diff = [i for i in range(len(rf.CODE_C_FACES)) if rf.CODE_C[i] != rf.CODE_C_FACES[i]]
+        self.assertEqual(diff[0], 0x2B)
+        self.assertTrue(0xA2 <= min(diff[1:]) and max(diff) <= 0xCB, (hex(min(diff[1:])), hex(max(diff))))
+
+
+class MergedRevisionTests(unittest.TestCase):
+    """The merge with b81 rookie-faces (624ebc2c6): each side's earlier region C is a recognised revision. b81
+    rookie-faces' own ("faces": one draw per rating) reads applied and upgrade_xbe moves region C only; league-aging's
+    first roll on GEN1 ("gen1_aging", the paired-r2 candidate discs) reads previous and upgrades like GEN1."""
+
+    def setUp(self):
+        from pathlib import Path
+        from tests.mod_editor.test_b778_rh1_rookie_faces import RETAIL_XBE, shipped_pool, toy_bank
+        if not (RETAIL_XBE and Path(RETAIL_XBE).is_file()):
+            self.skipTest("set NFL2K5_RETAIL_XBE to the retail default.xbe")
+        firsts, lasts = shipped_pool()
+        self.bank = toy_bank()
+        self.table = rf.tables(firsts, lasts, self.bank)
+        self.out, _ = rf.xbe_apply(Path(RETAIL_XBE).read_bytes(), self.table)
+
+    @staticmethod
+    def put(data, va, value):
+        buf = bytearray(data)
+        at = rf._offset(data, va, len(value))
+        buf[at:at + len(value)] = value
+        return bytes(buf)
+
+    def pad(self, code):
+        return code + b"\xcc" * (rf.REGION_C_END - rf.REGION_C - len(code))
+
+    def test_current(self):
+        self.assertEqual((rf.xbe_status(self.out), rf.xbe_revision(self.out), rf.region_c_state(self.out)),
+                         ("applied", "applied", "current"))
+        self.assertEqual(rf.upgrade_xbe(self.out, self.bank), (self.out, None))
+
+    def test_rookie_faces_region_c_is_upgraded_in_place(self):
+        faces = self.put(self.out, rf.REGION_C, self.pad(rf.CODE_C_FACES))
+        self.assertEqual((rf.xbe_status(faces), rf.xbe_revision(faces), rf.region_c_state(faces)),
+                         ("applied", "faces", "faces"))
+        up, receipt = rf.upgrade_xbe(faces, self.bank)
+        self.assertEqual(up[rf._offset(up, rf.REGION_C, 4):], self.out[rf._offset(up, rf.REGION_C, 4):])
+        self.assertEqual((rf.xbe_revision(up), receipt["upgraded_from"], receipt["changed_bytes"]),
+                         ("applied", "faces", 42))
+        self.assertEqual(rf.xbe_apply(faces, self.table)[0], self.out, "a full write over it gives the same bytes")
+
+    def test_league_aging_first_roll_on_gen1_reads_previous(self):
+        tail = rf.TABLE_END - rf.TABLE_VA - rf.TABLE_DATA
+        pad = lambda code, size: code + b"\xcc" * (size - len(code))  # noqa: E731
+        gen1 = self.put(self.put(self.out, rf.REGION_A, pad(rf.CODE_A_GEN1, rf.REGION_A_END - rf.REGION_A)),
+                        rf.REGION_B, pad(rf.CODE_B_GEN1, rf.REGION_B_END - rf.REGION_B))
+        gen1 = self.put(gen1, rf.TABLE_VA + rf.TABLE_DATA, pad(rf.CODE_D_GEN1, tail - 4))
+        aging = self.put(gen1, rf.REGION_C, self.pad(rf.CODE_C_GEN1_AGING))
+        self.assertEqual((rf.xbe_status(aging), rf.xbe_revision(aging), rf.region_c_state(aging)),
+                         ("previous", "gen1_aging", "gen1_aging"))
+        self.assertEqual(rf.xbe_revision(self.put(gen1, rf.REGION_C, self.pad(rf.CODE_C_GEN1))), "gen1")
+        up, receipt = rf.xbe_apply(aging, self.table)
+        self.assertEqual((up, receipt["from"]), (self.out, "previous"))
+        # a mix (this release's region A with the first roll) is nobody's revision
+        mixed = self.put(aging, rf.REGION_A, pad(rf.CODE_A, rf.REGION_A_END - rf.REGION_A))
+        self.assertEqual(rf.xbe_status(mixed), "foreign")
 
 
 class TemplateFitTests(unittest.TestCase):
@@ -348,7 +415,7 @@ class TemplateFitTests(unittest.TestCase):
         doc = rf.load_templates()
         by = {r["index"]: r["ratings"] for r in doc["templates"]}
         self.assertIn("b81 league-aging", doc["note"])
-        for pos in ("K", "P"):                         # the economy lane's supply; unchanged here
+        for pos in ("K", "P"):                         # the economy lane's supply; widened with the rest at the merge
             for k in range(4):
                 self.assertTrue(by[4 * rf.POSITIONS.index(pos) + k])
         for row in doc["templates"]:

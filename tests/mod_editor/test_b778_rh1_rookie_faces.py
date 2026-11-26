@@ -1,6 +1,8 @@
 """b778-rh1 rookie faces: tables, the in-place generator code under Unicorn, the bank, the names and the portraits.
 
-b779-rf3: prospect bodies (region A), the down-weighted zone (region D), the v3 bank with legacy ids."""
+b779-rf3: prospect bodies (region A), the down-weighted zone (region D), the v3 bank with legacy ids.
+b81 rookie-faces: rare homely / ugly faces (each row's rare tail and the last third of its hanging faces), measured with
+region D on the shipped bank and with the game's own class loop."""
 from __future__ import annotations
 
 import collections
@@ -70,7 +72,36 @@ class Tables(unittest.TestCase):
             self.assertEqual(struct.unpack_from("<HH", t, rf.T_BUCKETS + 4 * b), (2200 + 40 * b, 40 | 5 << 9))
         for r in range(6):
             self.assertEqual(struct.unpack_from("<HH", t, rf.T_BUCKETS + 4 * (18 + r)), (2200 + 720 + 10 * r, 10))
+        self.assertEqual(struct.unpack_from("<H", t, rf.T_ROWEND)[0], 2200 + 720 + 60, "b81: the id after the last row")
+        self.assertEqual(rf.T_ROWEND + 2, rf.T_LASTBITS)
         self.assertTrue(rf.T_LASTBITS + (rf.POOL_COUNT + 3) // 4 <= rf.TABLE_DATA)
+
+    def test_fields_do_not_overlap(self):
+        """b81 rookie-faces moved NICK0..BUCKETS down to fit the row-end word; every field keeps its own bytes."""
+        fields = [(rf.T_POS, 17), (rf.T_TONES, 2), (rf.T_FIRST, 32), (rf.T_LASTCODE, 4), (rf.T_SIG, 32), (rf.T_TCB, 4),
+                  (rf.T_TCO, 1), (rf.T_RFIRST0, 2), (rf.T_NICK0, 2), (rf.T_NICKMASK, 1), (rf.T_RS0, 2),
+                  (rf.T_CANARY, 2), (rf.T_BUCKETS, 4 * rf.ROWS), (rf.T_ROWEND, 2), (rf.T_LASTBITS, (rf.POOL_COUNT + 3) // 4)]
+        used = [i for at, n in fields for i in range(at, at + n)]
+        self.assertEqual(len(used), len(set(used)))
+        self.assertLessEqual(max(used), rf.TABLE_DATA - 1)
+
+    def test_rare_tail_leaves_the_row_word(self):
+        """b81 rookie-faces: the row word counts the ordinary faces; the rare tail is the rest of the row."""
+        bank = toy_bank()
+        for k, row in enumerate(bank["buckets"]):
+            row["rare"] = k % 4
+        t = rf.tables(self.firsts, self.lasts, bank)
+        for b, row in enumerate(bank["buckets"]):
+            start, word = struct.unpack_from("<HH", t, rf.T_BUCKETS + 4 * b)
+            self.assertEqual((start, word & 511, word >> 9), (row["start"], row["count"] - b % 4, row["hanging"]))
+        gap = toy_bank()
+        gap["buckets"][18]["start"] += 1
+        with self.assertRaises(rf.RookieFacesError):
+            rf.tables(self.firsts, self.lasts, gap)
+        whole = toy_bank()
+        whole["buckets"][3]["rare"] = whole["buckets"][3]["count"]
+        with self.assertRaises(rf.RookieFacesError):
+            rf.tables(self.firsts, self.lasts, whole)
 
     def test_sigmoid_table_is_the_exact_math_bytes(self):
         self.assertEqual(list(self.table[rf.T_SIG:rf.T_SIG + 32]),
@@ -382,9 +413,9 @@ class NativeRh2(unittest.TestCase):
         cls.firsts, cls.lasts = shipped_pool()
 
     def test_rows_above_255(self):
+        # b81 rookie-faces: the rows must follow one another (a row's rare tail ends at the next row's first id); this
+        # layout used to leave a gap before the rare rows
         bank = toy_bank(count=400, hanging=100, start=1000)
-        for r in bank["buckets"][18:]:
-            r["start"] += 400 * 18 - 40 * 18
         table = rf.tables(self.firsts, self.lasts, bank)
         rng = random.Random(5)
         pros = [(rng.randrange(445), rng.choice([0, 1, 2, 5, 9]), rf.POSITIONS.index("CB"), 190) for _ in range(300)]
@@ -392,6 +423,7 @@ class NativeRh2(unittest.TestCase):
         idx = [r["photo"] - (1000 + 400 * (3 * r["tone"])) for r in res]
         self.assertTrue(all(0 <= k < 400 for k in idx), "lean rows: start + index")
         # b779-rf3: the row's last (5 * 400) >> 4 = 125 faces (275..399) are down-weighted, so ~16 % land past 255
+        # (b81 rookie-faces: the toy rows have no rare tail, so all 400 are ordinary faces)
         self.assertGreater(sum(k >= 256 for k in idx), 30, "indices past 255 are drawn")
         for k, r in zip(idx, res):
             self.assertEqual(r["dreads"], int(k < 100), "hanging = the first 100 faces, also when the index is past 255")
@@ -573,10 +605,12 @@ class RetailXbe(unittest.TestCase):
 
     def test_previous_states(self):
         """Beta-79 / v0.8 (the old region D) and the first v0.9 release candidate (its region C and D, retail college
-        bands and draft numbers) read "previous"; a mix of old and new spans is foreign."""
+        bands and draft numbers) read "previous"; a mix of old and new spans is foreign.  b81 rookie-faces: so does the
+        b780 GEN1 revision (v0.9, the beta-81 candidates before this change), and xbe_apply upgrades each in place."""
         payload = Path(RETAIL_XBE).read_bytes()
         firsts, lasts = shipped_pool()
-        out, _ = rf.xbe_apply(payload, rf.tables(firsts, lasts, toy_bank()))
+        table = rf.tables(firsts, lasts, toy_bank())
+        out, _ = rf.xbe_apply(payload, table)
 
         def put(data, va, value):
             buf = bytearray(data)
@@ -584,8 +618,18 @@ class RetailXbe(unittest.TestCase):
             buf[at:at + len(value)] = value
             return bytes(buf)
         tail = rf.TABLE_END - rf.TABLE_VA - rf.TABLE_DATA
+        pad = lambda code, size: code + b"\xcc" * (size - len(code))  # noqa: E731
+        gen1 = put(put(out, rf.REGION_A, pad(rf.CODE_A_GEN1, rf.REGION_A_END - rf.REGION_A)),
+                   rf.REGION_B, pad(rf.CODE_B_GEN1, rf.REGION_B_END - rf.REGION_B))
+        gen1 = put(put(gen1, rf.REGION_C, pad(rf.CODE_C_GEN1, rf.REGION_C_END - rf.REGION_C)),
+                   rf.TABLE_VA + rf.TABLE_DATA, pad(rf.CODE_D_GEN1, tail - 4))
+        self.assertEqual(rf.xbe_status(gen1), "previous")
+        self.assertEqual(rf.xbe_status(put(gen1, rf.REGION_A, pad(rf.CODE_A, rf.REGION_A_END - rf.REGION_A))), "foreign")
+        self.assertEqual(rf.xbe_status(put(out, rf.TABLE_VA + rf.TABLE_DATA, pad(rf.CODE_D_GEN1, tail - 4))), "foreign")
+        up, receipt = rf.xbe_apply(gen1, table)
+        self.assertEqual((rf.xbe_status(up), receipt["from"], up), ("applied", "previous", out))
         old_c = rf.CODE_C_RF3 + b"\xcc" * (rf.REGION_C_END - rf.REGION_C - len(rf.CODE_C_RF3))
-        rc = put(put(out, rf.COLLEGE_VA, rf.COLLEGE_RETAIL), rf.NUMBER_VA, rf.NUMBER_RETAIL)
+        rc = put(put(gen1, rf.COLLEGE_VA, rf.COLLEGE_RETAIL), rf.NUMBER_VA, rf.NUMBER_RETAIL)
         rc = put(put(rc, rf.WRAPUP_STRING_VA, rf.WRAPUP_RETAIL), rf.JERSEY_HOOK_VA, rf.JERSEY_RETAIL)
         rc = put(rc, rf.REGION_B, rf.CODE_B_RF3 + b"\xcc" * (rf.REGION_B_END - rf.REGION_B - len(rf.CODE_B_RF3)))
         rc = put(put(rc, rf.REGION_C, old_c), rf.TABLE_VA + rf.TABLE_DATA,
@@ -593,6 +637,12 @@ class RetailXbe(unittest.TestCase):
         self.assertEqual(rf.xbe_status(rc), "previous")
         b779 = put(rc, rf.TABLE_VA + rf.TABLE_DATA, rf.CODE_D_B779 + b"\xcc" * (tail - len(rf.CODE_D_B779)))
         self.assertEqual(rf.xbe_status(b779), "previous")
+        self.assertEqual(rf.xbe_apply(b779, table)[0], out, "b81 rookie-faces: beta-79 is upgraded in place too")
+        self.assertEqual((rf.xbe_revision(rc), rf.xbe_revision(b779), rf.xbe_revision(gen1)), ("b779", "b779", "gen1"))
+        with self.assertRaises(rf.RookieFacesError):      # padding where HAIRPTR sits: no rookie hair helper there
+            rf.apply_hair(b779)
+        self.assertEqual(rf.upgrade_xbe(b779), (b779, None), "the in-place routes take only the v0.9 revision")
+        self.assertEqual(rf.upgrade_xbe(out), (out, None))
         self.assertEqual(rf.xbe_status(put(rc, rf.NUMBER_VA, rf.NUMBER_PATCHED)), "foreign")    # one new span alone
         self.assertEqual(rf.xbe_status(put(out, rf.NUMBER_VA, rf.NUMBER_RETAIL)), "foreign")
         self.assertEqual(rf.xbe_status(put(out, rf.COLLEGE_VA, rf.COLLEGE_RETAIL)), "foreign")
@@ -824,6 +874,16 @@ class MyCareerContext(unittest.TestCase):
         self.assertEqual(mcm.status(both), "applied")
         self.assertEqual(mcm.status(self.write(career, [(rf.NUMBER_VA, rf.NUMBER_PATCHED)])), "foreign")  # flag alone
         self.assertEqual(mcm.status(self.write(both, [(rf.NUMBER_VA, b"\x6a\x02")])), "foreign")       # another byte
+        # b81 rookie-faces: the GEN1 revision (released v0.9, beta-81 candidates) reads "previous" now and writes the same
+        # draft-number byte; MyCareer must still read applied with it (the review's M1: it read foreign)
+        pad = lambda code, size: code + b"\xcc" * (size - len(code))  # noqa: E731
+        gen1 = self.write(both, [(rf.REGION_A, pad(rf.CODE_A_GEN1, rf.REGION_A_END - rf.REGION_A)),
+                                 (rf.REGION_B, pad(rf.CODE_B_GEN1, rf.REGION_B_END - rf.REGION_B)),
+                                 (rf.REGION_C, pad(rf.CODE_C_GEN1, rf.REGION_C_END - rf.REGION_C)),
+                                 (rf.TABLE_VA + rf.TABLE_DATA,
+                                  pad(rf.CODE_D_GEN1, rf.TABLE_END - rf.TABLE_VA - rf.TABLE_DATA - 4))])
+        self.assertEqual((rf.xbe_status(gen1), rf.xbe_revision(gen1)), ("previous", "gen1"))
+        self.assertEqual(mcm.status(gen1), "applied")
 
 class RookieHair(unittest.TestCase):
     """b780 GEN1 Q81: every generated rookie had hair style 0 (the template's), so a face with braids, a bun, a mullet,
@@ -1107,13 +1167,14 @@ class NativeRf3(unittest.TestCase):
 
     def test_zone_is_down_weighted(self):
         """Rows big enough that few faces are in use: about (150 / 480) ** 2 = 10 % of draws land in the zone (the
-        last 150 faces, 31 % of the row).  When a row fills up, the in-use redraws reach the zone like any face."""
-        bank = toy_bank(count=480, hanging=10, start=1000)
-        for r in bank["buckets"][18:]:
-            r["start"] += 480 * 18 - 40 * 18
+        last 150 faces, 31 % of the row).  When a row fills up, the in-use redraws reach the zone like any face.
+        b81 rookie-faces: the zone is the plainest 5/16 of a row's ordinary faces (here, with no rare tail, the row)."""
+        bank = toy_bank(count=480, hanging=10, start=1000)       # no rare tail: every face is ordinary
         table = rf.tables(self.firsts, self.lasts, bank)
         pros = [(i % 445, 5, rf.POSITIONS.index("CB"), 190) for i in range(500)]
-        res = run_class(table, pros, seed=8)
+        # b81 rookie-faces: four classes (one byte more per prospect moved the stand-in rand's stream; one class of 500
+        # into four rows of 480 has a third of its faces in use by the end, and those redraws reach the zone)
+        res = [r for seed in (8, 9, 10, 11) for r in run_class(table, pros, seed=seed)]
         z0 = rf.zone_start(480)
         self.assertEqual(z0, 330)
         idx = [r["photo"] - (1000 + 480 * (3 * r["tone"])) for r in res]
@@ -1122,6 +1183,280 @@ class NativeRf3(unittest.TestCase):
         self.assertLess(share, 0.17, "about 10 % of draws, not 31 %")
         self.assertGreater(share, 0.04)
 
+
+
+# ------------------------------------------------------------------------------------------- b81 rookie-faces
+RARE = ("homely", "ugly", "extreme")     # the review's looks the owner calls ugly (the rf3 zone held them); kept here
+                                         # so the measurements below run unchanged on the b780 GEN1 module (failing first)
+
+
+def tail_of(bank, looks, b):
+    """Row b's run of RARE faces at its end (after its hanging faces), from the labels."""
+    row = bank["buckets"][b]
+    tail = 0
+    while tail < row["count"] - row["hanging"] and looks[row["start"] + row["count"] - 1 - tail] in RARE:
+        tail += 1
+    return tail
+
+
+def shipped_looks():
+    bank = rf.load_bank()
+    return bank, {f["id"]: f["look"] for f in bank["faces"] if f["id"] is not None}
+
+
+def row_of(bank, photo):
+    for b, row in enumerate(bank["buckets"]):
+        if row["start"] <= photo < row["start"] + row["count"]:
+            return b
+    return None
+
+
+def a_class(rng, size=380):
+    """Prospects spread over every row: (first, last, position, weight); one in fifty carries a rare surname (the game:
+    3 in 485), so the small East / South Asian rows are not drawn empty."""
+    mix = dict(CB=5, WR=4, HB=2, DE=3, DT=3, T=3, G=3, C=4, QB=4, TE=3, ILB=2, K=5, P=5)
+    weights = (190, 245, 305)                      # lean, medium, heavy
+    out = []
+    for _ in range(size):
+        pos = rng.choices(list(mix), weights=list(mix.values()))[0]
+        last = RARE_ROW + rng.randrange(3) if rng.random() < 0.02 else rng.randrange(445)
+        out.append((rng.randrange(445), last, rf.POSITIONS.index(pos), rng.choice(weights)))
+    return out
+
+
+class RareFaces(unittest.TestCase):
+    """b81 rookie-faces (the owner, 11/25: "the ugly draft prospect faces are still way too common. Every position has a
+    bunch of them every draft. The ugly faces should be very rare."): region A..D under Unicorn on the shipped bank's rows.
+    The b780 GEN1 code gave 10 % homely / ugly / extreme faces in an empty league and 16 % once 1,140 bank faces were
+    in use (the game's class loop, measured); the cause was the zone check on a row's first draw only and the hanging-
+    hair faces (always first in a row, so outside the zone).  Now a prospect gets one only on the rare-face byte."""
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            import unicorn  # noqa: F401
+        except ImportError:  # pragma: no cover
+            raise unittest.SkipTest("unicorn is not installed")
+        cls.firsts, cls.lasts = shipped_pool()
+        cls.bank, cls.looks = shipped_looks()
+        cls.table = rf.tables(cls.firsts, cls.lasts, cls.bank)
+        rng = random.Random(81)
+        cls.classes = [a_class(rng) for _ in range(12)]
+        cls.res = [r for k, pros in enumerate(cls.classes) for r in run_class(cls.table, pros, seed=100 + k)]
+        # a full league: half of every row's ordinary faces already worn (the plainest included), then one class
+        used = []
+        for b, row in enumerate(cls.bank["buckets"]):
+            ordinary = row["count"] - tail_of(cls.bank, cls.looks, b)
+            used += [row["start"] + k for k in range(0, ordinary, 2)]
+        cls.used = set(used)
+        cls.full = [r for k in range(4) for r in run_class(cls.table, cls.classes[k], roster_photos=used, seed=200 + k)]
+
+    def share(self, res):
+        rare = sum(self.looks.get(r["photo"]) in RARE for r in res)
+        return rare / len(res)
+
+    def test_every_face_is_a_bank_face_of_his_row(self):
+        for r in self.res + self.full:
+            self.assertIn(r["photo"], self.looks)
+            b = row_of(self.bank, r["photo"])
+            self.assertEqual(self.bank["buckets"][b]["tone"], r["tone"])
+            k = r["photo"] - self.bank["buckets"][b]["start"]
+            self.assertEqual(r["dreads"], int(k < self.bank["buckets"][b]["hanging"]))
+
+    def test_homely_and_ugly_faces_are_rare(self):
+        """About RAREK / 256 = 1.6 % of prospects (a handful in a class of 224), in an empty league and in a full one."""
+        self.assertLess(self.share(self.res), 0.025)
+        self.assertGreater(self.share(self.res), 0.004, "rare, not gone: the owner asked for some genuinely ugly people (10/22)")
+        self.assertLess(self.share(self.full), 0.025)
+
+    def test_no_row_is_ugly_heavy(self):
+        by_row = collections.defaultdict(list)
+        for r in self.res:
+            by_row[row_of(self.bank, r["photo"])].append(r)
+        for b, res in by_row.items():          # the 18 skin tone x build rows (the East / South rows see a few dozen)
+            if len(res) >= 100:
+                self.assertLess(self.share(res), 0.05, f"row {b}: {len(res)} prospects")
+        self.assertEqual(sum(len(v) >= 100 for v in by_row.values()), 18)
+
+    def test_plain_faces_are_not_over_represented(self):
+        plain = sum(self.looks[r["photo"]] == "plain" for r in self.res) / len(self.res)
+        bank = sum(1 for v in self.looks.values() if v == "plain") / len(self.looks)
+        self.assertLess(plain, bank)
+
+    def test_faces_do_not_repeat(self):
+        for k in range(12):
+            photos = [r["photo"] for r in self.res[380 * k:380 * (k + 1)]]
+            self.assertEqual(len(set(photos)), len(photos), f"class {k}")
+        for k in range(4):                     # four separate full leagues
+            res = self.full[380 * k:380 * (k + 1)]
+            repeats = sum(r["photo"] in self.used for r in res) + len(res) - len({r["photo"] for r in res})
+            self.assertLessEqual(repeats, 1, f"full league {k}: a worn face only when none is left to find")
+
+    def test_a_worn_out_row_overflows_into_the_first_half_of_the_tail(self):
+        """A row whose ordinary faces are all worn (a fully generated league's heavy rows): the last LASTTRIES draws take
+        the first half of the rare tail (homely first in the review's order; in 11 shipped rows it also reaches faces
+        labelled ugly) before a face a player already wears; the second half stays for the rare-face prospects."""
+        bank = toy_bank()
+        for row in bank["buckets"][:rf.BUCKETS]:
+            row["rare"] = 10                                         # faces 30..34 first half, 35..39 second half
+        table = rf.tables(self.firsts, self.lasts, bank)
+        lean_black = [6, 9, 12, 15]
+        worn = [2200 + 40 * b + k for b in lean_black for k in range(30)]
+        pros = [(i % 445, 5, rf.POSITIONS.index("CB"), 190) for i in range(40)]
+        res = [r for r in run_class(table, pros, roster_photos=worn, seed=31) if r["tone"] >= 2]
+        idx = [(r["photo"] - 2200) % 40 for r in res]
+        self.assertTrue(all((r["photo"] - 2200) // 40 in lean_black for r in res))
+        self.assertGreaterEqual(sum(30 <= k < 35 for k in idx), 15, idx)
+        self.assertLessEqual(sum(k >= 35 for k in idx), 1, idx)
+        bank = toy_bank()                                            # no rare tail: the same worn row only repeats
+        table = rf.tables(self.firsts, self.lasts, bank)
+        worn = [2200 + 40 * b + k for b in lean_black for k in range(40)]
+        res = run_class(table, pros[:10], roster_photos=worn, seed=31)
+        self.assertTrue(all(r["photo"] in set(worn) for r in res if r["tone"] >= 2))
+
+    def test_every_rare_look_is_in_a_rare_block(self):
+        """Each row's homely / ugly / extreme faces are its rare tail or in the last third of its hanging faces."""
+        self.assertEqual(rf.RARE_LOOKS, RARE)
+        for b, row in enumerate(self.bank["buckets"]):
+            tail, h = rf.rare_tail(self.bank, b), row["hanging"]
+            self.assertEqual(tail, tail_of(self.bank, self.looks, b))
+            for k in range(row["count"]):
+                if self.looks[row["start"] + k] in rf.RARE_LOOKS:
+                    self.assertTrue(k >= row["count"] - tail or h - rf.hanging_rare(h) <= k < h, (b, k))
+            self.assertGreaterEqual(row["count"] - tail, h, f"row {b}: the tail stops at the hanging faces")
+
+    def test_code_fits(self):
+        """In place, no allocator bytes: region D is full to HAIRPTR, pick sits after gearsetup in region C's padding,
+        and the b780 GEN1 bytes before it only changed where they name a moved table field (NICK0)."""
+        self.assertEqual(len(rf.CODE_D), rf.TABLE_END - rf.TABLE_VA - rf.TABLE_DATA - 4)
+        self.assertLessEqual(len(rf.CODE_C), rf.REGION_C_END - rf.REGION_C)
+        self.assertLessEqual(len(rf.CODE_B), rf.REGION_B_END - rf.REGION_B)
+        self.assertEqual(len(rf.CODE_A), rf.REGION_A_END - rf.REGION_A)
+        self.assertEqual(sum(x != y for x, y in zip(rf.CODE_C_FACES, rf.CODE_C_GEN1)), 1)
+        # b81 league-aging: + the grade roll in the qsetup / qrand slots (0xA2..0xCB) and the loop's call to qrand (0x2B)
+        slots = {0x2B, *range(0xA2, 0xCC)}
+        self.assertEqual(sum(x != y for i, (x, y) in enumerate(zip(rf.CODE_C, rf.CODE_C_GEN1)) if i not in slots), 1)
+        self.assertEqual(rf.CODE_C[len(rf.CODE_C_GEN1):], rf.CODE_C_FACES[len(rf.CODE_C_GEN1):], "pick is unchanged")
+        self.assertEqual(sum(x != y for x, y in zip(rf.CODE_A, rf.CODE_A_GEN1)), 3)       # NICK0 twice, NICKMASK
+        self.assertEqual(sum(x != y for x, y in zip(rf.CODE_B, rf.CODE_B_GEN1)), 2)       # CANARY, NICK0
+
+
+class Immediates(unittest.TestCase):
+    """b81 rookie-faces (the review's N2): RAREK, TRIES, LASTTRIES and HANGING_RARE_NUM are code immediates; the module's
+    names must be the bytes region D and pick carry."""
+
+    def test_region_d_and_pick_carry_the_module_constants(self):
+        d, pick = rf.CODE_D.hex(), rf.CODE_C[len(rf.CODE_C_GEN1):].hex()
+        b = lambda value: f"{value:02x}"  # noqa: E731
+        self.assertEqual(d.count("3c" + b(rf.RAREK) + "6a" + b(rf.TRIES) + "5b18ff"), 1)     # cmp al,RAREK; push TRIES;
+        self.assertEqual(d.count("80fb" + b(rf.TRIES) + "750c"), 1)                         # pop ebx; sbb bh,bh / first draw
+        self.assertEqual(d.count("fecb75"), 1)                                              # dec bl; jnz
+        self.assertEqual(pick.count("80fb" + b(rf.LASTTRIES + 1) + "7305"), 1)             # last tries: overflow range
+        self.assertEqual(pick.count("b0" + b(rf.LASTTRIES) + "38d8"), 1)                   # last tries: keep any face
+        self.assertEqual(pick.count("6bc8" + b(rf.HANGING_RARE_NUM) + "c1e905"), 1)        # (11 * hanging) >> 5
+        self.assertEqual(rf.hanging_rare(46), 15)
+        self.assertLess(rf.LASTTRIES, rf.TRIES)
+        self.assertLessEqual(rf.TRIES, 127)                                                  # push imm8
+
+
+class RealUpgrades(unittest.TestCase):
+    """b81 rookie-faces on the real GEN1 executables (the review's M1 / S1): the released v0.9 and the beta-81 candidate
+    read "previous" (revision gen1); MyCareer and the rookie hair helper still accept them; upgrade_xbe gives the bytes a
+    build from the disc's own name pool writes, keeping the hair helper, and every Studio status but rookie faces is
+    unchanged by it."""
+
+    def cases(self):
+        out = []
+        released = os.environ.get("NFL2K5_V09_RELEASED_XBE")
+        stability = os.environ.get("NFL2K5_B81_STABILITY_FIXTURES")
+        if released and Path(released).is_file():
+            out.append(("v0.9", Path(released), None))
+        if stability and (Path(stability) / "default.xbe").is_file():
+            out.append(("bda1e4a4", Path(stability) / "default.xbe", Path(stability) / "rost.body"))
+        if not out:
+            self.skipTest("the released v0.9 or beta-81 candidate executable is absent")
+        return out
+
+    def test_gen1_executables(self):
+        from mod_editor.core import nfl2k5_my_career_mode as mcm
+        bank = rf.load_bank()
+        for name, path, body in self.cases():
+            with self.subTest(executable=name):
+                payload = path.read_bytes()
+                self.assertEqual((rf.xbe_status(payload), rf.xbe_revision(payload)), ("previous", "gen1"))
+                self.assertNotEqual(mcm.status(payload), "foreign")
+                self.assertTrue(rf.apply_hair(payload)[1]["already_applied"])
+                out, receipt = rf.upgrade_xbe(payload, bank)
+                self.assertEqual((rf.xbe_status(out), receipt["from"], receipt["upgraded_from"]),
+                                 ("applied", "previous", "previous"))
+                self.assertEqual(rf.hair_status(out), "applied")
+                self.assertEqual(rf.upgrade_xbe(out, bank), (out, None))
+                self.assertEqual(mcm.status(out), mcm.status(payload))
+                old = rf.xbe_tables(payload)
+                new = rf.xbe_tables(out)
+                self.assertEqual(new[:rf.T_NICK0], old[:rf.T_NICK0])
+                self.assertEqual(new[rf.T_LASTBITS:], old[rf.T_LASTBITS:])
+                if body is not None:
+                    firsts, lasts = rf.pool_names(body.read_bytes())
+                    self.assertEqual(new, rf.tables(firsts, lasts, bank), "the table a build from this disc's pool writes")
+
+
+@unittest.skipUnless(RETAIL_XBE and Path(RETAIL_XBE).is_file(), "set NFL2K5_RETAIL_XBE to the retail default.xbe")
+class RareFacesClassLoop(unittest.TestCase):
+    """b81 rookie-faces with the game's own class loop (Unicorn): a fresh franchise makes its first class (0x13EE10), then
+    two league years (retirement pass 0x2BDB00, Combine cleanup 0x2BDA90, class generator 0x2BE940) with every earlier
+    prospect still on the roster, on the retail executable and roster with rookie faces applied."""
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            import unicorn  # noqa: F401
+        except ImportError:  # pragma: no cover
+            raise unittest.SkipTest("unicorn is not installed")
+        from tests.nfl2k5_supersim_draft_fixture import Machine, retail_roster
+        body = retail_roster()
+        firsts, lasts = rf.pool_names(body)
+        cls.bank, cls.looks = shipped_looks()
+        payload, _ = rf.xbe_apply(Path(RETAIL_XBE).read_bytes(), rf.tables(firsts, lasts, cls.bank))
+        m = Machine(payload, trace_writes=False)
+        m.load_retail_roster(body)
+        m.seed(12345)
+        for va, value in ((0xE5FF80, 4), (0xE60120, 0), (0xE6000C, 5), (0xE60010, 5)):
+            m.put(va, value)
+        m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
+        m.leaf(0x14E520, lambda: m.ret(), reason="informational dialog only")
+        made = []
+        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: made.append(m.reg("ECX")), begin=0x2BE6F0, end=0x2BE6F0)
+        cls.classes = []
+        for year in range(3):
+            n, base = m.get(m.root), m.get(m.root + 4)
+            before = {struct.unpack_from("<H", bytes(m.uc.mem_read(base + 0x54 * i + 6, 2)))[0] for i in range(n)}
+            made.clear()
+            if year == 0:
+                m.call(0x13EE10, budget=2_000_000_000)
+            else:
+                m.call(0x2BDB00, budget=4_000_000_000)
+                m.call(0x2BDA90, budget=2_000_000_000)
+                n, base = m.get(m.root), m.get(m.root + 4)
+                before = {struct.unpack_from("<H", bytes(m.uc.mem_read(base + 0x54 * i + 6, 2)))[0] for i in range(n)}
+                made.clear()
+                m.call(0x2BE940, ecx=380, budget=4_000_000_000)
+            photos = [struct.unpack_from("<H", bytes(m.uc.mem_read(record + 6, 2)))[0] for record in made]
+            cls.classes.append((photos, before))
+
+    def test_every_prospect_gets_a_bank_face_no_face_twice(self):
+        for photos, before in self.classes:
+            self.assertGreaterEqual(len(photos), 300)
+            self.assertTrue(all(p in self.looks for p in photos))
+            self.assertEqual(len(set(photos)), len(photos))
+            self.assertFalse(set(photos) & before, "a face a player already wears")
+
+    def test_homely_and_ugly_faces_are_rare(self):
+        photos = [p for c, _ in self.classes for p in c]
+        rare = sum(self.looks[p] in RARE for p in photos)
+        self.assertLess(rare / len(photos), 0.03, f"{rare} of {len(photos)}")
+        last = self.classes[-1][0]
+        self.assertLess(sum(self.looks[p] in RARE for p in last) / len(last), 0.04, "the third class, 760 faces worn")
 
 
 class NativeRf3Ratings(unittest.TestCase):
@@ -1137,6 +1472,7 @@ class NativeRf3Ratings(unittest.TestCase):
         mu.mem_write(0x48B90, self.FRAND)                     # retail frand: rand() mantissa | 1.0f, minus 1.0
         mu.mem_write(0x4E419C, struct.pack("<f", 1.0))
         mu.mem_write(0x4E4184, struct.pack("<f", 0.5))
+        mu.mem_write(0x4E696C, struct.pack("<f", 0.25))       # GRADEW: the retail .rdata 0.25f (b81 league-aging's roll)
         mu.mem_write(0xE3F10, bytes.fromhex("d9442404db5c24048b442404c20400"))   # fld [esp+4]; fistp [esp+4]; ret 4
         stubs = 0x600000
         for i in range(29):
@@ -1169,14 +1505,15 @@ class NativeRf3Ratings(unittest.TestCase):
     def test_code_fits(self):
         self.assertLessEqual(len(rf.CODE_C), rf.REGION_C_END - rf.REGION_C)
 
-    def test_ratings_stay_in_the_template_range_and_blue_chips_are_rare(self):
-        # b81 league-aging: the frame slot holds the prospect's grade g (a float; a blue-chip's is (g + 1) / 2), and every
-        # rating sits within GRADEW / 2 of it (tests/mod_editor/test_b81_league_aging.GradeRollTests checks that bound)
+    def test_ratings_stay_in_the_template_range_and_grades_are_uniform(self):
+        # b81 league-aging (merged on b81 rookie-faces): the frame slot holds the prospect's grade g (a float, uniform in
+        # [0, 1); no blue-chip draw), and every rating's r is g + GRADEW (u - g) (tests/mod_editor/test_b81_league_aging.
+        # GradeRollTests checks that bound)
         res = self.run_region()
         grades = [struct.unpack("<f", struct.pack("<i", flag))[0] for _r, flag in res]
         self.assertTrue(all(0.0 <= g < 1.0 for g in grades))
         upper = sum(1 for g in grades if g >= 0.5) / len(grades)
-        self.assertTrue(0.48 < upper < 0.58, upper)                # 1/2 + BLUEK 10 in 256 / 2
+        self.assertTrue(0.44 < upper < 0.56, upper)
         for (r, _flag), g in zip(res, grades):
             for i in range(29):
                 if 0x36 + i in (0x4E, 0x50, 0x51):              # the capped rolls write these after the loop

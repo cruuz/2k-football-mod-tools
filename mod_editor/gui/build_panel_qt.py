@@ -447,9 +447,10 @@ PREVIOUS_MULTIPLE_RELEASES = {"pass_rush_stats", "history_screen"}
 PREVIOUS_REBUILD_KEYS = {"history_screen": "Franchise History", "my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",
                          "pass_rush_stats": "pass rush stats", "scorebug_runtime": "scorebug effects",
                          "sim_realism": "simulated season realism",
-                         # b780 studio1: the released v0.8 disc reads "previous" for these two as well. Rookie faces cannot
-                         # be written over the beta-79 generator bytes (xbe_apply wants retail or this release's), and the
-                         # Player Progress row belongs to the screen above; both were greyed out with a generic badge.
+                         # b780 studio1: the released v0.8 disc reads "previous" for these two as well. A Build cannot
+                         # put rookie faces over an earlier release's generator bytes (it starts from retail; b81: only the
+                         # in-place v0.9 update and edits upgrade the v0.9 revision), and the Player Progress row belongs
+                         # to the screen above; both were greyed out with a generic badge.
                          "rookie_faces": "rookie faces and first names", "player_progress_visible": "Player Progress row"}
 # b780 studio1: the plan fields behind the installed runtime options the build will not drop (the modules listed in
 # nfl2k5_throw_tuning._check_installed_runtime_settings, and the plan fields their derived switches read:

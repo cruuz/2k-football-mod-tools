@@ -11892,7 +11892,9 @@
         "ASTRA_CALENDAR_ENGINE_REPORT.md",
         "tests/mod_editor/test_nfl2k5_calendar_engine.py",
         "tests/mod_editor/test_nfl2k5_calendar_engine_unicorn.py",
-        "tests/mod_editor/test_nfl2k5_calendar_engine_delivery.py"
+        "tests/mod_editor/test_nfl2k5_calendar_engine_delivery.py",
+        "mod_editor/core/nfl2k5_super_bowl_booth.py",
+        "tests/mod_editor/test_nfl2k5_super_bowl_booth.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -11906,7 +11908,8 @@
         "Pinned USA executable and a complete allocator union.",
         "Recognized complete season owners; base year 2004 or 2026. The executable-only CLI cannot install or certify external regular/preseason templates; use the combined 2026 image build for the shipped matching resources.",
         "Current dates encode year minus 2000; historical/templates retain their source context. No automatic migration of ambiguous older wrapped dates.",
-        "Extracted executable only, at most 12,300,288 bytes; output must be a new file. Full owner union must be reserved before any allocator owner is installed."
+        "Extracted executable only, at most 12,300,288 bytes; output must be a new file. Full owner union must be reserved before any allocator owner is installed.",
+        "b81 sb-booth: with the 2026 season (season_2026) the build also points the booth's franchise Super Bowl lines at the game's own lines without a city or a number: the retail welcomes of Super Bowls XXXIX to XLII (Jacksonville, Detroit, Miami, Tempe), the numbered coin-toss lead-ins and Berman's numbered sign-offs become lines 1483, 1051 and 2740, and Berman's sign-offs that celebrate ESPN's 25th year become the recorded ones without the anniversary (keys 39796 and 39798, and 39800 for the AFC wild card). 18 bytes in the in-game, pregame and halftime/postgame directors (outer entries 4, 1194 and 1195, stored uncompressed, each keeping its size), pinned retail, previous and applied; a foreign director is left alone; a line the user replaced through the commentary replacement keeps its retail key. Release gate: python3 -m mod_editor.core.nfl2k5_super_bowl_booth check <disc>. Witnessed in game: the Super Bowl welcome and coin toss; the sign-offs are unwitnessed."
       ],
       "portme": [
         "EXPERIMENTAL / UNWITNESSED: Noah must witness natural rollovers, boot and save/reload at 2053, 2098..2101, 2104 and indices 127/128; see ASTRA_CALENDAR_ENGINE_REPORT.md.",
@@ -15088,7 +15091,11 @@
         "tests/mod_editor/test_nfl2k5_stadium_shared_art.py",
         "data/nfl2k5_stadium_shared_art/event_fields.json",
         "tests/mod_editor/test_nfl2k5_event_fields.py",
-        "ev/evidence/field_proof.json"
+        "ev/evidence/field_proof.json",
+        "mod_editor/core/nfl2k5_stadium_welcome.py",
+        "tests/mod_editor/test_nfl2k5_stadium_welcome.py",
+        "mod_editor/core/nfl2k5_stale_speech.py",
+        "tests/mod_editor/test_nfl2k5_stale_speech.py"
       ],
       "game": "nfl2k5_xbox",
       "gui": {
@@ -15104,7 +15111,9 @@
         "Kansas City (s13) is written only with Modern Arrowhead off; its reviewed art fills what the Kansas City folder leaves out, except the sideline yard markers.",
         "The main ROST's stadium records of the twelve venues whose building is still the team's home (data/nfl2k5_modern_venues_2026/names.json): name and display name become the 2026 names; the asset codes (the engine's file-name keys) and every other record stay.",
         "Appearance in game is unwitnessed.",
-        "Residual sponsor items reach two home atlases and 19 special slots through the venue-art pass. Seven plain-type P8 event field logos replace the complete native textures in all nine variants: s31/s39 PRO BOWL / ALL-STARS; s41-s45 SUPER BOWL / CHAMPIONSHIP. s40 stays with the SoFi model and its existing LXI art. The ten board-kit venues have no shared items."
+        "Residual sponsor items reach two home atlases and 19 special slots through the venue-art pass. Seven plain-type P8 event field logos replace the complete native textures in all nine variants: s31/s39 PRO BOWL / ALL-STARS; s41-s45 SUPER BOWL / CHAMPIONSHIP. s40 stays with the SoFi model and its existing LXI art. The ten board-kit venues have no shared items.",
+        "b81 sb-booth: the pregame welcome (key 14039) names each stadium's 2004 building; for each of 24 stadium rows a build renames away from its recorded name (Arizona Stadium, Georgia Dome, Ralph Wilson, Chicago Field, Paul Brown, Texas Stadium, Invesco, RCA Dome, Alltel, Pro Player, Metrodome, Louisiana Superdome, Giants/Jets Stadium, Oakland Coliseum, Heinz Field, Edward Jones Dome, Qualcomm, San Francisco, Seattle Stadium, Tampa Bay Stadium, Titans Coliseum, Washington Field, Browns Stadium) the welcome is skipped (its value in the lines speech index's stadium list becomes 0xFFFF; the list belongs to 14039 alone and has no fallback line). Data-driven: rows that keep their retail name (spaces and case ignored) keep the welcome; a welcome the user re-recorded stays. Standard 2026 disc: 48 bytes; the welcome plays at 8 of the 32 home stadiums.",
+        "b81 sb-booth part 2 (nfl2k5_stale_speech): per-team and per-stadium booth lines that name a moved building, a relocated club's old city (Oakland, St. Louis, San Diego), Washington's old name, a 2004 head coach or storyline, or (with the 2026 season) a dated line are removed from their context lists. What plays instead is the game's own fallback, modelled from the context handlers and pinned in tests: the key's generic line (9453, 38506/38550, 38502, 9414, 9456), the home or visiting team line for Washington's in-game PA, booth and crowd calls (1201, 9405, 9413, 9424-9427, 9467, 9468, 38247/38248, 38853/38854; for example 'The home team has it.'), the context-99 line for 50020, or nothing (38800, 38803, 13850, 9455, 512, 9474-9476, 38851/38852, 38859/38860). The halftime/postgame recaps and franchise news keep 'Redskins' (their fallback would call Washington 'the visitors'). Each rule holds only when the built disc shows the change; a line the user re-recorded stays. 364 bytes on a standard 2026 disc."
       ],
       "portme": [
         "Witness home games at two venues by day and one at night (end zones, midfield, field walls, fan banners, boards), and one rain or snow game."

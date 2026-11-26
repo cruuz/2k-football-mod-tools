@@ -6,6 +6,9 @@ one tool with three steps. A target is {gsis, first, last, pos, college, bm, bd,
 roster_2026 ``headshot_url`` (the ESPN headshot of the same espn_id is the documented fallback).
 
   fetch    download each headshot, check it decodes, keep it as an RGBA PNG (at most 1400 px wide)
+  cutout   (b81) take the background off every source whose picture is opaque (a studio wall: no cutout), with a local
+           matting model (tools/b81/portrait_cutout.py, run in the venv that has rembg; PORTRAIT_CUTOUT_PY names its
+           python); the opaque original is kept in work/png_opaque. Transparent NFL.com headshots need no step.
   convert  gate (placeholder or shared image, empty, no face, tiny face ...), crop to the retail portrait framing
            (eye line y = 48.4, eye to mouth 30 px of 128, YuNet landmarks, zoom out up to 1.45x for tall hair), reduce
            to the game's 128 x 128 P8 format, measure the skin tone (ITA from forehead, nose and cheek patches), and
@@ -13,6 +16,7 @@ roster_2026 ``headshot_url`` (the ESPN headshot of the same espn_id is the docum
   append   put the accepted faces into the repo's atlases (a new atlas file when the last is full) and the manifest
 
   python3 tools/b780/rst2_headshots.py fetch   --targets T.json --work W
+  PORTRAIT_CUTOUT_PY=VENV/bin/python python3 tools/b780/rst2_headshots.py cutout --targets T.json --work W
   python3 tools/b780/rst2_headshots.py convert --targets T.json --work W --model face_detection_yunet_2023mar.onnx
   python3 tools/b780/rst2_headshots.py append  --targets T.json --work W [--data data/nfl2k5_real_portraits]
                                                  [--tones tones.json] [--job b780-rst2 --fetched 2026-11-04]
@@ -28,7 +32,9 @@ import hashlib
 import io
 import json
 import math
+import os
 import re
+import subprocess
 import sys
 import time
 import urllib.request
@@ -101,6 +107,43 @@ def fetch(args):
         res = list(pool.map(one, targets))
     (work / "fetch_receipt.json").write_text(json.dumps(res, indent=0), encoding="utf-8")
     print(collections.Counter((r["status"].split(":")[0], r.get("src")) for r in res))
+
+
+# ------------------------------------------------------------------------------------------------ cutout (b81)
+CUTOUT_TOOL = ROOT / "tools" / "b81" / "portrait_cutout.py"
+
+
+def opaque_without_cutout(fetch_row, cutout_receipt):
+    """True for a fetched source whose picture has no transparency and was not cut out: it would put a wall on the card."""
+    return bool(fetch_row.get("alpha")) and fetch_row["alpha"][0] == 255 \
+        and cutout_receipt.get(fetch_row["gsis"], {}).get("cutout") in (None, "source_transparent")
+
+
+def cutout(args):
+    """Replace the opaque sources in work/png by cutouts (the originals go to work/png_opaque); work/cutout_receipt.json
+    names the method per player. Runs the matting tool in the python of PORTRAIT_CUTOUT_PY (a venv with rembg)."""
+    import shutil
+    work = Path(args.work)
+    receipt = json.loads((work / "fetch_receipt.json").read_text(encoding="utf-8"))
+    opaque = [r["gsis"] for r in receipt if r.get("status") == "ok" and r["alpha"][0] == 255]
+    out = {r["gsis"]: {"cutout": "source_transparent"} for r in receipt if r.get("status") == "ok"}
+    if opaque:
+        py = os.environ.get("PORTRAIT_CUTOUT_PY")
+        if not py:
+            sys.exit("PORTRAIT_CUTOUT_PY must name the python of a venv with rembg (see tools/b81/portrait_cutout.py): "
+                     f"{len(opaque)} sources are opaque")
+        (work / "png_opaque").mkdir(exist_ok=True)
+        (work / "png_cut").mkdir(exist_ok=True)
+        for g in opaque:
+            shutil.copy2(work / "png" / f"{g}.png", work / "png_opaque" / f"{g}.png")
+        subprocess.run([py, str(CUTOUT_TOOL), "image", "--src", str(work / "png_opaque"), "--out", str(work / "png_cut")],
+                       check=True)
+        made = json.loads((work / "png_cut" / "cutout_receipt.json").read_text(encoding="utf-8"))
+        for g in opaque:
+            shutil.copy2(work / "png_cut" / f"{g}.png", work / "png" / f"{g}.png")
+            out[g] = made[g]
+    (work / "cutout_receipt.json").write_text(json.dumps(out, indent=0), encoding="utf-8")
+    print(len(opaque), "opaque sources cut out;", len(out) - len(opaque), "already transparent")
 
 
 # ------------------------------------------------------------------------------------------------ convert
@@ -211,6 +254,9 @@ def convert(args):
     old_urlid = {re.sub(r".*/", "", r["source_url"]) for r in manifest["portraits"]}
     urlid = collections.Counter(re.sub(r".*/", "", r["url"]) for r in receipt.values() if r.get("url"))
     shas = collections.Counter(r.get("raw_sha256") for r in receipt.values() if r.get("raw_sha256"))
+    cut = {}
+    if (work / "cutout_receipt.json").exists():
+        cut = json.loads((work / "cutout_receipt.json").read_text(encoding="utf-8"))
     fr = Framing(args.model)
     gate, crops, accepted = {}, {}, []
     for g, t in targets.items():
@@ -227,7 +273,10 @@ def convert(args):
         faces = fr.detect(im)
         info = dict(size=list(im.size), alpha_cover=round(cover, 3), faces=len(faces), src=r["src"], bytes=r["bytes"])
         if r["alpha"][0] == 255:
-            flags.append("opaque_no_cutout")
+            if opaque_without_cutout({**r, "gsis": g}, cut):
+                rej = rej or "opaque_run_cutout_step"          # b81: never ship a studio wall on the card
+            else:
+                flags.append("opaque_cut_out")                 # the wall was taken off by tools/b81/portrait_cutout.py
         if cover < 0.05:
             rej = rej or "empty_image"
         if not faces:
@@ -302,6 +351,7 @@ def append(args):
     targets = {t["gsis"]: t for t in _load_targets(args.targets)}
     receipt = {r["gsis"]: r for r in json.loads((work / "fetch_receipt.json").read_text(encoding="utf-8"))}
     gate = json.loads((work / "gate.json").read_text(encoding="utf-8"))
+    cut = json.loads((work / "cutout_receipt.json").read_text(encoding="utf-8")) if (work / "cutout_receipt.json").exists() else {}
     accepted = [g for g in json.loads((work / "accepted.json").read_text(encoding="utf-8"))]
     have = {r["gsis_id"] for r in doc["portraits"]}
     named = {(r["first"], r["last"], r["birth_month"], r["birth_day"]) for r in doc["portraits"]}
@@ -330,7 +380,8 @@ def append(args):
                          college=t.get("college") or "", birth_month=t["bm"], birth_day=t["bd"], group=args.group,
                          identity_match=t.get("method") or "roster_2026_gsis_id", source_url=r["url"], source_list=r["src"],
                          source_http_last_modified=r.get("last_modified"), source_bytes=r["bytes"], source_size=r["size"],
-                         source_sha256=r["raw_sha256"], atlas=name, cell=[col, line],
+                         source_sha256=r["raw_sha256"], cutout=cut.get(g, {}).get("cutout", "source_transparent"),
+                         atlas=name, cell=[col, line],
                          review="ok" if not gate[g]["flags"] else "ok_flagged"))
     for name, (idx, pal) in atlases.items():
         idx.save(data / name, optimize=True)
@@ -357,7 +408,7 @@ def append(args):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     sub = ap.add_subparsers(dest="step", required=True)
-    for name, fn in (("fetch", fetch), ("convert", convert), ("append", append)):
+    for name, fn in (("fetch", fetch), ("cutout", cutout), ("convert", convert), ("append", append)):
         p = sub.add_parser(name)
         p.add_argument("--targets", required=True)
         p.add_argument("--work", required=True)
