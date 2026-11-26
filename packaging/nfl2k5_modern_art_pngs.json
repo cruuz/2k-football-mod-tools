@@ -5770,14 +5770,14 @@
     },
     "data/nfl2k5_real_portraits/faces_04.png": {
       "height": 2048,
-      "sha256": "a6b9d16958ccd5172af508ced8ac0c79795dd41c0b326cf7fbdb731386de77c3",
-      "size": 1554268,
+      "sha256": "32d70a0a84a8fdb2ce64ed76effc80a9092ab5b5930908b972e933ab7f770d51",
+      "size": 1554861,
       "width": 2048
     },
     "data/nfl2k5_real_portraits/faces_04_pal.png": {
       "height": 256,
-      "sha256": "874305f788c20f4d500afdd89bd2521d7547cacfb830a2dcca736521885cceb1",
-      "size": 155247,
+      "sha256": "95995db4553c57a0f132c25081195e2664d230a53c9169f889972e45831253e9",
+      "size": 155154,
       "width": 256
     },
     "data/nfl2k5_relief_2026_b81u/difference_jersey.png": {

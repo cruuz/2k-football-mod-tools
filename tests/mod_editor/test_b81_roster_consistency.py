@@ -79,15 +79,15 @@ STANDARD_SOURCES = Path(os.environ.get("NFL2K5_B81_STANDARD_SOURCES", "") or "mi
 # b81 roster-1125 (Noah: "kirk cousins not on vikings, trade deadline roster not updated?"; the 2026 deadline was 11/10):
 # the release sources load the 11/25 refresh, 128 MB and the 64 MB retail-capacity fit of it.
 RELEASE_ROSTERS = {128: ("roster-edits-b81-refresh-20261125.json",
-                         "17c0cdd0d99154a7208fbfab1b880998d648b02008ba98f3227c4eae1da60eef"),
+                         "b5998c412308966f668c0d5f3007e8bbe57c225214a3913d9cf32c196b7fce53"),
                    64: ("roster-edits-b81-refresh-20261125-retail-capacity-64mb.json",
-                        "86b56a42215469fa3644644b41ba2d417db9a06fff158046eca754ee1fa5ce54")}
+                        "285b80bb63fbe795c52b3d0dc58b1c5a2dfd7e1dfcbf399318de46b20d3a7deb")}
 
 
 @unittest.skipUnless((STANDARD_SOURCES / "recipe.json").is_file(), "private release sources absent: NFL2K5_B81_STANDARD_SOURCES")
 class ReleaseSourcesRosterTests(unittest.TestCase):
     def test_both_editions_load_the_november_25_roster(self):
-        import hashlib, json
+        import hashlib, json, re
         for memory, (name, digest) in RELEASE_ROSTERS.items():
             root = STANDARD_SOURCES.parent / f"v10-sources-{memory}"
             if not (root / "recipe.json").is_file():
@@ -129,13 +129,12 @@ class ReleaseSourcesRosterTests(unittest.TestCase):
                     # coordinator ruling 11/25 (option A, tightened after review): real unsigned veterans with NFL snaps in
                     # 2023 or later who are not publicly retired; fewer than 600 qualify, so fewer ship
                     tail = [r for r in plan["players"] if (r.get("evidence") or {}).get("kind") == "long_tail_unsigned_veteran"]
-                    self.assertEqual(len(tail), 215)
+                    self.assertEqual(len(tail), 208)
                     self.assertTrue(all(r["status"] == "UFA" and r["index"] in plan["free_agents"] for r in tail))
                     self.assertTrue(all(r["evidence"]["last_nfl_snaps_season"] >= 2023 for r in tail))
-                    # review S4: the rows this refresh adds point to neutral top-level notes, with no owner's name
-                    added = [r for r in plan["players"] if (r.get("evidence") or {}).get("kind")
-                             in ("long_tail_unsigned_veteran", "owner_named_default_free_agent")]
-                    self.assertNotIn("Noah", json.dumps([r["evidence"] for r in added]))
+                    # review S4: no row's evidence names the owner (the added rows point to neutral top-level notes; the
+                    # 10/22 depth row for Colin Kaepernick was neutralized too)
+                    self.assertNotIn("Noah", json.dumps([r.get("evidence") for r in plan["players"]]))
                 # coordinator ruling 11/25: Daniel Carlson is Miami's kicker on the 53; the released Zane Gonzalez is not
                 miami = next(t for t in plan["teams"] if t["team"] == "MIA")
                 carlson = next(r for r in plan["players"] if r.get("gsis_id") == "00-0034161")
@@ -143,6 +142,36 @@ class ReleaseSourcesRosterTests(unittest.TestCase):
                 self.assertEqual(miami["specialists"]["k"], carlson["index"])
                 gonzalez = next((r for r in plan["players"] if r.get("gsis_id") == "00-0033862"), None)
                 self.assertTrue(gonzalez is None or gonzalez["index"] not in miami["active"] + miami["reserves"])
+                # coordinator 11/25: the ratings-2026 step names this edition's records and no personal name (the 64 MB fit
+                # had carried the 128 MB list: two players it does not carry and Jordan Mason under his 128 MB index)
+                document = json.loads(path.read_text(encoding="utf-8"))
+                step = document["reviewed_ratings_2026_step"]
+                self.assertNotIn("Noah", step["request"])
+                # review round 2: no text in the shipped document names the owner ("Noah" only as a player's name)
+                def strings(node):
+                    if isinstance(node, dict):
+                        for key, value in node.items():
+                            yield key
+                            yield from strings(value)
+                    elif isinstance(node, list):
+                        for value in node:
+                            yield from strings(value)
+                    elif isinstance(node, str):
+                        yield node
+                named = re.compile(r"Noah( [A-Z][\w'.-]+( (Jr\.|Sr\.|II|III|IV))?)?")
+                self.assertEqual([text for text in strings(document) if "Noah" in text and not named.fullmatch(text)], [])
+                by_gsis = {r["gsis_id"]: r["index"] for r in plan["players"] if r.get("gsis_id")}
+                for change in step["changes"]:
+                    if change["gsis_id"] in by_gsis:
+                        self.assertEqual(change["index"], by_gsis[change["gsis_id"]], change["player"])
+                absent = sorted(item.split(" (")[0] for item in step["skipped_absent"])
+                self.assertEqual(absent, [] if memory == 128 else
+                                 ["Ja'Kobi Lane run_route", "Omar Cooper break_tackle", "Omar Cooper catch"])
+                self.assertEqual(len(step["changes"]), step["changed"])
+                self.assertEqual(step["changed"], 354 - len(absent))
+                if memory == 64:
+                    self.assertFalse({c["player"] for c in step["changes"]} & {"Omar Cooper", "Ja'Kobi Lane"})
+                    self.assertEqual({c["index"] for c in step["changes"] if c["player"] == "Jordan Mason"}, {2572})
 
 
 RETAIL_XISO = Path(os.environ.get("NFL2K5_RETAIL_XISO", "") or "missing")

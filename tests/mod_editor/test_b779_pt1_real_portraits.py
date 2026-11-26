@@ -291,7 +291,7 @@ class RosterPlayersRst2(unittest.TestCase):
         self.assertLess(named[-1]["id"], rp.ID_LIMIT)
 
     def test_the_long_tail_free_agents_fill_the_rest_of_the_id_window(self):
-        """b81 roster-1125 (coordinator ruling 11/25, option A, tightened after review): 28 of the 215 long-tail free agents
+        """b81 roster-1125 (coordinator ruling 11/25, option A, tightened after review): 28 of the 208 long-tail free agents
         (NFL snaps in 2023 or later, not publicly retired), most recent snaps first, take the window's last ids; the
         others go the no-photo (created face) path. Announced retirees from the first selection are gone."""
         tail = self.rows[177:]
@@ -299,8 +299,14 @@ class RosterPlayersRst2(unittest.TestCase):
         self.assertTrue(self.doc["additions"][-1]["note"].startswith("Long-tail free agents"))
         names = {(r["first"], r["last"]) for r in tail}
         self.assertIn(("Reddy", "Steward"), names)            # 2026 snaps, now unsigned
-        for retired in (("J.J.", "Watt"), ("Alejandro", "Villanueva"), ("Patrick", "Peterson")):
+        # review round 2: the portrait holders were hand-checked against retirement news; the retired and retiring men
+        # (among them Lawrence Guy, Troy Hill, Denico Autry) gave their ids to the next eligible men
+        for retired in (("J.J.", "Watt"), ("Alejandro", "Villanueva"), ("Patrick", "Peterson"), ("Lawrence", "Guy"),
+                        ("Troy", "Hill"), ("Denico", "Autry"), ("Shane", "Lemieux"), ("Raekwon", "McMillan"),
+                        ("Austin", "Seibert"), ("William", "Gholston")):
             self.assertNotIn(retired, names)
+        self.assertEqual({r["id"]: (r["first"], r["last"]) for r in tail if r["last"] in ("Gipson", "Eifler")},
+                         {31179: ("Tashaun", "Gipson"), 31199: ("Milo", "Eifler")})
         self.assertEqual([r["id"] for r in tail], list(range(31172, rp.ID_LIMIT)))
         self.assertTrue(all(r["source_url"].startswith("https://static.www.nfl.com/") for r in tail))
 
