@@ -88,6 +88,8 @@ class Closure(unittest.TestCase):
         for label, plan in plans():
             for key, value in mb.recommended_64_profile(plan).items():
                 if key in FIELDS:
+                    if key == "modern_numbers" and value is False:
+                        continue   # b81 modern numbers: False is its documented Off (the Build tab's box left clear)
                     self.assertIsInstance(value, type(default_of(key)), f"{label}: {key}={value!r}")
 
     def test_the_off_values_are_fresh_copies(self):

@@ -441,7 +441,8 @@ class InPlaceUpgrades(_BuildPath):
         if mode is None:
             self.assertEqual(settings["status"], "retail")
         else:
-            self.assertEqual((settings["status"], settings["mode"], settings.get("revision")), ("applied", mode, 4))
+            # b81 integration: the QB option's current revision (5 since the game-outcomes merge, #35)
+            self.assertEqual((settings["status"], settings["mode"], settings.get("revision")), ("applied", mode, qb.REVISION))
         # review N3: the chain also moves the 18-week injury return boundary (nfl2k5_season_length)
         self.assertIn("injury_season_end", receipt["v09_update"])
         self.assertEqual(XbeImage(final).read(0x21DA97, 5), bytes.fromhex("83ff177d32"))

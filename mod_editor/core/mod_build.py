@@ -3296,6 +3296,18 @@ def _qb_floor_in_place(payload):
             notes.append("Simulated quarterback injuries: updated the franchise ownership safeguards to this release's "
                          "version (a refused trade listing is now withdrawn).")
         return payload, notes
+    if ir.status(payload) == "previous":
+        # b81 integration (#32 modern numbers): an earlier modern IR revision is updated in place, not added; the update
+        # also brings its franchise ownership page to the current revision, and the notes say what changed
+        store = ir.store_va(payload) or 0
+        older_page = getattr(ownership, "revision", None) is not None and ownership.revision(payload, store) == "previous"
+        upgraded, _receipt = ir.apply(payload, "modern", standard_guard=True)
+        notes.append("Simulated quarterback injuries: updated modern injured reserve to this release's version (a returning "
+                     "player keeps his number or gets a free one).")
+        if older_page and ownership.revision(upgraded, ir.store_va(upgraded) or 0) == "current":
+            notes.append("Simulated quarterback injuries: updated the franchise ownership safeguards to this release's "
+                         "version (a refused trade listing is now withdrawn).")
+        return upgraded, notes
     upgraded, _receipt = ir.apply(payload, "modern", standard_guard=True)
     return upgraded, [f"Simulated quarterback injuries: added modern injured reserve and its roster safeguards {_QB_FLOOR_WHY}."] + notes
 

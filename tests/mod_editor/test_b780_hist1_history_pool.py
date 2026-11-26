@@ -493,7 +493,8 @@ class RouteTests(unittest.TestCase):
     def test_the_build_tab_offers_the_update_on_a_previous_install(self):
         source = (ROOT / "mod_editor/gui/build_panel_qt.py").read_text(encoding="utf-8")
         keys = source[source.index("PREVIOUS_UPGRADE_KEYS = {"):source.index("LEGACY_UPGRADE_KEYS = {")]
-        self.assertIn('"history_pool": "career history pool"}', keys)
+        # b81 integration: later lanes add their own keys after this one (the overtime owner, modern numbers)
+        self.assertIn('"history_pool": "career history pool"', keys)
 
 
 @unittest.skipUnless(_retail() is not None, "pinned USA XBE required")

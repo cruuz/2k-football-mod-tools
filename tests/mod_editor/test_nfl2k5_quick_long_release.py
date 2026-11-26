@@ -175,7 +175,9 @@ class BytesTests(unittest.TestCase):
             with self.subTest(owner=name):
                 self.assertNotEqual(before, "foreign")
                 self.assertEqual(before, after)
-        self.assertGreaterEqual(sum(1 for state in seen.values() if state == "applied"), 20)
+        # b81 integration: owners this release revised read their v0.8 install as "previous" or "legacy" (the overtime
+        # owner since #22, season realism since #27); still installed, unchanged by this one and never foreign
+        self.assertGreaterEqual(sum(1 for state in seen.values() if state in ("applied", "previous", "legacy")), 20)
 
     def test_composes_with_the_neighbouring_throw_owners_in_both_orders(self):
         from mod_editor.core import nfl2k5_qb_accuracy as accuracy
