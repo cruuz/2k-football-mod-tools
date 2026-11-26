@@ -11,6 +11,8 @@
     build-sources  run Make my disc with an extracted editable source recipe
     edit-sim-qb    change only quarterback simulation on a new copy of a built standard disc
     edit-gadget-play  turn only the gadget player on gadget plays on or off on a new copy of a built standard disc
+    edit-team-building  add only CPU team building (needs-based CPU drafts and signings) to a new copy of a built
+                      standard disc
 
 Every run is verified against the SHA-256 of the bytes it replaces before
 anything is written; a wrong base is refused, not patched.
@@ -282,7 +284,8 @@ def cmd_update_v09(args: argparse.Namespace) -> int:
     rate = mod_build.BuildPlan.sim_qb_injury_rate if args.qb_injury_rate is None else args.qb_injury_rate
     plan = mod_build.v09_disc_update(args.source, args.out, save_list_type_guard=args.save_list_guard,
                                      modern_injured_reserve=args.modern_ir, backfield_cards=args.backfield_cards,
-                                     gadget_play=args.gadget_play, sim_qb_injuries=args.sim_qb_injuries, custom_rate=rate,
+                                     gadget_play=args.gadget_play, team_building=getattr(args, "team_building", False),
+                                     sim_qb_injuries=args.sim_qb_injuries, custom_rate=rate,
                                      qb_room=getattr(args, "qb_room", None), overwrite=args.overwrite)
     receipt = mod_build.build(plan, _progress(not args.json), require_change=True)
     print(json.dumps(receipt, indent=2, default=str))
@@ -306,6 +309,18 @@ def cmd_edit_cpu_decisions(args):
     from mod_editor.core import mod_build
     from mod_editor.core.errors import ModEditorError
     plan = mod_build.cpu_decisions_disc_edit(args.source, args.out)
+    try:
+        result = mod_build.build(plan, _progress(not args.json), require_change=True)
+    except ModEditorError as exc:
+        raise modpack.ModpackError(str(exc)) from exc
+    return _print_build_result(args, result, (args.source, args.out))
+
+
+def cmd_edit_team_building(args):
+    """b81 team building: CPU team building alone, on a new copy of a built 128 MB standard disc."""
+    from mod_editor.core import mod_build
+    from mod_editor.core.errors import ModEditorError
+    plan = mod_build.team_building_disc_edit(args.source, args.out)
     try:
         result = mod_build.build(plan, _progress(not args.json), require_change=True)
     except ModEditorError as exc:
@@ -430,6 +445,8 @@ def main(argv: list[str] | None = None) -> int:
     upgrade.add_argument("--backfield-cards", action="store_true", help="add starting backfield cards")
     upgrade.add_argument("--gadget-play", action="store_true",
                          help="add the gadget player on gadget plays (the SPECIAL GAD row; experimental)")
+    upgrade.add_argument("--team-building", action="store_true",
+                         help="add CPU team building: CPU clubs draft and sign to their weakest starters (experimental)")
     upgrade.add_argument("--sim-qb-injuries", choices=("retail", "realistic", "custom"),
                          help="set the simulated quarterback injury option on the same copy")
     upgrade.add_argument("--qb-injury-rate", type=float, metavar="PERCENT", help="Custom base injury chance per eligible play")
@@ -461,6 +478,13 @@ def main(argv: list[str] | None = None) -> int:
     decisions.add_argument("--receipt", help="new JSON receipt file")
     decisions.add_argument("--json", action="store_true")
     decisions.set_defaults(run=cmd_edit_cpu_decisions)
+    building = sub.add_parser("edit-team-building", help="add only CPU team building (needs-based CPU drafts and "
+                                                          "signings) to a copy of a built 128 MB standard disc")
+    building.add_argument("--source", required=True, help="built 128 MB standard disc with the draft AI and the economy")
+    building.add_argument("--out", required=True, help="new output disc")
+    building.add_argument("--receipt", help="new JSON receipt file")
+    building.add_argument("--json", action="store_true")
+    building.set_defaults(run=cmd_edit_team_building)
     sides = sub.add_parser("edit-helmet-sides", help="add only the helmet side numbers (Chargers) to a copy of a built "
                                                      "128 MB standard disc with Hair styles")
     sides.add_argument("--source", required=True, help="built 128 MB standard disc with Hair styles")

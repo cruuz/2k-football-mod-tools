@@ -53,7 +53,8 @@ def revision_six(payload: bytes, *, keep: frozenset = frozenset()) -> bytes:
             at = image.offset(va, len(body))
             out[at:at + len(body)] = body
     for site in economy.sites():
-        if (site.va in economy.REVISION_7_NEW and site.va not in keep) or site.va in getattr(economy, "REVISION_8_NEW", ()):
+        if (site.va in economy.REVISION_7_NEW and site.va not in keep) or site.va in getattr(economy, "REVISION_8_NEW", ()) \
+                or site.va in getattr(economy, "REVISION_9_NEW", ()):   # b81 team building: revision 9's window too
             at = image.offset(site.va, len(site.patched))
             out[at:at + len(site.patched)] = retail.read(site.va, len(site.patched))
     return _repin(out)
@@ -66,7 +67,7 @@ class SiteTests(unittest.TestCase):
         cls.after, cls.receipt = economy.apply(cls.retail)
 
     def test_revision_seven_applies(self):
-        self.assertIn(economy.REVISION, (7, 8))           # b81: revision 8 (practice squads) keeps every revision-7 site
+        self.assertIn(economy.REVISION, (7, 8, 9))        # b81: revisions 8 (practice squads) and 9 (team building) keep every revision-7 site
         self.assertEqual(self.receipt["revision"], economy.REVISION)
         self.assertEqual(economy.status(self.after), "applied")
         call = next(s.patched for s in economy.sites() if s.va == economy.DRAFT_NEED_MINIMUM)

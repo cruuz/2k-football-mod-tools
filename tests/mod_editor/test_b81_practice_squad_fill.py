@@ -64,7 +64,9 @@ class SiteTests(unittest.TestCase):
 
     def test_revision_eight_calls_the_squad_fill_from_the_gate(self):
         from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
-        self.assertEqual((economy.REVISION, self.receipt["revision"], economy.status(self.after)), (8, 8, "applied"))
+        # b81 team building: revision 9 (economy_room_for_signing) keeps every revision-8 site
+        self.assertIn(economy.REVISION, (8, 9))
+        self.assertEqual((self.receipt["revision"], economy.status(self.after)), (economy.REVISION, "applied"))
         self.assertEqual(XbeImage(self.retail).read(economy.SQUAD_GATE, 5), bytes.fromhex("e8cb720700"))   # call 0x2BF8B0
         gate = next(s.patched for s in economy.sites() if s.va == economy.SQUAD_GATE)
         self.assertEqual(gate, b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_gate"] - economy.SQUAD_GATE - 5))
@@ -80,10 +82,11 @@ class SiteTests(unittest.TestCase):
         self.assertEqual({va: eight[va] for va in seven}, seven)
 
     def test_a_revision_seven_image_reads_legacy_and_upgrades_in_place(self):
-        before = with_retail(self.after, self.retail, economy.REVISION_8_NEW)
+        # b81 team building: revision 9's window is retail on a revision-7 image as well
+        before = with_retail(self.after, self.retail, economy.REVISION_8_NEW | getattr(economy, "REVISION_9_NEW", frozenset()))
         self.assertEqual(economy.status(before), "legacy")
         upgraded, receipt = economy.apply(before)
-        self.assertEqual((receipt.get("upgraded_from"), receipt["revision"]), ("legacy", 8))
+        self.assertEqual((receipt.get("upgraded_from"), receipt["revision"]), ("legacy", economy.REVISION))
         self.assertEqual(upgraded, self.after)
 
     def test_half_a_revision_eight_is_foreign(self):
@@ -128,10 +131,10 @@ class SiteTests(unittest.TestCase):
         v09 = V09_XBE.read_bytes()
         self.assertEqual(economy.status(v09), "legacy")
         upgraded, receipt = economy.apply(v09)
-        self.assertEqual((economy.status(upgraded), receipt["revision"]), ("applied", 8))
+        self.assertEqual((economy.status(upgraded), receipt["revision"]), ("applied", economy.REVISION))
         image = XbeImage(v09)
         allowed = [(image.offset(s.va, len(s.patched)), image.offset(s.va, len(s.patched)) + len(s.patched))
-                   for s in economy.sites() if s.va in economy.REVISION_8_NEW]
+                   for s in economy.sites() if s.va in economy.REVISION_8_NEW | getattr(economy, "REVISION_9_NEW", frozenset())]
         allowed += [(s.header_offset + 36, s.header_offset + 56) for s in _sections(v09)]
         stray = [i for i in range(len(v09)) if v09[i] != upgraded[i] and not any(a <= i < b for a, b in allowed)]
         self.assertEqual(stray, [])

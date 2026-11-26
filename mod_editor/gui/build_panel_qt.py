@@ -293,6 +293,7 @@ from mod_editor.core import nfl2k5_catch_snap_limit as _catch_snap_limit  # noqa
 # b780-cv7: receivers block for a scrambling QB (off in every preset: a feel test for Noah).
 from mod_editor.core import nfl2k5_scramble_blocking as _scramble_blocking  # noqa: E402
 from mod_editor.core import nfl2k5_star_retention as _star_retention  # noqa: E402
+from mod_editor.core import nfl2k5_team_building as _team_building  # noqa: E402  b81 team building
 from mod_editor.core import nfl2k5_alien_prospect as _alien_prospect  # noqa: E402
 from mod_editor.core import nfl2k5_star_career as _star_career  # noqa: E402  b778-st2
 from mod_editor.core import nfl2k5_backfield_cards as _backfield_cards  # noqa: E402
@@ -350,6 +351,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("rookie_faces", _rookie_faces.BUILD_CAPTION, _rookie_faces.HELP_TEXT),  # b778-rh1
                  ("alien_prospect", _alien_prospect.BUILD_CAPTION, _alien_prospect.HELP_TEXT),  # b778-ee1
                  ("star_retention", _star_retention.BUILD_CAPTION, _star_retention.HELP_TEXT),  # b778-fa1
+                 ("team_building", _team_building.BUILD_CAPTION, _team_building.HELP_TEXT),  # b81 team building
                  ("practice_injuries", _practice_injuries.BUILD_CAPTION, _practice_injuries.HELP_TEXT),  # b778-pi1
                  # b778 ci2: the tab caption stays short; the full wording is the module help.
                  ("cpu_ball_carriers", "CPU carriers in bounds; QBs slide past sticks (experimental)",
@@ -3620,6 +3622,7 @@ class BuildPanel(QWidget):
             return mod_build.v09_disc_update(plan.source, plan.target, save_list_type_guard=plan.save_list_type_guard,
                                              modern_injured_reserve=plan.modern_injured_reserve,
                                              backfield_cards=plan.backfield_cards, gadget_play=plan.gadget_play,
+                                             team_building=plan.team_building,
                                              sim_qb_injuries=plan.sim_qb_injuries,
                                              custom_rate=plan.sim_qb_injury_rate, qb_room=plan.qb_room,
                                              overwrite=plan.overwrite,

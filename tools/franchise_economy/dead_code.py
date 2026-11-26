@@ -62,6 +62,9 @@ WINDOWS = {  # start: (size, sha256 of the retail bytes)
     0x3E9A90: (142, "04343c196ca45460668f254456e50e0e97f8950c728aa6c52384a47339c1cb4f"),
     0x3E9CD0: (134, "5d5df93f0747d8134d1c4c2502c4350caea4f033b513626ad5d08f2325f90a84"),
     0x3220B0: (131, "91cf637d17206732620e7706abdb4f7fab2b0b4269de74921a0f05ae3eacde72"),
+    # b81 team building (revision 9): one unreferenced retail function from the team-building lane's proof (also passes
+    # its decode-synchronisation test, tools/team_building/dead_code.py): "roster_v", economy_room_for_signing.
+    0x2D82F0: (110, "58e11dd15a15fd5c794376c38955800f8a89a1f94d53811c4f3b4aef314055a3"),
 }
 
 

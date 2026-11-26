@@ -198,6 +198,7 @@ STEP_LABELS: dict[str, str] = {
     "sportscenter_lineup": "SportsCenter highlight lineups",
     "ball_carriers": "CPU ball carriers",
     "star_retention": "CPU clubs keep their stars",
+    "team_building": "CPU team building",
     "star_career": "Rookie stars and career stars",
     "draft_clock": "the franchise draft clock",
     "weekly_progression": "Weekly player progression",

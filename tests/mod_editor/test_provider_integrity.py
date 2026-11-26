@@ -225,13 +225,16 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [611, 10, 8, 9, 8, 9]
+            [614, 10, 8, 9, 8, 9]
+            # b81 integration (#31 merge): 614 = 611 + 3 (that lane counted 612 = 609 + 3).
             # b81 integration (#22 + #23 merge): 611 = 609 + the show block guard owner (#22) + the honors
             # owner's frozen earlier runtime (#23); each lane counted 610 = 609 + its own module.
             # b81 ot-crash: 610 = 609 + the show block guard owner (loaded by name, imported by throw_tuning for the cave
             # manifest recorder).
             # b81 sb-ir-honors: 610 = 609 + the honors owner's frozen earlier runtime (nfl2k5_honors_code_b779, the
             # "previous" revision it upgrades in place).
+            # b81 team building: 612 = 609 + the team-building owner (loaded by name; the draft AI's status reads it),
+            # its generated code template and the shared team-need mirror it imports.
             # b81 helmet-sides: 609 = 607 + the helmet side numbers owner (loaded by name, imported by throw_tuning for
             # the cave manifest recorder) + Number kerning, whose state the owner reads.
             # b81 integration (qb34 trades merge): 607 = 605 (next lines) + the quarterback trades owner and its generated
