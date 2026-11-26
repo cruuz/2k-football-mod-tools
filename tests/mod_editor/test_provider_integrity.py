@@ -225,7 +225,8 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [614, 10, 8, 9, 8, 9]
+            [617, 10, 8, 9, 8, 9]
+            # b81 integration (#32 merge): 617 = 614 + 3 (that lane counted 612 = 609 + 3).
             # b81 integration (#31 merge): 614 = 611 + 3 (that lane counted 612 = 609 + 3).
             # b81 integration (#22 + #23 merge): 611 = 609 + the show block guard owner (#22) + the honors
             # owner's frozen earlier runtime (#23); each lane counted 610 = 609 + its own module.
@@ -235,6 +236,8 @@ class ProviderIntegrityTests(unittest.TestCase):
             # "previous" revision it upgrades in place).
             # b81 team building: 612 = 609 + the team-building owner (loaded by name; the draft AI's status reads it),
             # its generated code template and the shared team-need mirror it imports.
+            # b81 modern numbers: 612 = 609 + the modern numbers owner and its generated page (loaded by name, imported
+            # by throw_tuning for the cave manifest recorder) + modern IR's frozen pre-numbers revision ("previous").
             # b81 helmet-sides: 609 = 607 + the helmet side numbers owner (loaded by name, imported by throw_tuning for
             # the cave manifest recorder) + Number kerning, whose state the owner reads.
             # b81 integration (qb34 trades merge): 607 = 605 (next lines) + the quarterback trades owner and its generated
@@ -394,6 +397,8 @@ class ProviderIntegrityTests(unittest.TestCase):
         self.assertEqual(
             unified.data_pins,
             {
+                # b81 modern numbers: retired and legacy numbers, read when the owner module is imported
+                "data/nfl2k5_modern_numbers/numbers.json": "847e027758b39f0981403d8a2f0c643c5956dd6bada06fab8820acd6c7f27492",
                 "data/nfl2k5_modern_venues_2026/numbers/manifest.json": "fa9ca79e6175b4b50fb624841b4cb6aea47f9a9f910e891723de1fdf9cfed089",
                 "data/nfl2k5_modern_venues_2026/numbers/block.png": "1a6e2517c6f5f745a0a98712c4f19870ae964c8f81563d99351f2a1948d56718",
                 "data/nfl2k5_super_bowl_logos/manifest.json": "66193ac79c75a1da67f44948392f4a3885f31733e255448905f410409d1a28a8",

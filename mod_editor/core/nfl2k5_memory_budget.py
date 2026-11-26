@@ -161,6 +161,10 @@ def _modern(value):
 
 
 # owner -> the plan fields that install it (any of them); INFRASTRUCTURE rides with any space owner
+# b81 modern numbers: one fixed page at space.MODERN_NUMBERS_VA (after the CPU trades lane's two pages)
+LEGACY_REQUESTS["modern_numbers"] = (("code", 4096, 4096),)
+BUILD_OWNER_BYTES["modern_numbers"] = (space.MODERN_NUMBERS_SIZE, 0, 0, 0, 0)
+
 OWNER_FIELDS = {
     "sim_qb_injuries": ("sim_qb_injuries",),
     "backfield_cards": ("backfield_cards",),
@@ -324,6 +328,7 @@ weekly_progression widescreen xemu_display_list_fix zone_drop_cap""".split())
 RC_VALUES = {"momentum": 50, "momentum_collision_level": 50, "cpu_money_downs": "modern2", "cpu_scrambles": "modern",
              "team_number_scale": {"13A0": 1.1, "13H0": 1.1}, "modern_venues_2026": "2026 venue art",
              "roster_capacity": True, "roster_draft_pick_ownership": True, "roster_hback_roles": True}
+RC_VALUES["modern_numbers"] = False   # b81 modern numbers: the v0.9 pack had none (its season_2026 would select it)
 
 # Options a 64 MB build cannot have. A plan field, except roster_capacity: roster edits whose document asks for the
 # capacity arena (free_agent_capacity; see roster_capacity_records).
@@ -350,6 +355,10 @@ REQUIRES_128 = {
                               "the extra executable sections (the scale-out), and the 64 MB profile is the legacy "
                               "layout, which has no room left for it. A 64 MB build keeps the 2004 injured reserve "
                               "(5 a club, season-ending) with the Pro Bowl guard.",
+    # b81 modern numbers (review M1): its fixed page sits in the scale-out pool, which the 64 MB legacy layout has not
+    "modern_numbers": "Modern jersey numbers keep their rules on a page of the extra executable sections (the "
+                      "scale-out), and the 64 MB profile is the legacy layout, which has no room left for it. A 64 MB "
+                      "build keeps the game's own jersey numbers.",
 }
 
 # A field and the sub-options that only matter with it; a suggestion turns the whole group off.
@@ -498,6 +507,9 @@ def owners(opts: dict, target_mb: int = 64) -> list:
               and (opts.get("qb_room") is not None or (target_mb == 128 and qb_room_needs_met(opts.get))))
     if (target_mb == 128 and injuries) or piece3:
         out.append("qb_room")
+    value = opts.get("modern_numbers")   # b81 modern numbers: None follows season_2026; True or "modern" installs it
+    if target_mb == 128 and (value in (True, "modern") or (value is None and on(opts, "season_2026"))):
+        out.append("modern_numbers")
     return out + list(INFRASTRUCTURE) if out else out
 
 
@@ -531,6 +543,9 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     if "qb_room" in found:
         last = space.QB_ROOM_VA + space.QB_ROOM_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "modern_numbers" in found:  # b81 modern numbers: its fixed page at 0x1530000 (after the CPU trades pages)
+        last = space.MODERN_NUMBERS_VA + space.MODERN_NUMBERS_SIZE - space.POOL_VA
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     if "helmet_side_numbers" in found:  # b81 helmet sides: its fixed page after the quarterback trades page
         last = space.HELMET_SIDES_VA + space.HELMET_SIDES_SIZE - space.POOL_VA

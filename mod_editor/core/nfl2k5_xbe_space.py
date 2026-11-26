@@ -859,6 +859,33 @@ TAIL_OWNERS = (("nfl2k5_period_goalposts", "code"), ("nfl2k5_honors", "data"), (
 GAP_OWNERS = (("nfl2k5_honors", "code"), ("nfl2k5_coach_ai", "code"), ("nfl2k5_moment_coaches", "code"),
               ("nfl2k5_human_tap_burst", "code"))
 MYCAREER_M3_STATE_VA = 0x1505000
+# b81 modern numbers: one fixed page at 0x1530000 for the jersey-number owner (code and tables; the pool is RWX), placed
+# like the quarterback and helmet pages: at its absolute address, never advancing the pool cursor. 0x152E000..0x152FFFF
+# is reserved for the CPU trades owner's two pages (job/b81-cpu-trades), so this page sits right after them. It has its
+# own step-over (to_pool, after the fixed-span chain), so FIXED_SPAN_END and the span's tests are not edited here: every
+# other pool owner steps over 0x1530000..0x1530FFF whether or not it is requested, and the owner can be added in place
+# after every other owner. No layout but this owner's reaches 0x1529000 (see the quarterback room above).
+MODERN_NUMBERS_OWNER = "nfl2k5_modern_numbers"
+MODERN_NUMBERS_VA = 0x1530000
+MODERN_NUMBERS_SIZE = PAGE
+MODERN_NUMBERS_REQUEST = (MODERN_NUMBERS_OWNER, "code", MODERN_NUMBERS_SIZE, PAGE)
+# A fixed page never advances the pool cursor, so its place in LATE_OWNERS moves nobody; it sits before the quarterback
+# room so the fixed quarterback, helmet (and, after their merge, CPU trades) owners stay the last late owners.
+LATE_OWNERS = (LATE_OWNERS[:LATE_OWNERS.index(QB_ROOM_OWNER)] + (MODERN_NUMBERS_OWNER,)
+               + LATE_OWNERS[LATE_OWNERS.index(QB_ROOM_OWNER):])
+FIXED_PAGE_OWNERS += (MODERN_NUMBERS_OWNER,)
+
+
+def _modern_numbers_at(owner, at, size, align):
+    """b81 modern numbers: the fixed page's pool offset for its owner; any other owner overlapping it steps past it."""
+    page = MODERN_NUMBERS_VA - POOL_VA
+    if owner == MODERN_NUMBERS_OWNER:
+        return page
+    if at < page + MODERN_NUMBERS_SIZE and at + size > page:
+        return (page + MODERN_NUMBERS_SIZE + align - 1) & -align
+    return at
+
+
 # XSPACE2 is retained as the header envelope for the shipped boot-logo reader.
 # SP03 and the sealed external directory distinguish the v3 interpretation.
 SCALE_TAG = EXT_MAGIC + b"SP03"
@@ -1105,6 +1132,8 @@ def _scale_allocations(requests):
         _require(gadget == GADGET_REQUESTS, "incomplete or foreign gadget allocation")
         _require(all(r == BACKFIELD_REQUEST for r in requests if r[0] == BACKFIELD_REQUEST[0]),
                  "foreign Backfield card allocation")
+    _require(all(r == MODERN_NUMBERS_REQUEST for r in requests if r[0] == MODERN_NUMBERS_OWNER),
+             "the modern jersey numbers have one fixed page")  # b81 modern numbers
     _directory_code_size(requests)  # Validate every named slot before placement.
     requests = [r for r in requests if r[0] not in DIRECTORY_CODE_OWNERS]
     # b76-k1: the K128 owner is placed after every other owner, the promoted MyCareer code and the grown
@@ -1159,6 +1188,7 @@ def _scale_allocations(requests):
             at = HELMET_SIDES_VA - POOL_VA
         elif at < room + span and at + size > room:
             at = (room + span + align - 1) & -align
+        at = _modern_numbers_at(owner, at, size, align)    # b81 modern numbers: its fixed page, after the span
         _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")
         out.append(dict(owner=owner, kind=kind, size=size, align=align,
                         va=POOL_VA + at, raw=POOL_RAW + at, owner_offset=0))

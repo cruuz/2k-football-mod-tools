@@ -77,7 +77,9 @@ class AllocatorPlacementTests(unittest.TestCase):
             with self.subTest(room=ROOM in requests):
                 rows = space.plan(requests)["allocations"]
                 placed = next(r for r in rows if r["owner"] == straddle[0])
-                self.assertEqual(placed["va"], space.FIXED_SPAN_END)
+                # b81 modern numbers: from the span's end the 0x20000-byte owner would straddle the numbers page at
+                # 0x1530000 (space.MODERN_NUMBERS_VA), so it steps past that page too
+                self.assertEqual(placed["va"], space.MODERN_NUMBERS_VA + space.MODERN_NUMBERS_SIZE)
                 self.assertEqual(space.FIXED_SPAN_END, 0x152E000)
                 for row in rows:
                     if row["owner"] != ROOM[0]:
@@ -88,7 +90,8 @@ class AllocatorPlacementTests(unittest.TestCase):
         filler = ("aa_synthetic_filler", "code", 0x1528000 - 0x80 - space.POOL_VA - space.PAGE, space.PAGE)
         bumped = ("ab_synthetic_bumped", "code", 0x20000, 16)
         rows = space.plan([filler, bumped, ownership])["allocations"]
-        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x152E000)   # past trades and side numbers
+        # past trades and side numbers, and (b81 modern numbers) past the numbers page it would otherwise straddle
+        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x1531000)
 
     def test_a_foreign_room_request_is_refused(self):
         for request in (("nfl2k5_qb_room", "code", 0x2000, 0x1000), ("nfl2k5_qb_room", "data", 0x3000, 0x1000)):
@@ -477,19 +480,24 @@ class PreviousRevisionTests(unittest.TestCase):
     # Combined calibration levers (merge queue item 15): re-pinned once more; every rebuild differs from its
     # practice-squad-merge rebuild exactly where the injury option's executable differs (the QB bank's tables for
     # QB_CHANCE_SCALE 1.06, the scoring site's breakaway stop 68, the registry hash and digests).
-    D1D2_SHA = "5d471c14062b4080b33cbf699b8779cf307723b17fbd8ddae37f222a6c676e6b"
-    REVIEW_67_SHA = "08087d170426ec914119a7b4a32b4f1e47239152e1d6b759c99902bdca74a94a"
-    REVIEW_64_SHA = "c22d95b64fa9f01c0ebb3c1d0c0ccf796c2b493b8ea357d7cf526c41be2574ae"
-    FLOOR_SHA = "55e522337d0e11bbe7541b8fc23b16c0273a1656b78d4ff23ec6b00521883540"
-    FLOOR_EMPTY_SHA = "8652889ed5c32e064a6c8818b3c70dabaa39dcb1bd627afa2a59ee4ae1df790f"
+    D1D2_SHA = "dd02160e32c8fb083b60afd2fcac676362c0737b704ec47bb0ec4c253c3cda4b"
+    REVIEW_67_SHA = "0962b31e580a7f07cfdd326a006eef7671cd4b6cf0599685a205640d725c5744"
+    REVIEW_64_SHA = "92887acc8daea7a6324239b96af8df7383d6dc0377bec9955d8b7caf34821143"
+    FLOOR_SHA = "8c7b1095af3e57949964c6a04479ebfb11d469466b7acf5b87c53859b1e413b8"
+    FLOOR_EMPTY_SHA = "35af3cb703e303e8de34dda5eaae75767e2089e939f98b79f590b8391b4cf836"
     STAGE_3A_SHA = "5b3c065a543ea4cc7eb4e56c24709d9c5706406824db7c48e6cf1bdf2d863477"
     STAGE_3A_EMPTY_SHA = "0af4c40fa91dc267ad3f07c92f6d3fe354b49f9f04dd0b3ea0e4c78d494159df"
     # b2672e398's page (C21/C23 freeze it as "previous"): the P5 and P6-5ff panels ran f5270f4d (67) and 35ce7727 (64)
     # on slice 1 alone; rebuilt here at the merged head.
-    HANDOVER_67_SHA = "61724296e024ce01289635e1a93b7b5c46294098e391ed43bc272d4557fcfa42"
-    HANDOVER_64_SHA = "58e859356c3eebb935f1c0b40375b742744211214cff1e4607b58cf35ef741c0"
+    HANDOVER_67_SHA = "114e403140402abe7c76bf3c236ff01a47464fa0e20cd9ab7498b6092992b9e9"
+    HANDOVER_64_SHA = "eca5b56d1fb1731c69babc30ae5d4d421bca2e3cb52560fc61aaa4d81f01b827"
 
     @classmethod
+    # b81 modern numbers (modern IR's number-rights revision, 866fe3a8d / 911e590e3): the fixture's base is built with
+    # ir.apply, so every rebuild on that base differs from its earlier rebuild exactly in the IR runtime's code (its own
+    # allocation) and the digests; the room's pages and sites are unchanged, and the 3a rebuilds (no IR) did not move.
+    # The earlier values were D1D2 5d471c14, REVIEW_67 08087d17, REVIEW_64 c22d95b6, FLOOR 55e52233, FLOOR_EMPTY 8652889e, HANDOVER_67 61724296, HANDOVER_64 58e85935.
+    # Review S2 (IR rollover renumbers after the store is rebuilt) moved them again; before it: D1D2 103a4a6a, REVIEW_67 35d7feb5, REVIEW_64 3d752303, FLOOR 217c10a8, FLOOR_EMPTY 68c1556b, HANDOVER_67 8a2c1b18, HANDOVER_64 566e68b5.
     def setUpClass(cls):
         from mod_editor.core import nfl2k5_injured_reserve as ir, nfl2k5_qb_room as room, nfl2k5_sim_qb_injuries as qb
         cls.room = room

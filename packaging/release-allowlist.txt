@@ -60,6 +60,7 @@ mod_editor/core/nfl2k5_injured_reserve.py
 mod_editor/core/nfl2k5_injured_reserve_code.py
 mod_editor/core/nfl2k5_injured_reserve_code_b780.py
 mod_editor/core/nfl2k5_injured_reserve_code_b81_pre_ownership.py
+mod_editor/core/nfl2k5_injured_reserve_code_b81_pre_numbers.py
 mod_editor/core/nfl2k5_franchise_ownership.py
 mod_editor/core/nfl2k5_franchise_ownership_code.py
 mod_editor/core/nfl2k5_injured_reserve_save.py
@@ -616,6 +617,9 @@ mod_editor/core/nfl2k5_edition_save_notes.py
 mod_editor/core/nfl2k5_coach_career_fix.py
 mod_editor/core/nfl2k5_history_pool.py
 mod_editor/core/nfl2k5_history_pool_code.py
+mod_editor/core/nfl2k5_modern_numbers.py
+mod_editor/core/nfl2k5_modern_numbers_code.py
+data/nfl2k5_modern_numbers/numbers.json
 mod_editor/core/nfl2k5_sim_cb_tackles.py
 mod_editor/core/nfl2k5_sim_cb_tackles_b779.py
 mod_editor/core/nfl2k5_option_defaults.py

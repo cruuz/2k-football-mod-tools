@@ -340,6 +340,18 @@ def cmd_edit_helmet_sides(args):
     return _print_build_result(args, result, (args.source, args.out))
 
 
+def cmd_edit_modern_numbers(args):
+    """b81 modern numbers: modern jersey numbers (or Retail) alone, on a new copy of a built disc."""
+    from mod_editor.core import mod_build
+    from mod_editor.core.errors import ModEditorError
+    plan = mod_build.modern_numbers_disc_edit(args.source, args.out, mode=args.mode)
+    try:
+        result = mod_build.build(plan, _progress(not args.json), require_change=True)
+    except ModEditorError as exc:
+        raise modpack.ModpackError(str(exc)) from exc
+    return _print_build_result(args, result, (args.source, args.out))
+
+
 def cmd_edit_sim_qb(args):
     from mod_editor.core import mod_build
     from mod_editor.core.errors import ModEditorError
@@ -492,6 +504,14 @@ def main(argv: list[str] | None = None) -> int:
     sides.add_argument("--receipt", help="new JSON receipt file")
     sides.add_argument("--json", action="store_true")
     sides.set_defaults(run=cmd_edit_helmet_sides)
+    numbers = sub.add_parser("edit-modern-numbers", help="set only modern jersey numbers (players who join a club get "
+                                                         "today's numbers) on a copy of a built disc")
+    numbers.add_argument("--source", required=True, help="built disc (v0.9, beta 80 or beta 81)")
+    numbers.add_argument("--out", required=True, help="new output disc")
+    numbers.add_argument("--mode", choices=("modern", "retail"), default="modern")
+    numbers.add_argument("--receipt", help="new JSON receipt file")
+    numbers.add_argument("--json", action="store_true")
+    numbers.set_defaults(run=cmd_edit_modern_numbers)
 
     args = parser.parse_args(argv)
     try:
