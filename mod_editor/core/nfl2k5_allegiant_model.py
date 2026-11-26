@@ -28,7 +28,9 @@ in the st2 report. The scene:
 Geometry is in metres here (x across, +x plan east-south-east; y up from the field; z along, +z the south end zone
 toward azimuth 205 degrees: Levi's frame, so the Raiders' bench and the press box are on -x, where every retail stadium
 keeps the home sideline props and s20 its press box) and centimetres in the game. The row's indoor word becomes 1 (the
-roof is fixed). EXPERIMENTAL and UNWITNESSED in game unless a report says otherwise.
+roof is fixed), so the helmet shells take the stadium's reflection cube at full weight, as in every dome: the nine
+bundles carry SoFi's interior cube in place of the retail Oakland sky (see ``REFLECTION``; b81, the pink helmets).
+EXPERIMENTAL and UNWITNESSED in game unless a report says otherwise.
 """
 from __future__ import annotations
 
@@ -1454,10 +1456,12 @@ def build_scene(retail_bundle, filename, model, dry_bundle=None):
     return sc
 
 
-def model_bundle(retail_bundle, filename, model=None, *, cameras=None, dry_bundle=None):
+def model_bundle(retail_bundle, filename, model=None, *, cameras=None, dry_bundle=None, interior=None):
     """(bundle bytes, info): the retail bundle with its cityscape collapsed (the surroundings live in the stadium scene),
     its stadium scene replaced by the Allegiant model and its intro cameras rewritten when ``cameras`` gives the shots.
-    The stretch from the cityscape to the end of the cameras keeps its length, so the bundle keeps its size."""
+    The stretch from the cityscape to the end of the cameras keeps its length, so the bundle keeps its size. With
+    ``interior`` (``interior_reflection``'s decoded cube) the bundle's helmet reflection becomes that cube too, in the
+    reflection chunk's own span."""
     ml = sm._ml()
     tx = ml._tools()[0]
     model = model or build(venue=filename[:3])
@@ -1504,10 +1508,113 @@ def model_bundle(retail_bundle, filename, model=None, *, cameras=None, dry_bundl
     sb.require(back == decoded, "model chunk read-back differs")
     back_cam, _ = tx.decode_chunk(out, chunks[cam_chunk.index])
     sb.require(back_cam == new_cam, "intro cameras read-back differs")
+    reflection = None
+    if interior is not None:
+        r_at, r_span, reflection = reflection_span(out, interior)
+        out = out[:r_at] + r_span + out[r_at + len(r_span):]
+        sb.require(len(out) == len(retail_bundle), "the reflection changed the bundle's size")
     return out, dict(info, shapes=len(sc.shapes), materials=len(sc.materials), textures=len(sc.textures),
                      markers=len(sc.markers), stretch=[start, end], cityscape=city_info,
                      retail_system=st.system_bytes, retail_video=st.video_bytes,
-                     vertices=sum(s.vertex_count for s in sc.shapes))
+                     vertices=sum(s.vertex_count for s in sc.shapes), reflection=reflection)
+
+
+# ------------------------------------------------------------------------------------------------ the helmet reflection
+
+#: The helmet shells' reflection (b81, the pink helmets at Allegiant). Every stadium bundle carries a TXTR named
+#: ``reflection``: a 128-pixel P8 cube map (six faces of five mips, one palette) of the stadium round the field, which
+#: the executable binds by name for the helmet shells (the player texture table at 0x4EEAF8, entry 6, a global lookup).
+#: The shell reflection takes full weight indoors and at night (0x8E880 returns 1.0 when the row's indoor word is set)
+#: and the time of day's smaller weight outdoors by day. Retail s20 is the open-air Oakland Coliseum: its day cubes are a
+#: blue-sky panorama and its afternoon cubes a brown sky, which Allegiant's indoor word put on every shell at full weight
+#: (red shells read pink, WAS mauve; PROVED IN GAME, and the bound palette read at runtime was s20dd's sky). Every retail
+#: dome carries one dark interior cube in all nine bundles, so the model gives s20 the same: SoFi Stadium's (retail s23,
+#: the Edward Jones Dome, which no option rewrites), with its palette, its mips and its texture header kept byte for
+#: byte and only each face's 128-pixel level reduced to REFLECTION_TARGETS' entries so the cube fits the smallest s20
+#: span (s20nr.iff). The face means stay within 0.3 of SoFi's; the mips, which a helmet's size on screen samples, are
+#: SoFi's own.
+REFLECTION = "reflection"
+INTERIOR_VENUE, INTERIOR_BUNDLE = "s23", "s23dd.iff"
+#: brightness targets (0 to 255) for level 0: a 1.6 power curve over 16 steps, as integers so the choice is exact; each
+#: target takes the most used of the three palette entries nearest it (by the sum of R, G and B against 3 x the target)
+REFLECTION_TARGETS = (0, 3, 10, 19, 31, 44, 59, 75, 93, 113, 133, 155, 178, 203, 228, 255)
+#: the cube's layout: six faces of 128, 64, 32, 16 and 8 pixels, each face padded to 21,888 bytes, then the palette
+CUBE_FACES, CUBE_EDGE, CUBE_FACE_STRIDE = 6, 128, 21888
+
+
+def reflection_chunk(bundle):
+    """(chunk, decoded, texture) of a bundle's ``reflection`` TXTR."""
+    tx = sm._ml()._tools()[0]
+    found = []
+    for chunk in tx.parse_chunks(bundle, allow_trailing=True):
+        if chunk.kind != "TXTR":
+            continue
+        decoded, _ = tx.decode_chunk(bundle, chunk)
+        texture = tx.parse_texture(decoded, chunk)
+        if texture.name == REFLECTION:
+            found.append((chunk, decoded, texture))
+    sb.require(len(found) == 1, f"the bundle carries {len(found)} reflection textures")
+    chunk, decoded, texture = found[0]
+    sb.require((texture.format_name, texture.width, texture.height, texture.mip_levels) == ("P8", CUBE_EDGE, CUBE_EDGE, 5)
+               and texture.pixel_offset == 0 and texture.palette_offset == CUBE_FACE_STRIDE * CUBE_FACES - 64
+               and chunk.video_bytes == texture.palette_offset + 1024,
+               "the reflection is not the 128-pixel P8 cube")
+    return chunk, decoded, texture
+
+
+def interior_reflection(interior_bundle):
+    """The decoded interior cube (system + video bytes) from SoFi's retail s23 bundle: its reflection with each face's
+    level 0 reduced to the entries REFLECTION_TARGETS picks; the header, the mips, the padding and the palette stay."""
+    tx = sm._ml()._tools()[0]
+    chunk, decoded, texture = reflection_chunk(interior_bundle)
+    vid = chunk.system_bytes
+    pal = np.frombuffer(decoded[vid + texture.palette_offset:vid + texture.palette_offset + 1024],
+                        np.uint8).reshape(256, 4).astype(np.int64)
+    n = CUBE_EDGE * CUBE_EDGE
+    faces = [np.frombuffer(tx.unswizzle_2d(decoded[vid + f * CUBE_FACE_STRIDE:vid + f * CUBE_FACE_STRIDE + n], CUBE_EDGE,
+                                           CUBE_EDGE, 1), np.uint8).reshape(CUBE_EDGE, CUBE_EDGE) for f in range(CUBE_FACES)]
+    used = np.bincount(np.concatenate([face.ravel() for face in faces]), minlength=256)
+    ids = np.nonzero(used)[0]
+    rgb = pal[:, :3].sum(1)
+    keep = set()
+    for target in REFLECTION_TARGETS:
+        nearest = ids[np.argsort(np.abs(rgb[ids] - 3 * target), kind="stable")[:3]]
+        keep.add(int(nearest[np.argmax(used[nearest])]))
+    keep = np.array(sorted(keep))
+    gap = pal[:, None, :] - pal[None, keep, :]
+    lut = keep[(gap * gap).sum(-1).argmin(1)].astype(np.uint8)          # integers throughout: exact on every CPU
+    out = bytearray(decoded)
+    for f, face in enumerate(faces):
+        at = vid + f * CUBE_FACE_STRIDE
+        out[at:at + n] = tx.swizzle_2d(lut[face].tobytes(), CUBE_EDGE, CUBE_EDGE, 1)
+    return bytes(out)
+
+
+def reflection_span(bundle, interior):
+    """(offset, chunk bytes, info): the interior cube written into a bundle's own reflection span (same stored size and
+    texture header, so nothing else moves), read back equal."""
+    tx = sm._ml()._tools()[0]
+    chunk, decoded, _texture = reflection_chunk(bundle)
+    sb.require(len(interior) == len(decoded) and interior[:chunk.system_bytes] == decoded[:chunk.system_bytes],
+               "the interior cube's header differs from the bundle's")
+    span = bytes(bundle[chunk.offset:chunk.end_offset])
+    out, info = sb.fixed_span_chunk("TXTR", interior, chunk.system_bytes, chunk.video_bytes, span)
+    sb.require(len(out) == len(span), "the reflection span changed length")
+    back, _ = tx.decode_chunk(out, tx.parse_chunks(out, allow_trailing=True)[0])
+    sb.require(back == interior, "reflection read-back differs")
+    return chunk.offset, out, dict(info, offset=chunk.offset, length=len(span))
+
+
+def read_interior(source):
+    """The interior cube from SoFi's retail bundle in ``source`` (checked against the venue table's retail SHA-256)."""
+    from . import nfl2k5_modern_venues_2026 as mv
+    ml = sm._ml()
+    pin = next(p for p in mv.venues()[INTERIOR_VENUE]["bundles"] if p["name"] == INTERIOR_BUNDLE)
+    with ml._outer_image()(str(source)) as archive:
+        e = _entry(archive, pin)
+        data = archive.read(e.virtual_offset, e.size)
+    sb.require(sha(data) == pin["retail_sha256"], f"{INTERIOR_BUNDLE}: the source bundle is not retail")
+    return interior_reflection(data)
 
 
 # ------------------------------------------------------------------------------------------------ the field
@@ -1638,9 +1745,12 @@ VARIANTS = tuple(f"{VENUE}{t}{w}.iff" for t in "dan" for w in "drs")
 
 
 def _compile(job):
-    """Worker: (name, retail bundle, the dry retail bundle of the same time of day)."""
-    name, data, dry = job
-    out, info = model_bundle(data, name, build(venue=name[:3]), cameras=allegiant_shots(), dry_bundle=dry)
+    """Worker: (name, retail bundle, the dry retail bundle of the same time of day[, the interior cube]); the b77
+    stretch repair (tools/b77/alg_repair.py) passes the first three and reads only the stretch."""
+    name, data, dry, *rest = job
+    interior = rest[0] if rest else None
+    out, info = model_bundle(data, name, build(venue=name[:3]), cameras=allegiant_shots(), dry_bundle=dry,
+                             interior=interior)
     return name, out, info
 
 
@@ -1683,9 +1793,10 @@ def build_all(source, *, workers=None, progress=None, names=None):
     """{name: (retail bundle, model bundle, info)} for the nine bundles (or ``names``), compiled in parallel."""
     ml = sm._ml()
     retail = read_retail(source)
+    interior = read_interior(source)
     out = {}
-    for name, model, info in ml.run_jobs(_compile, [(n, retail[n], retail[dry_of(n)]) for n in (names or VARIANTS)],
-                                         workers=workers, progress=progress, label="Allegiant Stadium"):
+    jobs = [(n, retail[n], retail[dry_of(n)], interior) for n in (names or VARIANTS)]
+    for name, model, info in ml.run_jobs(_compile, jobs, workers=workers, progress=progress, label="Allegiant Stadium"):
         out[name] = (retail[name], model, info)
     return out
 
@@ -1756,7 +1867,7 @@ def field_span(bundle, name, *, team=None, colour_settings=None, outer_index=0):
 # ------------------------------------------------------------------------------------------------ build option
 
 PINS_PATH = DATA_DIR / "pins.json"
-PINS_SCHEMA = "nfl2k5_allegiant_model_pins/v1"
+PINS_SCHEMA = "nfl2k5_allegiant_model_pins/v2"
 RECEIPT_SCHEMA = "nfl2k5_allegiant_receipt/v1"
 BUILD_CAPTION = "Allegiant Stadium for the Raiders (experimental)"
 HELP_TEXT = (
@@ -1766,7 +1877,8 @@ HELP_TEXT = (
     "and the LED mesh toward I-15, the lots, the Strip's towers and the ranges round the valley, and a new pregame flyover "
     "with exterior passes. The field is natural grass mown in 5-yard bands with the 2026 venue art's Raiders end zones and "
     "midfield when that option is on. The row reads Allegiant Stadium, Las Vegas, NV and turns indoor (the roof is fixed: "
-    "no rain or snow falls). The 2026 venue art leaves the Raiders' packages to it. Off in every preset; appearance in "
+    "no rain or snow falls), and helmets reflect a dark domed interior as at SoFi Stadium instead of Oakland's open sky. "
+    "The 2026 venue art leaves the Raiders' packages to it. Off in every preset; appearance in "
     "game is unwitnessed."
 )
 _PINS = None
@@ -1789,10 +1901,16 @@ def record_pins(source, out_path=PINS_PATH, *, progress=None):
     for name in VARIANTS:
         retail, model, info = built[name]
         start, end = stretch(retail)
+        r = info["reflection"]
+        r_start, r_end = r["offset"], r["offset"] + r["length"]
+        sb.require(r_start >= end, f"{name}: the reflection is inside the stretch")
         bundles.append(dict(name=name, size=len(retail), offset=start, length=end - start,
                             retail_sha256=sha(retail[start:end]), model_sha256=sha(model[start:end]),
                             system=info["system"], video=info["video"], scratch=info["scratch"], shapes=info["shapes"],
-                            vertices=info["vertices"]))
+                            vertices=info["vertices"],
+                            reflection=dict(offset=r_start, length=r_end - r_start,
+                                            retail_sha256=sha(retail[r_start:r_end]),
+                                            model_sha256=sha(model[r_start:r_end]))))
     doc = dict(schema=PINS_SCHEMA, label=LABEL, bundles=bundles, source_note="compiled from the retail archive")
     Path(out_path).write_text(json.dumps(doc, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     return doc
@@ -1803,18 +1921,25 @@ def _pin(name):
 
 
 def bundle_state(archive, name, *, fan_receipt=None):
-    """retail / applied / foreign for the Allegiant stretch of one of the nine bundles."""
+    """retail / applied / mixed / foreign for one of the nine bundles: the Allegiant stretch and the helmet
+    reflection (mixed when one is the model's and the other retail, as on a disc built before the reflection was
+    added)."""
     pin = _pin(name)
     e = _entry(archive, _venue_pins()[name])
     if e.size != pin["size"]:
         return "foreign"
     have = sha(archive.read(e.virtual_offset + pin["offset"], pin["length"]))
     from . import nfl2k5_model_fan_art as fans
-    if fans.applied(have, pin, fan_receipt):
-        return "applied"
-    if have == pin["model_sha256"]:
-        return "applied"
-    return "retail" if have == pin["retail_sha256"] else "foreign"
+    if fans.applied(have, pin, fan_receipt) or have == pin["model_sha256"]:
+        state = "applied"
+    else:
+        state = "retail" if have == pin["retail_sha256"] else "foreign"
+    r = pin["reflection"]
+    have = sha(archive.read(e.virtual_offset + r["offset"], r["length"]))
+    reflection = ("applied" if have == r["model_sha256"] else "retail" if have == r["retail_sha256"] else "foreign")
+    if "foreign" in (state, reflection):
+        return "foreign"
+    return state if state == reflection else "mixed"
 
 
 def receipt_path(source):
@@ -1873,22 +1998,27 @@ def check_request(source):
 
 def _compose(job):
     """Worker: (name, retail bundle, current image bundle, colour settings or None, outer, team art or None, the dry
-    retail bundle of the same time of day)."""
-    name, retail, current, settings, outer, team, dry = job
-    model, info = model_bundle(retail, name, build(venue=name[:3]), cameras=allegiant_shots(), dry_bundle=dry)
+    retail bundle of the same time of day, the interior cube)."""
+    name, retail, current, settings, outer, team, dry, interior = job
+    model, info = model_bundle(retail, name, build(venue=name[:3]), cameras=allegiant_shots(), dry_bundle=dry,
+                               interior=interior)
     field, finfo = field_span(retail, name, team=team, colour_settings=settings, outer_index=outer)
     ml = sm._ml()
     chunk = ml.bundle_scenes(retail)["field"]
     start, end = stretch(retail)
+    r_start, r_end = info["reflection"]["offset"], info["reflection"]["offset"] + info["reflection"]["length"]
+    sb.require(current[r_start:r_end] == retail[r_start:r_end], f"{name}: another option wrote the reflection")
     out = bytearray(current)
     out[chunk.offset:chunk.offset + len(field)] = field
     out[start:end] = model[start:end]
+    out[r_start:r_end] = model[r_start:r_end]
     return name, bytes(out), dict(info, field=finfo)
 
 
 def apply_to_image(target, *, retail_source, art_root=None, progress=None, workers=None):
     """Build step (after Modern colour and the 2026 venue art, which leaves s20 to it): the Allegiant field, stadium,
-    cameras and collapsed cityscape of the nine bundles, and the s20 row. The retail bundles come from ``retail_source``;
+    cameras, collapsed cityscape and helmet reflection (SoFi's interior cube, read from the retail source's s23) of the
+    nine bundles, and the s20 row. The retail bundles come from ``retail_source``;
     the image's own bundles keep every other chunk (Modern colour's normal map and tint word). With Modern colour on, the
     field is composed before the colour grade and compressed once, and the colour receipt is updated so Modern colour
     still recognizes its bytes. ``art_root`` is the 2026 venue art folder: its Raiders end zones and midfield go onto the
@@ -1913,6 +2043,7 @@ def apply_to_image(target, *, retail_source, art_root=None, progress=None, worke
     settings = colour_receipt.get("settings") if colour_receipt else None
     colour_before = sm._colour_states(target, colour_receipt) if colour_receipt else None
     retail = read_retail(retail_source)
+    interior = read_interior(retail_source)
     pins = _venue_pins()
     team = team_field_art(art_root) if art_root else {}
     current = {}
@@ -1927,7 +2058,8 @@ def apply_to_image(target, *, retail_source, art_root=None, progress=None, worke
                 s_.get("kind") == "field" and s_.get("applied") == have for s_ in graded)
             sb.require(ok, f"{name}: the field is neither retail nor Modern colour's; another option wrote it")
             current[name] = data
-    jobs = [(n, retail[n], current[n], settings, pins[n]["outer"], team or None, retail[dry_of(n)]) for n in VARIANTS]
+    jobs = [(n, retail[n], current[n], settings, pins[n]["outer"], team or None, retail[dry_of(n)], interior)
+            for n in VARIANTS]
     receipt = dict(schema=RECEIPT_SCHEMA, label=LABEL, runtime_witnessed=False, colour=settings is not None, bundles={},
                    team_art=sorted(team), art_root=str(art_root) if art_root else None)
     new_colour = deepcopy(colour_receipt) if colour_receipt else None
@@ -1944,7 +2076,7 @@ def apply_to_image(target, *, retail_source, art_root=None, progress=None, worke
             sb.require(archive.read(e.virtual_offset, e.size) == after, f"{name}: write-back differs")
             receipt["bundles"][name] = dict(outer=pins[name]["outer"], applied_sha256=sha(after),
                                             field=info.get("field"), system=info["system"], video=info["video"],
-                                            fan_art=info.get("fan_art"))
+                                            fan_art=info.get("fan_art"), reflection=info.get("reflection"))
             if new_colour is not None and name in new_colour.get("bundle_pins", {}):
                 row = new_colour["bundle_pins"][name]
                 new_colour["bundle_pins"][name] = dict(row, applied_sha256=sha(after), sites=[
