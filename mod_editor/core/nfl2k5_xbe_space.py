@@ -1000,6 +1000,38 @@ def _awards_at(owner, at, size, align):
         return (page + AWARDS_SIZE + align - 1) & -align
     return at
 
+
+# b81 integration task 1 (SportsCenter review S2): the fixed pages above the quarterback span in one table, by address.
+# Each lane added its page with its own one-shot step-over; to_pool now places a page owner on its page and steps every
+# other owner past each page it would overlap, rescanning from the lowest page after every step until it overlaps none, so
+# a step past one page that lands on another is caught whatever order the pages were added in. The per-page helpers
+# above stay (their own tests call them); to_pool uses only this loop.
+POST_SPAN_PAGES = tuple(sorted(((MODERN_NUMBERS_OWNER, MODERN_NUMBERS_VA, MODERN_NUMBERS_SIZE),
+                                (AWARDS_OWNER, AWARDS_VA, AWARDS_SIZE),
+                                (CLASSIC_CROWD_OWNER, CLASSIC_CROWD_VA, CLASSIC_CROWD_SIZE),
+                                (SPORTSCENTER_NEWS_OWNER, SPORTSCENTER_NEWS_VA, SPORTSCENTER_NEWS_SIZE),
+                                (SIM_OUTCOMES_OWNER, SIM_OUTCOMES_VA, SIM_OUTCOMES_SIZE)), key=lambda page: page[1]))
+_require(all(a[1] + a[2] <= b[1] for a, b in zip(POST_SPAN_PAGES, POST_SPAN_PAGES[1:]))
+         and POST_SPAN_PAGES[0][1] >= FIXED_SPAN_END
+         and all(page[0] in FIXED_PAGE_OWNERS for page in POST_SPAN_PAGES),
+         "the fixed pages above the quarterback span overlap, sit inside it or are not fixed owners")
+
+
+def _post_span_pages_at(owner, at, size, align, pages=None):
+    """b81 integration task 1: a page owner's own page; any other owner past every fixed page it would overlap."""
+    pages = POST_SPAN_PAGES if pages is None else pages
+    for page_owner, va, _size in pages:
+        if owner == page_owner:
+            return va - POOL_VA
+    while True:
+        for _owner, va, page_size in pages:
+            page = va - POOL_VA
+            if at < page + page_size and at + size > page:
+                at = (page + page_size + align - 1) & -align
+                break
+        else:
+            return at
+
 # XSPACE2 is retained as the header envelope for the shipped boot-logo reader.
 # SP03 and the sealed external directory distinguish the v3 interpretation.
 SCALE_TAG = EXT_MAGIC + b"SP03"
@@ -1318,11 +1350,9 @@ def _scale_allocations(requests):
             at = CPU_TRADES_VA - POOL_VA
         elif at < room + span and at + size > room:
             at = (room + span + align - 1) & -align
-        at = _modern_numbers_at(owner, at, size, align)    # b81 modern numbers: its fixed page, after the span
-        at = _awards_at(owner, at, size, align)             # b81 awards: its fixed page, after the span
-        at = _classic_crowd_at(owner, at, size, align)      # b81-seamen: its fixed page
-        at = _sportscenter_news_at(owner, at, size, align)  # b81 sportscenter: its fixed page, after the span
-        at = _sim_outcomes_at(owner, at, size, align)      # b81 game outcomes: its fixed page, after the span
+        # b81 integration task 1: every fixed page above the span (numbers, awards, classic crowd, SportsCenter news,
+        # game outcomes) in one loop, until the owner overlaps none
+        at = _post_span_pages_at(owner, at, size, align)
         _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")
         out.append(dict(owner=owner, kind=kind, size=size, align=align,
                         va=POOL_VA + at, raw=POOL_RAW + at, owner_offset=0))
