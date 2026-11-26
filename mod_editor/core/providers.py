@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "4870c5541453fb9c4eb8c3ecd5cc4db9b06e3c01d26129d9e8f5e2ee67fc801a",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "929b9b4b34aa8eda42b236df6c693e4109112aa90da1451b6a287c4c18d0f03e",
+        "mod_editor/core/mod_build.py": "4006f104bfbbe18e2a173188ce34e278d0f3c1801dc99281f7c789534ee84a80",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -795,10 +795,12 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_letter_grades_attributes.py": "0fb3e43e4bd366b542bea98770f75d20ed0a46642bf25f38e261971d44b3e28a",
         "mod_editor/core/nfl2k5_letter_grades_code.py": "b01bcdb0e8a0e8c6a41f606500afeffd41034f2615c776dda6a9b24be6548dbd",
         "mod_editor/core/nfl2k5_letter_grades_progress.py": "5088c0b6a545b95efae98f906b5c4c2e030774b22f87a35fd08a2c1c80b31a90",
-        "mod_editor/core/nfl2k5_honors.py": "9e4c83e97c0c2d371a2387c9346f0110557eef94d369db0e0e3c55fa7ca13cc4",
+        "mod_editor/core/nfl2k5_honors.py": "42ddf3a03b293fcf1ea0b6f1f941fc7cc52c05524579afa62c999ed4d1db0623",
         "mod_editor/core/nfl2k5_honors_code.py": "e4a4554f1ac6df9ae267f47ec5095f84cd80015fb68f640a78f76d27263f9202",
         "mod_editor/core/nfl2k5_honors_code_b779.py": "94dda893841e3d46989aa77ebc77b50cfa08206adb38c66f6176ef4b09d06c30",  # b81 sb-ir-honors: the earlier runtime
-        "mod_editor/core/nfl2k5_champions.py": "cc677f15b8704080071a034b65ff953e2b12df194b64ef550aa17943373fb8b7",
+        "mod_editor/core/nfl2k5_champions.py": "f0291e02e9794d2421b588150e294a5898bc20d5e621eceeed0ed7eec3dcc682",
+        "mod_editor/core/nfl2k5_awards.py": "23770f8e0e9fa05c378f4aba10b6b76149145100f68878c73f931e3880e3f11e",  # b81 awards: the season award vote and All-Pro team (installed by the honors owner)
+        "mod_editor/core/nfl2k5_awards_code.py": "73d5f0fa734b595b7b68181c3b28fb5d3031247b33c8dfcf5df78ed902fde574",  # b81 awards: its generated page
         "mod_editor/core/nfl2k5_champions_code.py": "d0b7c4b07d849a24fda938e120cf7c6d4f15f0b589ac20183ecde61fb7fa463a",
         "mod_editor/core/nfl2k5_champions_code_b779.py": "c9a7e5bffface03b6ad23a030c652ef4398f8ac2ed26c249b8e815c2056c4407",  # b780 n6: frozen beta-79 runtime
         "mod_editor/core/nfl2k5_champions_code_b780.py": "c4f68380fa68902511e4502340d6b0e55228e04e6756dd3fde1eaef40db8ae7d",
@@ -1120,7 +1122,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "2bd24b6839cf6f7bff71f403368b6e340442757175008a7fd966338b3dd1f0cd",
+        "mod_editor/core/nfl2k5_xbe_space.py": "9ed1f38c80ea7e82a5cef5a82c503637a20e2724405571a503284186043a443c",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "b63521c9b17119b87558aff36a5a914d0c3fdd42e96240cf7de20065ead644d7",

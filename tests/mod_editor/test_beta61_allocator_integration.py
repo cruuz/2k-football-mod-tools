@@ -84,7 +84,7 @@ class CompleteOwnerTests(unittest.TestCase):
         self.assertEqual([r["size"] for r in regions if r["kind"] == "code"], [4096, 4096, 24 * 4096])
         # Beta 76: era rules add 2048 RX, stock books 1536 RX, and moment
         # venue labels 2304 RX to the previous 91879-byte union.
-        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 116487)  # b780 pres2 (Q51, 9b9d86f38): + 416 sprite scorebug code (5,920 -> 6,336: the pause menu score bar) = 116,487; b780 p2-playcall: + 544 sprite scorebug code (5,376 -> 5,920: the ball spot and page boxes) = 116,071; b778 ai8: + 192 cpu_third_down (the pin was stale on the beta-78 base: 109,031); b779: + 352 camera code (512 -> 864, cm2 grew the camera code owner), + 512 K128 (1,024 -> 1,536, km1), + 5,632 champions code (hn1) = 115,527. Earlier history: b773 i4: + 3,040 = 512 moment coaches code (mo1) and the four named directory code spills (tap burst 512, draft picks 544, H-back 1024, team ratings 448); b772-vt1: + 5,120 coach AI code; b77-f4: + the 160 RX bytes of the letter grades owner; b77-f4b: + 16 for the progression row; b77-v1b: + 176 period goalposts (legacy RX tail); b77-f5: + 2,560 honors code (MyCareer footprint gap)
+        self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "code"), 120583)  # b81 awards: + 4,096 award vote code (one fixed page at 0x1531000, appended by honors.apply) = 120,583; b780 pres2 (Q51, 9b9d86f38): + 416 sprite scorebug code (5,920 -> 6,336: the pause menu score bar) = 116,487; b780 p2-playcall: + 544 sprite scorebug code (5,376 -> 5,920: the ball spot and page boxes) = 116,071; b778 ai8: + 192 cpu_third_down (the pin was stale on the beta-78 base: 109,031); b779: + 352 camera code (512 -> 864, cm2 grew the camera code owner), + 512 K128 (1,024 -> 1,536, km1), + 5,632 champions code (hn1) = 115,527. Earlier history: b773 i4: + 3,040 = 512 moment coaches code (mo1) and the four named directory code spills (tap burst 512, draft picks 544, H-back 1024, team ratings 448); b772-vt1: + 5,120 coach AI code; b77-f4: + the 160 RX bytes of the letter grades owner; b77-f4b: + 16 for the progression row; b77-v1b: + 176 period goalposts (legacy RX tail); b77-f5: + 2,560 honors code (MyCareer footprint gap)
         # Era rules also add one 16-byte state allocation.
         self.assertEqual(sum(a["size"] for a in layout["allocations"] if a["kind"] == "data"), 85218)  # b775 mo2: + the 16-byte moment context state (legacy RW tail); b773 mo1: + the 512-byte moment coaches state; b772-vt1: + 128 coach AI state; b77-f5: + the 16-byte honors state block (legacy RW tail)
         image = XbeImage(self.full)
@@ -130,7 +130,9 @@ class CompleteOwnerTests(unittest.TestCase):
         # 4,096 + 6,336 + 5,632 = 16,064 bytes = 4 pages.
         pool_bytes = space.plan(REQUESTS)["file_size"] - len(legacy)
         self.assertEqual(pool_bytes, 4 * space.PAGE)  # was 3 pages
-        self.assertEqual(len(self.full), len(legacy) + pool_bytes)
+        # b81 awards: honors.apply then appends the award vote's fixed page at AWARDS_VA (0x1531000), so the full
+        # union's pool runs to the end of that page; the pages between champions and it are zero padding here.
+        self.assertEqual(len(self.full), len(legacy) + space.AWARDS_VA + space.AWARDS_SIZE - space.POOL_VA)
         # Beta 71: the sprite scorebug owner's 4,096-byte code no longer fits the first cave after the kickoff
         # owner (it was 1,408 at CODE_VA+2656 through beta 70) and is allocated in the scale region after the union.
         # Beta 76 s15: at 4,608 bytes it starts the 24-page code region, and the region directory follows the union.

@@ -95,7 +95,7 @@ CODE_V3_CAP, RO_V3_CAP, DATA_V3_CAP = 106_852 + 64, 17_316 + 624, 86_016
 # MEASURED offline (nfl2k5_xbe_space.apply on the retail XBE, 1 to 36 owners, 2026-11-03).
 LEGACY_DIRECTORY_BYTES = 444     # HEADER_LOGO_OFFSET - DIRECTORY
 LOGO_REQUEST = ("nfl2k5_boot_logo", "code", 690, 16)
-LEGACY_REQUESTS = {"widescreen_menus": (("code", 128, 16),), "period_goalposts": (("code", 176, 16), ("read_only", 32, 4)), "team_logo_swap": (("read_only", 64, 4),), "abilities_runtime": (('code', 1344, 16),), "accelerated_clock": (('code', 1024, 16), ('data', 4, 4), ('read_only', 8, 4)), "audible_legend": (('code', 1280, 16),), "ball_carrier_ai": (('code', 176, 16),), "calendar": (('code', 1024, 16), ('read_only', 2048, 16)), "camera": (('code', 864, 16), ('read_only', 320, 16)), "catch_snap_limit": (('code', 224, 16),), "classic_teams": (('read_only', 288, 16),), "clock_led": (('code', 576, 16),), "coach_carousel": (('code', 4096, 16),), "coin_defer": (('code', 384, 16), ('data', 4, 4), ('read_only', 128, 4)), "contract_college_guard": (('code', 32, 16),), "coverage_slider": (('code', 16, 16),), "coverage_trail": (('code', 640, 16),), "cpu_clock2": (('code', 1152, 16),), "cpu_money_downs": (('code', 2048, 16),), "cpu_money_downs_late": (('code', 400, 16),), "cpu_money_downs_late_state": (('data', 8, 4),), "cpu_passer_iq": (('code', 256, 16), ('data', 16, 16)), "cpu_qb_reads": (('code', 1280, 16), ('data', 192, 16)), "cpu_scrambles": (('code', 128, 16), ('read_only', 4, 4)), "cpu_third_down": (('code', 192, 16),), "db_ball_play": (('code', 256, 16),), "decided_clock": (('code', 384, 16), ('read_only', 8, 4)), "deep_zone": (('code', 2048, 16), ('data', 256, 16)), "dive_window": (('code', 352, 16),), "draft_clock": (('code', 608, 16),), "dynamic_kickoff_relocated": (('code', 1939, 16), ('data', 10, 4)), "espn25_more_moments": (('code', 2560, 16), ('data', 16, 16)), "force_out": (('code', 96, 16),), "formation_art_spacing": (('code', 1024, 16),), "franchise_autosave": (('code', 1536, 16), ('data', 128, 16), ('read_only', 512, 16)), "franchise_edit_player": (('read_only', 704, 16),), "guardian_overlay": (('code', 496, 16),), "hair_styles": (('code', 768, 16),), "historic_teams_quick_game": (('code', 1280, 16), ('data', 16, 16)), "human_tap_burst_spill": (('code', 512, 16),), "k128": (('code', 1536, 16),), "letter_grades": (('code', 160, 16), ('read_only', 240, 16)), "letter_grades_progress": (('code', 16, 16),), "module_loader": (('code', 256, 16), ('data', 32, 16)), "moment_coaches": (('code', 512, 16), ('data', 512, 16)), "momentum": (('code', 1408, 16), ('data', 2064, 16)), "music_playlist": (('code', 2048, 16), ('data', 512, 16), ('read_only', 1024, 16)), "pass_protection": (('code', 352, 16),), "play_art_routes": (('code', 576, 16),), "practice_injuries": (('code', 48, 16),), "preseason_warning": (('data', 16, 16),), "protection_calls": (('code', 288, 16), ('data', 16, 16)), "qb_accuracy": (('code', 448, 16),), "qb_spy": (('code', 2048, 16), ('data', 768, 16), ('read_only', 512, 16)), "read_option_runtime": (('code', 2048, 16), ('data', 256, 16), ('read_only', 88, 16)), "return_coverage": (('code', 192, 16),), "roster_storage": (('code', 82, 16),), "run_blocking": (('code', 160, 16),), "runner_vision": (('code', 1664, 16),), "scramble_blocking": (('code', 816, 16), ('data', 16, 16)), "scramble_tuning": (('code', 160, 16),), "screen_hooks": (('code', 640, 16),), "sim_cb_tackles": (('code', 256, 16),), "sim_rb_injuries": (('code', 640, 16),), "sim_realism": (('code', 896, 16), ('data', 16, 4)), "standings_records": (('code', 2304, 16), ('data', 16, 16)), "star_retention": (('code', 64, 16),), "stock_books": (('code', 1536, 16),), "team_number_scale": (('code', 624, 16),), "helmet_side_numbers": (('code', 4096, 4096),), "classic_crowd": (('code', 4096, 4096),), "weekly_prep": (('code', 1536, 16),), "weekly_progression": (('code', 608, 16),), "zone_drop": (('code', 80, 16),)}
+LEGACY_REQUESTS = {"widescreen_menus": (("code", 128, 16),), "period_goalposts": (("code", 176, 16), ("read_only", 32, 4)), "team_logo_swap": (("read_only", 64, 4),), "abilities_runtime": (('code', 1344, 16),), "accelerated_clock": (('code', 1024, 16), ('data', 4, 4), ('read_only', 8, 4)), "audible_legend": (('code', 1280, 16),), "ball_carrier_ai": (('code', 176, 16),), "calendar": (('code', 1024, 16), ('read_only', 2048, 16)), "camera": (('code', 864, 16), ('read_only', 320, 16)), "catch_snap_limit": (('code', 224, 16),), "classic_teams": (('read_only', 288, 16),), "clock_led": (('code', 576, 16),), "coach_carousel": (('code', 4096, 16),), "coin_defer": (('code', 384, 16), ('data', 4, 4), ('read_only', 128, 4)), "contract_college_guard": (('code', 32, 16),), "coverage_slider": (('code', 16, 16),), "coverage_trail": (('code', 640, 16),), "cpu_clock2": (('code', 1152, 16),), "cpu_money_downs": (('code', 2048, 16),), "cpu_money_downs_late": (('code', 400, 16),), "cpu_money_downs_late_state": (('data', 8, 4),), "cpu_passer_iq": (('code', 256, 16), ('data', 16, 16)), "cpu_qb_reads": (('code', 1280, 16), ('data', 192, 16)), "cpu_scrambles": (('code', 128, 16), ('read_only', 4, 4)), "cpu_third_down": (('code', 192, 16),), "db_ball_play": (('code', 256, 16),), "decided_clock": (('code', 384, 16), ('read_only', 8, 4)), "deep_zone": (('code', 2048, 16), ('data', 256, 16)), "dive_window": (('code', 352, 16),), "draft_clock": (('code', 608, 16),), "dynamic_kickoff_relocated": (('code', 1939, 16), ('data', 10, 4)), "espn25_more_moments": (('code', 2560, 16), ('data', 16, 16)), "force_out": (('code', 96, 16),), "formation_art_spacing": (('code', 1024, 16),), "franchise_autosave": (('code', 1536, 16), ('data', 128, 16), ('read_only', 512, 16)), "franchise_edit_player": (('read_only', 704, 16),), "guardian_overlay": (('code', 496, 16),), "hair_styles": (('code', 768, 16),), "historic_teams_quick_game": (('code', 1280, 16), ('data', 16, 16)), "human_tap_burst_spill": (('code', 512, 16),), "k128": (('code', 1536, 16),), "letter_grades": (('code', 160, 16), ('read_only', 240, 16)), "letter_grades_progress": (('code', 16, 16),), "module_loader": (('code', 256, 16), ('data', 32, 16)), "moment_coaches": (('code', 512, 16), ('data', 512, 16)), "momentum": (('code', 1408, 16), ('data', 2064, 16)), "music_playlist": (('code', 2048, 16), ('data', 512, 16), ('read_only', 1024, 16)), "pass_protection": (('code', 352, 16),), "play_art_routes": (('code', 576, 16),), "practice_injuries": (('code', 48, 16),), "preseason_warning": (('data', 16, 16),), "protection_calls": (('code', 288, 16), ('data', 16, 16)), "qb_accuracy": (('code', 448, 16),), "qb_spy": (('code', 2048, 16), ('data', 768, 16), ('read_only', 512, 16)), "read_option_runtime": (('code', 2048, 16), ('data', 256, 16), ('read_only', 88, 16)), "return_coverage": (('code', 192, 16),), "roster_storage": (('code', 82, 16),), "run_blocking": (('code', 160, 16),), "runner_vision": (('code', 1664, 16),), "scramble_blocking": (('code', 816, 16), ('data', 16, 16)), "scramble_tuning": (('code', 160, 16),), "screen_hooks": (('code', 640, 16),), "sim_cb_tackles": (('code', 256, 16),), "sim_rb_injuries": (('code', 640, 16),), "sim_realism": (('code', 896, 16), ('data', 16, 4)), "standings_records": (('code', 2304, 16), ('data', 16, 16)), "star_retention": (('code', 64, 16),), "stock_books": (('code', 1536, 16),), "team_number_scale": (('code', 624, 16),), "helmet_side_numbers": (('code', 4096, 4096),), "classic_crowd": (('code', 4096, 4096),), "weekly_prep": (('code', 1536, 16),), "weekly_progression": (('code', 608, 16),), "zone_drop": (('code', 80, 16),), "awards": (('code', 4096, 4096),)}
 
 # owner: (code in v3, code in the pool, read-only in v3, read-only in the pool, data), bytes in the RC
 OWNER_BYTES = {
@@ -141,6 +141,7 @@ OWNER_BYTES = {
     "classic_crowd": (space.CLASSIC_CROWD_SIZE, 0, 0, 0, 0),  # b81-seamen: the Seamen's crowd redirect, one fixed page
     "helmet_side_numbers": (space.HELMET_SIDES_SIZE, 0, 0, 0, 0),  # b81 helmet sides: route 5 -> set E, one fixed page
     "sportscenter_news": (space.SPORTSCENTER_NEWS_SIZE, 0, 0, 0, 0),  # b81 sportscenter: one fixed page (128 MB)
+    "awards": (space.AWARDS_SIZE, 0, 0, 0, 0),  # b81 awards: the season vote and All-Pro team, one fixed page
     "franchise_ownership": (space.FRANCHISE_OWNERSHIP_SIZE, 0, 0, 0, 0),
     "injured_reserve": (6144, 0, 0, 0, 5312),  # Modern IR, franchise ownership checks and the 32-club IR store.
 }
@@ -336,6 +337,13 @@ RC_VALUES = {"momentum": 50, "momentum_collision_level": 50, "cpu_money_downs": 
              "team_number_scale": {"13A0": 1.1, "13H0": 1.1}, "modern_venues_2026": "2026 venue art",
              "roster_capacity": True, "roster_draft_pick_ownership": True, "roster_hback_roles": True}
 RC_VALUES["modern_numbers"] = False   # b81 modern numbers: the v0.9 pack had none (its season_2026 would select it)
+RC_VALUES["award_vote"] = False   # b81 awards: the v0.9 pack had no award vote (its honors page installs it from beta 81)
+# b81 awards (review M1): the Studio's v0.9 update installs the award vote on the released v0.9 executable (honors.apply);
+# its fixed page at 0x1531000 carries the v4 pool from 0x1520000 to 0x1532000: 73,728 bytes more file and boot-loaded
+# image, measured on the released default.xbe (d78088f9). RC_VALUES above stays the measured anchor; v09_update_plan() is
+# the pack as the update leaves it, which this model charges at least V09_UPDATE_GROWTH more.
+V09_UPDATE_VALUES = {"award_vote": True}
+V09_UPDATE_GROWTH = 73_728
 
 # Options a 64 MB build cannot have. A plan field, except roster_capacity: roster edits whose document asks for the
 # capacity arena (free_agent_capacity; see roster_capacity_records).
@@ -390,6 +398,11 @@ NOT_SUGGESTED = frozenset(("module_loader", "resource_load_guard")) | frozenset(
 def rc_plan() -> dict:
     """The v0.9 pack's effective options (what the anchor measured), as a flat {field: value} dict."""
     return {**{f: True for f in RC_ON}, **RC_VALUES}
+
+
+def v09_update_plan() -> dict:
+    """The v0.9 pack as the Studio's v0.9 update leaves it (b81: plus the award vote's fixed page)."""
+    return {**rc_plan(), **V09_UPDATE_VALUES}
 
 
 _ROSTER_CACHE: dict = {}
@@ -539,6 +552,10 @@ def owners(opts: dict, target_mb: int = 64) -> list:
             and (on(opts, "season_2026") or on(opts, "modern_injured_reserve"))
             and any(on(opts, f) for f in SCALEOUT_FIELDS)):
         out.append("sportscenter_news")
+    # b81 awards: the award vote's fixed page rides with the honors page (None follows it); the v0.9 pack had none
+    value = opts.get("award_vote")
+    if value is True or (value is None and on(opts, "honors_page")):
+        out.append("awards")
     return out + list(INFRASTRUCTURE) if out else out
 
 
@@ -587,6 +604,9 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     if "sportscenter_news" in found:  # b81 sportscenter: its fixed page at 0x1533000
         last = space.SPORTSCENTER_NEWS_VA + space.SPORTSCENTER_NEWS_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "awards" in found:  # b81 awards: its fixed page at 0x1531000 (installed with the honors owner)
+        last = space.AWARDS_VA + space.AWARDS_SIZE - space.POOL_VA
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     return RETAIL_RESIDENT + LEGACY_SPACE + SCALEOUT_V3 + pool + extra
 

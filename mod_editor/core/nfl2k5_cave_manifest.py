@@ -519,6 +519,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_period_goalposts as period  # b77-v1b: the late allocator owner of the period uprights
     from . import nfl2k5_honors as honors  # b772-i3: in the union so the later coach AI owner lands where builds put it
     from . import nfl2k5_champions as champions  # b780-b13: installed inside honors.apply, observed as its own step below
+    from . import nfl2k5_awards as awards  # b81 awards: installed inside honors.apply, observed as its own step below
     from . import nfl2k5_team_names_2026 as team_names
     from . import nfl2k5_kick_meter_2026 as kick_meter  # b76-km: the wind digits' font lookup
     from . import nfl2k5_modern_goalposts as goalposts  # b77-v1: the upright lines and collision top
@@ -627,6 +628,8 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             # call never changes, so the byte diff cannot see it. Observe the install as its own step: its declared edits
             # reserve both complete 5-byte sites for nfl2k5_champions and its byte diff the two rewritten call operands.
             stack.enter_context(patch.object(champions, "install", recorder.wrapper(champions, "install")))
+            # b81 awards: installed inside honors.apply too (after champions); observed as its own step for the same reason
+            stack.enter_context(patch.object(awards, "install", recorder.wrapper(awards, "install")))
             receipt = build.build(plan, progress=lambda message, *_: progress(message))
             preset_xbe = build._xbe_bytes(target)
             # The dormant-owner probe needs an XBE WITHOUT an allocator directory: an installed request

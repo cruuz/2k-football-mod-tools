@@ -418,19 +418,30 @@ def reservations(payload: bytes | None = None) -> list[dict]:
     return result
 
 
+def _same_installed_requests(wanted, previous) -> bool:
+    """An installed image matches a build's request set. b81 awards: the season award vote's fixed page is appended by
+    its own owner after the build's allocation (honors.apply installs it), so an installed set may also hold exactly that
+    one request; the page sits at its absolute address and every other owner steps over it, so nothing else moves."""
+
+    if wanted == previous or wanted == [LOGO_REQUEST]:
+        return True
+    return (AWARDS_REQUEST in previous and AWARDS_REQUEST not in wanted
+            and [r for r in previous if r != AWARDS_REQUEST] == wanted)
+
+
 def apply(payload: bytes, requests=(), *, scaleout=False) -> tuple[bytes, dict]:
     _require(type(scaleout) is bool, "scaleout must be a boolean")
     grown, _, previous = _validate(payload)
     wanted = _requests(requests)
     if is_scaleout(payload):
-        _require(wanted == previous or wanted == [LOGO_REQUEST], "allocation requests differ; rebuild from base")
+        _require(_same_installed_requests(wanted, previous), "allocation requests differ; rebuild from base")
         return payload, {"status": "already_applied", "changed_bytes": 0, "allocations": _scale_allocations(previous)}
     if not grown and (scaleout or _needs_scaleout(wanted)):
         return _apply_scaleout(payload, wanted)
     _allocations(wanted)
     if grown:
         _require(not scaleout, "scale-out needs a rebuild from base")
-        _require(wanted == previous or wanted == [LOGO_REQUEST], "allocation requests differ; rebuild from base")
+        _require(_same_installed_requests(wanted, previous), "allocation requests differ; rebuild from base")
         return payload, {"status": "already_applied", "changed_bytes": 0, "allocations": _allocations(previous)}
     extended = _extended(wanted)
     if extended:
@@ -944,6 +955,28 @@ def _sportscenter_news_at(owner, at, size, align):
     return at
 
 
+# b81 awards: one fixed page at 0x1531000 for the season award vote and the All-Pro team (nfl2k5_awards; claimed in
+# the lane's page register after the CPU trades pages 0x152E000-0x152FFFF and the modern jersey numbers page 0x1530000).
+# Placed like those pages: at its absolute address, never advancing the pool cursor, with its own step-over in to_pool
+# (FIXED_SPAN_END untouched), so every other pool owner skips
+# 0x1531000..0x1531FFF whether or not it is requested and the owner can be added in place after every other owner.
+AWARDS_OWNER = "nfl2k5_awards"
+AWARDS_VA = 0x1531000
+AWARDS_SIZE = PAGE
+AWARDS_REQUEST = (AWARDS_OWNER, "code", AWARDS_SIZE, PAGE)
+LATE_OWNERS += (AWARDS_OWNER,)
+FIXED_PAGE_OWNERS += (AWARDS_OWNER,)
+
+
+def _awards_at(owner, at, size, align):
+    """b81 awards: the fixed page's pool offset for its owner; any other owner overlapping it steps past it."""
+    page = AWARDS_VA - POOL_VA
+    if owner == AWARDS_OWNER:
+        return page
+    if at < page + AWARDS_SIZE and at + size > page:
+        return (page + AWARDS_SIZE + align - 1) & -align
+    return at
+
 # XSPACE2 is retained as the header envelope for the shipped boot-logo reader.
 # SP03 and the sealed external directory distinguish the v3 interpretation.
 SCALE_TAG = EXT_MAGIC + b"SP03"
@@ -1025,6 +1058,7 @@ def dormant_union():
             + (QB_ROOM_REQUEST, QB_TRADES_REQUEST)  # b81 qb34: the fixed quarterback room pages, then trades (C20)
             + (HELMET_SIDES_REQUEST,)  # b81 helmet sides: its fixed page after the trades page
             + (CPU_TRADES_REQUEST,)  # b81 CPU trades: its two fixed pages after the helmet-sides page
+            + (AWARDS_REQUEST,)  # b81 awards (review S3): the award vote's fixed page at 0x1531000
             + (CLASSIC_CROWD_REQUEST,)  # b81-seamen: the classic crowd's fixed page
             + (SPORTSCENTER_NEWS_REQUEST,))  # b81 sportscenter: its fixed page at 0x1533000 (review S1)
 
@@ -1201,6 +1235,8 @@ def _scale_allocations(requests):
              "the modern jersey numbers have one fixed page")  # b81 modern numbers
     _require(all(r == CLASSIC_CROWD_REQUEST for r in requests if r[0] == CLASSIC_CROWD_OWNER),
              "the classic crowd owner has one fixed page")  # b81-seamen
+    _require(all(r == AWARDS_REQUEST for r in requests if r[0] == AWARDS_OWNER),
+             "the season awards owner has one fixed page")  # b81 awards
     _directory_code_size(requests)  # Validate every named slot before placement.
     requests = [r for r in requests if r[0] not in DIRECTORY_CODE_OWNERS]
     # b76-k1: the K128 owner is placed after every other owner, the promoted MyCareer code and the grown
@@ -1258,6 +1294,7 @@ def _scale_allocations(requests):
         elif at < room + span and at + size > room:
             at = (room + span + align - 1) & -align
         at = _modern_numbers_at(owner, at, size, align)    # b81 modern numbers: its fixed page, after the span
+        at = _awards_at(owner, at, size, align)             # b81 awards: its fixed page, after the span
         at = _classic_crowd_at(owner, at, size, align)      # b81-seamen: its fixed page
         at = _sportscenter_news_at(owner, at, size, align)  # b81 sportscenter: its fixed page, after the span
         _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")

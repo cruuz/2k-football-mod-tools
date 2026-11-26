@@ -37,9 +37,11 @@ class AllocatorPlacementTests(unittest.TestCase):
         self.assertEqual((space.QB_ROOM_OWNER, space.QB_ROOM_VA, space.QB_ROOM_SIZE), (ROOM[0], 0x1529000, 0x3000))
         self.assertEqual(space.QB_ROOM_REQUEST, ROOM)
         # C20: the trades page (fixed right after the room) follows the room; b81 helmet sides (review 11/22): the
-        # side-numbers page, fixed right after the trades page; b81 CPU trades: its two pages after that, the last late owner.
-        self.assertEqual(space.LATE_OWNERS[-4:], (ROOM[0], space.QB_TRADES_OWNER, space.HELMET_SIDES_OWNER,
-                                                  space.CPU_TRADES_OWNER))
+        # side-numbers page, fixed right after the trades page; b81 CPU trades: its two pages after that; b81 integration
+        # (#33, #38): then the classic crowd's and the award vote's fixed pages (fixed pages never advance the cursor, so
+        # their place among the late owners moves nobody)
+        self.assertEqual(space.LATE_OWNERS[-6:], (ROOM[0], space.QB_TRADES_OWNER, space.HELMET_SIDES_OWNER,
+                                                  space.CPU_TRADES_OWNER, space.CLASSIC_CROWD_OWNER, space.AWARDS_OWNER))
         self.assertIn(ROOM, space.dormant_union())
 
     def test_the_room_alone_and_in_the_dormant_union_sits_at_its_fixed_pages(self):
@@ -50,8 +52,8 @@ class AllocatorPlacementTests(unittest.TestCase):
                 self.assertEqual((row["va"], row["size"], row["align"]), (0x1529000, 0x3000, 0x1000))
                 # C20: the dormant union also carries the trades page right after the room (0x152C000..0x152CFFF) and
                 # (b81 helmet sides) the side-numbers page after it (0x152D000..0x152DFFF).
-                # b81 CPU trades: + 0x152E000..0x152FFFF; b81 integration (#32, #33, #37): + the numbers, classic crowd and
-                # SportsCenter news pages, so the dormant union ends at 0x1533FFF
+                # b81 CPU trades: + 0x152E000..0x152FFFF; b81 integration (#32, #33, #37, #38): + the numbers, award vote,
+                # classic crowd and SportsCenter news pages, so the dormant union ends at 0x1533FFF
                 end = 0x1534000 if name == "dormant union" else 0x152C000
                 self.assertEqual(report["file_size"] - space.SCALE3_FILE_SIZE, end - space.POOL_VA)
 
@@ -81,9 +83,9 @@ class AllocatorPlacementTests(unittest.TestCase):
             with self.subTest(room=ROOM in requests):
                 rows = space.plan(requests)["allocations"]
                 placed = next(r for r in rows if r["owner"] == straddle[0])
-                # b81 integration (#32, #33, #36, #37): the span ends at 0x1530000 (CPU trades' two pages); from there the
-                # 0x20000-byte owner would straddle the numbers page (0x1530000), then the classic crowd page (0x1532000),
-                # then the SportsCenter news page (0x1533000), so it steps past all three
+                # b81 integration (#32, #33, #36, #37, #38): the span ends at 0x1530000 (CPU trades' two pages); from there
+                # the 0x20000-byte owner would straddle the numbers page (0x1530000), then the award vote (0x1531000), the
+                # classic crowd (0x1532000) and the SportsCenter news page (0x1533000), so it steps past all four
                 self.assertEqual(placed["va"], space.SPORTSCENTER_NEWS_VA + space.SPORTSCENTER_NEWS_SIZE)
                 self.assertEqual(space.FIXED_SPAN_END, 0x1530000)
                 for row in rows:
@@ -95,8 +97,8 @@ class AllocatorPlacementTests(unittest.TestCase):
         filler = ("aa_synthetic_filler", "code", 0x1528000 - 0x80 - space.POOL_VA - space.PAGE, space.PAGE)
         bumped = ("ab_synthetic_bumped", "code", 0x20000, 16)
         rows = space.plan([filler, bumped, ownership])["allocations"]
-        # past trades, side numbers and CPU trades, then (b81 integration) past the numbers, classic crowd and SportsCenter
-        # news pages it would otherwise straddle
+        # past trades, side numbers and CPU trades, then (b81 integration) past the numbers, award vote, classic crowd and
+        # SportsCenter news pages it would otherwise straddle
         self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x1534000)
 
     def test_a_foreign_room_request_is_refused(self):

@@ -115,6 +115,8 @@ class PlanningTests(unittest.TestCase):
                 #   Beta 81 sportscenter (review S1): the budget union (dormant_union) also carries SportsCenter news,
                 #   one fixed page at space.SPORTSCENTER_NEWS_VA (0x1533000, its own step-over): the pool's end,
                 #   41 pages.
+                #   Beta 81 awards (integration, #38): the award vote's fixed page (space.AWARDS_VA, 0x1531000) lies below
+                #   the news page, so the pool still ends with SportsCenter news: 41 pages.
                 self.assertEqual(before['regions'][:6], after['regions'][:6])
                 injury_va = -(-(space.BACKFIELD_VA + space.BACKFIELD_REQUEST[2]) // space.PAGE) * space.PAGE
                 self.assertGreaterEqual(space.QB_ROOM_VA, injury_va + space.QB_INJURY_REQUEST[2])
@@ -124,6 +126,8 @@ class PlanningTests(unittest.TestCase):
                 fixed_end = space.SPORTSCENTER_NEWS_VA + space.SPORTSCENTER_NEWS_SIZE
                 budget_size = space.SCALE3_FILE_SIZE + fixed_end - space.POOL_VA
                 self.assertEqual(budget_size, space.SCALE3_FILE_SIZE + 41 * space.PAGE)
+                self.assertGreater(space.AWARDS_VA, space.HELMET_SIDES_VA + space.HELMET_SIDES_SIZE - 1)
+                self.assertLess(space.AWARDS_VA, space.SPORTSCENTER_NEWS_VA)
                 expected_size = {'full': space.SCALE3_FILE_SIZE + 4 * space.PAGE,
                                  'budget': budget_size}.get(label, space.SCALE3_FILE_SIZE)
                 self.assertEqual(after['file_size'], expected_size)
@@ -135,7 +139,8 @@ class PlanningTests(unittest.TestCase):
                              space.QB_ROOM_REQUEST[:2]: space.QB_ROOM_VA,
                              space.QB_TRADES_REQUEST[:2]: space.QB_TRADES_VA,
                              space.HELMET_SIDES_REQUEST[:2]: space.HELMET_SIDES_VA,
-                             space.SPORTSCENTER_NEWS_REQUEST[:2]: space.SPORTSCENTER_NEWS_VA}
+                             space.SPORTSCENTER_NEWS_REQUEST[:2]: space.SPORTSCENTER_NEWS_VA,
+                             space.AWARDS_REQUEST[:2]: space.AWARDS_VA}
                     for report in (before, after):
                         self.assertEqual({(a['owner'], a['kind']): a['va'] for a in report['allocations']
                                           if (a['owner'], a['kind']) in fixed}, fixed)
@@ -153,7 +158,8 @@ class PlanningTests(unittest.TestCase):
     def pool_pages(report):
         """Pool pages used by the directory page and the spills, leaving out the rows at fixed pool addresses."""
         fixed = {*space.LINEUP_SLOT_VA, space.QB_INJURY_REQUEST[:2], space.QB_ROOM_REQUEST[:2], space.QB_TRADES_REQUEST[:2],
-                 space.HELMET_SIDES_REQUEST[:2], space.SPORTSCENTER_NEWS_REQUEST[:2]}
+                 space.HELMET_SIDES_REQUEST[:2], space.SPORTSCENTER_NEWS_REQUEST[:2],
+                 space.AWARDS_REQUEST[:2]}
         ends = [a['va'] + a['size'] for a in report['allocations']
                 if a['va'] >= space.POOL_VA and (a['owner'], a['kind']) not in fixed]
         return -(-(max(ends, default=space.POOL_VA) - space.POOL_VA) // space.PAGE)

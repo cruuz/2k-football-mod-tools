@@ -225,7 +225,8 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [628, 10, 8, 9, 8, 9]
+            [630, 10, 8, 9, 8, 9]
+            # b81 integration (#38 merge): 630 = 628 + 2 (that lane counted 611 = 609 + 2).
             # b81 integration (#37 merge): 628 = 625 + 3 (that lane counted 612 = 609 + 3).
             # b81 integration (#36 merge): 625 = 621 + 4 (that lane counted 613 = 609 + 4).
             # b81 integration (#33 merge): 621 = 617 + 4 (that lane counted 613 = 609 + 4).
@@ -252,6 +253,8 @@ class ProviderIntegrityTests(unittest.TestCase):
             # loads the owner by name, right after the quarterback room step).
             # b81 sportscenter: 612 = 609 + SportsCenter news (MyCareer's guard and the cave manifest import it), the
             # SportsCenter lines owner (loaded by name) and the frozen pre-news-row halfback roll (imported by the roll).
+            # b81 awards: 611 = 609 + the award vote owner and its generated page (nfl2k5_awards, nfl2k5_awards_code), imported
+            # by the honors owner that installs them.
             # b81 helmet-sides: 609 = 607 + the helmet side numbers owner (loaded by name, imported by throw_tuning for
             # the cave manifest recorder) + Number kerning, whose state the owner reads.
             # b81 integration (qb34 trades merge): 607 = 605 (next lines) + the quarterback trades owner and its generated

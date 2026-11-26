@@ -23,6 +23,7 @@ for entry in (ROOT, ROOT / "tools", ROOT / "tests"):
     if str(entry) not in sys.path:
         sys.path.insert(0, str(entry))
 
+from mod_editor.core import nfl2k5_awards as awards  # noqa: E402
 from mod_editor.core import nfl2k5_cave_manifest as model  # noqa: E402
 from mod_editor.core import nfl2k5_champions as champions  # noqa: E402
 from mod_editor.core import nfl2k5_honors as honors  # noqa: E402
@@ -61,7 +62,12 @@ class ManifestModelWiring(unittest.TestCase):
         source = inspect.getsource(model.build_manifest)
         names = source[source.index('for name in ("apply", "apply_xbe"'):].split("):")[0]
         self.assertNotIn("install", names)
-        self.assertEqual(source.count('"install"'), 2)       # the patch.object target and the wrapper's function name
+        # the patch.object target and the wrapper's function name, for each of the two owners honors.apply installs
+        # (b81 awards: the award vote's install is observed the same way, right after the champions one)
+        self.assertEqual(source.count('"install"'), 4)
+        self.assertIn('patch.object(awards, "install", recorder.wrapper(awards, "install"))', source)
+        self.assertLess(source.index('patch.object(champions, "install"'), source.index('patch.object(awards, "install"'))
+        self.assertLess(source.index('patch.object(awards, "install"'), source.index("receipt = build.build(plan"))
 
 
 class RecorderOnRetail(unittest.TestCase):
@@ -75,7 +81,9 @@ class RecorderOnRetail(unittest.TestCase):
         recorder = model.Recorder(self.retail)
         with patch.object(honors, "apply", recorder.wrapper(honors, "apply")):
             if wrap_champions:
-                with patch.object(champions, "install", recorder.wrapper(champions, "install")):
+                # b81 awards: the manifest model observes both installs honors.apply makes (champions, then awards)
+                with patch.object(champions, "install", recorder.wrapper(champions, "install")), \
+                        patch.object(awards, "install", recorder.wrapper(awards, "install")):
                     result = honors.apply(self.retail)
             else:
                 result = honors.apply(self.retail)
@@ -91,10 +99,16 @@ class RecorderOnRetail(unittest.TestCase):
     def test_with_the_wrapper_the_champions_step_reserves_both_complete_sites(self):
         recorder, (payload, _receipt) = self._record(wrap_champions=True)
         self.assertEqual([(s["owner"], s["function"]) for s in recorder.steps],
-                         [("nfl2k5_champions", "install"), ("nfl2k5_honors", "apply")])   # the inner install finishes first
-        champion, honor = recorder.steps
-        self.assertEqual(champion["after_sha256"], honor["after_sha256"])                   # honors returns champions' output
+                         [("nfl2k5_champions", "install"), ("nfl2k5_awards", "install"),
+                          ("nfl2k5_honors", "apply")])   # the inner installs finish first
+        champion, award, honor = recorder.steps
+        self.assertEqual(champion["after_sha256"], award["before_sha256"])                  # awards takes champions' output
+        self.assertEqual(award["after_sha256"], honor["after_sha256"])                      # honors returns awards' output
         self.assertEqual(hashlib.sha256(payload).hexdigest(), honor["after_sha256"])
+        declared = {(int(s["start"], 0), int(s["end"], 0), s["basis"]) for s in recorder.spans
+                    if s["owner"] == awards.OWNER and s["basis"].startswith("declared edit:")}
+        self.assertEqual(declared, {(va, va + len(after), "declared edit: " + label)
+                                    for label, va, _before, after in awards.sites()})
         ranges = [(int(a, 0), int(b, 0)) for a, b in honor["file_runs"]]
         for a, b in ((int(a, 0), int(b, 0)) for a, b in champion["file_runs"]):
             self.assertTrue(any(lo <= a and b <= hi for lo, hi in ranges))                  # honors' diff contains champions'
@@ -126,9 +140,13 @@ class CommittedManifest(unittest.TestCase):
         steps = self.document["steps"]
         owners = [s["owner"] for s in steps]
         index = owners.index("nfl2k5_champions")
-        self.assertEqual((steps[index]["function"], owners[index + 1]), ("install", "nfl2k5_honors"))
+        nxt = index + 1
+        if owners[nxt] == "nfl2k5_awards":   # b81 awards: a manifest regenerated since the award vote joined honors.apply
+            self.assertEqual((steps[nxt]["function"], steps[nxt]["before_sha256"]), ("install", steps[index]["after_sha256"]))
+            nxt += 1
+        self.assertEqual((steps[index]["function"], owners[nxt]), ("install", "nfl2k5_honors"))
         self.assertEqual(owners.count("nfl2k5_champions"), 1)
-        self.assertEqual(steps[index]["after_sha256"], steps[index + 1]["after_sha256"])
+        self.assertEqual(steps[nxt - 1]["after_sha256"], steps[nxt]["after_sha256"])
         self.assertGreater(steps[index]["changed_bytes"], 0)
 
     def test_the_named_code_allocation_is_still_reserved_and_the_honors_sites_are_untouched(self):

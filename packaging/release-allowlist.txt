@@ -1194,6 +1194,8 @@ mod_editor/core/nfl2k5_champions_code.py
 mod_editor/core/nfl2k5_champions_code_b780.py
 mod_editor/core/nfl2k5_champions_code_b779.py
 mod_editor/core/nfl2k5_champions_history.py
+mod_editor/core/nfl2k5_awards.py
+mod_editor/core/nfl2k5_awards_code.py
 data/nfl2k5_champions_2026.json
 data/nfl2k5_franchise_leaders_2026.json
 mod_editor/core/nfl2k5_honors.py
@@ -4493,6 +4495,7 @@ tests/mod_editor/test_b81_sim_qb_injury_settings.py
 tests/mod_editor/test_b81_sim_qb_injuries_code.py
 tests/mod_editor/test_b81_scoring_native.py
 tests/mod_editor/test_b81_scoring_option.py
+tests/mod_editor/test_b81_awards.py
 tests/mod_editor/test_b81_gadget_play.py
 tests/mod_editor/test_b81_gadget_pair_path.py
 tests/mod_editor/test_b81_gadget_attract_fatigue.py

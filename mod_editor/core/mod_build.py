@@ -2038,6 +2038,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_letter_grades_progress", "Letter grades", lambda p: p.letter_grades),
     ("nfl2k5_honors", "Honors page", lambda p: p.honors_page),
     ("nfl2k5_champions", "Honors page", lambda p: p.honors_page),  # b779-hn1: installed with the honors owner
+    ("nfl2k5_awards", "Honors page", lambda p: p.honors_page),  # b81 awards: installed with the honors owner (fixed page)
     ("nfl2k5_coach_ai", "Automatic coach AI", lambda p: p.coach_ai),
     ("nfl2k5_moment_coaches", "25 more Anniversary moments", lambda p: p.espn25_more_moments),
     ("nfl2k5_moment_context", "25 more Anniversary moments", lambda p: p.espn25_more_moments),
@@ -4085,6 +4086,33 @@ def _verify_history_pool_final(target, receipt) -> None:
                          f"{'carries' if want == 'club' else 'does not carry'} franchise history.")
 
 
+def _season_awards_upgrade(payload):
+    """b81 awards (review M1): the released v0.9 executable carries the beta-80 honors and champions owners and no award
+    vote, so its honors owner reads "previous"; the v0.9 update upgrades it in place to this release's (honors.apply:
+    the champions links and the award vote's fixed page appended at 0x1531000; no existing allocation moves), as a full
+    build has it. Any other state is returned unchanged: the update never adds the honors page to a disc without it.
+    Returns (payload, receipt or None)."""
+    honors = _core_module("nfl2k5_honors")
+    if honors is None or honors.status(payload) != "previous":
+        return payload, None
+    return honors.apply(payload)
+
+
+def _apply_season_awards_in_place(target, receipt, progress):
+    """The v0.9 update's write of _season_awards_upgrade, at the same point of its chain."""
+    patched, upgrade = _season_awards_upgrade(_xbe_bytes(target))
+    if upgrade is None:
+        return
+    progress("Franchise: modern season award vote and All-Pro team", 0, 0)
+    _write_xbe_bytes(target, patched)
+    honors, awards = _core_module("nfl2k5_honors"), _core_module("nfl2k5_awards")
+    if _xbe_bytes(target) != patched or honors.status(patched) != "applied" or awards.status(patched) != "applied":
+        raise RuntimeError("The season award vote update did not read back as applied.")
+    receipt["steps"].append({"step": "season_awards", **{k: v for k, v in upgrade.items()
+                                                         if k not in ("edits", "reservations")}})
+    receipt["result"]["season_awards"] = "applied"
+
+
 def _history_pool_upgrade(payload):
     """b81 history-pool ("fix the history storage for franchise now"): an in-place copy of a built disc (update-v09,
     edit-sim-qb, edit-gadget) carries the career-history pool's current revision, as a full build of it does. An earlier
@@ -4438,6 +4466,12 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     expected, decisions = _cpu_decisions_current(expected)
     if decisions is not None and decisions.get("changed_bytes"):
         receipt["v09_update"].append("cpu_decisions")
+    # b81 awards (review M1): every v0.9 update also brings the season awards to this release's vote (the released
+    # champions rule could name a 15-interception linebacker MVP), as a full build has it; before the gadget and
+    # history-pool steps (the bytes are the same in either order with the history pool).
+    expected, awards_upgrade = _season_awards_upgrade(expected)
+    if awards_upgrade is not None:
+        receipt["v09_update"].append("season_awards")
     if plan.gadget_play:
         # After every other v0.9 update, as in a standard Build; the books are the released disc's own.
         expected, _ = gadget.apply(expected, _gadget_resources(source))
@@ -4478,6 +4512,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     _apply_qb_room(plan, target, receipt, progress)  # b81 qb34
     _apply_cpu_trades(plan, target, receipt, progress)  # b81 trades-all (R6): the expected chain's order
     _apply_cpu_decisions_in_place(target, receipt, progress)  # beta 81 fake kicks (the expected chain's order)
+    _apply_season_awards_in_place(target, receipt, progress)  # b81 awards (review M1)
     if plan.gadget_play:
         _apply_gadget_play(plan, target, receipt, progress)
     _apply_rookie_faces_in_place(target, receipt, progress)  # b81 rookie-faces (before the history pool, as above)

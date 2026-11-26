@@ -148,7 +148,12 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(got["mvp"], "QBWINNER")
         self.assertEqual(got["opoy"], "QBLOSER")              # not the MVP, so he can still be offensive player of the year
 
-    def test_otherworldly_seasons_win_mvp_at_any_position_and_on_any_team(self):
+    def test_otherworldly_seasons_no_longer_take_the_mvp_from_a_great_quarterback(self):
+        """b81 (job b81-awards; owner 11-25: "non qbs can win mvp, but not when a qb plays like that"): this owner's
+        vote still names an "otherworldly" season at the champions stage, but the award vote that runs right after it
+        (nfl2k5_awards, site 0x116E5A) has the last word: a record-breaking defender or a 2,500-yard back on a 6-11 club
+        does not take the MVP from a 45-touchdown quarterback on a 14-3 club."""
+        from mod_editor.core import nfl2k5_awards as awards
         qb = player("QB1", "QB", 0, pass_yds=5000, pass_td=45, pass_int=8)
         cases = {
             "edge": player("EDGE", "DE", 2, sacks2=62, tackles=60),                  # 31 sacks
@@ -160,12 +165,14 @@ class ModelTests(unittest.TestCase):
         }
         for label, wonder in cases.items():
             with self.subTest(label):
-                self.assertEqual(self.names([qb, wonder])["mvp"], wonder["name"])
+                self.assertEqual(self.names([qb, wonder])["mvp"], wonder["name"])   # the champions stage (superseded)
+                final = awards.choose_awards([qb, wonder], lambda t: self.RECORDS[t])
+                self.assertEqual(final["mvp"]["name"], "QB1")
         near = player("NEAR", "DE", 2, sacks2=58, tackles=60)                       # 29 sacks: great, not otherworldly
         self.assertEqual(self.names([qb, near])["mvp"], "QB1")
         self.assertEqual(self.names([qb, near])["dpoy"], "NEAR")
-        two = [player("A", "DE", 2, sacks2=61), player("B", "ILB", 2, tackles=450)]  # the bigger ratio wins
-        self.assertEqual(self.names([qb] + two)["mvp"], "B")
+        final = awards.choose_awards([qb, near], lambda t: self.RECORDS[t])
+        self.assertEqual((final["mvp"]["name"], final["dpoy"]["name"]), ("QB1", "NEAR"))
 
     def test_elite_edges_corners_tackles_and_linebackers_win_defensive_awards_when_the_season_merits_it(self):
         # a typical field of the simulated league's best defenders, then one elite season of each kind (lines in the
@@ -745,18 +752,26 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(names["oroy"], "RQB")
         self.assertEqual(names["droy"], "RDE")
 
-    def test_otherworldly_seasons_win_mvp_natively(self):
+    def test_otherworldly_seasons_no_longer_take_the_final_mvp_natively(self):
+        """b81 (job b81-awards): the champions stage still names the otherworldly season; the award vote that the
+        honors install puts right after it (0x116E5A) writes the MVP again, and it goes to the 14-3 club's quarterback."""
+        from mod_editor.core import nfl2k5_awards as awards
+        vote = awards.labels()["awards_vote"]
         for label, spec in (("edge", ("WONDER", "DE", 2, 6, dict(sacks2=62, tackles=50))),
                             ("linebacker", ("WONDER", "ILB", 2, 6, dict(tackles=305))),
                             ("runner", ("WONDER", "HB", 2, 6, dict(rush_yds=2510, rush_td=19))),
-                            ("receiver", ("WONDER", "WR", 2, 6, dict(rec=150, rec_yds=2210, rec_td=15)))):
+                            ("receiver", ("WONDER", "WR", 2, 6, dict(rec=150, rec_yds=2210, rec_td=15))),
+                            ("corner", ("WONDER", "CB", 2, 6, dict(def_int=15)))):
             with self.subTest(label):
                 m = self.machine()
                 got, recs, want = self.run_awards(m, self.SPECS + [spec], self.RECORDS)
-                self.assertEqual(got["mvp"], recs[-1])
+                self.assertEqual(got["mvp"], recs[-1])                     # the champions stage
                 self.assertEqual(want["mvp"]["name"], "WONDER")
-                self.assertNotEqual(got["opoy"], recs[-1])
-                self.assertNotEqual(got["dpoy"], recs[-1])
+                m.call(vote)
+                # after the award vote: QBA (4,600 yds, 38 TD, 300 rushing: 36,600 offence points, 14-3) has an
+                # MVP-calibre season on a winning club, so neither RBA's historic 2,400 scrimmage yards nor the
+                # otherworldly man on the 6-11 club can take it (review S6)
+                self.assertEqual(m.get(AWARDS + 0x5800), recs[0])
 
     def test_a_league_without_candidates_keeps_the_retail_winners(self):
         m = self.machine()
