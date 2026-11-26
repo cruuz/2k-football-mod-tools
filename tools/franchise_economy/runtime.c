@@ -29,6 +29,7 @@ extern unsigned STD n_cpu_sign(u8 *team, unsigned pos, int budget, void *menu); 
 extern void FAST n_cut_to(u8 *team, unsigned count);              /* 0x2BF9A0 */
 extern void n_prune(void);                                          /* 0x2BB9A0: the trade board's pruner */
 void FAST economy_release(u8 *team, u8 *p);
+unsigned economy_points(u8 *p);
 extern void FAST n_need_low(int *need, u8 *team);                  /* 0x2BD880 count - native minimum */
 extern void FAST n_need_want(int *need, u8 *team);                 /* 0x2BD8C0 count - wanted depth */
 extern unsigned FAST n_at_position(u8 *team, unsigned pos);        /* 0xC3CB0 */
@@ -1100,7 +1101,7 @@ SECTION(".roster_v") int FAST economy_room_for_signing(u8 *team) {
 #define TEAM_INDEX(t) ((u32)((t) - *(u8 **)(ROSTER_ROOT + 0x1c)) / 500u)
 #define HEALTHY(p) (!((p)[0x23] & 0x80))      /* no injury bit, as the trim, the gate and economy_cover read it */
 #define CHARGE(q) (n_salary(q) + n_prorated(*(u16 *)((q) + 10), (q)[0x26] >> 4, (q)[0x27] & 15))
-#define CAMP_EDGE 0.02f                         /* two points of 0x246D80 (retune 11/25: four kept turnover at 10%) */
+#define CAMP_EDGE 0.01f                         /* one point of 0x246D80 (11/25: four kept turnover at 10%, two at 13-14%) */
 /* Code space: economy_value's own 540 bytes (economy_value, price_of, share_e4), the retail routine 0x322690 (the
  * player's years wanted; economy_years) and unreferenced retail functions (assemble.py R10_WINDOWS, one or two routines
  * or tables each). A club a person owns never reaches the new rules (ruling 7: n_human, "CPU manages" or not). */
@@ -1151,7 +1152,7 @@ SECTION(".r10_value") unsigned share_e4(unsigned g, unsigned rank2) {
 /* His price in game $1000 before the minimum: the curve x the cap, then 8% a year past his position's decline age
  * (never below a quarter) when `aging`. */
 SECTION(".r10_value") unsigned price_of(u8 *p, unsigned aging) {
-    unsigned pos = p[0x35], v = share_e4(price_group[pos], rank_twice(p)) * (CAP / 100) / 100;
+    unsigned pos = p[0x35], v = share_e4(price_group[pos], rank_twice(p)) * (CAP / 100) / 100 * PRICE_SCALE_PCT / 100;
     int over = age_of(p) - decline_age[pos];
     if (aging && over > 0) v = v * (over >= 10 ? 64u : 256u - 20u * (unsigned)over) >> 8;
     return v;
@@ -1212,7 +1213,7 @@ SECTION(".r10_years") unsigned FAST economy_years(u8 *p) {
     const u8 *cum = years_cell(p);
     unsigned h = years_hash(p), years = 1;
     while (years < 5 && h >= cum[years - 1]) ++years;
-    if (years == 1 && age_of(p) <= 29) years = 2 + (h & 1);   /* retune 11/25: a man 29 or under signs for 2-3 years */
+    if (years == 1 && age_of(p) <= 25) years = 2 + (h & 1);   /* 11/25: a man 25 or under signs for 2-3 years */
     return years;
 }
 
@@ -1379,27 +1380,65 @@ SECTION(".r10_camp_fits") unsigned camp_fits(u8 *fa, int budget) {
     return (int)(economy_value(fa, 0, 0, 1, 0) & 0xFFFF) <= budget;
 }
 
-SECTION(".r10_camp_pick") u8 *camp_pick(u8 *team, unsigned pos, int budget) {
+/* The best healthy free agent at `pos` asks no more than `budget` and rates the edge above `mine`. */
+SECTION(".r10_camp_pick") unsigned camp_pick(u8 *mine, unsigned pos, int budget) {
     u32 *list = FA_LIST;
-    u8 *mine = best_at((u8 **)team, team[0x11c], pos), *fa = best_at((u8 **)list[1], list[0], pos);
-    return mine && fa && camp_fits(fa, budget) && camp_ahead(fa, mine) ? mine : 0;
+    u8 *fa = best_at((u8 **)list[1], list[0], pos);
+    return fa && camp_fits(fa, budget) && camp_ahead(fa, mine);
 }
 
-/* One position's competition: sign within the fill budget, keep the better of the two. */
 /* After a signing: the man just appended (0xC3EE0) stays only if he is healthy and the edge above `mine`. */
 SECTION(".r10_camp_keep") void FAST camp_keep(u8 *team, u8 *mine) {
     u8 *signed_man = ((u8 **)team)[team[0x11c] - 1];
     economy_release(team, camp_ahead(signed_man, mine) ? mine : signed_man);
 }
 
-SECTION(".r10_camp_one") void FAST camp_one(u8 *team, unsigned pos, void *menu) {
+/* Camp competition for `mine`, the club's best healthy man at `pos`: sign within the fill budget, keep the better. */
+SECTION(".r10_camp_one") void FAST camp_swap(u8 *team, u8 *mine, unsigned pos, void *menu) {
     int budget = economy_fill_budget(team);
-    u8 *mine = camp_pick(team, pos, budget);
-    if (mine && n_cpu_sign(team, pos, budget, menu)) camp_keep(team, mine);
+    if (team[0x11c] < 64 && camp_pick(mine, pos, budget) && n_cpu_sign(team, pos, budget, menu)) camp_keep(team, mine);
+}
+
+/* A full camp roster's cut for a missing specialist: no QB, K or P, depth row 2 or below (rows 0 and 1, +0x28 bits
+ * 10-12, are seated starters), at a position above its smart-cut minimum (cut_rows row 2). */
+SECTION(".r10_camp_ok") unsigned camp_cuttable(u8 *team, u8 *q) {
+    unsigned pos = q[0x35];
+    return pos >= 3 && pos < 17 && (*(u16 *)(q + 0x28) >> 10 & 7) >= 2 && n_at_position(team, pos) > cut_rows[2][pos];
+}
+
+/* The lowest-rated cuttable man (0x246D80 in whole points), or 0. */
+SECTION(".r10_camp_cut") u8 *camp_cut(u8 *team) {
+    u8 *best = 0;
+    unsigned low = 256;
+    for (unsigned i = 0; i < team[0x11c]; ++i) {
+        u8 *q = ((u8 **)team)[i];
+        unsigned r;
+        if (camp_cuttable(team, q) && (r = economy_points(q)) < low) { low = r; best = q; }
+    }
+    return best;
+}
+
+/* Review G6 (panel 74003, 2035: a club opened the season with no punter; the in-season cover only signed one at week 1):
+ * a CPU club with no healthy man at K or P in camp signs one (0x322BB0 with 0xFFFF, as the in-season cover does: its gate
+ * keeps the cap rule), after cutting camp_cut's man if the roster is full. */
+SECTION(".r10_camp_cover") void FAST camp_cover(u8 *team, unsigned pos, void *menu) {
+    u8 *cut;
+    if (team[0x11c] >= 64) {
+        if (!(cut = camp_cut(team))) return;
+        economy_release(team, cut);
+    }
+    n_cpu_sign(team, pos, 0xFFFF, menu);
+}
+
+/* One position in camp: cover a missing specialist, else compete. */
+SECTION(".r10_camp_pos") void FAST camp_one(u8 *team, unsigned pos, void *menu) {
+    u8 *mine = best_at((u8 **)team, team[0x11c], pos);
+    if (mine) camp_swap(team, mine, pos, menu);
+    else camp_cover(team, pos, menu);
 }
 
 SECTION(".r10_camp") void FAST economy_camp(u8 *team, void *menu) {
-    if (STAGE != 6 || n_human(team) || team[0x11c] >= 64) return;
+    if (STAGE != 6 || n_human(team)) return;
     camp_one(team, 1, menu);
     camp_one(team, 2, menu);
 }

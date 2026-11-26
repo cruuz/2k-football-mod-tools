@@ -393,11 +393,15 @@ R10_WINDOW_PINS = {                 # retail sha256 of each window the revision 
     0x65940: "20dcb7de3fb8abad5909d06f7de4b1fdccdda7087c1d0bbb6c2a0ec0e9ae2871",   # economy_prove_club (keeps the week stubs at their addresses)
     0x6F420: "e5c4bd553d6342316f547b146c89c20c4877e936d6500c8d6ec4624799ae3600",   # restructure_best + economy_release
     0x15E9D0: "20f03f798baf9489d32685f6bc3115606680117bdb9729e6745a760bfa50b228",   # restructured: a club's restructured deals
-    0xFAA20: "ae55f3d068724ec9a0ec7c73e18f546c1895fa21bf9c0c0ae26e6736f4f8abbf",   # camp_ahead + camp_fits
+    0xFAA20: "ae55f3d068724ec9a0ec7c73e18f546c1895fa21bf9c0c0ae26e6736f4f8abbf",   # camp_ahead
     0x25CC20: "b4f18b6672a0602cc9a693e1b3b6dba1e1504117c12667d83560666f30f5fd88",   # camp_keep: the better of the two stays
     0x28D4A0: "ae55f3d068724ec9a0ec7c73e18f546c1895fa21bf9c0c0ae26e6736f4f8abbf",   # camp_one: one position's camp competition
     0x329C50: "ae55f3d068724ec9a0ec7c73e18f546c1895fa21bf9c0c0ae26e6736f4f8abbf",   # years_hash: the length draw 0..254
     0x31B000: "584bae975e91b245a9408bc69c535c992412054a17f2dfbd0ac046bccd599a43",   # hole_room
+    0x36F380: "3c1a3a86a0640a529e9bca2792f886b899de12bf7251ef54261e2f7e0c1bd8c0",   # camp_cut
+    0x250B70: "700bd9881c81e5c6a617190012d20015931fb89a07552a265abfd94b1a9ddce6",   # camp_cuttable + camp_fits (G6, M1)
+    0x1646E0: "82d666317a88531f6c7bf8b94d162473ed2091efe1ecc2f1386f7c035e2d700f",   # camp_cover
+    0x1D12C0: "08c504bdc413e29bf4740d34454c18fa1da12af8b6434f0639846876f7030546",   # camp_one
 }
 PINS.update(R10_WINDOW_PINS)
 PINS[OFFER_JITTER] = "fa53102234cdfb47e76212cf24faf309c148be7f525d793ad1ee97a9052f9e49"

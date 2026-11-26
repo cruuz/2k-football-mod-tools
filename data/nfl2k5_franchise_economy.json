@@ -1993,8 +1993,8 @@
     "evidence": "DESIGN (b81 economy lane DESIGN.txt; coordinator rulings 2026-11-25); real yardsticks PROVED by economy/ec_real.py",
     "price": {
       "rule": "price = price_scale x market_curve[group](rank) x cap; rank = 1 + rostered men of the group rated above him + half of those level with him (0x246D80 unboosted, whole points); then the aging rule and the minimum",
-      "price_scale": 1.0,
-      "price_scale_note": "retune 2026-11-25 (coordinator, one round): 0.8 left a median 19.6% of the cap unspent in panel 74001-74004 and the 99th-percentile deal at 8.9% (gates E1, E3); about 1.0",
+      "price_scale": 1.05,
+      "price_scale_note": "2026-11-25 (coordinator): 0.8 left a median 19.6% of the cap unspent in panel 74001-74004 and the 99th-percentile deal at 8.9% (gates E1, E3); 1.0 in panel 74001-74004 (retune) left 6.4% (band 1.5-5%) with the 99th percentile at 11.05%: 1.05",
       "groups": [
         "QB",
         "K",

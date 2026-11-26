@@ -12,11 +12,11 @@ WINDOWS = {
             "4d0c56536bc20e8db84029330083fa0476118db884d1100083fa0977068db8cae0120031db89d88d"
             "5b010fb69071e1080001d239ca730a83fb0c75e9b80c0000000fb69870e1080001db39cb72090fb6"
             "04076bc00aeb340fb69071e108000fb674070101d239d172056bc60aeb1d0fb6040789d729cf29d9"
-            "0fafce0fafc701c889d131d26bc00a29d9f7f15b5e5f5dc35589e55756be6400000053508b5d080f"
-            "b67b3553e8e7a7dcff500fb6877ee1080050e841ffffff5a5931d289c1a178c2e300f7f631d20faf"
-            "c1f7f68945f089c653e8aa96efff0fb6975fe108005b5f29d0837d0c00742085c07e1cbe40000000"
-            "83f8097f096bc0ec8db0000100008b45f00faff0c1ee088d65f489f05b5e5f5dc366906690669066"
-            "906690669066906690669066906690669066909055a1b876e500b90400000039c889e50f47c1b907"
+            "0fafce0fafc701c889d131d26bc00a29d9f7f15b5e5f5dc35589e55756be64000000538b4d080fb6"
+            "793551e8e8a7dcff500fb6877ee1080050e842ffffff5a31d25989c3a178c2e3008b4d08f7f65131"
+            "d20fafc3f7f631d26bc069f7f689c389c6e8a296efff0fb6975fe108005f29d0837d0c005a741d85"
+            "c07e19be4000000083f8097f096bc0ec8db0000100000faff3c1ee088d65f489f05b5e5f5dc36690"
+            "669066906690669066906690669066906690669055a1b876e500b90400000039c889e50f47c1b907"
             "0000008b55085d6bc02d39ca0f47d10fb7941224d82b008d441003c1e802c35589e5578b7d085653"
             "83ff06773389cb89d6b830ec1300ffd085c0742489f1b800ed1300ffd08d947b9c01000089c10fb7"
             "0201c8b9ffff000039c80f47c16689025b5e5f5dc204005589e5565383ec0c8b5d0883fb06760431"
@@ -29,7 +29,7 @@ WINDOWS = {
             "240100006a0089c1e8f2feffff8b4df089c3e851b2e5ff29c339de7f928a45ef8b7de8c1e0040a45"
             "ee884726b8010000008d65f45b5e5f5dc3900c0e0e0707080805080807070a0a0a0908007503ed03"
             "33047904bf04bf04bf04140501000002020101010001000201020202020000000001020304050607"
-            "08090b0b0c0d0e0f106690900012934700ff7f470000003f3333333f000000400ad7a33c"
+            "08090b0b0c0d0e0f106690900012934700ff7f470000003f3333333f000000400ad7233c"
         ).ljust(1082, b"\xcc")
     ),
     0x3228a0: (  # contracts: 211/215 bytes
@@ -110,7 +110,7 @@ WINDOWS = {
         bytes.fromhex(
             "5589e55731ff568d45b05383ec4c8b5d08ff75145350e81aba030083c40c8b44bdb085c00f89c900"
             "00004089d98944bdb0e8aa7cdaff85c074166a00ba0100000089d9e83f67f2ff2b8324010000eb07"
-            "89d9e840d0f1ff837d180089c67520b9a0fce500e8d71bcbffd94510dff1ddd876acff750c565753"
+            "89d9e837d0f1ff837d180089c67520b9a0fce500e8d71bcbffd94510dff1ddd876acff750c565753"
             "e8e3bbf8ffeb9f80bb1c0100003177756a00ba0100000089d9e8f166f2ff2b83240100006a008d70"
             "f6e86666f2ff833da476e500025a89f189c277078d0c850000000001d2894da839d689d0ff750c0f"
             "46c68955ac505753e88bbbf8ff85c00f8541ffffff8b4da889f08b55ac39f10f4ec139c27ccde92b"
@@ -326,7 +326,7 @@ WINDOWS = {
         bytes.fromhex(
             "89f9e9020000000f0b83c8ff85c9745a5589e556538079351089cb7607b801000000eb3f51e8d60c"
             "0b005389c1e88e75000089c658b8010000005a0fb65401ff39d672084083f80575f1eb1783f80175"
-            "1253e8c945e9ff5a83f81d7fc083e6018d46028d65f85b5e5dc3c3"
+            "1253e8c945e9ff5a83f8197fc083e6018d46028d65f85b5e5dc3c3"
         ).ljust(133, b"\xcc")
     ),
     0x5de10: (  # r10_5de10: 80/84 bytes
@@ -407,14 +407,13 @@ WINDOWS = {
             "8b5dfc89d0c9c3"
         ).ljust(87, b"\xcc")
     ),
-    0x2b3f40: (  # r10_2b3f40: 209/214 bytes
+    0x2b3f40: (  # r10_2b3f40: 200/214 bytes
         bytes.fromhex(
-            "833da476e50006753c5589e55689d65389cbe8d9ace8ff85c0752380bb1c0100003f771a56ba0100"
-            "000089d9e82f95fdffba0200000089d956e82295fdff8d65f85b5e5dc3c35589e55756538b750c56"
-            "ff7508e80836deff5a5985c0750431c0eb3d89f1bf64000000e8d223e3ff89f131d289c38a46248d"
-            "341b83e00f506a016a00e87994000031d289c1a178c2e300f7f78d144901d039c67cc389d829c88d"
-            "65f45b5e5f5dc35589e553e84009e1ff6a0089c3e8e12cf0ff5abaffff0000c1e00239d30f4fda39"
-            "d80f4cc38b5dfcc9c3"
+            "833da476e5000675335589e55689d65389cbe8d9ace8ff85c0751a56ba0100000089d9e858d3f1ff"
+            "ba0200000089d956e84bd3f1ff8d65f85b5e5dc3c35589e55756538b750c56ff7508e81136deff5a"
+            "5985c0750431c0eb3d89f1bf64000000e8db23e3ff89f131d289c38a46248d341b83e00f506a016a"
+            "00e88294000031d289c1a178c2e300f7f78d144901d039c67cc389d829c88d65f45b5e5f5dc35589"
+            "e553e84909e1ff6a0089c3e8ea2cf0ff5abaffff0000c1e00239d30f4fda39d80f4cc38b5dfcc9c3"
         ).ljust(214, b"\xcc")
     ),
     0x31efa0: (  # r10_31efa0: 99/103 bytes
@@ -445,7 +444,7 @@ WINDOWS = {
     ),
     0x351d60: (  # r10_351d60: 66/82 bytes
         bytes.fromhex(
-            "5531d289e55731ff5653538b750831db0fb6861c01000039c3731d8955f0ff349e56e8ff21f6ff5a"
+            "5531d289e55731ff5653538b750831db0fb6861c01000039c3731d8955f0ff349e56e8f621f6ff5a"
             "8b55f05939c27d058b3c9e89c243ebd88d65f489f85b5e5f5dc3"
         ).ljust(82, b"\xcc")
     ),
@@ -455,11 +454,10 @@ WINDOWS = {
             "0da476e50083f907760789d0c1e802eb0c83f9057607d1ea39d00f47c239d80f42c35b5dc3"
         ).ljust(81, b"\xcc")
     ),
-    0x3c8e00: (  # r10_3c8e00: 102/107 bytes
+    0x3c8e00: (  # r10_3c8e00: 75/107 bytes
         bytes.fromhex(
-            "5589e55756538b45088b7d0c8b351829b700570fb6901c0100005250e8bffef5ff57ff763889c3ff"
-            "763ce8b1fef5ff83c41885db741589c685c0740fff751050e8161cd3ff5f5a85c0750431dbeb0d53"
-            "56e8ca1bd3ff5a5985c074ef8d65f489d85b5e5f5dc3"
+            "5589e553a11829b700ff750cff7038ff703ce8c9fef5ff83c40c85c0750431c0eb24ff751089c350"
+            "e87c7de8ff5a5985c074ebff750853e8e41bd3ff5a5985c00f95c00fb6c08b5dfcc9c3"
         ).ljust(107, b"\xcc")
     ),
     0x3c98c0: (  # r10_3c98c0: 108/108 bytes
@@ -571,11 +569,10 @@ WINDOWS = {
             "ebe989d05b5dc3"
         ).ljust(91, b"\xcc")
     ),
-    0xfaa20: (  # r10_faa20: 92/94 bytes
+    0xfaa20: (  # r10_faa20: 59/94 bytes
         bytes.fromhex(
             "5589e55031c08b4d0885c9742c80792300782631d2e846c314008b4d0c31d2d95dfce839c31400d8"
-            "0570d82b0031c0d945fcdff1ddd80f93c0c9c35531d289e56a006a018b4d086a00e8d2291c000fb7"
-            "c03b450cc90f9ec00fb6c0c3"
+            "0570d82b0031c0d945fcdff1ddd80f93c0c9c3"
         ).ljust(94, b"\xcc")
     ),
     0x25cc20: (  # r10_25cc20: 52/94 bytes
@@ -584,10 +581,10 @@ WINDOWS = {
             "65f889f25e5f5de90828e1ff"
         ).ljust(94, b"\xcc")
     ),
-    0x28d4a0: (  # r10_28d4a0: 73/94 bytes
+    0x28d4a0: (  # r10_28d4a0: 79/94 bytes
         bytes.fromhex(
-            "5589e55789d7565389cb50e8376b0200508945f05753e845b9130083c40c85c0741dff75088b55f0"
-            "89c6525753e8de56090085c0740989f289d9e841f7fcff8d65f45b5e5f5dc20400"
+            "5589e5575689d65389cbe82f6b020080bb1c0100003f772d5089c7ff750856e83cb9130083c40c85"
+            "c0741aff750c57ff750853e8d856090085c0740989f289d9e83bf7fcff8d65f45b5e5f5dc20800"
         ).ljust(94, b"\xcc")
     ),
     0x329c50: (  # r10_329c50: 50/94 bytes
@@ -602,6 +599,32 @@ WINDOWS = {
             "0fafc629c38d65f889d85b5e5dc3"
         ).ljust(93, b"\xcc")
     ),
+    0x36f380: (  # r10_36f380: 89/93 bytes
+        bytes.fromhex(
+            "5589e557bf000100005631f65331db518975f08b45080fb6801c01000039c3732d8b45088b349856"
+            "50e8c217eeff595a85c075078b75f089f8eb0b56e86f1c07005a39f873ee8975f04389c7ebc58b45"
+            "f08d65f45b5e5f5dc3"
+        ).ljust(93, b"\xcc")
+    ),
+    0x250b70: (  # r10_250b70: 90/92 bytes
+        bytes.fromhex(
+            "5531c089e5538b550c0fb65a358d4bfd83f90d772166f74228001874198b4d0889dae81931e7ff0f"
+            "b693140b3c0039c20f92c00fb6c05b5dc35531d289e56a006a018b4d086a00e884c806000fb7c03b"
+            "450cc90f9ec00fb6c0c3"
+        ).ljust(92, b"\xcc")
+    ),
+    0x1646e0: (  # r10_1646e0: 62/88 bytes
+        bytes.fromhex(
+            "5589e55689d65380b91c0100003f89cb761451e888ac200089c25885d2741689d9e856adf0ffff75"
+            "0868ffff00005653e89be41b008d65f85b5e5dc20400"
+        ).ljust(88, b"\xcc")
+    ),
+    0x1d12c0: (  # r10_1d12c0: 73/88 bytes
+        bytes.fromhex(
+            "5589e5565389d3508b7508520fb6811c0100005051894df4e8037a150083c40c8b4df485c0741256"
+            "89c253e8b0c10b008d65f85b5e5dc204008975088d65f889da5b5e5de9d733f9ff"
+        ).ljust(88, b"\xcc")
+    ),
 }
 ROOKIE_TABLE_VA = 0x521598
 ROOKIE_TABLE = bytes.fromhex(
@@ -612,4 +635,4 @@ ROOKIE_TABLE = bytes.fromhex(
     "fc567100fd5671000000000000000000000000000000000000000000000000000000000000000000"
     "000000000000000000000000000000000000000000000000"
 )
-SYMBOLS = {'economy_prove_club': 416064, 'economy_restructure_best': 455712, 'economy_release': 455772, 'economy_usable_room': 805168, 'economy_reserve': 1149504, 'economy_restructured': 1436112, 'economy_hole_p': 1549440, 'economy_league_pct': 2449968, 'economy_draft_min': 2509504, 'economy_full': 2509529, 'economy_offer_both': 2509747, 'economy_camp': 2834240, 'economy_fill_budget': 2834407, 'economy_pick': 2861856, 'economy_txn_years': 2861978, 'economy_value': 2872384, 'economy_floor': 2872924, 'economy_penalty': 2872975, 'economy_cap': 2873047, 'economy_offer_room': 2873174, 'economy_reconcile': 2882528, 'economy_room_for_signing': 2982640, 'economy_hole_first': 2982645, 'economy_weakest': 3065136, 'economy_money': 3270016, 'economy_fill_gate': 3270149, 'economy_clear_cap': 3272608, 'economy_years_entry': 3286672, 'economy_years': 3286681, 'economy_contract': 3287200, 'economy_offer_gate': 3287383, 'economy_rookie': 3287424, 'economy_week': 3291248, 'economy_after': 3291679, 'economy_stage6': 3291695, 'economy_resign_stage': 3440448, 'economy_class_free': 3678720, 'economy_class_position': 3678801, 'economy_class_slot': 3678877, 'economy_renew_gate': 3765744, 'economy_expire': 3765821, 'economy_fa_retire': 3765897, 'economy_class_topup': 3825440, 'economy_floor_protected': 3825551, 'economy_cover': 3825552, 'economy_restructure': 3907424, 'economy_ask': 3907725, 'economy_fill_room': 3908784, 'economy_renew_room': 3908855, 'economy_clubs': 3908986, 'economy_rollover_reconcile': 3909108, 'economy_vet_short': 3934496, 'economy_vet_pick': 3934554, 'economy_best_room': 4008080, 'economy_need': 4008325, 'economy_camp_limit': 4045923, 'economy_vet_release': 4045943, 'economy_points': 4067376, 'economy_smart_cut': 4071888, 'economy_squad_expire': 4102800, 'economy_squad_gate': 4103376, 'economy_preseason_gate': 4317856}
+SYMBOLS = {'economy_prove_club': 416064, 'economy_restructure_best': 455712, 'economy_release': 455772, 'economy_usable_room': 805168, 'economy_reserve': 1149504, 'economy_restructured': 1436112, 'economy_hole_p': 1549440, 'economy_league_pct': 2449968, 'economy_draft_min': 2509504, 'economy_full': 2509529, 'economy_offer_both': 2509747, 'economy_camp': 2834240, 'economy_fill_budget': 2834398, 'economy_pick': 2861856, 'economy_txn_years': 2861978, 'economy_value': 2872384, 'economy_floor': 2872924, 'economy_penalty': 2872975, 'economy_cap': 2873047, 'economy_offer_room': 2873174, 'economy_reconcile': 2882528, 'economy_room_for_signing': 2982640, 'economy_hole_first': 2982645, 'economy_weakest': 3065136, 'economy_money': 3270016, 'economy_fill_gate': 3270149, 'economy_clear_cap': 3272608, 'economy_years_entry': 3286672, 'economy_years': 3286681, 'economy_contract': 3287200, 'economy_offer_gate': 3287383, 'economy_rookie': 3287424, 'economy_week': 3291248, 'economy_after': 3291679, 'economy_stage6': 3291695, 'economy_resign_stage': 3440448, 'economy_class_free': 3678720, 'economy_class_position': 3678801, 'economy_class_slot': 3678877, 'economy_renew_gate': 3765744, 'economy_expire': 3765821, 'economy_fa_retire': 3765897, 'economy_class_topup': 3825440, 'economy_floor_protected': 3825551, 'economy_cover': 3825552, 'economy_restructure': 3907424, 'economy_ask': 3907725, 'economy_fill_room': 3908784, 'economy_renew_room': 3908855, 'economy_clubs': 3908986, 'economy_rollover_reconcile': 3909108, 'economy_vet_short': 3934496, 'economy_vet_pick': 3934554, 'economy_best_room': 4008080, 'economy_need': 4008325, 'economy_camp_limit': 4045923, 'economy_vet_release': 4045943, 'economy_points': 4067376, 'economy_smart_cut': 4071888, 'economy_squad_expire': 4102800, 'economy_squad_gate': 4103376, 'economy_preseason_gate': 4317856}

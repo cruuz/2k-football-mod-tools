@@ -60,7 +60,11 @@ R10_WINDOWS = {"r10_5de10": (0x5de10, 84),
                "r10_25cc20": (0x25cc20, 94),
                "r10_28d4a0": (0x28d4a0, 94),
                "r10_329c50": (0x329c50, 94),
-               "r10_31b000": (0x31b000, 93)}
+               "r10_31b000": (0x31b000, 93),
+               "r10_36f380": (0x36f380, 93),
+               "r10_250b70": (0x250b70, 92),
+               "r10_1646e0": (0x1646e0, 88),
+               "r10_1d12c0": (0x1d12c0, 88)}
 # the input sections each window takes (value: economy_value's own bytes, placed before economy_floor's pin below)
 R10_SECTIONS = {'r10_5de10': ['r10_casualty'],
                 'r10_87dc0': ['r10_rank'],
@@ -102,11 +106,15 @@ R10_SECTIONS = {'r10_5de10': ['r10_casualty'],
                 'r10_65940': ['r10_prove'],
                 'r10_6f420': ['r10_rbest', 'r10_release'],
                 'r10_15e9d0': ['r10_rcount'],
-                'r10_faa20': ['r10_camp_ahead', 'r10_camp_fits'],
+                'r10_faa20': ['r10_camp_ahead'],
                 'r10_25cc20': ['r10_camp_keep'],
                 'r10_28d4a0': ['r10_camp_one'],
                 'r10_329c50': ['r10_hash'],
                 'r10_31b000': ['r10_hole_room'],
+                'r10_36f380': ['r10_camp_cut'],
+                'r10_250b70': ['r10_camp_ok', 'r10_camp_fits'],
+                'r10_1646e0': ['r10_camp_cover'],
+                'r10_1d12c0': ['r10_camp_pos'],
                 'roster_v': ['r10_holefirst']}
 WINDOWS = {"value": (0x2BD440, 1082), "contracts": (0x3228A0, 215),
            "rookie": (0x322980, 280), "picks": (0x2BAB20, 403),
@@ -197,8 +205,11 @@ def r10_tables(data):
     r = data["revision_10"]
     price = r["price"]
     scale, ranks, groups = price["price_scale"], price["ranks"], price["groups"]
-    curve = [[round(1000 * scale * v) for v in price["market_curve_capshare"][g]] for g in groups]   # 0.1% of the cap
+    # 0.1% of the cap at scale 1.0 (a byte holds the top QB's 24.5%); price_of applies the scale (11/25: 1.05 > 1.0)
+    curve = [[round(1000 * v) for v in price["market_curve_capshare"][g]] for g in groups]
     assert all(0 < v <= 255 for row in curve for v in row) and all(a >= b for row in curve for a, b in zip(row, row[1:]))
+    scale_pct = round(100 * scale)
+    assert abs(scale_pct - 100 * scale) < 1e-9 and 50 <= scale_pct <= 200
     years = []
     for band in r["lengths"]["bands"]:
         for tier in r["lengths"]["tiers"]:
@@ -219,7 +230,7 @@ def r10_tables(data):
               ("u8", "years_cum", [min(v, 255) for row in years for v in row[:4]], "r10_tab_c")]
     header = "\n".join(f'const {typ} {name}[] SECTION(".{sec}") __attribute__((aligned(1))) = '
                        + "{" + ",".join(map(str, values)) + "};" for typ, name, values, sec in tables)
-    header += f"\n#define PRICE_KNOTS {len(ranks)}\n"
+    header += f"\n#define PRICE_KNOTS {len(ranks)}\n#define PRICE_SCALE_PCT {scale_pct}u\n"
     return header
 
 

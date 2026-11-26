@@ -63,7 +63,7 @@ class OwnerTests(unittest.TestCase):
 
     def test_the_tables_come_from_the_real_market(self):
         price = DATA["price"]
-        self.assertEqual(price["price_scale"], 1.0)                  # retune 11/25 (0.80 left ~20% of the cap unspent)
+        self.assertEqual(price["price_scale"], 1.05)                 # 11/25: 0.80 left ~20% of the cap unspent, 1.0 6.4%
         qb = price["market_curve_capshare"]["QB"]
         self.assertAlmostEqual(qb[0], 0.245)                          # OverTheCap: the best-paid QB, 24.5% of the cap
         for group, row in price["market_curve_capshare"].items():
@@ -138,10 +138,11 @@ class NativeTests(unittest.TestCase):
         return self.p
 
     def test_the_best_quarterback_is_priced_at_the_top_of_the_market(self):
-        # 24.5% of the cap x 1.0 (retune 11/25; 0.80 before) = 2450 x (75300 / 100) / 100 game $1000 (rank 1); a tie at
-        # the top shares ranks 1 and 2 (23.5%). Revision 8 priced the best QB at the top-five average x a cube of his overall.
+        # 24.5% of the cap = 2450 x (75300 / 100) / 100 game $1000 (rank 1), then the price scale 1.05 (11/25; the byte
+        # tables hold scale 1.0); a tie at the top shares ranks 1 and 2 (23.5%). Revision 8 priced the best QB at the
+        # top-five average x a cube of his overall.
         best = max(self.price(q) for t in range(32) for q in self.roster(t) if self.m.uc.mem_read(q + 0x35, 1)[0] == 0)
-        self.assertIn(best, (2450 * 753 // 100, (2450 + 2350) // 2 * 753 // 100))
+        self.assertIn(best, (2450 * 753 // 100 * 105 // 100, (2450 + 2350) // 2 * 753 // 100 * 105 // 100))
 
     def test_a_league_wide_rating_shift_moves_no_price(self):
         # Every rostered receiver three points worse at everything: the ranks are the same men's ranks, so the
@@ -197,10 +198,10 @@ class NativeTests(unittest.TestCase):
         # 0x322690 (EDI = player) answers economy_years: a cheap 33+ veteran always 1, a young star 3 to 5.
         cheap = [self.m.call(0x322690, edi=self.synthetic(rating=40, age=34), budget=50_000_000)]
         self.assertEqual(cheap, [1])
-        # retune 11/25 (gate E2: 88% of the <=25 veterans were on 1-year deals, real 27%): a man 29 or under signs for
-        # 2-3 years where the draw said 1
+        # 11/25 (gate E2: 88% of the <=25 veterans were on 1-year deals, real 27%): a man 25 or under signs for 2-3 years
+        # where the draw said 1 (29 first: the 26-29 band then fell to 31% one-year, real 47.5%)
         young = {self.m.call(0x322690, edi=self.synthetic(rating=r, age=a, pro=3), budget=50_000_000)
-                 for a in (22, 25, 27, 29) for r in (40, 55, 70)}
+                 for a in (21, 23, 25) for r in (40, 55, 70)}
         self.assertTrue(young and min(young) >= 2, young)
         self.assertEqual(self.m.call(0x322690, edi=0), 0xFFFFFFFF)
 
@@ -438,9 +439,10 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(kickers, [fa])
 
 
-    def test_the_camp_edge_is_two_points(self):
-        # retune 11/25 (gate E5: K/P jobs changed hands 10% a year at a four-point edge; real 34% / 28%): a free-agent
-        # kicker who rates 3 points above the incumbent (0x246D80 in whole points) now wins the job; 1 point does not.
+    def test_the_camp_edge_is_one_point(self):
+        # 11/25 (gate E5: K/P jobs changed hands 10% a year at a four-point edge, 13-14% at two; real 34% / 28%): a
+        # free-agent kicker 2-3 whole points above the incumbent (0x246D80, rounded: over one point) wins the job; an equal
+        # one does not.
         t = next(t for t in range(32) if t not in self.human and
                  sum(self.m.uc.mem_read(q + 0x35, 1)[0] == 1 for q in self.roster(t)) == 1)
         team = self.team(t)
@@ -455,9 +457,9 @@ class NativeTests(unittest.TestCase):
         try:
             self.m.uc.mem_write(mine + 0x38, bytes([70] * (84 - 0x38)))
             base = point(mine)
-            for want in (1, 3):
+            for want in (0, 2):
                 v = next(v for v in range(70, 100) if (self.m.uc.mem_write(fa + 0x38, bytes([v] * (84 - 0x38))) or True)
-                         and point(fa) - base == want)
+                         and (point(fa) - base == 0 if not want else 2 <= point(fa) - base <= 3))
                 for q in (mine, fa):
                     self.m.uc.mem_write(q + 0x23, bytes((self.m.uc.mem_read(q + 0x23, 1)[0] & 0x7F,)))
                 self.m.put(0xE3C278, 200000)
@@ -471,7 +473,7 @@ class NativeTests(unittest.TestCase):
             self.m.uc.mem_write(team, roster)
             for q, raw in saved.items():
                 self.m.uc.mem_write(q, raw)
-        self.assertEqual(results, {1: [mine], 3: [fa]})
+        self.assertEqual(results, {0: [mine], 2: [fa]})
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
@@ -548,6 +550,68 @@ class ReviewFixTests(unittest.TestCase):
         self.assertGreater(got["usable"], 0xFFFF)
         self.assertEqual(got["budget"], 0xFFFF)
         self.assertEqual(got["now"], [got["star"]])
+
+    def no_punter_camp(self, full):
+        """A CPU club in camp (stage 6) whose punters are all released to the pool; with `full`, first grown to 64 with
+        free agents who are not punters. Returns (machine, team, roster before camp)."""
+        from tools.franchise_economy.probe import start
+        m = start(retail_roster(), economy.apply(retail_bytes())[0])
+        m.leaf(0x14E540, lambda: m.ret(1), reason="user confirmation only")
+        m.leaf(0x14E520, lambda: m.ret(), reason="informational display only")
+        rb = lambda a: m.uc.mem_read(a, 1)[0]
+        human = [t for t in range(32) if m.call(0x13EC30, ecx=m.team_base + 500 * t)]
+        t = next(t for t in range(32) if t not in human)
+        team = m.team_base + 500 * t
+        members = lambda: [m.get(team + 4 * i) for i in range(rb(team + 0x11C))]
+        m.put(0xE576A4, 6)
+        m.put(0xE3C278, 200000)
+        for q in [q for q in members() if rb(q + 0x35) == 2]:
+            m.call(0x2BD900, ecx=team, edx=q, args=(1, 1), budget=50_000_000)
+        if full:
+            lst = m.root + 0x38
+            pool = [m.call(0x242500, ecx=lst, edx=i) for i in range(m.call(0x2424F0, ecx=lst))]
+            for q in pool:
+                if rb(team + 0x11C) >= 64:
+                    break
+                if rb(q + 0x35) in (2,) or rb(q + 0x35) >= 17:
+                    continue
+                m.call(0x2425C0, ecx=lst, edx=q)
+                raw = bytearray(m.uc.mem_read(q, 84))
+                raw[0x27] = (raw[0x27] & 0xF0) | 1
+                raw[0x24] = (raw[0x24] & 0xF0) | 1
+                struct.pack_into("<H", raw, 10, 30)
+                struct.pack_into("<H", raw, 0x28, struct.unpack_from("<H", raw, 0x28)[0] | 7 << 10)   # the overflow row
+                m.uc.mem_write(q, bytes(raw))
+                self.assertTrue(m.call(0xC3EE0, ecx=team, edx=q))
+            self.assertEqual(rb(team + 0x11C), 64)
+        self.assertFalse([q for q in members() if rb(q + 0x35) == 2])
+        return m, team, members()
+
+    def test_g6_a_camp_with_no_punter_ends_with_one(self):
+        # Panel 74003 2035: a club opened the season without a punter (the in-season cover signed one at week 1). Camp now
+        # covers a missing K or P. On 37cc01aee this club left camp with no punter.
+        m, team, before = self.no_punter_camp(full=False)
+        m.call(SYM["economy_camp"], ecx=team, edx=m.ARENA + 0x1A0000, budget=1_500_000_000)
+        after = [m.get(team + 4 * i) for i in range(m.uc.mem_read(team + 0x11C, 1)[0])]
+        self.assertEqual(sum(m.uc.mem_read(q + 0x35, 1)[0] == 2 for q in after), 1)
+        self.assertEqual(len(after), len(before) + 1)
+
+    def test_g6_a_full_camp_cuts_a_backup_for_the_punter(self):
+        # At 64 the club first cuts its lowest-rated man in depth row 2 or below (no QB, K or P; above the position's
+        # smart-cut minimum), never a seated starter (rows 0 and 1) or a quarterback, then signs a punter.
+        m, team, before = self.no_punter_camp(full=True)
+        row = lambda q: struct.unpack("<H", bytes(m.uc.mem_read(q + 0x28, 2)))[0] >> 10 & 7
+        pos = lambda q: m.uc.mem_read(q + 0x35, 1)[0]
+        m.call(SYM["economy_camp"], ecx=team, edx=m.ARENA + 0x1A0000, budget=1_500_000_000)
+        after = [m.get(team + 4 * i) for i in range(m.uc.mem_read(team + 0x11C, 1)[0])]
+        self.assertEqual(len(after), 64)
+        self.assertEqual(sum(pos(q) == 2 for q in after), 1)
+        gone = [q for q in before if q not in after]
+        self.assertEqual(len(gone), 1)
+        self.assertGreaterEqual(row(gone[0]), 2)
+        self.assertNotIn(pos(gone[0]), (0, 1, 2))
+        self.assertEqual(sum(pos(q) == 0 for q in after), sum(pos(q) == 0 for q in before))
+        self.assertEqual([q for q in before if row(q) < 2 and q not in after], [])
 
     def test_s2_a_cell_at_one_year_always_draws_one_year(self):
         # The length cell "33+, under 0.5% of the cap" is 100 per cent one year; the hash's top byte 255 used to pass
