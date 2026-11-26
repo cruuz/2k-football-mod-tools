@@ -62,7 +62,7 @@ ART = ROOT / "data/nfl2k5_glyph_fixes_2026"
 #: released v0.9 build and applied as the last uniform step (``apply_digits_b81``). The document names its own art folder.
 DATA_B81U = ROOT / "data/nfl2k5_glyph_fixes_2026_b81u.json"
 KINDS = ("names_retint", "digit_png", "digit_retint", "names_png", "name_widths", "digit_derived", "names_derived")
-DERIVE_OPS = ("remap", "embolden", "edge", "inline_fill", "inline_dark", "recolour", "paint", "thin_letters", "clear_rgb",
+DERIVE_OPS = ("remap", "embolden", "edge", "inline_fill", "inline_dark", "recolour", "paint", "thin_letters", "smooth_letters", "clear_rgb",
               "hidden_from_base", "keep")
 NAMES_CHUNK = 43
 NAME_CHUNK = 44                         # the raw NAME chunk: 29 (atlas offset, glyph width) pairs for ' - A..Z c
@@ -335,6 +335,8 @@ def derive_digit(before_rgba, ops):
                 a[hit, :3] = _colour(new)
         elif kind == "thin_letters":
             a = thin_letters(a, op)
+        elif kind == "smooth_letters":
+            a = smooth_letters(a, op)
         elif kind == "hidden_from_base":
             # b81-retail-free-art (ruling 2): the colour under every clear texel is the glyph's own colour at that texel
             # (as a picture editor leaves it), by rule
@@ -586,6 +588,94 @@ def thin_letters(strip, op):
         new = new[:, ncols[0]:ncols[-1] + 1]
         region = out[top:top + cap, x0:x0 + new.shape[1]]
         region[new, 3] = 255
+    return out
+
+
+# -- smooth letter edges (b81-nameplates, owner 11/25: "the last name font is pixelated and not good ... not accurate
+# nameplate font"). The beta 81 strips were drawn with every texel fully on or off (alpha 0 or 255), so the game's
+# magnified plate shows each texel step; the released v0.9 strips carry 120 to 220 alpha levels on their edges. This
+# operation keeps each letter's design and gives it coverage edges: the silhouette at SMOOTH_SS x SMOOTH_SS subtexels,
+# ``passes`` centred box filters of ``box`` subtexels per axis (about a Gaussian of box * sqrt(passes / 12) / SMOOTH_SS
+# texels), cut at ``level`` / ``den`` of full weight (one half keeps a straight edge where it is, less moves every edge
+# outward), each glyph moved so it starts on its cell's column 0 (by whole texels when nothing grew past the drawn
+# left edge, so edges that sat on texel boundaries stay crisp; by subtexels when the strokes grew), then reduced back so
+# each texel's alpha is its exact coverage. Integer arithmetic only: the same bytes on every platform.
+
+SMOOTH_SS = 8
+
+
+def _box_sums(values, box, passes):
+    """``passes`` centred box sums of odd width ``box`` along both axes of an int64 array (zero outside)."""
+    require(box % 2 == 1 and box >= 1 and passes >= 1, "smoothing box must be an odd width and at least one pass")
+    half = box // 2
+    out = values
+    for axis in (0, 1):
+        for _ in range(passes):
+            pad = [(0, 0), (0, 0)]
+            pad[axis] = (half + 1, half)
+            c = np.cumsum(np.pad(out, pad), axis=axis)
+            n = c.shape[axis]
+            out = np.take(c, np.arange(box, n), axis=axis) - np.take(c, np.arange(0, n - box), axis=axis)
+    return out
+
+
+def _smooth_silhouette(mask, box, passes, level, den):
+    """A boolean texel mask -> its smoothed silhouette at SMOOTH_SS subtexels (with ``margin`` subtexels around it)."""
+    margin = passes * (box // 2) + SMOOTH_SS
+    big = np.repeat(np.repeat(mask.astype(np.int64), SMOOTH_SS, 0), SMOOTH_SS, 1)
+    big = np.pad(big, margin)
+    sums = _box_sums(big, box, passes)
+    return sums * int(den) >= int(level) * box ** (2 * passes), margin
+
+
+def smooth_letters(strip, op):
+    """The ``smooth_letters`` operation on a nameplate strip (32 x 1024 RGBA): every glyph cell (``offsets``: the 29
+    atlas columns) keeps its letter (texels of alpha 128 and up), smoothed and weighted as above, in ``fill``; with
+    ``outline`` the texels of the fill colour are the inner letter and the rest its edge, both smoothed alike, each edge
+    texel's colour the outline-to-fill blend of its coverage in ``blend_steps`` steps. Clear texels carry the edge
+    colour (a filtered edge never fades through black)."""
+    rgba = np.asarray(strip, np.uint8)
+    height, width = rgba.shape[:2]
+    fill = _colour(op["fill"])
+    outline = _colour(op.get("outline"))
+    box, passes, level, den = int(op["box"]), int(op["passes"]), int(op["level"]), int(op["den"])
+    require(0 < level < den, "smoothing level must be a fraction of full weight")
+    steps = int(op.get("blend_steps", 8))
+    cell = 32
+    letter = rgba[..., 3] >= 128
+    inner = letter & (rgba[..., :3].astype(np.int64) == fill).all(-1) if outline is not None else None
+    out = np.zeros(rgba.shape, np.uint8)
+    out[..., :3] = (outline if outline is not None else fill).astype(np.uint8)
+    full = SMOOTH_SS * SMOOTH_SS
+    for x0 in (int(v) for v in op["offsets"]):
+        require(0 <= x0 and x0 + cell <= width, "glyph cell outside the strip")
+        mask = letter[:, x0:x0 + cell]
+        if not mask.any():
+            continue
+        shapes = [_smooth_silhouette(mask, box, passes, level, den)]
+        if outline is not None:
+            shapes.append(_smooth_silhouette(inner[:, x0:x0 + cell], box, passes, level, den))
+        silhouette, margin = shapes[0]
+        first = int(np.flatnonzero(silhouette.any(0))[0])
+        if first >= margin:                 # the drawn weight: whole texels, so an edge on a texel boundary stays crisp
+            first = margin + SMOOTH_SS * ((first - margin) // SMOOTH_SS)
+        cover = []
+        for shape, _m in shapes:
+            piece = shape[margin:margin + height * SMOOTH_SS, first:first + cell * SMOOTH_SS]
+            if piece.shape[1] < cell * SMOOTH_SS:
+                piece = np.pad(piece, ((0, 0), (0, cell * SMOOTH_SS - piece.shape[1])))
+            cover.append(piece.reshape(height, SMOOTH_SS, cell, SMOOTH_SS).sum(axis=(1, 3)).astype(np.int64))
+        require(not shapes[0][0][:, first + cell * SMOOTH_SS:].any(), "a smoothed glyph is wider than its cell")
+        alpha = (cover[0] * 255 + full // 2) // full
+        region = out[:, x0:x0 + cell]
+        region[..., 3] = alpha.astype(np.uint8)
+        if outline is not None:
+            inside = np.minimum(cover[1], cover[0])
+            weight = (inside * steps + np.maximum(cover[0], 1) // 2) // np.maximum(cover[0], 1)
+            colour = (outline[None, None, :] * (steps - weight[..., None]) + fill[None, None, :] * weight[..., None]
+                      + steps // 2) // steps
+            seen = cover[0] > 0
+            region[seen, :3] = colour[seen].astype(np.uint8)
     return out
 
 

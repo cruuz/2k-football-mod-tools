@@ -40,8 +40,9 @@ read-only code and leaves the played game alone:
 * **Pass yards after conversion.** At three native pass-yard calculation sites, ``PASS_SCALE``
   multiplies the gain returned to the simulator. Changing this value affects credited yardage
   and can change subsequent plays and final scores.
-* **Season rushing correction.** The postgame merge applies ``RUSH_BONUS_PCT`` to the lead
-  halfback's rushing-yard delta and adds the result to his season total.
+* **Season rushing correction (beta 80 and pre-rule beta 81 only).** Those revisions' postgame merge applied
+  ``RUSH_BONUS_PCT`` to the lead halfback's rushing-yard delta. It has been 0 since b780 db2, and b81 fb-targets
+  removed the branch from the current revision (``RUSH_BONUS_PCT`` must stay 0; its pool float is kept at its offset).
 
 Round 5 calibration: two QL 15 seasons and one QL 5 season with the round-3 roster gave
 22.65/22.35 points, 1.84/1.82 pass touchdowns, 0.50/0.52 rush touchdowns and 110.7/109.6 rush
@@ -76,6 +77,28 @@ so the games are identical) give lead backs 928/965 yards, 10/17 backs over 1,00
 (NFL 1,269) and top-32 960/1,006 (NFL 985). The beta 80 correction code stays in place and adds nothing. A custom build with this
 option but without Simulated RB short injuries keeps the retail fullback carries and loses the old correction.
 
+b81 fb-targets: fullback targets. Report (beta 81, from a played franchise): "patric ricard, h back for giants, dominated
+the stats for the year?? they never use him". The retail target lottery ``0x1034C0`` draws from the lineup slots at
+``0x4F6A80`` (4, 1, 5, 8, 2, 6, 3, 7: WR1, HB1, WR2, TE1, FB1, WR3, HB2, WR4), each weighted by its receiving composite
+squared, so the FB1 slot always competes. The b780 db2 rule thinned fullback carries, never targets: on the stored beta 81
+panels fullbacks caught 500-540 passes a league season (20-24% of the backfield's catches, 4.4-4.8% of all), the starters
+10-50 each and Ricard about 40, where the same players caught about 125 in the 2025 NFL season and Ricard 1. The target
+site now enters ``fb_entry``: the target step runs as before (the lottery and the redirect above), and a pick with
+position byte 8 (fullbacks and the authored H-backs) keeps the pass when the 16-bit league draw is below
+``FB_TARGET_KEEP_THRESHOLD`` (1 in 3); otherwise the step runs again, up to ``FB_TARGET_REDRAWS`` times, and the first
+other pick takes it (the TE1 slot, else the HB1 slot, if every draw is a fullback). A halfback in the FB slot is not
+touched. Only the 0x107035 call is hooked. The lottery's two other callers are 0x106C76 (play family 0, a pass
+whose gain is the full distance to goal; the redirect never covered it either) and 0x104C04 (an offensive player
+picked to take the ball after a play event, not a pass target). Fullbacks' share of receiving touchdowns fell with
+their catches on the panels (3.05% -> 0.96%), so family 0 is no real fullback channel (LATER). The same report named Isaiah Likely ("the giants barely use isiah likely"): in the regular season (stage 8) the
+lottery gives no role any weight (its WR1 x1.5 and HB1 x1.2 apply only when 0xE576A4 is 7, the preseason), so TE1s
+drew 11.7% of the targets against 14.5-15.0% in the 2024-2025 NFL; the redirect above now moves 14% (was 8%) of the
+eligible picks at an average WR1 and sends half (was a quarter) of them to TE1. The room came from the season merge: the lead-back rush correction had a constant of 0 since b780 db2 and never
+changed a stat, so its branch and the rushing-yard read at the tackle entry are gone; the tackle correction is the same
+arithmetic, inlined. Everything before the tackle entry and the float pool keep their offsets (the simulated QB injury
+option links ``pass_scale`` and the pool, and edits the mix block), and the size stays 896, so the beta 81 revision
+before this rule reads "legacy" and is updated in place in its own allocation, under the QB injury option too.
+
 Every site is recognised by its pinned retail bytes; the module refuses a foreign executable.  The
 data reservation (16 bytes) holds the temporary merge and run-outcome hand-offs and nothing else.
 The played-game path (game mode other than 4 at the merge gate), the live playbook calls and every
@@ -87,14 +110,17 @@ import hashlib
 import struct
 
 OWNER = "nfl2k5_sim_realism"
-CODE_SIZE = 896                      # b780 b5-sim: 832 -> 896 (QB-scaled mix, WR1-scaled targets, lead-back rush rule)
+CODE_SIZE = 896                      # b780 b5-sim: 832 -> 896 (QB-scaled mix, WR1-scaled targets, then a lead-back rush
+                                     # rule); b81 fb-targets: same size, the rush rule's room holds the fullback target rule
 DATA_SIZE = 16
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 4))
 BUILD_CAPTION = "Simulated season realism (experimental)"
 HELP_TEXT = (
     "EXPERIMENTAL. In franchise games the CPU simulates (not games you play) the play mix moves toward "
     "the modern NFL (about 33 passes and 27 runs a team), and better passers call more passes than weaker ones; "
-    "both starting receivers keep the targets the game gives them. Strong receiving pairs share extra targets, and mobile quarterbacks "
+    "both starting receivers keep the targets the game gives them. Strong receiving pairs share extra targets, fullbacks and "
+    "H-backs keep about one in three of the passes the game aims at them, half of the passes moved off backs and depth "
+    "receivers go to the first tight end, and mobile quarterbacks "
     "carry more often. Team interceptions move toward 12.8, and tackle totals move toward the NFL leader and "
     "top-10 levels. Red-zone passes gain fewer yards so scoring and the touchdown mix land near the modern NFL. "
     "Played games, ratings and rosters are unchanged. The numbers are calibrated from nflverse 2021-2025 regular "
@@ -132,10 +158,10 @@ FN_YARD_CONVERT = 0x00106480
 MIX_BIAS = 8.5                       # run score must beat pass score by this much to stay a run (average QB)
 MIX_QB_PIVOT = 87                    # b780 b5-sim: QB1 Pass Accuracy of the league-average starter (SOFTDRINK roster)
 MIX_QB_SLOPE = 0.4                   # extra bias per accuracy point above the pivot (fewer passes below it)
-TARGET_RATE = 0.08                   # share of eligible targets redirected with an average WR1
+TARGET_RATE = 0.14                   # share of eligible targets redirected with an average WR1 (b81 fb-targets: was 0.08)
 TARGET_PIVOT = 90                    # b780 b5-sim: WR1 Catching of the league-average WR1 (SOFTDRINK roster)
 TARGET_SLOPE = 0.015                 # extra redirect share per Catching point above the pivot (less below it)
-TARGET_WR1_SHARE = 0.75              # receiver share of redirects, with the rest going to TE1
+TARGET_WR1_SHARE = 0.50              # receiver share of redirects, with the rest going to TE1 (b81 fb-targets: was 0.75)
 WR2_MIN_CATCH = 80
 WR2_MAX_CATCH_GAP = 8
 WR2_SHARE = 0.28                     # share of receiver redirects for a competitive WR2
@@ -157,6 +183,16 @@ TACKLE_BONUS_PCT = 10                # b780 b5-sim: the code added a hard-coded 
                                      # and the round-5 notes said 10%; the code now uses the constant (17-game seasons put
                                      # the 21% tackle leader at 171-190 against the NFL's 155-180)
 SKIP_TACKLE_POSITION = 4             # cornerbacks are calibrated by nfl2k5_sim_cb_tackles
+# b81 fb-targets: a fullback (position byte 8: fullbacks and the authored H-backs) picked as the target keeps the pass
+# when the 16-bit league draw is below this (21845/65536 = 1 in 3); otherwise the whole target step (the retail lottery
+# and the redirect above) draws again, up to FB_TARGET_REDRAWS times, and then the TE1 lineup slot, else the HB1 slot,
+# takes it. Measured before the rule (stored b81 panels): fullbacks caught 500-540 passes a league season, 20-24% of the
+# backfield's catches; the same players caught about 125 in the 2025 NFL season.
+FULLBACK_POSITION = 8
+FB_TARGET_KEEP_THRESHOLD = 21845
+FB_TARGET_REDRAWS = 3
+FN_LEAGUE_DRAW = 0x00048BC0          # mov ecx,0xB12680; jmp 0x48B50: the league RNG (the carry rule's draw), dword in EAX
+TE1_SLOT, HB1_SLOT = 0x28, 0x0C      # sim team offense summary (EDI at the target call): TE1 (slot 8), HB1 (slot 1)
 
 # Fixed float-pool offsets inside the code cave (the assembler must not cross them). b780 b5-sim moved the pool from
 # 704 to 816 for the longer mix, target and lead-back code.
@@ -180,6 +216,41 @@ WR2_SHARE_OFF = 880
 FLOAT_POOL = MIX_BIAS_OFF
 
 
+# b81 fb-targets (review S1): every tuned constant that reaches the code or the float pool. An installed revision is
+# recognised by rebuilding its exact bytes, so the earlier revisions read their own frozen values here, never the live
+# module constants: tuning a live constant (the red-zone scale, say) must not turn a v0.9 or pre-rule beta 81 disc
+# "foreign". The current revision reads the live constants. Whoever changes one of them makes a new revision: freeze
+# this release's values as another entry here, recognise it in _revision() (it reads "legacy") and update it in place
+# in apply(), as "b81" is. FrozenRevisionTests pins both frozen bodies by sha256.
+_TUNED = ("MIX_BIAS", "MIX_QB_PIVOT", "MIX_QB_SLOPE", "TARGET_RATE", "TARGET_WR1_SHARE", "TARGET_PIVOT", "TARGET_SLOPE",
+          "WR2_SHARE", "WR2_MIN_CATCH", "WR2_MAX_CATCH_GAP", "QB_SCRAMBLE_SCALE", "QB_SCRAMBLE_CAP", "QB_MOBILE_SUM",
+          "QB_BONUS_YARDS", "QB_BONUS_RZ_LINE", "INTERCEPT_SCALE", "PASS_SCALE", "RUN_RZ_SCALE", "RZ_PASS_SCALE",
+          "RUSH_BONUS_PCT", "TACKLE_BONUS_PCT", "SKIP_TACKLE_POSITION", "LEAD_BACK_POSITION", "FULLBACK_POSITION",
+          "FB_TARGET_KEEP_THRESHOLD", "FB_TARGET_REDRAWS", "TE1_SLOT", "HB1_SLOT")
+_B81_PRE_RULE = dict(MIX_BIAS=8.5, MIX_QB_PIVOT=87, MIX_QB_SLOPE=0.4, TARGET_RATE=0.08, TARGET_WR1_SHARE=0.75,
+                     TARGET_PIVOT=90, TARGET_SLOPE=0.015, WR2_SHARE=0.28, WR2_MIN_CATCH=80, WR2_MAX_CATCH_GAP=8,
+                     QB_SCRAMBLE_SCALE=0.0056, QB_SCRAMBLE_CAP=40, QB_MOBILE_SUM=150, QB_BONUS_YARDS=3.5,
+                     QB_BONUS_RZ_LINE=20.0, INTERCEPT_SCALE=1.35, PASS_SCALE=0.91, RUN_RZ_SCALE=0.94, RZ_PASS_SCALE=0.64,
+                     RUSH_BONUS_PCT=0, TACKLE_BONUS_PCT=10, SKIP_TACKLE_POSITION=4, LEAD_BACK_POSITION=7,
+                     FULLBACK_POSITION=None, FB_TARGET_KEEP_THRESHOLD=None, FB_TARGET_REDRAWS=None, TE1_SLOT=None,
+                     HB1_SLOT=None)
+FROZEN_CONSTANTS = {
+    "b81": _B81_PRE_RULE,                                       # beta 81 before the fullback target rule (c4406481b)
+    "beta80": {**_B81_PRE_RULE, "QB_SCRAMBLE_SCALE": 0.0036, "QB_BONUS_YARDS": 3.0, "PASS_SCALE": 0.86,
+               "WR2_SHARE": None, "WR2_MIN_CATCH": None, "WR2_MAX_CATCH_GAP": None},     # beta 80 / v0.9
+}
+
+
+def _revision_constants(name):
+    from types import SimpleNamespace
+    if name != "current":
+        return SimpleNamespace(**FROZEN_CONSTANTS[name])
+    values = {key: globals()[key] for key in _TUNED}
+    # review N2: the current revision has no lead-back rush correction, so a non-zero value would do nothing in game
+    require(values["RUSH_BONUS_PCT"] == 0, "RUSH_BONUS_PCT must be 0: the current revision has no lead-back rush "
+                                           "correction (b81 fb-targets removed that branch)")
+    return SimpleNamespace(**values)
+
 class SimRealismError(ValueError):
     pass
 
@@ -197,7 +268,8 @@ def tackle_bonus(game_tackles):
 
 
 def rush_bonus(game_yards):
-    """The integer season rush-yard correction added after a scheduled simulated game."""
+    """The integer season rush-yard correction the beta 80 and pre-rule beta 81 merges added (legacy: the current
+    revision has no such branch and requires RUSH_BONUS_PCT == 0)."""
     if game_yards <= 0:
         return 0
     return (game_yards * RUSH_BONUS_PCT + 50) // 100
@@ -232,7 +304,7 @@ def _flt(value):
     return struct.pack("<f", value)
 
 
-def _beta80_merge(a, state):
+def _beta80_merge(a, state, K):
     """Exact season-merge instructions retained to recognize installed beta 80 copies."""
     a.label("tackle_return")
     a.b("60")                                             # pushad
@@ -241,7 +313,7 @@ def _beta80_merge(a, state):
     a.j32("0f84", "tackle_done")
     # b780 b5-sim: the season rush correction goes to the lead back only (HB, depth rank 0); every other runner keeps the
     # engine's line, so team rushing is not inflated by backups, fullbacks and receivers
-    a.b("807835" + bytes([LEAD_BACK_POSITION]).hex())      # cmp byte [eax+0x35],7  a halfback
+    a.b("807835" + bytes([K.LEAD_BACK_POSITION]).hex())      # cmp byte [eax+0x35],7  a halfback
     a.j8("75", "rush_done")
     a.b("f74028001c0000")                                 # test dword [eax+0x28],0x1C00  depth rank 0
     a.j8("75", "rush_done")
@@ -252,7 +324,7 @@ def _beta80_merge(a, state):
     a.b("2bc1")                                           # sub eax,ecx
     a.b("85c0")
     a.j8("7e", "rush_done")
-    a.b("69c0" + struct.pack("<I", RUSH_BONUS_PCT).hex())
+    a.b("69c0" + struct.pack("<I", K.RUSH_BONUS_PCT).hex())
     a.b("0532000000")                                     # add eax,50
     a.b("99")                                             # cdq
     a.b("b964000000")                                     # mov ecx,100
@@ -275,7 +347,7 @@ def _beta80_merge(a, state):
     a.b("8b0d" + _u32(state).hex())
     a.b("80793504")                                       # cmp byte [ecx+0x35],4
     a.j8("74", "tackle_done")
-    a.b("69c0" + struct.pack("<I", TACKLE_BONUS_PCT).hex())  # imul eax,eax,TACKLE_BONUS_PCT
+    a.b("69c0" + struct.pack("<I", K.TACKLE_BONUS_PCT).hex())  # imul eax,eax,TACKLE_BONUS_PCT
     a.b("0532000000")                                     # add eax,50
     a.b("99")                                             # cdq
     a.b("b964000000")                                     # mov ecx,100
@@ -293,26 +365,26 @@ def _beta80_merge(a, state):
     a.b("c20800")                                         # ret 8
 
 
-def _season_merge(a, state):
+def _season_merge(a, state, K):
     """Apply each eligible runner or defender's percentage to this game's stat delta."""
     a.label("tackle_return")
     a.b("60")                                             # pushad
     a.b("8b3d" + _u32(state).hex())                       # edi = player
     a.b("85ff")
     a.j8("74", "merge_done")
-    a.b("807f35" + bytes([LEAD_BACK_POSITION]).hex())
+    a.b("807f35" + bytes([K.LEAD_BACK_POSITION]).hex())
     a.j8("75", "merge_tackles")
     a.b("f74728001c0000")                                 # test depth rank bits
     a.j8("75", "merge_tackles")
     a.b("6a025e")                                         # esi = rushing yards field
-    a.b("6a" + bytes([RUSH_BONUS_PCT]).hex() + "5d")     # ebp = correction percent
+    a.b("6a" + bytes([K.RUSH_BONUS_PCT]).hex() + "5d")     # ebp = correction percent
     a.b("8b1d" + _u32(state + 8).hex())                   # ebx = prior rushing yards
     a.j32("e8", "correct_delta")
     a.label("merge_tackles")
-    a.b("807f35" + bytes([SKIP_TACKLE_POSITION]).hex())
+    a.b("807f35" + bytes([K.SKIP_TACKLE_POSITION]).hex())
     a.j8("74", "merge_done")
     a.b("6a125e")                                         # esi = tackles field
-    a.b("6a" + bytes([TACKLE_BONUS_PCT]).hex() + "5d")
+    a.b("6a" + bytes([K.TACKLE_BONUS_PCT]).hex() + "5d")
     a.b("8b1d" + _u32(state + 4).hex())                   # ebx = prior tackles
     a.j32("e8", "correct_delta")
     a.label("merge_done")
@@ -335,7 +407,76 @@ def _season_merge(a, state):
     a.b("c3")
 
 
-def _assemble(code_va, data_va, *, beta80=False):
+def _tackle_merge(a, state, K):
+    """b81 fb-targets: the tackle correction alone (cornerbacks skipped), inlined.
+
+    The lead-back rush correction is gone: its constant has been 0 since b780 db2, so that branch never changed a stat
+    (correct_delta returned at ``test ebp,ebp``). Its 32 bytes and the rushing-yard read at the entry make the room for the
+    fullback target rule; the tackle arithmetic is the same: (delta * TACKLE_BONUS_PCT + 50) / 100 when delta > 0."""
+    a.label("tackle_return")
+    a.b("60")                                             # pushad
+    a.b("8b3d" + _u32(state).hex())                       # edi = player
+    a.b("85ff")
+    a.j8("74", "merge_done")
+    a.b("807f35" + bytes([K.SKIP_TACKLE_POSITION]).hex())   # cornerbacks: nfl2k5_sim_cb_tackles
+    a.j8("74", "merge_done")
+    a.b("6a125a89f9")                                     # edx = tackles field, ecx = player
+    a.call(FN_STAT_READ)
+    a.b("2b05" + _u32(state + 4).hex())                   # sub eax,[prior tackles]
+    a.j8("7e", "merge_done")
+    a.b("6bc0" + bytes([K.TACKLE_BONUS_PCT]).hex())        # imul eax,eax,percent
+    a.b("83c03299")                                       # add eax,50; cdq
+    a.b("6a6459f7f9")                                     # idiv 100
+    a.b("85c0")
+    a.j8("7e", "merge_done")
+    a.b("506a125a89f9")                                   # push bonus; edx = tackles field, ecx = player
+    a.call(FN_HISTORY_ADD)
+    a.label("merge_done")
+    a.b("31c0a3" + _u32(state).hex())                     # clear the hand-off
+    a.b("61c20800")                                       # popad; ret 8
+
+
+def _fullback_target(a, K):
+    """b81 fb-targets: the target site's entry. The target step (retail lottery plus the redirect) runs first; a pick
+    with position byte 8 keeps the pass 1 time in 3 (the 16-bit league draw, as the carry rule), otherwise the step runs
+    again (up to FB_TARGET_REDRAWS times) and a non-fullback pick goes out as drawn. A fullback drawn every time gives
+    the pass to the TE1 lineup slot, else the HB1 slot, else he keeps it. EDI is the sim team at this call (0x10702A:
+    mov edi,[0xA9719C]); the target step and the league draw keep EDI and EBP."""
+    a.label("fb_entry")
+    a.j32("e8", "target")                                 # eax = the target step's pick
+    a.b("807835" + bytes([K.FULLBACK_POSITION]).hex())     # cmp byte [eax+0x35],8
+    a.j8("75", "fb_ret")
+    a.b("60")                                             # pushad (saved EAX = the fullback)
+    a.call(FN_LEAGUE_DRAW)
+    a.b("663d" + struct.pack("<H", K.FB_TARGET_KEEP_THRESHOLD).hex())  # cmp ax,threshold
+    a.j8("72", "fb_out")                                  # below: he keeps this pass
+    a.b("6a" + bytes([K.FB_TARGET_REDRAWS]).hex() + "5d")  # ebp = redraws
+    a.label("fb_redraw")
+    a.j32("e8", "target")
+    a.b("807835" + bytes([K.FULLBACK_POSITION]).hex())
+    a.j8("75", "fb_store")                                # not a fullback: this pick
+    a.b("4d")                                             # dec ebp
+    a.j8("75", "fb_redraw")
+    a.b("8b47" + bytes([K.TE1_SLOT]).hex())                 # mov eax,[edi+0x28]  TE1
+    a.b("85c0")
+    a.j8("75", "fb_store")
+    a.b("8b47" + bytes([K.HB1_SLOT]).hex())                 # mov eax,[edi+0xc]   HB1
+    a.b("85c0")
+    a.j8("74", "fb_out")                                  # neither: the fullback keeps it
+    a.label("fb_store")
+    a.b("8944241c")                                       # mov [esp+0x1c],eax
+    a.label("fb_out")
+    a.b("61")                                             # popad
+    a.label("fb_ret")
+    a.b("c3")
+
+
+def _assemble(code_va, data_va, *, beta80=False, fb=True):
+    """beta80: the beta 80 / v0.9 revision. fb=False: the beta 81 revision before the fullback target rule (same
+    896 bytes; everything before the tackle entry and the float pool are the same in both). Earlier revisions read
+    their frozen constants (FROZEN_CONSTANTS), the current one the live module constants."""
+    fb = fb and not beta80
+    K = _revision_constants("beta80" if beta80 else "current" if fb else "b81")
     from .nfl2k5_draft_ai import _Asm
     a = _Asm(code_va)
     state, state_out = data_va, data_va + 8
@@ -347,7 +488,7 @@ def _assemble(code_va, data_va, *, beta80=False):
     a.b("dfe0")                                           # fnstsw ax
     a.b("f6c441")                                         # test ah,0x41
     a.j8("74", "mix_red")                                 # spot > 79.5: own side, retail call
-    # b780 b5-sim: bias = MIX_BIAS + MIX_QB_SLOPE * (QB1 Pass Accuracy - MIX_QB_PIVOT), so better passers call more passes
+    # b780 b5-sim: bias = K.MIX_BIAS + K.MIX_QB_SLOPE * (QB1 Pass Accuracy - K.MIX_QB_PIVOT), so better passers call more passes
     # and weaker ones fewer around the same league mix (eax, ecx and edx are dead here: both paths reload them)
     a.b("a1" + _u32(TEAM_OFFENSE).hex())                  # mov eax,[offense]
     a.b("8b4008")                                         # mov eax,[eax+8]  slot 0 = QB
@@ -356,7 +497,7 @@ def _assemble(code_va, data_va, *, beta80=False):
     a.b("80783500")                                       # cmp byte [eax+0x35],0  a quarterback
     a.j8("75", "mix_flat")
     a.b("0fb64842")                                       # movzx ecx,byte [eax+0x42]  Pass Accuracy
-    a.b("83e9" + struct.pack("<b", MIX_QB_PIVOT).hex())   # sub ecx,pivot
+    a.b("83e9" + struct.pack("<b", K.MIX_QB_PIVOT).hex())   # sub ecx,pivot
     a.b("890d" + _u32(state_out).hex())                   # mov [tmp],ecx
     a.b("db05" + _u32(state_out).hex())                   # fild dword [tmp]
     a.b("d80d" + _u32(code_va + MIX_QB_SLOPE_OFF).hex())  # fmul slope
@@ -398,9 +539,9 @@ def _assemble(code_va, data_va, *, beta80=False):
     a.b("0fb6484f")                                       # movzx ecx,byte [eax+0x4f]
     a.b("83e92d")                                         # sub ecx,45
     a.j8("7e", "qb_done")
-    a.b("83f9" + bytes([QB_SCRAMBLE_CAP]).hex())                                         # cmp ecx,40
+    a.b("83f9" + bytes([K.QB_SCRAMBLE_CAP]).hex())                                         # cmp ecx,40
     a.j8("7e", "qb_ok")
-    a.b("b9" + _u32(QB_SCRAMBLE_CAP).hex())                                     # mov ecx,40
+    a.b("b9" + _u32(K.QB_SCRAMBLE_CAP).hex())                                     # mov ecx,40
     a.label("qb_ok")
     a.b("890d" + _u32(state_out).hex())                   # mov [state],ecx
     a.b("db05" + _u32(state_out).hex())                   # fild dword [state]
@@ -444,10 +585,10 @@ def _assemble(code_va, data_va, *, beta80=False):
         a.label("target_native")
         a.b("895c241c61c3")                               # return the original receiver
         a.label("target_rate")
-    # b780 b5-sim: rate = TARGET_RATE + TARGET_SLOPE * (WR1 Catching - TARGET_PIVOT): an elite WR1 draws more of the other
+    # b780 b5-sim: rate = K.TARGET_RATE + K.TARGET_SLOPE * (WR1 Catching - K.TARGET_PIVOT): an elite WR1 draws more of the other
     # targets, a weaker one fewer (a rate below 0 never redirects; the WR1 pointer is still in eax)
     a.b("0fb64844")                                       # movzx ecx,byte [eax+0x44]  Catching
-    a.b("83e9" + struct.pack("<b", TARGET_PIVOT).hex())   # sub ecx,pivot
+    a.b("83e9" + struct.pack("<b", K.TARGET_PIVOT).hex())   # sub ecx,pivot
     a.b("890d" + _u32(state_out).hex())                   # mov [tmp],ecx
     a.b("db05" + _u32(state_out).hex())                   # fild dword [tmp]
     a.b("d80d" + _u32(code_va + TARGET_SLOPE_OFF).hex())  # fmul slope
@@ -474,9 +615,9 @@ def _assemble(code_va, data_va, *, beta80=False):
         a.b("807f3503")                                   # cmp byte [edi+0x35],WR
         a.j8("75", "target_done")
         a.b("0fb64f44")                                   # movzx ecx,byte [edi+0x44] WR2 Catching
-        a.b("83f9" + bytes([WR2_MIN_CATCH]).hex())
+        a.b("83f9" + bytes([K.WR2_MIN_CATCH]).hex())
         a.j8("72", "target_done")
-        a.b("83c1" + bytes([WR2_MAX_CATCH_GAP]).hex())
+        a.b("83c1" + bytes([K.WR2_MAX_CATCH_GAP]).hex())
         a.b("0fb64344")                                   # movzx eax,byte [ebx+0x44] WR1 Catching
         a.b("39c1")
         a.j8("72", "target_done")
@@ -520,7 +661,7 @@ def _assemble(code_va, data_va, *, beta80=False):
     a.b("0fb6484f")                                       # movzx ecx,byte [eax+0x4f]
     a.b("0fb65037")                                       # movzx edx,byte [eax+0x37]
     a.b("03ca")                                           # add ecx,edx
-    a.b("81f9" + struct.pack("<I", QB_MOBILE_SUM).hex())
+    a.b("81f9" + struct.pack("<I", K.QB_MOBILE_SUM).hex())
     a.j8("7e", "qb_bonus_done")
     a.b("d9442414")                                       # fld dword [esp+0x14]
     a.b("d805" + _u32(code_va + QB_BONUS_VALUE_OFF).hex())
@@ -554,6 +695,25 @@ def _assemble(code_va, data_va, *, beta80=False):
     # ---- tackle scale: save the career line before the merge --------------------------------
     a.label("tackle_entry")
     a.b("60")                                             # pushad
+    if fb:
+        # b81 fb-targets: [state] = the player (0 outside the scheduled sim) and [state+4] = his tackles; the rushing
+        # yards read went with the lead-back correction (see _tackle_merge)
+        a.b("31c0")                                       # xor eax,eax
+        a.b("803d" + _u32(SIM_MODE).hex() + "04")         # cmp byte [mode],4
+        a.j8("75", "tackle_entry_store")
+        a.b("6a125a89f9")                                 # edx = 18, ecx = player
+        a.call(FN_STAT_READ)
+        a.b("a3" + _u32(state + 4).hex())
+        a.b("89f8")                                       # mov eax,edi
+        a.label("tackle_entry_store")
+        a.b("a3" + _u32(state).hex())
+        a.b("61")                                         # popad
+        a.b("8d9424e0000000")                             # lea edx,[esp+0xe0] (replayed +4)
+        a.b("83c404")                                     # add esp,4
+        a.jmp_abs(TACKLE_ENTRY_RESUME)
+        _tackle_merge(a, state, K)
+        _fullback_target(a, K)
+        return _finish(a, code_va, K)
     a.b("31c0")                                           # xor eax,eax
     a.b("a3" + _u32(state).hex())                         # [state]=0
     a.b("803d" + _u32(SIM_MODE).hex() + "04")             # cmp byte [mode],4
@@ -575,21 +735,24 @@ def _assemble(code_va, data_va, *, beta80=False):
     a.jmp_abs(TACKLE_ENTRY_RESUME)
 
     if beta80:
-        _beta80_merge(a, state)
+        _beta80_merge(a, state, K)
     else:
-        _season_merge(a, state)
+        _season_merge(a, state, K)
+    return _finish(a, code_va, K)
+
+
+def _finish(a, code_va, K):
     body = bytearray(a.assemble())
     require(len(body) <= FLOAT_POOL, f"sim realism code is {len(body)} bytes, float pool {FLOAT_POOL}")
     body = body.ljust(FLOAT_POOL, b"\xcc")
-    qb_scale, qb_yards, pass_scale = (0.0036, 3.0, 0.86) if beta80 else (QB_SCRAMBLE_SCALE, QB_BONUS_YARDS, PASS_SCALE)
-    pool = (_flt(MIX_BIAS) + _flt(TARGET_RATE) + _flt(TARGET_WR1_SHARE) + _flt(qb_scale)
-            + _flt(qb_yards) + _flt(INTERCEPT_SCALE) + _flt(pass_scale) + _flt(TACKLE_BONUS_PCT)
-            + _flt(QB_BONUS_RZ_LINE) + _flt(RUN_RZ_SCALE) + _flt(RUSH_BONUS_PCT)
-            + _flt(RZ_PASS_SCALE))
-    pool = (pool.ljust(RED_ZONE_OFF - FLOAT_POOL, b"\xcc") + _flt(79.5) + _flt(0.0) + _flt(MIX_QB_SLOPE)
-            + _flt(TARGET_SLOPE))
-    if not beta80:
-        pool += _flt(WR2_SHARE)
+    pool = (_flt(K.MIX_BIAS) + _flt(K.TARGET_RATE) + _flt(K.TARGET_WR1_SHARE) + _flt(K.QB_SCRAMBLE_SCALE)
+            + _flt(K.QB_BONUS_YARDS) + _flt(K.INTERCEPT_SCALE) + _flt(K.PASS_SCALE) + _flt(K.TACKLE_BONUS_PCT)
+            + _flt(K.QB_BONUS_RZ_LINE) + _flt(K.RUN_RZ_SCALE) + _flt(K.RUSH_BONUS_PCT)
+            + _flt(K.RZ_PASS_SCALE))
+    pool = (pool.ljust(RED_ZONE_OFF - FLOAT_POOL, b"\xcc") + _flt(79.5) + _flt(0.0) + _flt(K.MIX_QB_SLOPE)
+            + _flt(K.TARGET_SLOPE))
+    if K.WR2_SHARE is not None:                           # beta 80 had no WR2 share in its pool
+        pool += _flt(K.WR2_SHARE)
     body += pool.ljust(CODE_SIZE - FLOAT_POOL, b"\xcc")
     require(len(body) == CODE_SIZE, "sim realism code size")
     return a, bytes(body)
@@ -609,8 +772,11 @@ def label_offsets():
     return _LABEL_CACHE
 
 
-def sites(code_va, *, beta80=False):
-    offs = _assemble(code_va, 0, beta80=True)[0].labels if beta80 else label_offsets()
+def sites(code_va, *, beta80=False, fb=True):
+    """fb=False: the beta 81 revision before the fullback target rule (its target site calls the target step itself)."""
+    fb = fb and not beta80
+    offs = (_assemble(code_va, 0, beta80=True)[0].labels if beta80 else label_offsets() if fb
+            else _assemble(code_va, 0, fb=False)[0].labels)
     hook = lambda label, site, before, off: (label, site, before,
                                              b"\xe8" + struct.pack("<i", code_va + off - site - 5))
     mix = ("mix", MIX_SITE, MIX_BEFORE, b"\xe8" + struct.pack("<i", code_va - MIX_SITE - 5) + b"\x90" * 4)
@@ -618,7 +784,7 @@ def sites(code_va, *, beta80=False):
                      b"\xe9" + struct.pack("<i", code_va + offs["tackle_return"] - TACKLE_RETURN_SITE - 5))
     out = [mix,
            ("qb", QB_SITE, QB_BEFORE, b"\xe8" + struct.pack("<i", code_va + offs["qb"] - QB_SITE - 5) + b"\x90"),
-           hook("target", TARGET_SITE, TARGET_BEFORE, offs["target"]),
+           hook("target", TARGET_SITE, TARGET_BEFORE, offs["fb_entry" if fb else "target"]),
            hook("intercept", INTERCEPT_SITE, INTERCEPT_BEFORE, offs["int"]),
            ("tackle_entry", TACKLE_ENTRY_SITE, TACKLE_ENTRY_BEFORE,
             b"\xe8" + struct.pack("<i", code_va + offs["tackle_entry"] - TACKLE_ENTRY_SITE - 5) + b"\x90\x90"),
@@ -654,8 +820,17 @@ def _revision(payload):
         code, data = _allocations(payload)
         def old_code(va, state):
             return _assemble(va, state, beta80=True)[1]
-        if XbeImage(payload).read(code["va"], CODE_SIZE) == old_code(code["va"], data["va"]):
+        raw = XbeImage(payload).read(code["va"], CODE_SIZE)
+        if raw == old_code(code["va"], data["va"]):
             return CODE_SIZE, old_code, lambda va: sites(va, beta80=True), "beta80"
+        # b81 fb-targets: the revision before the fullback target rule. It differs from this one only from the tackle
+        # entry to the float pool, bytes the simulated QB injury option never edits (it edits the mix block and the
+        # pool), so the choice is right on an executable with that option installed too.
+        def b81_code(va, state):
+            return _assemble(va, state, fb=False)[1]
+        tail = slice(label_offsets()["tackle_entry"], FLOAT_POOL)
+        if raw[tail] == b81_code(code["va"], data["va"])[tail]:
+            return CODE_SIZE, b81_code, lambda va: sites(va, fb=False), "b81"
     return CODE_SIZE, code_for, sites, "applied"
 
 
@@ -704,7 +879,7 @@ def _recognize_physical(payload):
         states.add("retail" if raw == b"\xcc" * size else "applied" if raw == expected else "foreign")
     require(states in ({"retail"}, {"applied"}), "Foreign or mixed sim realism site/code")
     state = next(iter(states))
-    if state == "applied" and installed in ("previous", "beta80"):
+    if state == "applied" and installed in ("previous", "beta80", "b81"):
         return installed
     require(state == "applied" or size == CODE_SIZE, "an empty beta-79 sim realism allocation; rebuild from retail")
     return state
@@ -721,6 +896,20 @@ def apply(payload):
         code, data = _allocations(payload)
         return payload, {"owner": OWNER, "status": "already_applied", "code_va": hex(code["va"]),
                          "data_va": hex(data["va"]), "changed_bytes": 0}
+    if state == "b81":
+        # b81 fb-targets: a beta 81 executable with the simulated QB injury option installed carries that option's
+        # edits inside this owner's code (the mix block and the float pool). Update the physical executable beneath
+        # it, then write the option again exactly as it was; none of its bytes is one this update changes.
+        from . import nfl2k5_sim_qb_injuries as quarterback
+        physical = quarterback.physical_view(payload)
+        if physical != payload:
+            upgraded, receipt = apply(physical)
+            result = quarterback.reinstall_on(payload, upgraded)
+            require(_recognize(result) == "applied" and quarterback.physical_view(result) == upgraded,
+                    "Simulated season realism update beneath the QB injury option failed")
+            return result, {**receipt, "simulated_qb_injuries_kept": True,
+                            "changed_bytes": space.count_differing_bytes(payload, result),
+                            "file_growth": len(result) - len(payload)}
     before = payload
     receipt = {}
     # b779-int1: a full build allocates this owner with the selected request set (nfl2k5_throw_tuning) before this
@@ -733,8 +922,11 @@ def apply(payload):
             require(space.is_scaleout(payload), "Simulated season realism needs the scale-out allocator")
             payload, receipt = space.extend_scaleout(payload, REQUESTS)
     code, data = _allocations(payload)
-    previous = _assemble(code["va"], data["va"], beta80=True)[1] if state == "beta80" else None
-    old_hooks = {va: after for _, va, _, after in sites(code["va"], beta80=True)} if previous else {}
+    # In-place updates in the same allocation: the beta 80 / v0.9 revision and the beta 81 one before the fullback
+    # target rule (b81 fb-targets).
+    revision = {"beta80": {"beta80": True}, "b81": {"fb": False}}.get(state)
+    previous = _assemble(code["va"], data["va"], **revision)[1] if revision else None
+    old_hooks = {va: after for _, va, _, after in sites(code["va"], **revision)} if revision else {}
     payload, _ = space.install_code(payload, OWNER, code_for(code["va"], data["va"]), previous=previous)
     image = XbeImage(payload)
     buf = bytearray(payload)
@@ -758,12 +950,12 @@ def apply(payload):
 
 
 def status(payload):
-    """retail | applied | legacy (the beta 80 / v0.9 revision; apply() updates it in place) | previous (beta 79; rebuild
-    from retail) | foreign. Beta 81 review: the beta 80 revision used to read "applied", so a disc report could not tell
-    v0.9 from v0.10."""
+    """retail | applied | legacy (the beta 80 / v0.9 revision, or beta 81's before the fullback target rule; apply()
+    updates both in place) | previous (beta 79; rebuild from retail) | foreign. Beta 81 review: the beta 80 revision used
+    to read "applied", so a disc report could not tell v0.9 from v0.10."""
     try:
         state = _recognize(payload)
-        return "legacy" if state == "beta80" else state
+        return "legacy" if state in ("beta80", "b81") else state
     except (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, UnicodeError, OSError):
         return "foreign"
 

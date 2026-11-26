@@ -59,7 +59,7 @@ OPTIONAL_STEPS = frozenset({
     # broadcast art, people on the field, late visual passes
     "espn_marks_2026", "espn_wipes_boards_2026", "kick_meter_2026", "modern_goalposts", "modern_coaches",
     "modern_fans", "modern_officials", "modern_helmets", "menu_icon_orientation", "espn25_fields", "era_ball",
-    "broadcast_greens", "super_bowl_hosts",
+    "broadcast_greens", "super_bowl_hosts", "super_bowl_booth", "stadium_welcome", "stale_speech",
 })
 ROOT = Path(__file__).resolve().parents[2]
 PACK0_SIZE = 193_710_080   # vc_53450030/0 (retail); the schedule template lives in its ROST resource
@@ -3063,6 +3063,10 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     patched, aim_receipt = _cpu_kick_aim_with_kicking(patched)
     if aim_receipt is not None:
         patch = {**patch, "cpu_kick_aim": aim_receipt}
+    # b81 rookie-faces: the copy carries rookie faces' current revision (rare homely and ugly prospect faces).
+    patched, faces_upgrade = _rookie_faces_upgrade(patched)
+    if faces_upgrade is not None:
+        patch = {**patch, "rookie_faces": {k: v for k, v in faces_upgrade.items() if k != "edits"}}
     # b81 history-pool: the copy carries the career history pool's current revision, as a full build does.
     patched, history_upgrade = _history_pool_upgrade(patched)
     if history_upgrade is not None:
@@ -3096,6 +3100,7 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
         "source_sha256": sha256(original).hexdigest(), "result_sha256": sha256(patched).hexdigest(),
         "source_simulator": simulator_state, "simulator_upgraded": dependency is not None, "settings": settings,
         "pass_protection_upgraded": pressure is not None,
+        "rookie_faces_upgraded": faces_upgrade is not None,
         "history_pool_upgraded": history_upgrade is not None,
         "stability_reference": stability,
     }
@@ -3262,11 +3267,13 @@ def _edit_installed_gadget(plan, source, target, original, receipt, progress, *,
         patched, patch = gadget.apply(original, books)
     else:
         patched, patch = gadget.remove(original)
+    patched, faces_upgrade = _rookie_faces_upgrade(patched)  # b81 rookie-faces: as a full build
     patched, history_upgrade = _history_pool_upgrade(patched)  # b81 history-pool: as a full build
     receipt["installed_gadget_only"] = True
     receipt["gadget_source_update"] = {"source_sha256": sha256(original).hexdigest(),
                                        "result_sha256": sha256(patched).hexdigest(),
                                        "source_state": gadget.status(original, books),
+                                       "rookie_faces_upgraded": faces_upgrade is not None,
                                        "history_pool_upgraded": history_upgrade is not None}
     if preflight:
         return True
@@ -3282,6 +3289,9 @@ def _edit_installed_gadget(plan, source, target, original, receipt, progress, *,
         raise RuntimeError("Gadget player on gadget plays: the output does not read back as written")
     receipt["steps"].append({"step": "gadget_play", **{k: v for k, v in patch.items() if k != "books"}})
     receipt["result"]["gadget_play"] = "applied" if plan.gadget_play else "retail"
+    if faces_upgrade is not None:
+        receipt["steps"].append({"step": "rookie_faces", **{k: v for k, v in faces_upgrade.items() if k != "edits"}})
+        receipt["result"]["rookie_faces"] = "applied"
     if history_upgrade is not None:
         receipt["steps"].append({"step": "history_pool", **{k: v for k, v in history_upgrade.items() if k != "edits"}})
         receipt["result"]["history_pool"] = "applied"
@@ -3670,6 +3680,32 @@ def _history_pool_upgrade(payload):
     return module.apply(payload, club=True) if club else module.apply(payload)
 
 
+def _rookie_faces_upgrade(payload):
+    """b81 rookie-faces (the owner, 11/25: "The ugly faces should be very rare"): an in-place copy of a built disc
+    (update-v09, edit-sim-qb, edit-gadget) carries rookie faces' current revision, as a full build does. The released
+    v0.9 revision (b780 GEN1, "previous") is upgraded in place by nfl2k5_rookie_faces.upgrade_xbe (the code and table a
+    full build writes, from the disc's own name tables and the bank; the rookie hair pointer is kept); any other state
+    is returned unchanged: a single-setting route never adds rookie faces. Returns (payload, receipt or None)."""
+    module = _core_module("nfl2k5_rookie_faces")
+    if module is None:
+        return payload, None
+    return module.upgrade_xbe(payload)
+
+
+def _apply_rookie_faces_in_place(target, receipt, progress):
+    """The v0.9 update's write of _rookie_faces_upgrade, after the route's own writers and before the history pool."""
+    patched, upgrade = _rookie_faces_upgrade(_xbe_bytes(target))
+    if upgrade is None:
+        return
+    progress("Draft classes: rookie faces update (homely and ugly prospect faces made rare)", 0, 0)
+    _write_xbe_bytes(target, patched)
+    if _xbe_bytes(target) != patched or _core_module("nfl2k5_rookie_faces").xbe_status(patched) != "applied":
+        raise RuntimeError("The rookie faces update did not read back as applied.")
+    receipt["steps"].append({"step": "rookie_faces", **{k: v for k, v in upgrade.items() if k != "edits"},
+                             "edits": upgrade.get("edits", [])})
+    receipt["result"]["rookie_faces"] = "applied"
+
+
 def _apply_history_pool_in_place(target, receipt, progress):
     """The in-place routes' write of _history_pool_upgrade, after the route's own writers."""
     patched, upgrade = _history_pool_upgrade(_xbe_bytes(target))
@@ -3836,6 +3872,9 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     if plan.gadget_play:
         # After every other v0.9 update, as in a standard Build; the books are the released disc's own.
         expected, _ = gadget.apply(expected, _gadget_resources(source))
+    expected, faces_upgrade = _rookie_faces_upgrade(expected)  # b81 rookie-faces: every v0.9 update, as a full build
+    if faces_upgrade is not None:
+        receipt["v09_update"].append("rookie_faces")
     expected, history_upgrade = _history_pool_upgrade(expected)  # b81 history-pool: every v0.9 update, as a full build
     if history_upgrade is not None:
         receipt["v09_update"].append("history_pool")
@@ -3862,6 +3901,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     _apply_cpu_decisions_in_place(target, receipt, progress)  # beta 81 fake kicks (the expected chain's order)
     if plan.gadget_play:
         _apply_gadget_play(plan, target, receipt, progress)
+    _apply_rookie_faces_in_place(target, receipt, progress)  # b81 rookie-faces (before the history pool, as above)
     _apply_history_pool_in_place(target, receipt, progress)  # b81 history-pool
     _compact_build_disc(target, source, receipt, progress)
     _step("final_checks")
@@ -6277,6 +6317,17 @@ def _r62_plan_options(plan, frozen_setup=None):
     # the music library wins and MyCareer keeps its Classic Apartment.
     options["my_career_home"] = bool(plan.my_career_home and not plan.music_library)
     return options
+
+
+def _user_lines_streams(plan) -> frozenset[int]:
+    """b81 sb-booth (review S2): the ``lines`` streams the user's own commentary replaced (plan.commentary, "lines:N");
+    the booth steps leave them reachable."""
+    out = set()
+    for swap in plan.commentary:
+        bank, _sep, number = str(swap.stream).rpartition(":")
+        if bank == "lines" and number.isdigit():
+            out.add(int(number))
+    return frozenset(out)
 
 
 def _commentary_final_wanted(plan, loaded_espn25_plan):
@@ -9816,6 +9867,48 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 progress(line, 0, 0)
             receipt["steps"].append({"step": "super_bowl_hosts", **hosts_receipt})
             receipt["result"]["super_bowl_hosts"] = hosts_receipt["state"]
+        # sb-booth (b81): on the 2026 calendar the booth's retail Super Bowl welcome, coin toss and sign-off name Super
+        # Bowls XXXIX to XLII and their cities ("here in Jacksonville" at the first franchise Super Bowl), and Berman's
+        # sign-offs celebrate ESPN's 25th year; 18 bytes in three director entries point them at the game's own lines
+        # without a city, a number or the anniversary.
+        booth = _core_module("nfl2k5_super_bowl_booth")
+        if booth is None:
+            raise ValueError("the Super Bowl booth step is unavailable")
+        with _optional(receipt, target, progress, "super_bowl_booth"):
+            progress("Super Bowl booth lines for the 2026 calendar", 0, 0)
+            booth_receipt = booth.apply_to_image(target, keep_streams=_user_lines_streams(plan),
+                                                 progress=lambda line: progress(line, 0, 0))
+            receipt["steps"].append({"step": "super_bowl_booth", **booth_receipt})
+            receipt["result"]["super_bowl_booth"] = booth_receipt["state"]
+    if tt.is_disc_image(target):
+        # sb-booth (b81, audit finding 1): the pregame welcome (key 14039) names each stadium's 2004 building; for every
+        # stadium row this build renamed away from a recorded name, the welcome is skipped instead of naming it wrong.
+        # Data-driven: a disc without the venue renames is left alone.
+        welcome = _core_module("nfl2k5_stadium_welcome")
+        if welcome is None:
+            raise ValueError("the pregame welcome step is unavailable")
+        with _optional(receipt, target, progress, "stadium_welcome"):
+            progress("Pregame welcome for renamed stadiums", 0, 0)
+            welcome_receipt = welcome.apply_to_image(target, keep_streams=_user_lines_streams(plan),
+                                                     progress=lambda line: progress(line, 0, 0))
+            receipt["steps"].append({"step": "stadium_welcome", **welcome_receipt})
+            receipt["result"]["stadium_welcome"] = welcome_receipt["state"]
+        # sb-booth (b81, audit part 2, review fixes): per-team and per-stadium booth lines that name a moved building,
+        # a relocated club's old city, Washington's old name, a 2004 head coach or (with the 2026 season) a dated
+        # line take the game's own fallback (the generic line, the home/visiting team line) or are dropped, by the
+        # same context-list edit; each rule holds only when the built disc shows the change. Every booth step leaves
+        # the user's own commentary recordings reachable.
+        stale = _core_module("nfl2k5_stale_speech")
+        if stale is None:
+            raise ValueError("the stale booth lines step is unavailable")
+        with _optional(receipt, target, progress, "stale_speech"):
+            progress("Stale team and stadium booth lines", 0, 0)
+            stale_receipt = stale.apply_to_image(target, season_2026=bool(plan.season_2026),
+                                                 keep_streams=_user_lines_streams(plan),
+                                                 progress=lambda line: progress(line, 0, 0))
+            receipt["steps"].append({"step": "stale_speech", **{k: v for k, v in stale_receipt.items() if k != "edits"},
+                                     "edit_count": len(stale_receipt.get("edits", ()))})
+            receipt["result"]["stale_speech"] = stale_receipt["state"]
     if plan.team_number_scale:
         _step("team_number_scale")
         # b776-ns1: after every executable writer (the hair styles' late owner and the Super Bowl hosts' season codes): a late
@@ -10105,6 +10198,21 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         seasons = [row["super_bowl"] for row in _core_module("nfl2k5_champions_history").read_image(target)]
         if seasons != list(range(60, 38, -1)):
             raise ValueError("the champions history (Super Bowls XXXIX to LX) did not survive the final passes")
+    # b81 sb-booth (review S5): the booth lines, the pregame welcome and the stale team/stadium lines are late data
+    # owners of their own; check them on the finished disc like the other late steps.
+    if receipt["result"].get("super_bowl_booth") == "applied":
+        _booth = _core_module("nfl2k5_super_bowl_booth")
+        _keep = _user_lines_streams(plan)
+        if (_booth.image_state(target) != ("partial" if _booth.kept_keys(_keep) else "applied")
+                or _booth.check_image(target, _keep)):
+            raise ValueError("the Super Bowl booth lines did not survive the final passes")
+    if receipt["result"].get("stadium_welcome") == "applied":
+        _welcome = _core_module("nfl2k5_stadium_welcome").status(target, _user_lines_streams(plan))
+        if _welcome["skipped"] != _welcome["expected"]:
+            raise ValueError("the pregame welcome for renamed stadiums did not survive the final passes")
+    if receipt["result"].get("stale_speech") == "applied" and _core_module("nfl2k5_stale_speech").pending_bytes(
+            target, season_2026=bool(plan.season_2026), keep_streams=_user_lines_streams(plan)):
+        raise ValueError("the stale team and stadium booth lines did not survive the final passes")
     if plan.hair_styles and is_image:  # b778-hr3: scenes, textures, owner + hook and the 2026 roster bytes
         hair_step = next((s for s in receipt["steps"] if s.get("step") == "hair_styles"), {})
         receipt["result"]["hair_styles_final"] = _core_module("nfl2k5_hair_styles").verify_final(

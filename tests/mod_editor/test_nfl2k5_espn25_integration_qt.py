@@ -172,9 +172,9 @@ class BuildPlanTests(unittest.TestCase):
                                   lambda message, *_: messages.append(message))
         step = next(row for row in receipt["steps"] if row["step"] == "espn25_plan")
         # b778-uf2: the 2026 nameplate fixes run after the uniform writers (and the plan) and before c2.
-        self.assertEqual([row["step"] for row in receipt["steps"][-5:]],
+        self.assertEqual([row["step"] for row in receipt["steps"][-7:]],
                          ["espn25_plan", "unc_bowl_uniforms", "nameplate_fixes_2026", "commentary_final",
-                          "menu_icon_orientation"],
+                          "menu_icon_orientation", "stadium_welcome", "stale_speech"],  # b81 sb-booth: booth steps last
                          "c2 finalizes commentary after the plan's roster edits")
         self.assertFalse(step["already_applied"])
         self.assertEqual(receipt["result"]["espn25_plan"], "applied")

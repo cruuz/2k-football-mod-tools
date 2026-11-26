@@ -1,6 +1,7 @@
 # Gillette Stadium (experimental)
 
-Build option `modern_gillette`, off in every preset. It writes the New England Patriots' Gillette Stadium (Foxborough,
+Build option `modern_gillette`, off in every preset and off in the SOFTDRINK 2K28 v0.10 release recipe (the game's own
+Gillette Stadium was judged better after play; this model stays an experimental option). It writes the New England Patriots' Gillette Stadium (Foxborough,
 MA; opened 2002, Populous) as it stands after the 2021 to 2023 north end renovation into the Patriots' venue record s16
 (the retail 2002 Gillette Stadium), all nine bundles (day, afternoon and night; dry, rain and snow), and gives the s16
 row the town's own spelling and today's capacity.

@@ -25,9 +25,12 @@ class ConstantTests(unittest.TestCase):
     def test_calibration_constants(self):
         self.assertEqual(r.MIX_BIAS, 8.5)
         self.assertEqual((r.MIX_QB_PIVOT, r.MIX_QB_SLOPE), (87, 0.4))      # b780 b5-sim: QB1-scaled play mix
-        self.assertEqual(r.TARGET_RATE, 0.08)                               # b780 b5-sim: was 0.14
+        self.assertEqual(r.TARGET_RATE, 0.14)                               # b81 fb-targets (b780 b5-sim: 0.08)
         self.assertEqual((r.TARGET_PIVOT, r.TARGET_SLOPE), (90, 0.015))      # b780 b5-sim: WR1-scaled redirect
-        self.assertEqual(r.TARGET_WR1_SHARE, 0.75)
+        self.assertEqual(r.TARGET_WR1_SHARE, 0.50)                          # b81 fb-targets: half go to TE1 (was 0.75)
+        for revision in ("b81", "beta80"):
+            self.assertEqual((r.FROZEN_CONSTANTS[revision]["TARGET_RATE"], r.FROZEN_CONSTANTS[revision]["TARGET_WR1_SHARE"]),
+                             (0.08, 0.75))
         self.assertEqual(r.QB_BONUS_YARDS, 3.5)
         self.assertEqual(r.QB_BONUS_RZ_LINE, 20.0)
         self.assertEqual(r.PASS_SCALE, 0.91)
@@ -121,7 +124,13 @@ class CodeTests(unittest.TestCase):
         # the float pool carries the calibrated constants
         import struct as _s
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.MIX_BIAS_OFF)[0], 8.5, places=6)
-        self.assertAlmostEqual(_s.unpack_from("<f", code, r.TARGET_RATE_OFF)[0], 0.08, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.TARGET_RATE_OFF)[0], 0.14, places=6)
+        self.assertAlmostEqual(_s.unpack_from("<f", code, r.TARGET_WR1_OFF)[0], 0.50, places=6)
+        # the beta 80 and pre-rule beta 81 revisions keep the constants they shipped with (recognition, upgrades)
+        for kw in ({"beta80": True}, {"fb": False}):
+            old = r._assemble(0x14DA000, 0x14DC000, **kw)[1]
+            self.assertAlmostEqual(_s.unpack_from("<f", old, r.TARGET_RATE_OFF)[0], 0.08, places=6)
+            self.assertAlmostEqual(_s.unpack_from("<f", old, r.TARGET_WR1_OFF)[0], 0.75, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.MIX_QB_SLOPE_OFF)[0], 0.4, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.TARGET_SLOPE_OFF)[0], 0.015, places=6)
         self.assertAlmostEqual(_s.unpack_from("<f", code, r.INTERCEPT_SCALE_OFF)[0], 1.35, places=6)
@@ -182,6 +191,29 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(again, patched)
         self.assertEqual(second["status"], "already_applied")
 
+    def test_beta81_revision_upgrades_in_place_to_a_fresh_install(self):
+        # b81 fb-targets: beta 81 before the fullback target rule (same 896-byte allocation) reads "legacy" and is
+        # updated in place to exactly what a fresh install writes
+        from mod_editor.core import nfl2k5_rdata_sites as rdata, nfl2k5_xbe_space as space
+        data = retail_bytes()
+        allocated = space.apply(data, r.REQUESTS, scaleout=True)[0]
+        code, state = r._allocations(allocated)
+        old_body = r._assemble(code["va"], state["va"], fb=False)[1]
+        self.assertNotEqual(old_body, r.code_for(code["va"], state["va"]))
+        self.assertEqual(old_body[:r.label_offsets()["tackle_entry"]],
+                         r.code_for(code["va"], state["va"])[:r.label_offsets()["tackle_entry"]])
+        pool_diff = [i for i in range(r.FLOAT_POOL, r.CODE_SIZE)
+                     if old_body[i] != r.code_for(code["va"], state["va"])[i]]
+        self.assertTrue(set(pool_diff) <= set(range(r.TARGET_RATE_OFF, r.TARGET_WR1_OFF + 4)), pool_diff)  # the retune
+        old = space.install_code(allocated, r.OWNER, old_body)[0]
+        old = rdata.apply(old, r.sites(code["va"], fb=False), r.OWNER)[0]
+        self.assertEqual(r.status(old), "legacy")
+        self.assertEqual([s[3] for s in r.installed_sites(old)], [s[3] for s in r.sites(code["va"], fb=False)])
+        upgraded, receipt = r.apply(old)
+        self.assertEqual(upgraded, r.apply(data)[0])
+        self.assertEqual(r.status(upgraded), "applied")
+        self.assertEqual(r.apply(upgraded)[1]["status"], "already_applied")
+
     def test_apply_reuses_the_allocation_a_full_build_made(self):
         # b779-int1: the build allocates the owner with the selected request set before this step installs it
         from mod_editor.core import nfl2k5_xbe_space as space
@@ -229,17 +261,12 @@ class NativeTests(unittest.TestCase):
         from tests.mod_editor.test_nfl2k5_honors import Machine
         return Machine(self.patched)
 
-    def test_rush_correction_goes_to_the_lead_back_only(self):
-        # b780 db2: the shipped constant is 0, so no runner gets a correction; the lead-back gate is checked on code
-        # assembled at b5's 8 percent
-        from unittest import mock
+    def test_no_runner_gets_a_season_rush_correction(self):
+        # b780 db2: the constant is 0. b81 fb-targets: the lead-back branch it gated (which then never changed a stat) is
+        # gone from the code, so no runner, lead back or not, gets a correction; the hand-off is still cleared
         from tests.mod_editor.test_nfl2k5_honors import Machine, word
         game_yards = 120
-        with mock.patch.object(r, "RUSH_BONUS_PCT", 8):
-            at_eight = r.apply(retail_bytes())[0]
-            eight = r.rush_bonus(game_yards)
-        self.assertGreater(eight, 0)
-        for payload, lead in ((self.patched, 0), (at_eight, eight)):
+        for payload, lead in ((self.patched, 0),):
             for position, rank, expected in ((7, 0, lead), (7, 1, 0), (8, 0, 0), (3, 0, 0), (0, 0, 0)):
                 m = Machine(payload)
                 p = m.roster([(3, [word(2, 3, 400 + game_yards), word(18, 3, 10)])])[0]
@@ -264,6 +291,60 @@ class NativeTests(unittest.TestCase):
         m.call(self.code_va + r.label_offsets()["tackle_return"], stack=(0, 0))
         self.assertEqual(m.call(0x14EE40, ecx=p, edx=18) & 0xFFFF, 30 + r.tackle_bonus(20))
         self.assertEqual(r.tackle_bonus(20), 2)       # 10 percent, rounded
+
+    def test_the_compact_tackle_merge_matches_the_previous_revision(self):
+        # b81 fb-targets: the entry and the merge were rewritten to make room for the fullback rule (the rush branch it
+        # dropped never changed a stat). Both revisions run the same merge calls natively: entry, the game's own merge of
+        # this game's tackles and rushing yards (the additive writer), return; the tackles, the rushing line and the
+        # hand-off must agree. With rushing yards on a lead back in the simulator the old revision enters its lead-back
+        # branch (review N3), which at its frozen 0 percent adds nothing.
+        from mod_editor.core import nfl2k5_rdata_sites as rdata, nfl2k5_xbe_space as space
+        from tests.mod_editor.test_nfl2k5_honors import Machine, word
+        data = retail_bytes()
+        allocated = space.apply(data, r.REQUESTS, scaleout=True)[0]
+        code, state = r._allocations(allocated)
+        old = space.install_code(allocated, r.OWNER, r._assemble(code["va"], state["va"], fb=False)[1])[0]
+        old = rdata.apply(old, r.sites(code["va"], fb=False), r.OWNER)[0]
+        new = r.apply(data)[0]
+        self.assertEqual((code["va"], state["va"]), (self.code_va, self.data_va))
+
+        def run(payload, labels, position, rank, mode, before, game, rush=0):
+            m = Machine(payload)
+            p = m.roster([(3, [word(2, 3, 300), word(18, 3, before)])])[0]
+            m.put8(p + 0x35, position)
+            m.put(p + 0x28, (rank & 7) << 10)
+            m.put8(r.SIM_MODE, mode)
+            m.put(self.data_va, 0xDEADBEEF)
+            m.hook(r.TACKLE_ENTRY_RESUME, lambda mm: None)     # the game's merge continues here: return instead
+            sp = m.SP - 0x40
+            m.put(sp, m.STOP)                                    # the site's call (dropped by the entry)
+            m.put(sp + 4, m.STOP)                                # where the stand-in for the merge returns
+            m.reg("ESP", sp)
+            m.reg("EDI", p)
+            m.uc.emu_start(self.code_va + labels["tackle_entry"], m.STOP, count=100_000)
+            if game:
+                m.call(0x14F450, ecx=p, edx=18, stack=(game,))   # the merge adds this game's tackles
+            if rush:
+                m.call(0x14F450, ecx=p, edx=2, stack=(rush,))    # and this game's rushing yards
+            m.call(self.code_va + labels["tackle_return"], stack=(0, 0))
+            return (m.call(0x14EE40, ecx=p, edx=18) & 0xFFFF, m.call(0x14EE40, ecx=p, edx=2) & 0xFFFF,
+                    m.get(self.data_va))
+
+        old_labels = r._assemble(self.code_va, self.data_va, fb=False)[0].labels
+        cases = 0
+        for position in (0, 3, 4, 7, 8, 11):
+            for rank in (0, 1):
+                for mode in (4, 0):
+                    for before, game in ((10, 0), (10, 4), (10, 5), (30, 15), (30, 20), (0, 25), (100, 96)):
+                        for rush in ((0, 120) if position == 7 else (0,)):
+                            a = run(old, old_labels, position, rank, mode, before, game, rush)
+                            b = run(new, r.label_offsets(), position, rank, mode, before, game, rush)
+                            self.assertEqual(a, b, (position, rank, mode, before, game, rush))
+                            bonus = r.tackle_bonus(game) if mode == 4 and position != 4 else 0
+                            self.assertEqual(b, (before + game + bonus, 300 + rush, 0),
+                                             (position, rank, mode, before, game, rush))
+                            cases += 1
+        self.assertEqual(cases, 196)                       # merge calls, 28 of them with a lead back's rushing yards
 
     def _mix(self, accuracy, run_minus_pass, *, deep_own_end=False, position=0):
         """Run the mix hook: returns 'pass' or 'run' (its two retail continuations)."""
@@ -299,6 +380,204 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(self._mix(70, low), "run")
         self.assertEqual(self._mix(99, margin, position=3), "run")       # no quarterback in slot 0: the flat bias
         self.assertEqual(self._mix(99, 0.5, deep_own_end=True), "run")   # own deep end: the retail call
+
+
+class FrozenRevisionTests(unittest.TestCase):
+    """Review S1: the earlier revisions are rebuilt from frozen constants, so tuning a live constant (game-outcomes will
+    refit the red-zone pass scale) cannot turn a v0.9 or pre-rule beta 81 disc foreign."""
+
+    PINS = {"b81": "a2d6fdc0bbf3983a96cb5b5b6cca9ab21d92401df0e27221fd1efc82928078f6",      # c4406481b's code_for
+            "beta80": "c89d42e3f4fa73abb05718e1ac7d246d1829b072785d34264d62b6252bbf15a7"}   # beta-80 / v0.9
+    TUNED = {"RZ_PASS_SCALE": 0.60, "MIX_BIAS": 9.25, "PASS_SCALE": 0.95, "TARGET_RATE": 0.2, "TACKLE_BONUS_PCT": 12,
+             "INTERCEPT_SCALE": 1.2, "RUN_RZ_SCALE": 0.9, "WR2_SHARE": 0.3}
+
+    def bodies(self):
+        return {"b81": r._assemble(0x14DA000, 0x14DC000, fb=False)[1],
+                "beta80": r._assemble(0x14DA000, 0x14DC000, beta80=True)[1]}
+
+    def test_the_earlier_bodies_are_pinned(self):
+        for revision, body in self.bodies().items():
+            self.assertEqual(hashlib.sha256(body).hexdigest(), self.PINS[revision], revision)
+
+    def test_retuned_live_constants_leave_earlier_discs_legacy(self):
+        from unittest import mock
+        from mod_editor.core import nfl2k5_rdata_sites as rdata, nfl2k5_xbe_space as space
+        data = retail_bytes()
+        allocated = space.apply(data, r.REQUESTS, scaleout=True)[0]
+        code, state = r._allocations(allocated)
+        installs = {}
+        for revision, kw in (("b81", {"fb": False}), ("beta80", {"beta80": True})):
+            old = space.install_code(allocated, r.OWNER, r._assemble(code["va"], state["va"], **kw)[1])[0]
+            installs[revision] = rdata.apply(old, r.sites(code["va"], **kw), r.OWNER)[0]
+        with mock.patch.multiple(r, **self.TUNED):
+            r._LABEL_CACHE = None
+            self.assertEqual({k: hashlib.sha256(v).hexdigest() for k, v in self.bodies().items()}, self.PINS)
+            for revision, old in installs.items():
+                self.assertEqual(r.status(old), "legacy", revision)           # still the previous revision
+                upgraded = r.apply(old)[0]                                   # updated in place to the retuned one
+                self.assertEqual(r.status(upgraded), "applied", revision)
+                self.assertEqual(upgraded, r.apply(data)[0], revision)
+                pool = XbeImage(upgraded).read(code["va"] + r.RZ_PASS_SCALE_OFF, 4)
+                self.assertAlmostEqual(struct.unpack("<f", pool)[0], 0.60, places=6)
+        r._LABEL_CACHE = None
+
+    def test_a_non_zero_rush_correction_is_refused(self):
+        from unittest import mock
+        with mock.patch.object(r, "RUSH_BONUS_PCT", 8), self.assertRaises(r.SimRealismError):
+            r.code_for(0x14DA000, 0x14DC000)
+        r._assemble(0x14DA000, 0x14DC000, fb=False)                    # the frozen revisions keep their own 0
+        r._assemble(0x14DA000, 0x14DC000, beta80=True)
+
+
+class FullbackTargetTests(unittest.TestCase):
+    """b81 fb-targets: the target site's call, run natively as the game makes it (EDI = the sim team), with the retail
+    target lottery 0x1034C0 and the league draw 0x48BC0 replaced by scripted stand-ins where a test needs exact picks.
+
+    The entry is read from the installed site, so on an executable without the rule (the target step alone) these tests
+    fail: the fullback keeps every pass."""
+
+    TEAM, PLAYERS = 0x3070000, 0x3071000
+    KEEP, REDRAWS, LEAGUE_DRAW = 21845, 3, 0x48BC0         # 1 in 3 of the 16-bit draw; then the target step 3 more times
+    WR1, HB1, WR2, TE1, FB1, HB2 = 4, 1, 5, 8, 2, 3        # lineup slots (0x4F6A80 order: 4, 1, 5, 8, 2, 6, 3, 7)
+
+    @classmethod
+    def setUpClass(cls):
+        import importlib.util
+        if importlib.util.find_spec("unicorn") is None:
+            raise unittest.SkipTest("unicorn is needed")
+        cls.patched, receipt = r.apply(retail_bytes())
+        image = XbeImage(cls.patched)
+        call = image.read(r.TARGET_SITE, 5)
+        cls.assert_call = call[0] == 0xE8
+        cls.entry = (r.TARGET_SITE + 5 + struct.unpack_from("<i", call, 1)[0]) & 0xFFFFFFFF
+
+    def machine(self, positions, *, wr1=False, te1=True, hb1=True):
+        """A sim team whose lineup holds one player per slot with these position bytes; slot -> player address."""
+        from tests.mod_editor.test_nfl2k5_honors import Machine
+        m = Machine(self.patched)
+        m.uc.mem_write(self.TEAM, bytes(0x100))
+        players = {}
+        for i, (slot, position) in enumerate(sorted(positions.items())):
+            p = self.PLAYERS + 0x80 * i
+            m.uc.mem_write(p, bytes(0x80))
+            m.put8(p + 0x35, position)
+            m.put8(p + 0x44, r.TARGET_PIVOT)              # Catching: an average WR1 redirects at TARGET_RATE
+            players[slot] = p
+            if (slot == self.WR1 and not wr1) or (slot == self.TE1 and not te1) or (slot == self.HB1 and not hb1):
+                continue                                  # an empty lineup slot (WR1 empty: the redirect never runs)
+            m.put(self.TEAM + 8 + 4 * slot, p)
+        m.put(r.TEAM_OFFENSE, self.TEAM)
+        return m, players
+
+    def script(self, m, picks, draws=None):
+        """FN_TARGET returns the picks in order; the league draw returns the draws in order (None: the real one)."""
+        state = {"picks": list(picks), "draws": list(draws or ()), "targets": 0, "drawn": 0}
+        def target(mm):
+            state["targets"] += 1
+            self.assertEqual(mm.reg("EDI"), self.TEAM, "the lottery draws for the sim team")
+            return state["picks"].pop(0)
+        m.hook(0x1034C0, target)
+        if draws is not None:
+            def draw(mm):
+                state["drawn"] += 1
+                return state["draws"].pop(0)
+            m.hook(self.LEAGUE_DRAW, draw)
+        return state
+
+    def run_site(self, m):
+        sp = m.SP - 0x40
+        m.put(sp, m.STOP)
+        m.reg("ESP", sp)
+        for name, value in (("EDI", self.TEAM), ("ESI", 0x11111111), ("EBX", 0x22222222), ("EBP", 0x33333333)):
+            m.reg(name, value)
+        m.uc.emu_start(self.entry, m.STOP, count=200_000)
+        self.assertEqual(m.reg("EIP"), m.STOP)
+        self.assertEqual(m.reg("ESP"), sp + 4)
+        self.assertEqual((m.reg("ESI"), m.reg("EBX"), m.reg("EBP"), m.reg("EDI")),
+                         (0x11111111, 0x22222222, 0x33333333, self.TEAM), "callee registers survive")
+        return m.reg("EAX")
+
+    LINEUP = {1: 7, 2: 8, 3: 7, 4: 3, 5: 3, 8: 9}          # HB1, FB1, HB2, WR1, WR2, TE1
+
+    @staticmethod
+    def seed(m, state, seed=81):
+        """Seed one of the game's additive lagged generators (0x48B50: two indexes, then 55 qwords) as boot does."""
+        import random
+        rng = random.Random(seed)
+        m.put(state, 54)
+        m.put(state + 4, 30)
+        m.uc.mem_write(state + 8, b"".join(struct.pack("<Q", rng.getrandbits(64)) for _ in range(55)))
+
+    def test_rule_constants(self):
+        self.assertEqual((r.FB_TARGET_KEEP_THRESHOLD, r.FB_TARGET_REDRAWS, r.FN_LEAGUE_DRAW, r.FULLBACK_POSITION),
+                         (self.KEEP, self.REDRAWS, self.LEAGUE_DRAW, 8))
+        self.assertEqual((r.TE1_SLOT, r.HB1_SLOT), (8 + 4 * self.TE1, 8 + 4 * self.HB1))
+
+    def test_the_site_calls_the_rule(self):
+        self.assertTrue(self.assert_call)
+        self.assertEqual(self.entry, int(r.apply(retail_bytes())[1]["code_va"], 16) + r.label_offsets()["fb_entry"])
+
+    def test_a_fullback_keeps_one_target_in_three(self):
+        # the real league draw (0x48B50's additive lagged generator, seeded here as the game seeds it at boot): of 3,000
+        # fullback picks about a third stay with him, the rest go to the redraw's pick
+        m, players = self.machine(self.LINEUP)
+        self.seed(m, 0xB12680)
+        kept = 0
+        for _ in range(3000):
+            self.script(m, [players[self.FB1], players[self.WR2]])
+            kept += self.run_site(m) == players[self.FB1]
+        self.assertAlmostEqual(kept / 3000, self.KEEP / 65536, delta=0.03)
+
+    def test_the_keep_draw_reads_its_low_16_bits(self):
+        m, players = self.machine(self.LINEUP)
+        for draw, expected in ((self.KEEP - 1, self.FB1), (self.KEEP, self.WR2),
+                               (0xFFFF0000 | (self.KEEP - 1), self.FB1), (0, self.FB1),
+                               (0xFFFF, self.WR2)):
+            state = self.script(m, [players[self.FB1], players[self.WR2]], [draw])
+            self.assertEqual(self.run_site(m), players[expected], hex(draw))
+            self.assertEqual(state["drawn"], 1)
+
+    def test_a_redraw_goes_out_as_the_lottery_draws_it(self):
+        m, players = self.machine(self.LINEUP)
+        for picks, expected, calls in (([self.FB1, self.WR2], self.WR2, 2), ([self.FB1, self.FB1, self.HB2], self.HB2, 3),
+                                       ([self.FB1, self.FB1, self.FB1, self.TE1], self.TE1, 4),
+                                       ([self.FB1, self.HB1], self.HB1, 2)):
+            state = self.script(m, [players[s] for s in picks], [0xFFFF])
+            self.assertEqual(self.run_site(m), players[expected], picks)
+            self.assertEqual((state["targets"], state["drawn"]), (calls, 1), picks)
+
+    def test_a_fullback_drawn_every_time_goes_to_te1_then_hb1(self):
+        redraws = self.REDRAWS
+        for te1, hb1, expected in ((True, True, self.TE1), (False, True, self.HB1), (False, False, self.FB1)):
+            m, players = self.machine(self.LINEUP, te1=te1, hb1=hb1)
+            state = self.script(m, [players[self.FB1]] * (1 + redraws), [0xFFFF])
+            self.assertEqual(self.run_site(m), players[expected], (te1, hb1))
+            self.assertEqual(state["targets"], 1 + redraws)
+
+    def test_every_other_pick_is_untouched_and_draws_nothing(self):
+        lineup = {1: 7, 2: 7, 3: 7, 4: 3, 5: 3, 6: 3, 7: 9, 8: 9, 9: 0}   # a halfback in the fullback slot keeps his
+        m, players = self.machine(lineup)
+        for slot in sorted(lineup):
+            state = self.script(m, [players[slot]], [])
+            self.assertEqual(self.run_site(m), players[slot], slot)
+            self.assertEqual((state["targets"], state["drawn"]), (1, 0), slot)
+
+    def test_the_rule_runs_after_the_redirect(self):
+        # with WR1 in the lineup the target step's redirect runs first (the match RNG, real); a fullback it keeps meets
+        # the rule, a pick it moved to WR1 or TE1 does not
+        m, players = self.machine(self.LINEUP, wr1=True)
+        self.seed(m, r.MATCH_RNG)
+        outcomes, ruled = set(), 0
+        for _ in range(400):
+            state = self.script(m, [players[self.FB1], players[self.WR2]], [0xFFFF])
+            got = self.run_site(m)
+            outcomes.add(got)
+            self.assertNotEqual(got, players[self.FB1])
+            self.assertEqual(state["targets"], 1 + state["drawn"])
+            ruled += state["drawn"]
+        self.assertGreater(ruled, 300)                     # most fullback picks survive the redirect and meet the rule
+        self.assertLess(ruled, 400)                        # some are redirected first and draw nothing
+        self.assertTrue(outcomes <= {players[self.WR1], players[self.TE1], players[self.WR2]})
 
 
 if __name__ == "__main__":
