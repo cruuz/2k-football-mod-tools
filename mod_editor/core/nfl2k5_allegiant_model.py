@@ -1521,100 +1521,19 @@ def model_bundle(retail_bundle, filename, model=None, *, cameras=None, dry_bundl
 
 # ------------------------------------------------------------------------------------------------ the helmet reflection
 
-#: The helmet shells' reflection (b81, the pink helmets at Allegiant). Every stadium bundle carries a TXTR named
-#: ``reflection``: a 128-pixel P8 cube map (six faces of five mips, one palette) of the stadium round the field, which
-#: the executable binds by name for the helmet shells (the player texture table at 0x4EEAF8, entry 6, a global lookup).
-#: The shell reflection takes full weight indoors and at night (0x8E880 returns 1.0 when the row's indoor word is set)
-#: and the time of day's smaller weight outdoors by day. Retail s20 is the open-air Oakland Coliseum: its day cubes are a
-#: blue-sky panorama and its afternoon cubes a brown sky, which Allegiant's indoor word put on every shell at full weight
-#: (red shells read pink, WAS mauve; PROVED IN GAME, and the bound palette read at runtime was s20dd's sky). Every retail
-#: dome carries one dark interior cube in all nine bundles, so the model gives s20 the same: SoFi Stadium's (retail s23,
-#: the Edward Jones Dome, which no option rewrites), with its palette, its mips and its texture header kept byte for
-#: byte and only each face's 128-pixel level reduced to REFLECTION_TARGETS' entries so the cube fits the smallest s20
-#: span (s20nr.iff). The face means stay within 0.3 of SoFi's; the mips, which a helmet's size on screen samples, are
-#: SoFi's own.
-REFLECTION = "reflection"
-INTERIOR_VENUE, INTERIOR_BUNDLE = "s23", "s23dd.iff"
-#: brightness targets (0 to 255) for level 0: a 1.6 power curve over 16 steps, as integers so the choice is exact; each
-#: target takes the most used of the three palette entries nearest it (by the sum of R, G and B against 3 x the target)
-REFLECTION_TARGETS = (0, 3, 10, 19, 31, 44, 59, 75, 93, 113, 133, 155, 178, 203, 228, 255)
-#: the cube's layout: six faces of 128, 64, 32, 16 and 8 pixels, each face padded to 21,888 bytes, then the palette
-CUBE_FACES, CUBE_EDGE, CUBE_FACE_STRIDE = 6, 128, 21888
-
-
-def reflection_chunk(bundle):
-    """(chunk, decoded, texture) of a bundle's ``reflection`` TXTR."""
-    tx = sm._ml()._tools()[0]
-    found = []
-    for chunk in tx.parse_chunks(bundle, allow_trailing=True):
-        if chunk.kind != "TXTR":
-            continue
-        decoded, _ = tx.decode_chunk(bundle, chunk)
-        texture = tx.parse_texture(decoded, chunk)
-        if texture.name == REFLECTION:
-            found.append((chunk, decoded, texture))
-    sb.require(len(found) == 1, f"the bundle carries {len(found)} reflection textures")
-    chunk, decoded, texture = found[0]
-    sb.require((texture.format_name, texture.width, texture.height, texture.mip_levels) == ("P8", CUBE_EDGE, CUBE_EDGE, 5)
-               and texture.pixel_offset == 0 and texture.palette_offset == CUBE_FACE_STRIDE * CUBE_FACES - 64
-               and chunk.video_bytes == texture.palette_offset + 1024,
-               "the reflection is not the 128-pixel P8 cube")
-    return chunk, decoded, texture
-
-
-def interior_reflection(interior_bundle):
-    """The decoded interior cube (system + video bytes) from SoFi's retail s23 bundle: its reflection with each face's
-    level 0 reduced to the entries REFLECTION_TARGETS picks; the header, the mips, the padding and the palette stay."""
-    tx = sm._ml()._tools()[0]
-    chunk, decoded, texture = reflection_chunk(interior_bundle)
-    vid = chunk.system_bytes
-    pal = np.frombuffer(decoded[vid + texture.palette_offset:vid + texture.palette_offset + 1024],
-                        np.uint8).reshape(256, 4).astype(np.int64)
-    n = CUBE_EDGE * CUBE_EDGE
-    faces = [np.frombuffer(tx.unswizzle_2d(decoded[vid + f * CUBE_FACE_STRIDE:vid + f * CUBE_FACE_STRIDE + n], CUBE_EDGE,
-                                           CUBE_EDGE, 1), np.uint8).reshape(CUBE_EDGE, CUBE_EDGE) for f in range(CUBE_FACES)]
-    used = np.bincount(np.concatenate([face.ravel() for face in faces]), minlength=256)
-    ids = np.nonzero(used)[0]
-    rgb = pal[:, :3].sum(1)
-    keep = set()
-    for target in REFLECTION_TARGETS:
-        nearest = ids[np.argsort(np.abs(rgb[ids] - 3 * target), kind="stable")[:3]]
-        keep.add(int(nearest[np.argmax(used[nearest])]))
-    keep = np.array(sorted(keep))
-    gap = pal[:, None, :] - pal[None, keep, :]
-    lut = keep[(gap * gap).sum(-1).argmin(1)].astype(np.uint8)          # integers throughout: exact on every CPU
-    out = bytearray(decoded)
-    for f, face in enumerate(faces):
-        at = vid + f * CUBE_FACE_STRIDE
-        out[at:at + n] = tx.swizzle_2d(lut[face].tobytes(), CUBE_EDGE, CUBE_EDGE, 1)
-    return bytes(out)
-
-
-def reflection_span(bundle, interior):
-    """(offset, chunk bytes, info): the interior cube written into a bundle's own reflection span (same stored size and
-    texture header, so nothing else moves), read back equal."""
-    tx = sm._ml()._tools()[0]
-    chunk, decoded, _texture = reflection_chunk(bundle)
-    sb.require(len(interior) == len(decoded) and interior[:chunk.system_bytes] == decoded[:chunk.system_bytes],
-               "the interior cube's header differs from the bundle's")
-    span = bytes(bundle[chunk.offset:chunk.end_offset])
-    out, info = sb.fixed_span_chunk("TXTR", interior, chunk.system_bytes, chunk.video_bytes, span)
-    sb.require(len(out) == len(span), "the reflection span changed length")
-    back, _ = tx.decode_chunk(out, tx.parse_chunks(out, allow_trailing=True)[0])
-    sb.require(back == interior, "reflection read-back differs")
-    return chunk.offset, out, dict(info, offset=chunk.offset, length=len(span))
-
-
-def read_interior(source):
-    """The interior cube from SoFi's retail bundle in ``source`` (checked against the venue table's retail SHA-256)."""
-    from . import nfl2k5_modern_venues_2026 as mv
-    ml = sm._ml()
-    pin = next(p for p in mv.venues()[INTERIOR_VENUE]["bundles"] if p["name"] == INTERIOR_BUNDLE)
-    with ml._outer_image()(str(source)) as archive:
-        e = _entry(archive, pin)
-        data = archive.read(e.virtual_offset, e.size)
-    sb.require(sha(data) == pin["retail_sha256"], f"{INTERIOR_BUNDLE}: the source bundle is not retail")
-    return interior_reflection(data)
+#: The helmet shells' reflection (b81, the pink helmets at Allegiant; the helpers live in nfl2k5_sofi_model, see its
+#: REFLECTION notes). Retail s20 is the open-air Oakland Coliseum: its day cubes are a blue-sky panorama and its
+#: afternoon cubes a brown sky, which Allegiant's indoor word put on every shell at full weight (red shells read pink,
+#: WAS mauve; PROVED IN GAME, and the bound palette read at runtime was s20dd's sky). The nine s20 bundles take SoFi's
+#: interior cube, as every retail dome carries one dark interior cube in all nine bundles.
+REFLECTION = sm.REFLECTION
+INTERIOR_VENUE, INTERIOR_BUNDLE = sm.INTERIOR_VENUE, sm.INTERIOR_BUNDLE
+REFLECTION_TARGETS = sm.REFLECTION_TARGETS
+CUBE_FACES, CUBE_EDGE, CUBE_FACE_STRIDE = sm.CUBE_FACES, sm.CUBE_EDGE, sm.CUBE_FACE_STRIDE
+reflection_chunk = sm.reflection_chunk
+interior_reflection = sm.interior_reflection
+reflection_span = sm.reflection_span
+read_interior = sm.read_interior
 
 
 # ------------------------------------------------------------------------------------------------ the field

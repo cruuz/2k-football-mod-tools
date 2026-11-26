@@ -646,3 +646,109 @@ class Pins(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class _Entry:
+    def __init__(self, size, name_id):
+        self.virtual_offset, self.size, self.name_id = 0, size, name_id
+
+
+class _Archive:
+    """One bundle as an archive whose every entry is that bundle (bundle_state reads one entry)."""
+    def __init__(self, data, outer, name_id):
+        self.data = bytes(data)
+        entry = _Entry(len(data), name_id)
+        self.entries = type("Entries", (), {"__len__": lambda _s: outer + 1, "__getitem__": lambda _s, _i: entry})()
+
+    def read(self, offset, size):
+        return self.data[offset:offset + size]
+
+
+@unittest.skipUnless(EXTRACTED.is_dir() and sm.PINS_PATH.is_file(), "needs the hydrated retail archive and pins")
+class HelmetReflection(unittest.TestCase):
+    """b81 (the pink helmets): this option turns the Chargers' row s24 (retail QUALCOMM Stadium, open air) indoor, so the
+    shells take the bundle's reflection cube at full weight; s24's retail day cube is San Diego's blue sky. The nine s24
+    bundles get SoFi's interior; s23 keeps its own and s40's retail cubes are neutral already."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.retail = sm.read_retail(EXTRACTED)
+        cls.interior = sm.read_interior(EXTRACTED)
+
+    @staticmethod
+    def faces(decoded, chunk, level=0):
+        tx = sm._ml()._tools()[0]
+        vid = chunk.system_bytes
+        pal = np.frombuffer(decoded[vid + chunk.video_bytes - 1024:vid + chunk.video_bytes], np.uint8).reshape(256, 4)
+        edge = sm.CUBE_EDGE >> level
+        at = sum((sm.CUBE_EDGE >> k) ** 2 for k in range(level))
+        out = []
+        for f in range(sm.CUBE_FACES):
+            o = vid + f * sm.CUBE_FACE_STRIDE + at
+            idx = np.frombuffer(tx.unswizzle_2d(decoded[o:o + edge * edge], edge, edge, 1), np.uint8)
+            out.append(pal[idx].astype(int)[:, [2, 1, 0, 3]])
+        return out
+
+    def test_the_retail_s24_day_cube_is_open_sky_and_s40_is_neutral(self):
+        chunk, decoded, _t = sm.reflection_chunk(self.retail["s24dd.iff"])
+        top = self.faces(decoded, chunk)[2][:, :3].mean(0)
+        self.assertGreater(top[2], top[0] + 40)
+        for t in "dan":
+            chunk, decoded, _t = sm.reflection_chunk(self.retail[f"s40{t}d.iff"])
+            for face in self.faces(decoded, chunk):
+                self.assertTrue((face[:, 0] == face[:, 1]).all() and (face[:, 1] == face[:, 2]).all())
+
+    def test_only_the_nine_s24_bundles_carry_a_reflection_pin(self):
+        pins = {p["name"]: p for p in sm.model_pins()["bundles"]}
+        self.assertEqual(sorted(n for n, p in pins.items() if "reflection" in p),
+                         sorted(n for n in sm.VARIANTS if n[:3] == "s24"))
+        self.assertEqual(sm.REFLECTION_VENUES, ("s24",))
+
+    def test_every_s24_bundle_takes_the_neutral_interior(self):
+        pins = {p["name"]: p for p in sm.model_pins()["bundles"]}
+        for name in (n for n in sm.VARIANTS if n[:3] == "s24"):
+            bundle = self.retail[name]
+            at, span, _info = sm.reflection_span(bundle, self.interior)
+            r = pins[name]["reflection"]
+            self.assertEqual((at, len(span)), (r["offset"], r["length"]), name)
+            self.assertEqual(sm.sha(span), r["model_sha256"], name)
+            self.assertEqual(sm.sha(bundle[at:at + len(span)]), r["retail_sha256"], name)
+            out = bundle[:at] + span + bundle[at + len(span):]
+            self.assertEqual(sm.reflection_chunk(out)[1], self.interior, name)
+        chunk = sm.reflection_chunk(self.retail[sm.INTERIOR_BUNDLE])[0]
+        for level in range(5):
+            for face in self.faces(self.interior, chunk, level):
+                self.assertTrue((face[:, 0] == face[:, 1]).all() and (face[:, 1] == face[:, 2]).all(), level)
+
+    @requires_real_pack("modern_sofi")
+    def test_the_compiled_s24_reflection_equals_its_pin_and_s23_s40_keep_theirs(self):
+        """model_bundle writes the cube into s24's own span (the build passes the interior for REFLECTION_VENUES only);
+        every byte outside the stretch and the reflection stays retail; s23 and s40 compile without one."""
+        built = sm.build_all(EXTRACTED, workers=1, names=["s24nr.iff", "s23dd.iff", "s40dd.iff"])
+        name = "s24nr.iff"
+        retail, model, info = built[name]
+        pin = sm._pin(name)
+        r = pin["reflection"]
+        self.assertEqual((info["reflection"]["offset"], info["reflection"]["length"]), (r["offset"], r["length"]))
+        self.assertEqual(sm.sha(model[r["offset"]:r["offset"] + r["length"]]), r["model_sha256"])
+        start, end = sm.stretch(retail)
+        self.assertEqual(sm.sha(model[start:end]), pin["model_sha256"])
+        self.assertEqual(model[:start], retail[:start])
+        self.assertEqual(model[end:r["offset"]], retail[end:r["offset"]])
+        self.assertEqual(model[r["offset"] + r["length"]:], retail[r["offset"] + r["length"]:])
+        for other in ("s23dd.iff", "s40dd.iff"):
+            retail, model, info = built[other]
+            self.assertIsNone(info["reflection"])
+            start, end = sm.stretch(retail)
+            self.assertEqual(model[end:], retail[end:], other)
+
+    @requires_real_pack("modern_sofi")
+    def test_the_s24_bundle_state_needs_the_reflection(self):
+        """The model's stretch with the retail reflection (a disc built before b81) reads mixed; both read applied."""
+        name = "s24dd.iff"
+        retail, model, _info = sm.build_all(EXTRACTED, workers=1, names=[name])[name]
+        pin, vpin = sm._pin(name), sm._venue_pins()[name]
+        start, end = pin["offset"], pin["offset"] + pin["length"]
+        old = retail[:start] + model[start:end] + retail[end:]
+        for data, want in ((retail, "retail"), (old, "mixed"), (model, "applied")):
+            self.assertEqual(sm.bundle_state(_Archive(data, vpin["outer"], vpin["name_id"]), name), want)
