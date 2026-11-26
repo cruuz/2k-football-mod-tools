@@ -404,6 +404,7 @@ class Routes(unittest.TestCase):
             receipt.setdefault("steps", [])
         full = {}
         with seam, patch.object(mod_build, "_copy_private_build_source", side_effect=copied), \
+                patch.object(mod_build, "_apply_class_templates_in_place", return_value=None), \
                 patch.object(mod_build, "_compact_build_disc", side_effect=lambda *args: compaction.append(args)), \
                 patch.object(mod_build, "inspect", return_value={}), \
                 patch.object(mod_build, "_verify_finished_game_disc", return_value=None):
@@ -537,6 +538,7 @@ class Routes(unittest.TestCase):
             receipt.setdefault("steps", [])
         receipt = {}
         with unreadable, patch.object(mod_build, "_copy_private_build_source", side_effect=copied), \
+                patch.object(mod_build, "_apply_class_templates_in_place", return_value=None), \
                 patch.object(mod_build, "_compact_build_disc", return_value=None), \
                 patch.object(mod_build, "inspect", return_value={}), \
                 patch.object(mod_build, "_verify_finished_game_disc", return_value=None):

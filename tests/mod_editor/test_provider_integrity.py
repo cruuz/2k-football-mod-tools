@@ -225,7 +225,8 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [609, 10, 8, 9, 8, 9]
+            [610, 10, 8, 9, 8, 9]
+            # b81 league-aging (review M2): 610 = 609 + star_career's frozen previous code (nfl2k5_star_career_code_b780).
             # b81 helmet-sides: 609 = 607 + the helmet side numbers owner (loaded by name, imported by throw_tuning for
             # the cave manifest recorder) + Number kerning, whose state the owner reads.
             # b81 integration (qb34 trades merge): 607 = 605 (next lines) + the quarterback trades owner and its generated

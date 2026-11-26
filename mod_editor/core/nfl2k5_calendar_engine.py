@@ -200,6 +200,8 @@ def _prerequisites(payload, base_year):
             got = payload[off:off + site.size]
             if site.retail == site.patched and got == site.retail:
                 continue
+            if season.earlier_birth_site(site, got):   # b81 league-aging (review S1): the rest of the group decides
+                continue
             values.add("retail" if got == site.retail else "applied" if got == site.patched or
                        (site.legacy and got == site.legacy) else "foreign")
         _require(values in ({"retail"}, {"applied"}), f"calendar prerequisite {group} is mixed/foreign")

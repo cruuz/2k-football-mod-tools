@@ -1524,7 +1524,7 @@ class NativeRf3Ratings(unittest.TestCase):
             self.assertTrue(50 <= r[0x51] <= 100, r[0x51])         # a template above 100 counts as 100
             self.assertTrue(70 <= r[0x4E] <= 100, r[0x4E])
         mean = sum(r[0x37] for r, _f in res) / len(res)
-        self.assertLess(abs(mean - 61), 2.5, "a class is centred between the templates")
+        self.assertLess(abs(mean - 60), 1.5, "a prospect is uniform between the templates")  # E[r] = 0.75 E[g] + 0.25 E[u] = 1/2
         cons = [r[0x50] for r, _f in res]
         self.assertLess(abs(sum(cons) / len(cons) - 62.5), 2.5)
 

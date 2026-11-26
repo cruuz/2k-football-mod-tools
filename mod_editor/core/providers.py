@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "9679faa26c715c4808991471a3350ab6115e779e685da238238cd39c0c72de68",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "5a796823b21daa94b7b96f18d210885eac379fde3f876dd4ea7397b0b303bffc",
+        "mod_editor/core/mod_build.py": "866bd24414473a5a3c8593f39fc6274f58b1ec9f0fef900386f6c9222511be35",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -681,7 +681,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_modern_arrowhead.py": "0bd6686db5572940b95b0c75211a89ddfb1c8d30aeb278a5ccf6921fca524b17",
         "mod_editor/core/nfl2k5_modern_color.py": "07ba4a7667d28c989cb59d12da91e0e0e8189c68e8c1a971d39289ee0d03617e",
         "mod_editor/core/nfl2k5_bump_strength.py": "79f9264fbe0813db9be66f22e35f8944e35b92ae415132d819eda50920e41bb0",
-        "mod_editor/core/nfl2k5_calendar_engine.py": "0ade93859ea9932903c550c51540e43dce05eb57f3d7ae2b99d925ec81fe67cd",
+        "mod_editor/core/nfl2k5_calendar_engine.py": "3085f0ba5466ead94a3f102cbbdc614aa6f0479cecbc73c5dd1ff9d5a9918859",
         "mod_editor/core/nfl2k5_calendar_engine_code.py": "9b43e835f1df76f85ecb13e7ef593d2eee884a1fa82fe41ea3d813186445ca22",
         "mod_editor/core/nfl2k5_later_schedule.py": "3bcf96d22a24338d02c7f930151d27c1d812612036a38fadfc0797f2a0e446ef",  # b780-season1
         "mod_editor/core/nfl2k5_camera.py": "c2b85ae199f5cd6b334b6b3dfa193caf782671488ce852eba8cb28fd50c34cfb",
@@ -961,8 +961,9 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_catch_snap_limit.py": "949c360348a42ef86f14ea338a7fe5493ad3061deeccd7068febff351cee711b",  # b780-cv4
         "mod_editor/core/nfl2k5_speed_threshold.py": "73f076c6af05daebe5f54a661fc5cb4fc2daf4bdbc627e797a42851872f1b08b",  # b780-cv5
         "mod_editor/core/nfl2k5_speed_threshold_code.py": "7578a910fadc5852901edaeca84d983f1a20e2e90ab227f00a678a08554d3e90",  # b780-cv5
-        "mod_editor/core/nfl2k5_star_career.py": "9190271ff9fe7a641a0eee544876b92e7f756950ccb9a498727245d5622d7616",  # b778-st2
+        "mod_editor/core/nfl2k5_star_career.py": "d6ea8be5969e91d483c7f9a9a7df999242b39e9653692f80494ac0f9df376bf9",  # b778-st2
         "mod_editor/core/nfl2k5_star_career_code.py": "47b34490a21113803ba97a985378dcec237c39d53fed8fd6e9f498b82ec39098",  # b778-st2
+        "mod_editor/core/nfl2k5_star_career_code_b780.py": "57d5a6f2d463ed83494aefe1aea813fcb5a09232309a83942cb3b04c33cb97cf",  # b81 league-aging: frozen previous revision
         "mod_editor/core/nfl2k5_sportscenter_lineup.py": "d7901a39e3d80149441eb2b88ce71d49b5cdf6a47a27397ae3947d40f7c29023",  # b778-sc2
         "mod_editor/core/nfl2k5_draft_clock.py": "306e873a85e3c2aaf63815b424faa092a454a15cfd7a6fd334947686262cf4c6",  # b778-dr1
         "mod_editor/core/nfl2k5_weekly_progression.py": "6153d7c4e7e2767453cee3855710dd90a7ed685fca14225afa7d2fc31a082092",  # b778-pg1
@@ -1073,7 +1074,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_screen_hooks_code.py": "bcab9155aceb1e62e2cb1e5a7b98231ec7cf101ae3623a8e0b2397dd4ab27b33",
         "mod_editor/core/nfl2k5_screen_timing.py": "8c7245f79a2c79df3974545b30db4de45c6b1b8071ff5d7a4bc396b2a9903894",
         "mod_editor/core/nfl2k5_season_cap.py": "dda1e4d3a11bfe798d837ab8629bfa1d4e90fc233417e39de1974ac1c5b959c6",
-        "mod_editor/core/nfl2k5_season_length.py": "7150c844b348fefd2fea0fa1c05c1ea3ac1a106e4401f2b9f3ba10cefc681276",
+        "mod_editor/core/nfl2k5_season_length.py": "e420fc805f23da6aaacf330caf5f0da39a8a6af854c3d64b4082140bb6752d1d",
         "mod_editor/core/nfl2k5_senior_bowl.py": "ce39c8aef6d9f5438a98c67360c1392d1e5063d7f5b9094b615dfdae141c255c",
         "mod_editor/core/nfl2k5_senior_bowl_code.py": "000abee8fc9bf5d382d4c8934a0509c32de7976805eadabb5c4aed3ccb0812da",
         "mod_editor/core/nfl2k5_seven_on_seven.py": "8d0da9680a0481ee861c45b0dc8f9e785015bd43e472796a3b6e781597244269",
