@@ -221,6 +221,7 @@ STEP_LABELS: dict[str, str] = {
     "sim_realism": "Simulated season realism",
     "sim_qb_injuries": "Simulated injuries (all positions)",
     "qb_room": "the quarterback room rules",  # b81 qb34
+    "cpu_trades": "Computer trades at every position",  # b81 trades-all (R6), right after the quarterback room
     "gadget_play": "the gadget player on gadget plays",  # beta 81 Q62 (its step had no label)
     "cpu_decisions": "CPU decisions (Modern 2)",  # beta 81 fake kicks: the single-setting update of a built disc
     # b780 rev1: the beta-80 late owners and the coaching staff's playbook copy (they had no step, so a failure in one

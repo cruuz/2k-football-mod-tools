@@ -8,8 +8,9 @@ advance's stage-8 `call 0x2BC960` (the native trade pass), reached only while th
 reads the room's settings and writes the room's ring and counters at the room's fixed offsets.
 
 States: "retail" (the site holds its retail call and the page is empty or not reserved), "applied" (the site enters the
-page and the page is exactly the template linked for this address, the room's address and the IR link), anything else
-"foreign". Retail restores the site and fills the page with 0xCC; the reservation stays.
+page and the page is exactly the template linked for this address, the room's address and the IR link), "previous"
+(exactly an earlier revision's template, the frozen nfl2k5_qb_trades_code_b81_*: the room owner upgrades it in place or
+restores it), anything else "foreign". Retail restores the site and fills the page with 0xCC; the reservation stays.
 """
 from __future__ import annotations
 
@@ -54,25 +55,54 @@ def allocation(payload):
     return rows[0]
 
 
+def previous_revisions():
+    """(name, frozen template) for each earlier revision whose page a Studio wrote: stage 4b at stage set 383 as merged
+    at ff6ae30b2 (b1b547a16's template), whose cap test charged the buyer the base salary before the trade (the trades
+    review's 1.3, coordinator ruling M1/N6)."""
+    from . import nfl2k5_qb_trades_code_b81_383 as b81_383
+    return (("b81 4b trades 383", b81_383),)
+
+
 def page(ir_store_va, shadow=False):
     return _code().page_bytes(VA, ROOM_VA, ir_store_va=ir_store_va, shadow=shadow)
 
 
-def state(payload):
-    """(status, IR link, shadow) after authenticating the site and the whole page: "retail" with link and shadow None,
-    "applied" with the page's link word and its shadow flag; raises QbTradesError when foreign."""
+def _read(payload):
+    """(status, revision, IR link, shadow) after authenticating the site and the whole page against the current template
+    and each earlier revision's: ("retail", None, None, None) when the site holds its retail call; ("applied", None,
+    link, shadow) for the current template; ("previous", (name, frozen template), link, shadow) for an earlier one.
+    Raises QbTradesError when foreign."""
     image = XbeImage(payload)
-    at, original, patched = _code().site(VA)
+    at, original, _patched = _code().site(VA)
     found = image.read(at, len(original))
     row = allocation(payload)
     raw = image.read(VA, SIZE) if row is not None else None
     if found == original:
         _require(raw is None or raw == b"\xcc" * SIZE, "The quarterback trades page holds code but its site is retail")
-        return "retail", None, None
-    _require(found == patched and raw is not None, f"Foreign quarterback trades bytes at {at:#x}")
-    link, flags = struct.unpack_from("<II", raw, _code().LINK_IR_STORE)
-    _require(flags in (0, _code().FLAG_SHADOW) and raw == page(link, bool(flags)), "Foreign quarterback trades page")
-    return "applied", link, bool(flags)
+        return "retail", None, None, None
+    _require(raw is not None, f"Foreign quarterback trades bytes at {at:#x}")
+    for name, code in ((None, _code()), *previous_revisions()):
+        site_at, site_original, patched = code.site(VA)
+        link, flags = struct.unpack_from("<II", raw, code.LINK_IR_STORE)
+        if ((site_at, site_original) == (at, original) and found == patched and flags in (0, code.FLAG_SHADOW)
+                and raw == code.page_bytes(VA, ROOM_VA, ir_store_va=link, shadow=bool(flags))):
+            found_revision = None if name is None else (name, code)
+            return ("applied" if name is None else "previous"), found_revision, link, bool(flags)
+    raise QbTradesError(f"Foreign quarterback trades page or site at {at:#x}")
+
+
+def state(payload):
+    """(status, IR link, shadow) after authenticating the site and the whole page: "retail" with link and shadow None,
+    "applied" (the current template) or "previous" (an earlier revision's, see revision()) with the page's link word
+    and its shadow flag; raises QbTradesError when foreign."""
+    status, _revision, link, shadow = _read(payload)
+    return status, link, shadow
+
+
+def revision(payload):
+    """(name, frozen template) of the earlier revision whose page this executable holds; None for the current template
+    or retail. Raises QbTradesError when foreign."""
+    return _read(payload)[1]
 
 
 def status(payload):
@@ -82,10 +112,12 @@ def status(payload):
         return "foreign"
 
 
-def edits(ir_store_va, *, restoring, shadow=False):
-    """(address, before, after) for the site and the whole page."""
-    at, original, patched = _code().site(VA)
-    empty, full = b"\xcc" * SIZE, page(ir_store_va, shadow)
+def edits(ir_store_va, *, restoring, shadow=False, code=None):
+    """(address, before, after) for the site and the whole page; ``code`` is the template the page is written with (the
+    current one by default; an earlier revision's to restore its page)."""
+    code = code or _code()
+    at, original, patched = code.site(VA)
+    empty, full = b"\xcc" * SIZE, code.page_bytes(VA, ROOM_VA, ir_store_va=ir_store_va, shadow=shadow)
     if restoring:
         return [(at, patched, original), (VA, full, empty)]
     return [(at, original, patched), (VA, empty, full)]

@@ -1121,6 +1121,16 @@ class TradeExecutionTests(unittest.TestCase):
         hurt(after)
         report, _ = self.judged(after=after)
         self.assertEqual(new_failures(report, fi.check(after.view())), set())
+        # out 1 week at the boundary (healed by the advance before the trade tick) and hurt again in this week's game:
+        # healthy at the call, as the room observer's snapshot showed for P1 2026 seed 71002 week 7
+        one = lambda ram: ram.put(ram.player(rourke) + 0x20, ram.get(ram.player(rourke) + 0x20) | fi.INJURED | 1 << 22)
+        before = Ram(self.image)
+        one(before)
+        previous = before.view()
+        after = Ram(self.after.regions)
+        hurt(after)
+        report, _ = self.judged(previous=previous, after=after)
+        self.assertEqual(new_failures(report, fi.check(after.view())), set())
 
     def test_a_buyer_above_three_quarterbacks_fails_T1_buyer_qbs(self):
         """C22 addendum (1): a buyer holds at most 2 active quarterbacks before the trade, never 4 after (the acting run's

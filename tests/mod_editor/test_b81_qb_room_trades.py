@@ -12,6 +12,11 @@ advance's room pass writes it. The expected package is computed here from the de
 
 TradesPage and TradesOwner: the byte interface with the room page and the owner (install with bit 16, Retail, needs).
 
+The 4b revision (coordinator ruling M1/N6, the trades review's 1.3): TradesCapAfterTrade and TradesCapSeasonOne (the cap
+test charges what the buyer pays after the executor's contract rewrite), TradesPreviousRevision and StudioTrades' 383
+case (the page of ff6ae30b2 reads "previous" and upgrades in place). Their fixtures come from the environment only
+(QB4B_383_XBE, QB4B_CAP_IMAGE); they fail on f411bf2e4.
+
 Every class fails on b2672e398 (no nfl2k5_trade_picks, no trades page, the room refused bit 16):
 evidence qb34/evidence/trades/tests-on-b2672e398.txt.
 """
@@ -38,6 +43,14 @@ P2A_XBE = ("p2-candidate-9edd1353.xbe", "9edd1353bedfbca6b4ce35faa2acc3cb68b8a74
 CANDIDATE = Path(os.environ.get("QB_TRADES_CANDIDATE",
                                 "/home/noah/2k-worktrees/.b77-scratch/b81/qb34/builds/direct-5ff30d9f8/p6-candidate/default.xbe"))
 CANDIDATE_SHA = "f5270f4dd305564ad38b782d492f26a095434f11bd3b9627f159a1c6b109e284"
+# M1/N6 (the cap test's charge, the 4b revision's in-place upgrade): fixtures from the environment only. QB4B_383_XBE is
+# an executable the Studio wrote with stage set 383 and the trades page of ff6ae30b2 (the page frozen as
+# nfl2k5_qb_trades_code_b81_383); QB4B_CAP_IMAGE is a kept season-7 image (2032, stage 8, week counter 7) made with it.
+STANDARD_383 = os.environ.get("QB4B_383_XBE", "")
+STANDARD_383_SHA = "8b180ed5bd69647c99ba7eb5f63c95471b1785d89afe4b489f2492ace37aa8aa"
+CAP_IMAGE = os.environ.get("QB4B_CAP_IMAGE", "")
+CAP_IMAGE_SHA = "a9c15972fd476e46d785cfcba21b57fef0efd8782a719b09f58287e08f5f0eaa"
+PREVIOUS_383 = "b81 4b trades 383"            # the revision name read_settings reports for that page
 ROOM_VA, TRADES_VA = 0x1529000, 0x152C000
 BOARD, RECORD = 0xE3C27C, 0x3C
 PICKS = 0xE3C094
@@ -53,6 +66,14 @@ def _sha(path):
 def _need(path, digest):
     if not path.is_file() or _sha(path) != digest:
         raise unittest.SkipTest(f"{path.name} is absent or differs")
+
+
+def _from_env(value, digest, variable):
+    """The fixture an environment variable names, or a skip when it is unset, absent or not the pinned file."""
+    if not value:
+        raise unittest.SkipTest(f"{variable} is not set")
+    _need(Path(value), digest)
+    return Path(value)
 
 
 def fmix32(h):
@@ -82,16 +103,19 @@ def overall_of_bits(u):
 
 
 class ImageMachine:
-    """A kept image on its executable (the method of test_b81_qb_room_floor.TF34)."""
+    """A kept image on its executable (the method of test_b81_qb_room_floor.TF34). ``image`` and ``xbe`` name another
+    image and the executable it was made with (paths already checked)."""
 
-    def __init__(self, name):
+    def __init__(self, name=None, *, image=None, xbe=None):
         from tests.nfl2k5_supersim_draft_fixture import Machine
         from tools import franchise_invariants as fi
-        _need(EVIDENCE / name, IMAGES[name])
-        _need(P2A / P2A_XBE[0], P2A_XBE[1])
+        if image is None:
+            _need(EVIDENCE / name, IMAGES[name])
+            _need(P2A / P2A_XBE[0], P2A_XBE[1])
+            image, xbe = EVIDENCE / name, P2A / P2A_XBE[0]
         self.fi = fi
-        self.memory = fi.load_memory(EVIDENCE / name)
-        self.m = m = Machine((P2A / P2A_XBE[0]).read_bytes(), trace_writes=False)
+        self.memory = fi.load_memory(image)
+        self.m = m = Machine(Path(xbe).read_bytes(), trace_writes=False)
         for lo, data in self.memory.regions:
             if lo < 0x3000000:
                 m.uc.mem_write(lo, data)
@@ -137,6 +161,20 @@ class ImageMachine:
     def record(self, i):
         team = self.club(i)
         return tuple(self.m.call(at, ecx=team, budget=5_000_000) for at in (0xC7720, 0xC7750, 0xC7780))
+
+    def charge_after(self, p):
+        """What the buyer is charged for p once the trade is made, by the game's own code (M1/N6): the executor's
+        contract rewrite 0x2BB360 (ESI = the record; called at 0x2BC733 for every moved man) run on a copy of p's
+        record at PROBE + 0x100, then this season's charge 0xE6380 of the copy. p itself is not touched."""
+        copy = PROBE + 0x100
+        self.m.uc.mem_write(copy, bytes(self.m.uc.mem_read(p, 0x54)))
+        code = (b"\x56\xbe" + struct.pack("<I", copy) + b"\xb8\x60\xb3\x2b\x00\xff\xd0"     # push esi; esi = copy; 0x2BB360
+                + b"\x89\xf1\xb8\x80\x63\x0e\x00\xff\xd0"                                  # ecx = copy; 0xE6380
+                + b"\xa3" + struct.pack("<I", PROBE + 0x800) + b"\x5e\xc3")
+        self.m.uc.mem_write(PROBE, code)
+        self.m.uc.ctl_flush_tb()
+        self.m.call(PROBE, budget=2_000_000)
+        return self.m.get(PROBE + 0x800)
 
     def board(self, slot):
         return BOARD + RECORD * slot
@@ -370,7 +408,7 @@ class TradesImage(unittest.TestCase):
                         or not x.b(p + 0x24) & 15 or p in named_players):
                     continue
                 o = x.ovr(p)
-                if o <= top or o >= seller_best or room - m.call(0xE6380, ecx=p) <= 10:
+                if o <= top or o >= seller_best or room - x.charge_after(p) <= 10:     # M1/N6: after the trade
                     continue
                 backup = max((x.ovr(q) for q in qbs if q not in (best_man, p) and x.healthy(q)), default=0)
                 if backup < 60:                                                  # C24 F3
@@ -694,7 +732,7 @@ class TradesImage(unittest.TestCase):
                 continue
             best = max((p for p in qbs if x.healthy(p)), key=x.ovr)
             if (x.b(best + 0x25) & 31 >= 4 and x.b(best + 0x24) & 15 and x.ovr(best) >= floor
-                    and room - m.call(0xE6380, ecx=best) > 10):
+                    and room - x.charge_after(best) > 10):
                 found = (c, best)
                 break
         if found is None:
@@ -925,7 +963,7 @@ class TradesImage(unittest.TestCase):
         x, m = self.x, self.x.m
         fa = self.set_overall(self.best_free_agent(), 90)
         mariota = next(p for p in x.qbs(25) if x.row(p) == 1)
-        salary = m.call(0xE6380, ecx=mariota)
+        salary = x.charge_after(mariota)                              # M1/N6: the charge the buyer takes on
         value = m.call(0x2BD440, ecx=fa, edx=0, args=(0, 1, 0), budget=5_000_000) & 0xFFFF
         self.assertGreaterEqual(value, salary + 2)                     # he cannot be signed within the budget
         m.put(x.club(self.BUYER) + 0x124, m.get(0xE3C278) - (salary + 12))
@@ -1295,6 +1333,29 @@ class StudioTrades(unittest.TestCase):
         self.assertEqual(back, expected)
         self.assertEqual(room.apply(back, "realistic")[0], self.fresh)
 
+    def test_the_383_trades_page_of_ff6ae30b2_reads_previous_and_upgrades_in_place(self):
+        """N6 on f5270f4d: the Studio's 383 with the trades page frozen as nfl2k5_qb_trades_code_b81_383 in place of the
+        current one (same link and flag words) reads previous; Realistic is the fresh 383 and Retail the two empty
+        reservations, also with the trades page's own shadow flag (the calibration path's)."""
+        import importlib
+        room, trades, space = self.room, self.trades, self.space
+        frozen = importlib.import_module("mod_editor.core.nfl2k5_qb_trades_code_b81_383")
+        empty, _ = space.extend_scaleout(self.empty, trades.REQUESTS)
+        for shadow in (False, True):
+            with self.subTest(trades_shadow=shadow):
+                current = room.install_stages(self.fresh, 383, trades_shadow=True)[0] if shadow else self.fresh
+                link = trades.state(current)[1]
+                page = trades._code().page_bytes(trades.VA, trades.ROOM_VA, ir_store_va=link, shadow=shadow)
+                old = frozen.page_bytes(trades.VA, trades.ROOM_VA, ir_store_va=link, shadow=shadow)
+                payload = room._patch(current, [(trades.VA, page, old)])
+                settings = room.read_settings(payload)
+                self.assertEqual((settings["status"], settings["stages"], settings["trades"], settings["revision"],
+                                  settings["trades_shadow"]), ("previous", 383, "previous", PREVIOUS_383, shadow))
+                upgraded, receipt = room.apply(payload, "realistic")
+                self.assertEqual((upgraded, receipt["upgraded_from"]), (self.fresh, PREVIOUS_383))
+                back, receipt = room.apply(payload, "retail")
+                self.assertEqual((back, receipt["restored_revision"]), (empty, PREVIOUS_383))
+
     def test_every_frozen_hand_over_page_set_reads_previous_and_upgrades_to_383(self):
         import importlib
         room = self.room
@@ -1311,6 +1372,239 @@ class StudioTrades(unittest.TestCase):
                 upgraded, receipt = room.apply(payload, "realistic")
                 self.assertEqual((upgraded, receipt["upgraded_from"]), (self.fresh, "b81 floor + D1 + D2 hand-over"))
                 self.assertEqual(room.apply(payload, "retail")[0], self.empty)
+
+
+def _ring_row(m, club, decision, result=1):
+    """A row in the room's ring for `club` with this season and week (the room page's layout, INTERFACE.md)."""
+    room = _room_code()
+    n = m.get(ROOM_VA + 0x2E00)
+    m.uc.mem_write(ROOM_VA + 0x2400 + 20 * (n % 128),
+                   room.RING_EVENT.pack(m.get(YEAR), m.get(WEEK), club, decision, result, 0, 0, 0, 0, 0, 0, 0, 0))
+    m.put(ROOM_VA + 0x2E00, n + 1)
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is required")
+class TradesCapAfterTrade(unittest.TestCase):
+    """M1/N6 (FABLE_DESIGN_REVIEW 1.3): the cap test charges the buyer what it pays after the trade, not the base salary
+    before it. The executor rewrites every moved man's contract (0x2BB360 at 0x2BC733: the bonus still owed folded into
+    the contract value, the bonus field cleared) and recounts both payrolls (0xC3F00); from the second season the buyer's
+    charge is above the old base for most veterans.
+
+    Kept season-7 image (QB4B_CAP_IMAGE, 2032 stage 8 week counter 7, the native deadline byte 9) on the executable that
+    made it (QB4B_383_XBE), with the trades page under test written over the image's own (the image's IR link kept).
+    Club 30 is made the buyer: one non-quarterback leaves its active list (53 to 52; the reserve block moves up one
+    slot, as the practice squad keeps it), its best quarterback is hurt for 4 weeks (its best healthy man is then 82),
+    and the previous advance's room pass benched its starter (a D3 row with this week). Club 10 is the only seller (every
+    other club that could sell is made human): its 85, eight years pro with a bonus still owed, is the one package. The
+    buyer's cap room is set through the league cap (cap = the buyer's payroll as the game recounts it + room), so its
+    stored payroll stays the game's own. The 2032 draw posts at the image's own year index (6)."""
+
+    BUYER, SELLER = 30, 10
+
+    def setUp(self):
+        x = self.x = ImageMachine(image=_from_env(CAP_IMAGE, CAP_IMAGE_SHA, "QB4B_CAP_IMAGE"),
+                                  xbe=_from_env(STANDARD_383, STANDARD_383_SHA, "QB4B_383_XBE"))
+        m = x.m
+        self.assertEqual((m.get(STAGE), m.get(WEEK), m.get(YEAR), x.b(0x5151C5)), (8, 7, 6, 9))
+        room = _room_code()
+        settings = room.parse_settings(bytes(m.uc.mem_read(ROOM_VA + room.SETTINGS_OFFSET, room.SETTINGS.size)))
+        self.assertEqual((settings["stages"], settings["shadow"]), (383, False))
+        link = m.get(TRADES_VA + _trades_code().LINK_IR_STORE)
+        m.uc.mem_write(TRADES_VA, _trades_code().page_bytes(TRADES_VA, ROOM_VA, ir_store_va=link))
+        team = x.club(self.BUYER)
+        active, reserves = x.b(team + 0x11C), x.b(team + 0x1F2)
+        self.assertEqual((active, len(x.qbs(self.BUYER))), (53, 2))
+        slots = [m.get(team + 4 * i) for i in range(active + reserves)]
+        self.dropped = slots.pop(max(i for i in range(active) if x.b(slots[i] + 0x35) != 0))
+        for i, p in enumerate(slots + [0]):
+            m.put(team + 4 * i, p)
+        m.uc.mem_write(team + 0x11C, bytes([active - 1]))
+        starter = max((p for p in x.qbs(self.BUYER) if x.healthy(p)), key=x.ovr)
+        m.put(starter + 0x20, m.get(starter + 0x20) | 0x80000000 | 4 << 22)
+        self.best = max(x.ovr(p) for p in x.qbs(self.BUYER) if x.healthy(p))
+        self.assertEqual(self.best, 82)
+        for c in range(32):
+            qbs = x.qbs(c)
+            if c != self.SELLER and len(x.roster(c)) >= 51 and len(qbs) >= 3 and sum(map(x.healthy, qbs)) >= 3:
+                m.put(USER_FLAG + 4 * c, 1)
+        _ring_row(m, self.BUYER, 3)
+        healthy = [p for p in x.qbs(self.SELLER) if x.healthy(p)]
+        top = max(map(x.ovr, healthy))
+        self.qs, = [p for p in healthy if self.best + 2 < x.ovr(p) < top]
+        self.assertEqual((x.ovr(self.qs), (self.qs - x.table) // 0x54), (85, 617))
+        self.word = 4 | self.BUYER << 6                                   # 82-89: the buyer's own 4th
+        self.assertEqual(x.pick_owner(self.word), self.BUYER)
+        w, l, t = x.record(self.BUYER)
+        sp = max((p for p in x.qbs(self.BUYER) if x.healthy(p)), key=x.ovr)
+        att, yds = (m.call(0x14EE40, ecx=sp, edx=f) & 0xFFFF for f in (6, 8))
+        self.assertLess(draw([8, self.BUYER, m.get(YEAR), w, l, t, (self.qs - x.table) // 0x54, att, yds]), 35000)
+        self.base = m.call(0xE6380, ecx=self.qs)
+        self.charge = x.charge_after(self.qs)
+        m.uc.ctl_flush_tb()
+
+    def counters(self):
+        room = _room_code()
+        return room.counters(bytes(self.x.m.uc.mem_read(ROOM_VA, room.PAGE_SIZE)))
+
+    def run_with_room(self, room):
+        """The buyer's cap room set to `room`, then the site's call. Returns (counter changes, payroll before, after)."""
+        x, m = self.x, self.x.m
+        team = x.club(self.BUYER)
+        before = m.call(0xC3F00, ecx=team, budget=5_000_000)              # the game's own recount (and store)
+        self.assertEqual(m.get(team + 0x124), before)
+        m.put(0xE3C278, before + room)
+        m.uc.ctl_flush_tb()
+        start = self.counters()
+        m.uc.mem_write(m.STACK, struct.pack("<I", m.STOP))
+        for k, v in dict(ESP=m.STACK, ECX=3, EDX=m.ARENA + TradesImage.MENU_OFFSET, EFLAGS=0x202).items():
+            m.reg(k, v)
+        m.uc.emu_start(TRADES_VA + _trades_code().LABELS["trade_entry"], m.STOP, count=2_000_000_000)
+        self.assertEqual(m.reg("EIP"), m.STOP)
+        end = self.counters()
+        return {k: end[k] - start[k] for k in end if end[k] != start[k]}, before, m.get(team + 0x124)
+
+    def test_the_buyers_charge_after_the_trade_is_above_the_base_before_it(self):
+        x, m = self.x, self.x.m
+        self.assertGreater(self.charge, self.base + 10)                   # 3673 against 3267 here
+        before = bytes(m.uc.mem_read(self.qs, 0x54))
+        x.charge_after(self.qs)
+        self.assertEqual(bytes(m.uc.mem_read(self.qs, 0x54)), before)    # computed on a copy
+
+    def assert_no_trade(self, changes):
+        x = self.x
+        self.assertEqual(changes.get("trades_posted", 0), 0)
+        self.assertEqual(changes.get("trade_no_package", 0), 1)          # the one package fails the cap test
+        self.assertNotIn(self.qs, x.roster(self.BUYER))
+        self.assertIn(self.qs, x.roster(self.SELLER))
+        self.assertEqual(x.pick_owner(self.word), self.BUYER)
+
+    def test_no_trade_when_the_base_fits_but_the_charge_after_the_trade_does_not(self):
+        """Room = the old base + 11: the old test (room - base > 10) posts and the executor runs, leaving the buyer
+        over the cap by charge - base - 11; the cap test on the charge after the trade posts nothing."""
+        changes, _before, _after = self.run_with_room(self.base + 11)
+        self.assert_no_trade(changes)
+
+    def test_no_trade_at_the_charge_plus_10(self):
+        changes, _before, _after = self.run_with_room(self.charge + 10)
+        self.assert_no_trade(changes)
+
+    def test_at_the_charge_plus_11_the_trade_is_made_and_the_buyer_pays_exactly_that_charge(self):
+        """The margin is unchanged (> 10): at room = charge + 11 the package is posted, the native executor makes the
+        trade, and the buyer's payroll as the executor recounts it rises by exactly the predicted charge (the cap is
+        then 11 above it)."""
+        x, m = self.x, self.x.m
+        roster = set(x.roster(self.BUYER))
+        changes, before, after = self.run_with_room(self.charge + 11)
+        self.assertEqual((changes.get("trades_posted"), changes.get("trades_executed")), (1, 1))
+        self.assertEqual(set(x.roster(self.BUYER)) - roster, {self.qs})
+        self.assertEqual(roster - set(x.roster(self.BUYER)), set())
+        self.assertEqual(x.pick_owner(self.word), self.SELLER)
+        self.assertEqual(after - before, self.charge)
+        self.assertEqual(m.call(0xC3F00, ecx=x.club(self.BUYER), budget=5_000_000), after)
+        self.assertEqual(m.get(0xE3C278) - after, 11)
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is required")
+class TradesCapSeasonOne(unittest.TestCase):
+    """In the first season every contract on the opening roster reads as its first year (X1), so the charge after the
+    trade equals the base before it for every quarterback the rules let a club sell (the 2026 image of TradesImage):
+    the revision changes nothing there."""
+
+    def test_the_charge_after_the_trade_equals_the_base_in_2026(self):
+        x = ImageMachine("no-qb-2505-2026-w10-kickoff.b81mem.gz")
+        men = [p for c in range(32) for p in x.qbs(c)
+               if x.healthy(p) and x.row(p) and x.b(p + 0x25) & 31 >= 4 and x.b(p + 0x24) & 15]
+        self.assertGreater(len(men), 20)
+        self.assertEqual([x.charge_after(p) for p in men], [x.m.call(0xE6380, ecx=p) for p in men])
+
+
+class TradesPreviousRevision(unittest.TestCase):
+    """N6's in-place upgrade on a real Studio executable (QB4B_383_XBE: stage set 383 with the trades page of
+    ff6ae30b2, whose cap test charged the base before the trade). It reads "previous"; Realistic upgrades the trades page
+    in place (same address; the room page, its sites and every allocation row untouched); Retail restores it to the empty
+    reservation; Realistic then Retail is Retail of the previous disc, and Realistic after Retail is the upgrade. A mixed
+    or unknown trades page stays foreign and is refused."""
+
+    NAME = PREVIOUS_383
+    PAGE_SHA = "9bd3061c7e8bbdb4bc454c49377c39ab41160534089da80e00ed8f392b37d556"   # its trades page, IR link 0x14FD6D0
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_qb_room as room, nfl2k5_qb_trades as trades
+        cls.room, cls.trades = room, trades
+        cls.previous = _from_env(STANDARD_383, STANDARD_383_SHA, "QB4B_383_XBE").read_bytes()
+
+    def page_of(self, payload):
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        return XbeImage(payload).read(TRADES_VA, 0x1000)
+
+    def room_bytes(self, payload):
+        from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+        image = XbeImage(payload)
+        return image.read(ROOM_VA, self.room.SIZE), [image.read(at, 5) for _o, at, *_rest in self.room._sites(
+            ROOM_VA, 383)]
+
+    def test_the_383_executable_reads_previous(self):
+        room, trades = self.room, self.trades
+        settings = room.read_settings(self.previous)
+        self.assertEqual((settings["status"], settings["stages"], settings.get("trades"), settings.get("revision")),
+                         ("previous", 383, "previous", self.NAME))
+        self.assertEqual((room.status(self.previous), trades.status(self.previous)), ("previous", "previous"))
+        self.assertEqual(hashlib.sha256(self.page_of(self.previous)).hexdigest(), self.PAGE_SHA)
+        from mod_editor.core import nfl2k5_qb_trades_code_b81_383 as frozen
+        self.assertEqual(frozen.page_bytes(TRADES_VA, ROOM_VA, ir_store_va=0x14FD6D0), self.page_of(self.previous))
+        self.assertEqual((frozen.HOOK, frozen.LINK_IR_STORE, frozen.FLAGS), (_trades_code().HOOK, 0xF00, 0xF04))
+
+    def test_realistic_upgrades_the_trades_page_in_place(self):
+        from mod_editor.core import nfl2k5_xbe_space as space
+        room = self.room
+        out, receipt = room.apply(self.previous, "realistic")
+        settings = room.read_settings(out)
+        self.assertEqual((settings["status"], settings["stages"], settings["trades"], settings.get("revision")),
+                         ("applied", 383, "applied", None))
+        self.assertEqual((receipt["status"], receipt["upgraded_from"]), ("applied", self.NAME))
+        self.assertEqual(self.page_of(out), _trades_code().page_bytes(TRADES_VA, ROOM_VA, ir_store_va=0x14FD6D0))
+        self.assertEqual(self.room_bytes(out), self.room_bytes(self.previous))        # the room page untouched
+        self.assertEqual(space.layout(out)["allocations"], space.layout(self.previous)["allocations"])
+        self.assertEqual(len(out), len(self.previous))
+        again, receipt = room.apply(out, "realistic")                                 # readback
+        self.assertEqual((again, receipt["status"]), (out, "already_applied"))
+
+    def test_retail_restores_the_previous_page_and_realistic_then_retail_is_the_same_reservation(self):
+        room, trades = self.room, self.trades
+        back, receipt = room.apply(self.previous, "retail")
+        self.assertEqual((room.status(back), trades.status(back)), ("retail", "retail"))
+        self.assertEqual((receipt["restored_stages"], receipt["restored_revision"]), (383, self.NAME))
+        self.assertEqual(self.page_of(back), b"\xcc" * 0x1000)
+        upgraded, _ = room.apply(self.previous, "realistic")
+        self.assertEqual(room.apply(upgraded, "retail")[0], back)
+        self.assertEqual(room.apply(back, "realistic")[0], upgraded)
+
+    def test_a_mixed_or_unknown_trades_page_stays_foreign(self):
+        room, trades = self.room, self.trades
+        from mod_editor.core import nfl2k5_qb_trades_code_b81_383 as frozen
+        old, new = self.page_of(self.previous), _trades_code().page_bytes(TRADES_VA, ROOM_VA, ir_store_va=0x14FD6D0)
+        cut = next(i for i in range(0x1000) if old[i] != new[i])
+        # (page, what the trades owner alone reads): a page linked to another IR store is a known template, but not
+        # this executable's link, so the room refuses it.
+        cases = {"one code byte": (old[:0x10] + bytes([old[0x10] ^ 1]) + old[0x11:], "foreign"),
+                 "old then new": (old[:cut + 1] + new[cut + 1:], "foreign"),
+                 "new then old": (new[:cut + 1] + old[cut + 1:], "foreign"),
+                 "another IR link": (frozen.page_bytes(TRADES_VA, ROOM_VA, ir_store_va=0x14FD6D4), "previous")}
+        for name, (page, alone) in cases.items():
+            with self.subTest(case=name):
+                self.assertNotIn(page, (old, new))
+                payload = room._patch(self.previous, [(TRADES_VA, old, page)])     # section digest resealed
+                self.assertEqual((room.status(payload), trades.status(payload)), ("foreign", alone))
+                with self.assertRaises(ValueError):
+                    room.apply(payload, "realistic")
+                with self.assertRaises(ValueError):
+                    room.apply(payload, "retail")
+        # The previous page and its site while the room's stage set has no bit 16: foreign.
+        without, _ = room.apply(room.apply(self.previous, "retail")[0], "realistic", stages=367)
+        payload = room._patch(without, [(trades.VA, b"\xcc" * 0x1000, old),
+                                        (0x247E1E, bytes.fromhex("e83d4b0700"), frozen.site(TRADES_VA)[2])])
+        self.assertEqual((room.status(payload), trades.status(payload)), ("foreign", "previous"))
 
 
 if __name__ == "__main__":

@@ -108,6 +108,7 @@ FEATURE_KEYS += ("sim_realism",)  # b779-sim2 r4: scheduled-sim season realism, 
 FEATURE_KEYS += ("sim_qb_injuries", "sim_qb_injury_rate")
 FEATURE_KEYS += ("sim_breakaway_stop",)  # b81 scoring: the simulated breakaway stop, yards to goal (default 68 since the combined calibration)
 FEATURE_KEYS += ("qb_room",)  # b81 qb34: None follows sim_qb_injuries (DESIGN_CHANGES C1)
+FEATURE_KEYS += ("cpu_trades",)  # b81 trades-all (R6): computer trades at every position; None follows the room
 FEATURE_KEYS += ("coach_carousel",)  # b780-c6: the coaching carousel, late executable owner + roster pool
 FEATURE_KEYS += ("standings_records",)  # b780-j1: Team Standings division / conference / home / road records, late executable owner
 FEATURE_KEYS += ("catch_snap_limit",)  # b780-cv4: CPU defenders cannot slide to the ball for a pick, late executable owner
@@ -179,6 +180,25 @@ def qb_room_level(qb_room, sim_qb_injuries):
     return {"realistic": "realistic", "custom": "realistic", "retail": "retail"}.get(sim_qb_injuries)
 
 
+CPU_TRADES_LEVELS = (None, "retail", "realistic")
+
+
+def validate_cpu_trades(level):
+    """b81 trades-all (R6): computer trades at every position have Retail and Realistic only; None follows the
+    quarterback option (mod_build._cpu_trades_plan)."""
+    if level not in CPU_TRADES_LEVELS or type(level) not in (str, type(None)):
+        raise ValueError("Choose Retail or Realistic for computer trades.")
+
+
+def cpu_trades_needs_met(get):
+    """b81 trades-all: a plan (``get(field)``) that installs what computer trades need: the 128 MB standard target with
+    K128, the 2026 season (its NFL week 9 trade deadline), the franchise economy, reserve save compatibility (the
+    practice squad) and modern injured reserve (with its ownership safeguards), as for the quarterback trades of stage
+    4b. A missing console_memory is 128. An executable is judged by nfl2k5_cpu_trades.requirements instead."""
+    return (get("console_memory") in (None, 128) and all(bool(get(name)) for name in (
+        "k128_memory", "season_2026", "franchise_economy", "practice_squad", "modern_injured_reserve")))
+
+
 def qb_room_needs_met(get):
     """b81 qb34: a plan (``get(field)``) that installs the room's needs: the 128 MB standard target with K128, depth
     chart locks and the SPECIAL depth chart rows (which carry the lineup roles). A missing console_memory is 128."""
@@ -203,6 +223,7 @@ def build_settings(value):
     validate_sim_qb_injuries(choices["sim_qb_injuries"], choices["sim_qb_injury_rate"])
     validate_sim_breakaway_stop(choices["sim_breakaway_stop"])
     validate_qb_room(choices["qb_room"])
+    validate_cpu_trades(choices["cpu_trades"])
     tt._require(choices["helmet_finish"] in ("glossy", "matte"), "Helmet finish must be glossy or matte")
     from . import nfl2k5_modern_color as colour
     colour.normalize_settings(choices["modern_color_settings"])

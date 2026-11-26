@@ -37,8 +37,9 @@ class AllocatorPlacementTests(unittest.TestCase):
         self.assertEqual((space.QB_ROOM_OWNER, space.QB_ROOM_VA, space.QB_ROOM_SIZE), (ROOM[0], 0x1529000, 0x3000))
         self.assertEqual(space.QB_ROOM_REQUEST, ROOM)
         # C20: the trades page (fixed right after the room) follows the room; b81 helmet sides (review 11/22): the
-        # side-numbers page, fixed right after the trades page, is the last late owner.
-        self.assertEqual(space.LATE_OWNERS[-3:], (ROOM[0], space.QB_TRADES_OWNER, space.HELMET_SIDES_OWNER))
+        # side-numbers page, fixed right after the trades page; b81 CPU trades: its two pages after that, the last late owner.
+        self.assertEqual(space.LATE_OWNERS[-4:], (ROOM[0], space.QB_TRADES_OWNER, space.HELMET_SIDES_OWNER,
+                                                  space.CPU_TRADES_OWNER))
         self.assertIn(ROOM, space.dormant_union())
 
     def test_the_room_alone_and_in_the_dormant_union_sits_at_its_fixed_pages(self):
@@ -49,7 +50,7 @@ class AllocatorPlacementTests(unittest.TestCase):
                 self.assertEqual((row["va"], row["size"], row["align"]), (0x1529000, 0x3000, 0x1000))
                 # C20: the dormant union also carries the trades page right after the room (0x152C000..0x152CFFF) and
                 # (b81 helmet sides) the side-numbers page after it (0x152D000..0x152DFFF).
-                end = 0x152E000 if name == "dormant union" else 0x152C000
+                end = 0x1530000 if name == "dormant union" else 0x152C000   # b81 CPU trades: + 0x152E000..0x152FFFF
                 self.assertEqual(report["file_size"] - space.SCALE3_FILE_SIZE, end - space.POOL_VA)
 
     def test_adding_the_room_moves_no_row_and_does_not_advance_the_cursor(self):
@@ -69,7 +70,8 @@ class AllocatorPlacementTests(unittest.TestCase):
         # An owner that would straddle 0x1529000 is placed after the room's pages whether or not the room is requested,
         # so an owner installed first can never take the room's address. (On the old code it straddled the range.)
         # C20: the span stepped over is the room's three pages and the trades page, 0x1529000..0x152CFFF; b81 helmet sides
-        # (review 11/22): it also holds the side-numbers page, so it ends at 0x152DFFF.
+        # (review 11/22): it also holds the side-numbers page, so it ends at 0x152DFFF; b81 CPU trades: and its two pages,
+        # so it ends at 0x152FFFF.
         filler = ("aa_synthetic_filler", "code", 0x1529000 - 0x80 - space.POOL_VA - space.PAGE, space.PAGE)
         # Both are larger than the v3 code run holds, so both go whole to the pool, in name order.
         straddle = ("ab_synthetic_straddle", "code", 0x20000, 16)
@@ -77,21 +79,23 @@ class AllocatorPlacementTests(unittest.TestCase):
             with self.subTest(room=ROOM in requests):
                 rows = space.plan(requests)["allocations"]
                 placed = next(r for r in rows if r["owner"] == straddle[0])
-                # b81 modern numbers: from the span's end the 0x20000-byte owner would straddle the numbers page at
-                # 0x1530000 (space.MODERN_NUMBERS_VA), so it steps past that page too
-                self.assertEqual(placed["va"], space.MODERN_NUMBERS_VA + space.MODERN_NUMBERS_SIZE)
-                self.assertEqual(space.FIXED_SPAN_END, 0x152E000)
+                # b81 integration (#32, #33, #36): the span now ends at 0x1530000 (CPU trades' two pages); from there the
+                # 0x20000-byte owner would straddle the numbers page (0x1530000), then the classic crowd page (0x1532000),
+                # so it steps past both
+                self.assertEqual(placed["va"], space.CLASSIC_CROWD_VA + space.CLASSIC_CROWD_SIZE)
+                self.assertEqual(space.FIXED_SPAN_END, 0x1530000)
                 for row in rows:
                     if row["owner"] != ROOM[0]:
-                        self.assertFalse(row["va"] < 0x152E000 and row["va"] + row["size"] > 0x1529000, row)
+                        self.assertFalse(row["va"] < 0x1530000 and row["va"] + row["size"] > 0x1529000, row)
 
     def test_an_owner_bumped_over_the_ownership_page_also_steps_over_the_room(self):
         ownership = (space.FRANCHISE_OWNERSHIP, "code", space.FRANCHISE_OWNERSHIP_SIZE, 16)
         filler = ("aa_synthetic_filler", "code", 0x1528000 - 0x80 - space.POOL_VA - space.PAGE, space.PAGE)
         bumped = ("ab_synthetic_bumped", "code", 0x20000, 16)
         rows = space.plan([filler, bumped, ownership])["allocations"]
-        # past trades and side numbers, and (b81 modern numbers) past the numbers page it would otherwise straddle
-        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x1531000)
+        # past trades, side numbers and CPU trades, then (b81 integration) past the numbers page and the classic crowd
+        # page it would otherwise straddle
+        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x1533000)
 
     def test_a_foreign_room_request_is_refused(self):
         for request in (("nfl2k5_qb_room", "code", 0x2000, 0x1000), ("nfl2k5_qb_room", "data", 0x3000, 0x1000)):
@@ -672,7 +676,7 @@ class TestOnlyInstallTests(unittest.TestCase):
         import re
         hits = []
         for path in [*(ROOT / "mod_editor").rglob("*.py"), ROOT / "tools/nfl2k5_modpack.py"]:
-            if path.name in ("nfl2k5_qb_room.py",):
+            if path.name in ("nfl2k5_qb_room.py", "nfl2k5_cpu_trades.py"):   # each owner's own calibration path
                 continue
             text = path.read_text(encoding="utf-8", errors="replace")
             if re.search(r"install_stages|test_without_needs", text):

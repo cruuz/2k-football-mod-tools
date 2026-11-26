@@ -75,9 +75,10 @@ u32 FC ownership_trade_valid(u32 *offer) {
 
 void FC ownership_decline(u32 *offer, u32 interactive, void *menu) {
     /* The weekly processor and trade menu share 15 persistent 60-byte offer slots.
-     * A private proposal elsewhere may need a message, but only posted offers are cleared. */
+     * A private proposal elsewhere may need a message, but only posted records are cleared: a pending offer (kind 2)
+     * and a listing (kind 1), which the CPU's proposers would otherwise pick and refuse again every week. */
     u32 offset=(u32)offer-0x00E3C27C;
-    if (offset<0x384 && offset%60==0 && offer[0]==2)
+    if (offset<0x384 && offset%60==0 && (offer[0]==1 || offer[0]==2))
         ((void (FC *)(u32 *,u32,u32,u32))0x002BB660)(offer,0,1,1);
     if (interactive && menu)
         ((void (FC *)(void *,const unsigned short *))0x0014E520)(menu,u"Trade canceled. A player is no longer available.");

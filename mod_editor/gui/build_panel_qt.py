@@ -2096,7 +2096,7 @@ class BuildPanel(QWidget):
                 box.clicked.connect(self._v09_other_selected)
             box.clicked.connect(self._other_sim_qb_choice)
         for combo in self.findChildren(QComboBox):
-            if combo is not self.qb_injury_mode:
+            if combo is not self.qb_injury_mode and combo is not self.cpu_trades_mode:  # b81 trades-all: rides with it
                 combo.activated.connect(self._v09_other_selected)
                 combo.activated.connect(self._other_sim_qb_choice)
         for spin in (*self.findChildren(QSpinBox), *self.findChildren(QDoubleSpinBox)):
@@ -2170,6 +2170,27 @@ class BuildPanel(QWidget):
         rate.addWidget(self.qb_injury_rate)
         layout.addLayout(rate)
         layout.addWidget(self.qb_injury_rate_help)
+        # b81 trades-all (ruling R6): computer trades at every position have their own control beside the quarterback
+        # option; "Same as the quarterback option" leaves the plan unnamed, so they follow it.
+        trades_help = ("Computer clubs trade players for draft picks when one club has a hole and another has a spare "
+                       "man: about 16 trades up to the Week 9 deadline and about 13 to 15 in each preseason after the "
+                       "first (a new franchise's first preseason has none). Clubs you control are never part of a "
+                       "computer trade. Retail keeps the original game's few player swaps.")
+        trades_caption = QLabel("Computer trades")
+        self.cpu_trades_mode = QComboBox()
+        trades_caption.setBuddy(self.cpu_trades_mode)
+        for name, value in (("Same as the quarterback option", None), ("Realistic", "realistic"), ("Retail", "retail")):
+            self.cpu_trades_mode.addItem(name, value)
+        self.cpu_trades_mode.setAccessibleName(trades_caption.text())
+        self.cpu_trades_mode.setToolTip(trades_help)
+        self.cpu_trades_mode.setAccessibleDescription(trades_help)
+        trades_row = QHBoxLayout()
+        trades_row.addWidget(trades_caption)
+        trades_row.addWidget(self.cpu_trades_mode)
+        layout.addLayout(trades_row)
+        self.cpu_trades_help = WrappedLabel(trades_help)
+        layout.addWidget(self.cpu_trades_help)
+        self.cpu_trades_mode.currentIndexChanged.connect(lambda _index: self._refresh())
         self.qb_injury_mode.currentIndexChanged.connect(self._sim_qb_injury_mode_changed)
         self.qb_injury_rate.valueChanged.connect(lambda _value: (self._qb_floor_ticks(), self._refresh()))
 
@@ -2229,8 +2250,9 @@ class BuildPanel(QWidget):
     @staticmethod
     def _sim_qb_companion_choices(plan):
         values = plan.to_recipe()
-        for name in ("sim_qb_injuries", "sim_qb_injury_rate", "qb_room", "sim_realism", "k128_memory", "name", "author",
-                     "notes", "modern_injured_reserve", "franchise_economy", "practice_squad"):  # b81 qb34: floor needs
+        for name in ("sim_qb_injuries", "sim_qb_injury_rate", "qb_room", "cpu_trades", "sim_realism", "k128_memory", "name",
+                     "author", "notes", "modern_injured_reserve", "franchise_economy",
+                     "practice_squad"):  # b81 qb34: floor needs; b81 trades-all: the computer trades control
             values.pop(name, None)
         return values
 
@@ -2494,6 +2516,9 @@ class BuildPanel(QWidget):
             blocked = self.qb_injury_rate.blockSignals(True)
             self.qb_injury_rate.setValue(installed_qb.get("custom_rate", mod_build.BuildPlan.sim_qb_injury_rate))
             self.qb_injury_rate.blockSignals(blocked)
+            blocked = self.cpu_trades_mode.blockSignals(True)  # b81 trades-all: unnamed (it follows) on a new disc
+            self.cpu_trades_mode.setCurrentIndex(0)
+            self.cpu_trades_mode.blockSignals(blocked)
         # The two throw sub-options are not feature toggles; a new disc starts at their defaults.
         self.realistic_check.setChecked(True)
         self.arc_by_distance_check.setChecked(False)
@@ -3151,7 +3176,7 @@ class BuildPanel(QWidget):
             self.pending_preset = name
             return False
         if (any(box.isChecked() for box in self._toggle_boxes()) or self.speed_threshold_spin.value()
-                or self.qb_injury_mode.currentData() is not None):
+                or self.qb_injury_mode.currentData() is not None or self.cpu_trades_mode.currentData() is not None):
             self.preset_note.setText("Your current choices were kept; press a preset button to replace them.")
             return False
         self.apply_preset(name)
@@ -3231,6 +3256,8 @@ class BuildPanel(QWidget):
         qb_mode = values.get("sim_qb_injuries") if self.console_memory() == 128 and self.qb_injury_mode.isEnabled() else None
         self.qb_injury_mode.setCurrentIndex(self.qb_injury_mode.findData(qb_mode))
         self.qb_injury_rate.setValue(mod_build.BuildPlan.sim_qb_injury_rate)
+        trades_level = values.get("cpu_trades")  # b81 trades-all: None in every preset (it follows the quarterback option)
+        self.cpu_trades_mode.setCurrentIndex(0 if trades_level is None else self.cpu_trades_mode.findData(trades_level))
         self.stock_age_combo.setCurrentIndex(self.stock_age_combo.findData(values.get("stock_age_policy", "preserve_age")))
         boxes = self._boxes()
         applied, skipped = [], []
@@ -3576,6 +3603,8 @@ class BuildPanel(QWidget):
             # b81 qb34: this control also sets the quarterback room rules: the plan leaves them unnamed, so they follow
             # this choice (Realistic and Custom where depth chart locks and SPECIAL rows are on, Retail off).
             plan.qb_room = None
+            # b81 trades-all (R6): computer trades at every position, named or (Same as the quarterback option) unnamed.
+            plan.cpu_trades = self.cpu_trades_mode.currentData() if self.cpu_trades_mode.isEnabled() else None
             if plan.sim_qb_injuries == "custom":
                 plan.sim_qb_injury_rate = self.qb_injury_rate.value()
             if plan.sim_qb_injuries in ("realistic", "custom"):
@@ -3650,12 +3679,12 @@ class BuildPanel(QWidget):
                                              team_building=plan.team_building,
                                              sim_qb_injuries=plan.sim_qb_injuries,
                                              custom_rate=plan.sim_qb_injury_rate, qb_room=plan.qb_room,
-                                             overwrite=plan.overwrite,
+                                             cpu_trades=plan.cpu_trades, overwrite=plan.overwrite,
                                              name=plan.name, author=plan.author, notes=plan.notes)
         if self._sim_qb_only_selected(plan):
             return mod_build.sim_qb_disc_edit(plan.source, plan.target, plan.sim_qb_injuries,
                                               custom_rate=plan.sim_qb_injury_rate, qb_room=plan.qb_room,
-                                              overwrite=plan.overwrite,
+                                              cpu_trades=plan.cpu_trades, overwrite=plan.overwrite,
                                               name=plan.name, author=plan.author, notes=plan.notes)
         for name in KEPT_WHEN_INSTALLED:
             if getattr(plan, name, True) is False and self._installed(name):
@@ -3688,7 +3717,7 @@ class BuildPanel(QWidget):
     @staticmethod
     def _v09_companion_choices(plan):
         values = plan.to_recipe()
-        for key in (*mod_build.V09_UPDATE_CHOICES, "sim_qb_injuries", "sim_qb_injury_rate", "qb_room",
+        for key in (*mod_build.V09_UPDATE_CHOICES, "sim_qb_injuries", "sim_qb_injury_rate", "qb_room", "cpu_trades",
                     "sim_realism", "k128_memory", "name", "author", "notes"):
             values.pop(key, None)
         return values
@@ -4178,11 +4207,33 @@ class BuildPanel(QWidget):
         current = mode == "retail" or installed.get("revision") == _sim_qb_injuries.REVISION
         if mode == installed.get("mode", "retail") and current and room_now == room_wanted and (
                 mode != "custom" or self.qb_injury_rate.value() == installed.get("custom_rate")):
-            return ""
+            return self._cpu_trades_change(mode)  # b81 trades-all: the copy may still change the computer trades
         detail = mode.title()
         if mode == "custom":
             detail += f", {self.qb_injury_rate.value():.3f}%"
         return f"Simulated injuries ({detail})"
+
+    def _cpu_trades_wanted(self, mode):
+        """b81 trades-all (R6): what the copy does to computer trades at every position with this quarterback mode:
+        "realistic", "retail" or None (kept, or left out because their needs are off). Unnamed, they follow the
+        quarterback option as mod_build._cpu_trades_plan does: Realistic where the room's who-starts rules ride with
+        injuries above zero, Retail otherwise."""
+        named = self.cpu_trades_mode.currentData() if self.cpu_trades_mode.isEnabled() else None
+        if named is None:
+            if mode is None:
+                return None
+            above_zero = mode == "realistic" or (mode == "custom" and self.qb_injury_rate.value() > 0)
+            room_rules = self._qb_room_needs_on() or not mod_build._piece3_bits()
+            named = "realistic" if above_zero and room_rules else "retail"
+        if named == "realistic" and not self._qb_trades_needs_on():
+            return None  # the build leaves them out with the owner's note
+        return named
+
+    def _cpu_trades_change(self, mode):
+        wanted = self._cpu_trades_wanted(mode)
+        installed = (self._state or {}).get("cpu_trades_settings") or {}
+        now = "realistic" if installed.get("status") == "applied" else "retail"
+        return "" if wanted is None or wanted == now else f"Computer trades ({wanted.title()})"
 
     def _speed_separation_chosen(self) -> int:
         """The Speed separation strength the player set (0 = off).
@@ -4474,6 +4525,8 @@ class BuildPanel(QWidget):
                 reason = "This executable has unrecognized quarterback data. Open a verified source disc."
             elif state.get("qb_room") == "foreign":  # b81 qb34
                 reason = "This executable has unrecognized quarterback room data. Open a verified source disc."
+            elif state.get("cpu_trades") == "foreign":  # b81 trades-all
+                reason = "This executable has unrecognized computer trades data. Open a verified source disc."
             elif (state.get("k128_memory") == "applied"
                   and (state.get("k128_settings") or {}).get("require_128") is False):
                 reason = ("This disc allows a 64 MB boot. Build from your retail disc to select the 128 MB "
@@ -4487,6 +4540,7 @@ class BuildPanel(QWidget):
                 reason = "The quarterback simulator option is unavailable in this Studio installation."
             available = not reason
             self.qb_injury_mode.setEnabled(available)
+            self.cpu_trades_mode.setEnabled(available)  # b81 trades-all: rides with the quarterback option
             help_text = reason or getattr(self, "_qb_floor_message", "") or self.qb_injury_mode.toolTip()
             if self.qb_injury_help.text() != help_text:
                 self.qb_injury_help.setText(help_text)

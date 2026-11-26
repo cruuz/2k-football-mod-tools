@@ -816,6 +816,12 @@ class BuildPlan:
     # SPECIAL rows); otherwise the build leaves it out with a note. An explicit "realistic" or "retail" wins and an
     # explicit Realistic without its needs is refused (qb34 DESIGN_CHANGES C1, lead 2026-11-20). No Custom level.
     qb_room: str | None = None
+    # b81 trades-all (ruling R6): computer trades at every position (nfl2k5_cpu_trades). None follows the quarterback
+    # option: Realistic where the quarterback room plan includes (or wanted) its quarterback trades (stage bit 16), Retail
+    # where the room plan is Retail or leaves those trades out by choice, None keeps the source. An explicit "realistic"
+    # or "retail" wins. Realistic is installed only where the owner's needs are met (in the executable when one is given,
+    # else in the plan); otherwise it is left out with the owner's LEFT_OUT note, never a refused build.
+    cpu_trades: str | None = None
     # b780-c6: the coaching carousel (EXPERIMENTAL): at Advance to offseason CPU clubs may fire their head coach and hire
     # one from the hiring pool the build writes into the roster (real people) or a coach another club let go. The game's
     # Owner Firing option becomes Off / CPU Teams / All Teams. A late executable owner plus the roster's pool block.
@@ -942,7 +948,7 @@ class BuildPlan:
     gadget_play: bool = False
 
     def wants_xbe_patch(self) -> bool:
-        return (self.sim_qb_injuries is not None or self.qb_room is not None or self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
+        return (self.sim_qb_injuries is not None or self.qb_room is not None or self.cpu_trades is not None or self.throw or self.catch_slider or self.accel_ramp or self.draft_ai or self.returner_fix
                 or self.quick_long_release  # b780-c-release: constants only, in place
                 or self.modern_numbers not in (None, False)  # b81 modern numbers (an explicit choice)
                 or self.progression or self.franchise_economy or self.scheme_labels or self.camera or self.kick_rules or self.kick_power or self.position_pools or self.xbe_space or self.kickoff_relocated or self.dynamic_kickoff or self.depth_chart_rows or self.practice_squad or self.depth_locks
@@ -974,6 +980,8 @@ class BuildPlan:
             d.pop("qb_room")
         if self.modern_numbers is None:  # b81 modern numbers: a recipe without the key follows season_2026
             d.pop("modern_numbers")
+        if self.cpu_trades is None:  # b81 trades-all (R6): a recipe without the key follows the quarterback option
+            d.pop("cpu_trades")
         if d.get("console_memory") == 128:  # b780-m64b: a 128 MB recipe stays exactly the recipe it always was
             d.pop("console_memory")
         return d
@@ -989,15 +997,17 @@ V09_UPDATE_CHOICES = ("save_list_type_guard", "modern_injured_reserve", "backfie
 
 def v09_disc_update(source, target, *, save_list_type_guard=False, modern_injured_reserve=False, backfield_cards=False,
                     gadget_play=False, team_building=False, sim_qb_injuries=None, custom_rate=BuildPlan.sim_qb_injury_rate,
-                    breakaway_stop=BuildPlan.sim_breakaway_stop, qb_room=None,
+                    breakaway_stop=BuildPlan.sim_breakaway_stop, qb_room=None, cpu_trades=None,
                     overwrite=False, name="", author="", notes=""):
-    from .nfl2k5_build_settings import validate_qb_room, validate_sim_qb_injuries
+    """b81 trades-all (R6): ``cpu_trades`` None follows the quarterback option, as ``qb_room`` does."""
+    from .nfl2k5_build_settings import validate_cpu_trades, validate_qb_room, validate_sim_qb_injuries
     validate_sim_qb_injuries(sim_qb_injuries, custom_rate)
     validate_qb_room(qb_room)
+    validate_cpu_trades(cpu_trades)
     choices = (save_list_type_guard, modern_injured_reserve, backfield_cards, gadget_play, team_building)
     if any(type(choice) is not bool for choice in choices):
         raise ValueError("The v0.9 update choices must be on or off.")
-    if not any(choices) and sim_qb_injuries is None and qb_room is None:
+    if not any(choices) and sim_qb_injuries is None and qb_room is None and cpu_trades is None:
         raise ValueError("Select a v0.9 update for the boot save list, modern injured reserve, starting backfield cards, "
                          "the gadget player on gadget plays, CPU team building or simulated quarterback injuries.")
     needs_simulator = sim_qb_injuries in ("realistic", "custom")
@@ -1010,7 +1020,8 @@ def v09_disc_update(source, target, *, save_list_type_guard=False, modern_injure
                               backfield_cards=backfield_cards, sim_qb_injuries=sim_qb_injuries,
                               gadget_play=gadget_play, team_building=team_building, sim_qb_injury_rate=custom_rate,
                               sim_breakaway_stop=breakaway_stop,
-                              sim_realism=needs_simulator, k128_memory=needs_simulator, qb_room=qb_room)
+                              sim_realism=needs_simulator, k128_memory=needs_simulator, qb_room=qb_room,
+                              cpu_trades=cpu_trades)
 
 
 def _v09_reference(source, executable):
@@ -1028,18 +1039,20 @@ class _InstalledSimQbEdit(BuildPlan):
 
 
 def sim_qb_disc_edit(source, target, mode, *, custom_rate=BuildPlan.sim_qb_injury_rate,
-                     breakaway_stop=BuildPlan.sim_breakaway_stop, qb_room=None,
+                     breakaway_stop=BuildPlan.sim_breakaway_stop, qb_room=None, cpu_trades=None,
                      overwrite=False, name="", author="", notes=""):
-    """b81 qb34: ``qb_room`` None follows ``mode`` (the quarterback room rules ride with Realistic and Custom)."""
-    from .nfl2k5_build_settings import validate_qb_room, validate_sim_qb_injuries
+    """b81 qb34: ``qb_room`` None follows ``mode`` (the quarterback room rules ride with Realistic and Custom).
+    b81 trades-all (R6): ``cpu_trades`` None follows the quarterback option too; the copy carries an explicit level."""
+    from .nfl2k5_build_settings import validate_cpu_trades, validate_qb_room, validate_sim_qb_injuries
     if mode is None:
         raise ValueError("Choose Retail, Realistic or Custom for this disc copy.")
     validate_sim_qb_injuries(mode, custom_rate)
     validate_qb_room(qb_room)
+    validate_cpu_trades(cpu_trades)
     enabled = mode in ("realistic", "custom")
     return _InstalledSimQbEdit(str(source), str(target), sim_qb_injuries=mode,
                                sim_qb_injury_rate=custom_rate, sim_breakaway_stop=breakaway_stop,
-                               sim_realism=enabled, k128_memory=enabled, qb_room=qb_room,
+                               sim_realism=enabled, k128_memory=enabled, qb_room=qb_room, cpu_trades=cpu_trades,
                                overwrite=overwrite, name=name, author=author, notes=notes)
 
 
@@ -1149,6 +1162,66 @@ def _qb_room_plan(plan, payload=None):
     if piece3_level is not None or plan.sim_qb_injuries is not None:
         return "retail", 0, note
     return None, 0, note
+
+
+_CPU_TRADES_UNAVAILABLE = ("Computer trades at every position are unavailable in this Studio installation, so they were "
+                           "not added.")
+_CPU_TRADES_OCCUPIED = ("Computer trades at every position need executable space that an option of this disc already "
+                        "uses, so they were not added. Build from your retail disc to add them.")
+
+
+def _cpu_trades_plan(plan, payload=None):
+    """b81 trades-all (ruling R6): (level, note) for computer trades at every position (nfl2k5_cpu_trades); level is
+    "realistic", "retail" or None (nothing changes). An explicit plan.cpu_trades wins. Unnamed, it follows the
+    quarterback option: Realistic where the quarterback room plan includes its quarterback trades (stage bit 16) or
+    wanted them (injuries above zero with the room's who-starts rules), Retail where the room plan is otherwise Retail or
+    Realistic, None where the plan names no quarterback setting. Realistic is judged on the executable when one is given
+    (the step passes the one it writes), else on the plan with the floor's needs a full build adds; where the owner's
+    needs are missing it is left out with the owner's LEFT_OUT note, never refused."""
+    from .nfl2k5_build_settings import cpu_trades_needs_met, validate_cpu_trades
+    validate_cpu_trades(plan.cpu_trades)
+    effective = _with_qb_floor_needs(plan)[0] if payload is None else plan
+    level = plan.cpu_trades
+    if level is None:
+        room_level, room_stages, _note = _qb_room_plan(effective, payload)
+        if room_level is None:
+            return None, None
+        trade_bit = getattr(_core_module("nfl2k5_qb_room"), "STUDIO_TRADE_BITS", 16)
+        wanted = _qb_injuries_above_zero(effective) and _qb_room_resolution(effective, payload)[0] == "realistic"
+        level = "realistic" if room_stages & trade_bit or wanted else "retail"
+    owner = _core_module("nfl2k5_cpu_trades")
+    if level == "retail":
+        return ("retail", None) if owner is not None else (None, None)
+    if owner is None:
+        return None, _CPU_TRADES_UNAVAILABLE
+    if payload is not None:
+        ready = owner.needs_met(payload)
+        # An earlier build may have placed another option in the pages' range; the owner refuses to install over it
+        # (its unowned_problem, where the owner has one), so the step leaves them out instead of refusing the build.
+        occupied = getattr(owner, "unowned_problem", None)
+        if ready and occupied is not None and owner.status(payload) == "retail" and occupied(payload):
+            return None, _CPU_TRADES_OCCUPIED
+    else:
+        ready = cpu_trades_needs_met(lambda name: getattr(effective, name))
+    return ("realistic", None) if ready else (None, owner.LEFT_OUT)
+
+
+def _cpu_trades_preflight(plan, payload):
+    """b81 trades-all: before any write, refuse an executable whose computer trades bytes are foreign, where the plan
+    names a quarterback or computer trades setting (a plan without one never touches them)."""
+    from .nfl2k5_build_settings import qb_room_level
+    if plan.cpu_trades is None and qb_room_level(plan.qb_room, plan.sim_qb_injuries) is None:
+        return
+    owner = _core_module("nfl2k5_cpu_trades")
+    if owner is not None and owner.status(payload) == "foreign":
+        raise ValueError("Unrecognized computer trades data. Choose a verified source disc.")
+
+
+def inspect_cpu_trades(payload):
+    """b81 trades-all: the inspection rows for computer trades at every position (status and settings)."""
+    owner = _core_module("nfl2k5_cpu_trades")
+    settings = owner.read_settings(payload) if owner is not None else {"status": "unavailable"}
+    return {"cpu_trades": settings["status"], "cpu_trades_settings": settings}
 
 
 class _InstalledGadgetEdit(BuildPlan):
@@ -1614,6 +1687,7 @@ for _preset in PRESETS.values():
     _preset["k128_early"] = False
     _preset["sim_qb_injuries"] = None
     _preset["qb_room"] = None  # b81 qb34
+    _preset["cpu_trades"] = None  # b81 trades-all (R6): unnamed in every preset, so it follows the quarterback option
 del _preset
 # b81 relrev M4: with 128 MB memory the Experimental preset takes the early form and the roster heap, as the standard release
 # recipe (v10-sources-128 overrides) and every release build since beta 80 do. The late form alone is the setup Check my
@@ -1708,6 +1782,7 @@ def apply_preset(plan: BuildPlan, name: str) -> BuildPlan:
         values["sim_qb_injuries"] = None
         values["qb_room"] = None  # b81 qb34: 128 MB standard only
         values["modern_numbers"] = False  # b81 modern numbers (review M1): its page is in the 128 MB scale-out pool
+        values["cpu_trades"] = None  # b81 trades-all: 128 MB standard only
         values["k128_memory"] = False
         values["k128_early"] = False         # b81 relrev M4: both need 128 MB memory
         values["k128_roster_heap"] = False
@@ -1998,6 +2073,8 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_sim_realism", "Simulated season realism", lambda p: p.sim_realism),  # b779-sim2 r4
     ("nfl2k5_sim_qb_injuries", "Simulated injuries (all positions)", lambda p: p.sim_qb_injuries in ("realistic", "custom")),
     ("nfl2k5_qb_room", "Quarterback room rules", lambda p: _qb_room_level(p) == "realistic"),  # b81 qb34
+    ("nfl2k5_cpu_trades", "Computer trades at every position",
+     lambda p: _cpu_trades_plan(p)[0] == "realistic"),  # b81 trades-all (R6)
     ("nfl2k5_coach_carousel", "Coaching carousel", lambda p: p.coach_carousel),  # b780-c6
     ("nfl2k5_history_screen", "Franchise History screen", lambda p: p.history_screen),  # b780-j4
     ("nfl2k5_standings_records", "Team Standings records", lambda p: p.standings_records),  # b780-j1
@@ -3088,11 +3165,69 @@ def _apply_qb_room(plan, target, receipt, progress, *, prepared=None):
     receipt["result"]["qb_room"] = settings["mode"]
 
 
+def _verify_cpu_trades(plan, module, payload):
+    """b81 trades-all: the executable holds exactly the level the plan asks for (Realistic: the Studio's stage set,
+    chances and shadow flag; Retail: the site retail and the pages empty or not reserved)."""
+    level, _note = _cpu_trades_plan(plan, payload)
+    if module is None:
+        if level is not None:
+            raise ValueError("Computer trades at every position are unavailable in this Studio installation.")
+        return {"status": "unavailable"}
+    settings = module.read_settings(payload)
+    if level == "realistic":
+        ok = (settings["status"] == "applied" and settings["stages"] == module.REALISTIC_STAGES
+              and settings["shadow"] == module.SHADOW_DEFAULT and settings["p8_ppm"] == module.P8_PPM
+              and settings["p7_ppm"] == module.P7_PPM)
+    else:
+        ok = level is None or settings["status"] == "retail"
+    if not ok:
+        raise ValueError("Computer trades at every position did not read back with the chosen setting.")
+    return settings
+
+
+@_core_step("cpu_trades")
+def _apply_cpu_trades(plan, target, receipt, progress, *, prepared=None):
+    """b81 trades-all (ruling R6): right after the quarterback room step in the full build, the in-place quarterback
+    copy and the v0.9 update. The owner places its two fixed pages itself (nfl2k5_xbe_space.CPU_TRADES_VA), so no
+    earlier owner can move. ``prepared`` (the in-place copy) is (executable the room step writes, result, receipt),
+    judged on that executable."""
+    from .nfl2k5_build_settings import qb_room_level
+    if plan.cpu_trades is None and qb_room_level(plan.qb_room, plan.sim_qb_injuries) is None:
+        return  # nothing named: the source is kept and the executable is not read
+    original = _xbe_bytes(target)
+    level, note = _cpu_trades_plan(plan, original if prepared is None else prepared[0])
+    if level is None:
+        _note_qb_room_left_out(receipt, note)
+        if note:
+            receipt["steps"].append({"step": "cpu_trades", "status": "left_out", "user_notes": [note]})
+            receipt["result"]["cpu_trades"] = "left_out"
+        return
+    module = _core_module("nfl2k5_cpu_trades")
+    progress("Adding computer trades at every position" if level == "realistic"
+             else "Removing computer trades at every position", 0, 0)
+    if prepared is None:
+        payload, patch = module.apply(original, level)
+    else:
+        source, payload, patch = prepared
+        if original != source:
+            raise ValueError("The source executable changed while the Studio was copying it.")
+    if payload != original:
+        _write_xbe_bytes(target, payload)
+    written = _xbe_bytes(target)
+    if written != payload:
+        raise ValueError("The written computer trades data differs from the requested update.")
+    settings = _verify_cpu_trades(plan, module, written)
+    receipt["steps"].append({"step": "cpu_trades", **{k: v for k, v in patch.items() if k != "allocation"},
+                             "allocated": "allocation" in patch, "settings": settings})
+    receipt["result"]["cpu_trades"] = settings["mode"]
+
+
 def _only_sim_qb_changes(plan):
     if not isinstance(plan, _InstalledSimQbEdit) or plan.console_memory != 128 or plan.sim_qb_injuries is None:
         return False
     expected = sim_qb_disc_edit(plan.source, plan.target, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
                                 breakaway_stop=plan.sim_breakaway_stop, qb_room=plan.qb_room,
+                                cpu_trades=plan.cpu_trades,
                                 overwrite=plan.overwrite, name=plan.name, author=plan.author, notes=plan.notes)
     return plan == expected
 
@@ -3122,6 +3257,12 @@ def _qb_floor_in_place(payload):
     if ir is None or ownership is None:
         raise ValueError("Modern injured reserve is unavailable in this Studio installation. Choose Retail or Custom 0 percent.")
     if ir.status(payload) == "applied" and ownership.status(payload, ir.store_va(payload) or 0) == "applied":
+        store = ir.store_va(payload) or 0
+        if getattr(ownership, "revision", None) is not None and ownership.revision(payload, store) == "previous":
+            # b81 trades lane: the earlier ownership page left a refused trade listing on the board every week
+            payload, _receipt = ownership.apply(payload, store)
+            notes.append("Simulated quarterback injuries: updated the franchise ownership safeguards to this release's "
+                         "version (a refused trade listing is now withdrawn).")
         return payload, notes
     upgraded, _receipt = ir.apply(payload, "modern", standard_guard=True)
     return upgraded, [f"Simulated quarterback injuries: added modern injured reserve and its roster safeguards {_QB_FLOOR_WHY}."] + notes
@@ -3199,6 +3340,14 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
             _note_qb_room_left_out(receipt, note)
     _note_qb_room_left_out(receipt, room_note)
     final = room_prepared[1] if room_prepared else patched
+    # b81 trades-all (R6): computer trades at every position on the same copy, judged and written on the executable the
+    # room step leaves (the floor's needs included), as the full build's step does.
+    cpu_level, cpu_note = _cpu_trades_plan(plan, final)
+    cpu, cpu_prepared = _core_module("nfl2k5_cpu_trades"), None
+    if cpu_level is not None:
+        traded, cpu_patch = cpu.apply(final, cpu_level)
+        cpu_prepared = (final, traded, cpu_patch)
+    _note_qb_room_left_out(receipt, cpu_note)
     receipt["sim_qb_source_update"] = {
         "source_sha256": sha256(original).hexdigest(), "result_sha256": sha256(patched).hexdigest(),
         "source_simulator": simulator_state, "simulator_upgraded": dependency is not None, "settings": settings,
@@ -3216,6 +3365,14 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
             **({"added": floor_notes} if floor_notes else {}),
             **({"user_notes": [room_note]} if room_note else {}),
         }
+    if cpu_level is not None or cpu_note:
+        receipt["cpu_trades_source_update"] = {
+            "level": cpu_level, "result_sha256": sha256(cpu_prepared[1] if cpu_prepared else final).hexdigest(),
+            "settings": _verify_cpu_trades(plan, cpu, cpu_prepared[1]) if cpu_prepared else None,
+            **({"user_notes": [cpu_note]} if cpu_note else {}),
+        }
+    if cpu_prepared:
+        final = cpu_prepared[1]
     if preflight:
         return True
     _copy_private_build_source(source, target, receipt, progress, consume)
@@ -3226,14 +3383,17 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
         receipt["steps"].append({"step": "pass_protection", **{k: v for k, v in pressure.items() if k != "reservations"}})
     _apply_sim_qb_injuries(plan, target, receipt, progress, prepared=(original, patched, patch))
     _apply_qb_room(plan, target, receipt, progress, prepared=room_prepared)
+    _apply_cpu_trades(plan, target, receipt, progress, prepared=cpu_prepared)  # b81 trades-all (R6)
     _compact_build_disc(target, reference, receipt, progress)
     _step("final_checks")
     inspection = inspect(target, screen_timing=plan.screen_timing)
     _verify_sim_qb_injuries(plan, module, _xbe_bytes(target))
     if room_prepared:
         _verify_qb_room(plan, room, _xbe_bytes(target))
-        if _xbe_bytes(target) != final:
-            raise ValueError("The quarterback edit did not read back as the prepared executable.")
+    if cpu_prepared:
+        _verify_cpu_trades(plan, cpu, _xbe_bytes(target))
+    if (room_prepared or cpu_prepared) and _xbe_bytes(target) != final:
+        raise ValueError("The quarterback edit did not read back as the prepared executable.")
     receipt["result"] = {**inspection, **receipt["result"], "path": str(target)}
     _verify_finished_game_disc(target, receipt, progress)
     return True
@@ -4094,8 +4254,8 @@ def _update_v09_disc(plan, progress, *, preflight, project):
             modern_injured_reserve=plan.modern_injured_reserve, backfield_cards=plan.backfield_cards,
             gadget_play=plan.gadget_play, team_building=plan.team_building,
             sim_qb_injuries=plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate,
-            breakaway_stop=plan.sim_breakaway_stop, qb_room=plan.qb_room, overwrite=plan.overwrite,
-            name=plan.name, author=plan.author, notes=plan.notes):
+            breakaway_stop=plan.sim_breakaway_stop, qb_room=plan.qb_room, cpu_trades=plan.cpu_trades,
+            overwrite=plan.overwrite, name=plan.name, author=plan.author, notes=plan.notes):
         raise ValueError("Use your retail disc to build a project with additional v0.9 changes.")
     source, target = Path(plan.source), Path(plan.target)
     if not tt.is_disc_image(source):
@@ -4171,6 +4331,14 @@ def _update_v09_disc(plan, progress, *, preflight, project):
             expected, _ = room.apply(expected, room_level)
         _verify_qb_room(plan, room, expected)
         receipt["v09_update"].append("qb_room")
+    # b81 trades-all (R6): computer trades at every position right after the room, in this chain and the one below.
+    cpu_level, cpu_note = _cpu_trades_plan(plan, expected)
+    _note_qb_room_left_out(receipt, cpu_note)
+    if cpu_level is not None:
+        cpu = _core_module("nfl2k5_cpu_trades")
+        expected, _ = cpu.apply(expected, cpu_level)
+        _verify_cpu_trades(plan, cpu, expected)
+        receipt["v09_update"].append("cpu_trades")
     # beta 81 fake kicks (review 11/22), after the quarterback steps (they stay adjacent): every v0.9 update also brings CPU decisions to the current Modern 2 template,
     # as a full build has it (the released b778_late ran fake field goals before fourth down).
     expected, decisions = _cpu_decisions_current(expected)
@@ -4211,6 +4379,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         _apply_sim_qb_injuries(plan, target, receipt, progress)
     _apply_cpu_kick_aim_in_place(target, receipt, progress)
     _apply_qb_room(plan, target, receipt, progress)  # b81 qb34
+    _apply_cpu_trades(plan, target, receipt, progress)  # b81 trades-all (R6): the expected chain's order
     _apply_cpu_decisions_in_place(target, receipt, progress)  # beta 81 fake kicks (the expected chain's order)
     if plan.gadget_play:
         _apply_gadget_play(plan, target, receipt, progress)
@@ -4632,6 +4801,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("sim_realism", "nfl2k5_sim_realism"),  # b779-sim2 r4
                                ("sim_qb_injuries", "nfl2k5_sim_qb_injuries"),
                                ("qb_room", "nfl2k5_qb_room"),  # b81 qb34
+                               ("cpu_trades", "nfl2k5_cpu_trades"),  # b81 trades-all (R6)
                                ("coach_carousel", "nfl2k5_coach_carousel"),  # b780-c6
                                ("history_screen", "nfl2k5_history_screen"),  # b780-j4
                                ("standings_records", "nfl2k5_standings_records"),  # b780-j1
@@ -4963,6 +5133,7 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     room_settings = qb_room.read_settings(_xbe_bytes(source)) if qb_room is not None else {"status": "unavailable"}
     out["qb_room"] = room_settings["status"]
     out["qb_room_settings"] = room_settings
+    out.update(inspect_cpu_trades(_xbe_bytes(source)))  # b81 trades-all (R6)
     # b81 qb34 (coordinator's rule): a build whose quarterback injuries are above zero must carry the floor.
     injuries = (qb_settings.get("status") == "applied" and (qb_settings.get("mode") == "realistic"
                 or (qb_settings.get("mode") == "custom" and (qb_settings.get("custom_rate") or 0) > 0)))
@@ -5882,9 +6053,10 @@ def validate_plan(plan: BuildPlan) -> list[str]:
     if plan.sim_qb_injuries in ("realistic", "custom"):
         if plan.console_memory != 128 or not plan.k128_memory or not plan.sim_realism:
             return ["Simulated quarterback injuries require the 128 MB target, 128 MB memory (K128) and Simulated season realism."]
-    from .nfl2k5_build_settings import qb_room_needs_met, validate_qb_room
+    from .nfl2k5_build_settings import qb_room_needs_met, validate_cpu_trades, validate_qb_room
     try:
         validate_qb_room(plan.qb_room)
+        validate_cpu_trades(plan.cpu_trades)  # b81 trades-all: never refused for its needs (left out with a note)
     except ValueError as exc:
         return [str(exc)]
     if (plan.qb_room == "realistic" and _piece3_bits() and not isinstance(plan, (_InstalledSimQbEdit, _ReleasedV09Update))
@@ -8363,6 +8535,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             raise ValueError("The quarterback room rules are unavailable in this Studio installation.")
         if qb_room.status(_xbe_bytes(source)) == "foreign":
             raise ValueError("Unrecognized quarterback room data. Choose a verified source disc.")
+    if plan.cpu_trades is not None or plan.qb_room is not None or plan.sim_qb_injuries is not None:
+        _cpu_trades_preflight(plan, _xbe_bytes(source))  # b81 trades-all: before any write
     if plan.coach_carousel:  # b780-c6: before any write
         _coach_carousel_preflight(source, progress, plan.roster_edits)
     if plan.history_screen:  # b780-j4: before any write
@@ -10527,6 +10701,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _apply_backfield_cards(target, receipt, progress)
     _apply_sim_qb_injuries(plan, target, receipt, progress)
     _apply_qb_room(plan, target, receipt, progress)  # b81 qb34: right after the quarterback injury step
+    _apply_cpu_trades(plan, target, receipt, progress)  # b81 trades-all (R6): right after the quarterback room
     _apply_helmet_side_numbers(plan, target, receipt, progress)  # b81 helmet-sides: the last allocator owner
     # Beta 81 Q62: after every play-book writer and every other owner, so its table matches the books on the disc and
     # its gate call is the final one. Its code and table sit in the fixed gadget slots ahead of the cards.
@@ -10632,6 +10807,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         _verify_sim_qb_injuries(plan, _core_module("nfl2k5_sim_qb_injuries"), _xbe_bytes(target))
     if (plan.qb_room is not None or plan.sim_qb_injuries is not None) and _qb_room_level(plan, _xbe_bytes(target)) is not None:  # b81 qb34
         _verify_qb_room(plan, _core_module("nfl2k5_qb_room"), _xbe_bytes(target))
+    if plan.cpu_trades is not None or plan.qb_room is not None or plan.sim_qb_injuries is not None:  # b81 trades-all
+        _verify_cpu_trades(plan, _core_module("nfl2k5_cpu_trades"), _xbe_bytes(target))
     if plan.sim_realism and _core_module("nfl2k5_sim_realism").status(_xbe_bytes(target)) != "applied":
         raise ValueError("simulated season realism did not survive the final passes")  # b779-sim2 r4
     if plan.coach_carousel and _core_module("nfl2k5_coach_carousel").status(_xbe_bytes(target)) != "applied":

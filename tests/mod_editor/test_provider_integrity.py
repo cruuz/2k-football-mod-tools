@@ -225,7 +225,8 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [621, 10, 8, 9, 8, 9]
+            [625, 10, 8, 9, 8, 9]
+            # b81 integration (#36 merge): 625 = 621 + 4 (that lane counted 613 = 609 + 4).
             # b81 integration (#33 merge): 621 = 617 + 4 (that lane counted 613 = 609 + 4).
             # b81 integration (#32 merge): 617 = 614 + 3 (that lane counted 612 = 609 + 3).
             # b81 integration (#31 merge): 614 = 611 + 3 (that lane counted 612 = 609 + 3).
@@ -243,6 +244,11 @@ class ProviderIntegrityTests(unittest.TestCase):
             # manifest recorder) and the 2026 fans writer it refits its spans with.
             # b81-seamen: 611 = 609 + the frozen revision 18 scorebug engine (the owner's recognition of 18 and 17) and
             # the abilities editor (its tier capacities check the classic teams' authored player tags).
+            # b81 trades lane (ownership refusal fix): 613 = 612 + the frozen previous ownership page template
+            # nfl2k5_franchise_ownership_code_b81_prev (the owner reads such a page as its previous revision).
+            # b81 trades-all (R6) + 4b revision (M1/N6): 612 = 609 + the frozen 383 trades page template
+            # nfl2k5_qb_trades_code_b81_383 + the computer trades owner and its generated page template (mod_build
+            # loads the owner by name, right after the quarterback room step).
             # b81 helmet-sides: 609 = 607 + the helmet side numbers owner (loaded by name, imported by throw_tuning for
             # the cave manifest recorder) + Number kerning, whose state the owner reads.
             # b81 integration (qb34 trades merge): 607 = 605 (next lines) + the quarterback trades owner and its generated
@@ -363,6 +369,9 @@ class ProviderIntegrityTests(unittest.TestCase):
                     # b81 qb34: mod_build selects the quarterback room owner by name; it imports its page template.
                     "mod_editor/core/nfl2k5_qb_room.py",
                     "mod_editor/core/nfl2k5_qb_room_code.py",
+                    # b81 trades-all: mod_build selects the computer trades owner by name; it imports its page template.
+                    "mod_editor/core/nfl2k5_cpu_trades.py",
+                    "mod_editor/core/nfl2k5_cpu_trades_code.py",
 
                     "mod_editor/core/nfl2k5_audo_fixed_slots.py",
                     "mod_editor/core/nfl2k5_safe_text_banks.py",

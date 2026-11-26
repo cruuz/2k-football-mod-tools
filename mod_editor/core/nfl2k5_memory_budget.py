@@ -148,6 +148,7 @@ OWNER_BYTES = {
 BUILD_OWNER_BYTES = {**OWNER_BYTES, "backfield_cards": (space.BACKFIELD_REQUEST[2], 0, 0, 0, 0),
                      "sim_qb_injuries": (4 * PAGE, 0, 0, 0, 0),
                      "qb_room": (space.QB_ROOM_SIZE, 0, 0, 0, 0),  # b81 qb34: the fixed quarterback room pages
+                     "cpu_trades": (space.CPU_TRADES_SIZE, 0, 0, 0, 0),  # b81 trades-all: the two fixed CPU trades pages
                      "gadget_reservation": (space.GADGET_REQUESTS[0][2], 0, space.GADGET_REQUESTS[1][2], 0, 0),
                      "pass_rush_stats": (
     0, pass_rush_stats.CODE_SIZE, pass_rush_stats.READ_ONLY_SIZE, 0, pass_rush_stats.DATA_SIZE)}
@@ -515,6 +516,18 @@ def owners(opts: dict, target_mb: int = 64) -> list:
     value = opts.get("modern_numbers")   # b81 modern numbers: None follows season_2026; True or "modern" installs it
     if target_mb == 128 and (value in (True, "modern") or (value is None and on(opts, "season_2026"))):
         out.append("modern_numbers")
+    # b81 trades-all (R6): computer trades' two fixed pages where the plan installs them: named Realistic, or unnamed with
+    # the quarterback trades wanted (injuries above zero with the room's who-starts rules), and their needs in the plan
+    # (a full build adds the floor's economy, practice squad and modern IR whenever injuries are above zero).
+    from .nfl2k5_build_settings import cpu_trades_needs_met
+    named = opts.get("cpu_trades")
+    wanted = (injuries and qb_room_level(opts.get("qb_room"), opts.get("sim_qb_injuries")) == "realistic"
+              and (opts.get("qb_room") is not None or not room.REALISTIC_STAGES & room.PIECE3_BITS
+                   or qb_room_needs_met(opts.get)))
+    floor = ("franchise_economy", "practice_squad", "modern_injured_reserve") if injuries else ()
+    if (target_mb == 128 and (named == "realistic" or (named is None and wanted))
+            and cpu_trades_needs_met(lambda name: name in floor or opts.get(name))):
+        out.append("cpu_trades")
     return out + list(INFRASTRUCTURE) if out else out
 
 
@@ -557,6 +570,9 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     if "classic_crowd" in found:  # b81-seamen: its fixed page (0x1532000, right after the awards lane's page)
         last = space.CLASSIC_CROWD_VA + space.CLASSIC_CROWD_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "cpu_trades" in found:  # b81 trades-all: its two fixed pages after the helmet-sides page (the end of the span)
+        last = space.CPU_TRADES_VA + space.CPU_TRADES_SIZE - space.POOL_VA
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     return RETAIL_RESIDENT + LEGACY_SPACE + SCALEOUT_V3 + pool + extra
 

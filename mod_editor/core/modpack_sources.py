@@ -161,6 +161,25 @@ def prepare(recipe_path, work, *, stack=None, marks_pack=None, patched_image=Non
                     follows = qb_room_level(None, effective.get("sim_qb_injuries"))
                 if follows != installed and not (follows is None and installed == "retail"):
                     effective["qb_room"] = installed
+        cpu = mod_build._core_module("nfl2k5_cpu_trades")  # b81 trades-all (R6): record the disc's computer trades
+        if effective.get("cpu_trades") is not None or (cpu is not None and payload is not None):
+            m._require(cpu is not None and payload is not None, "Cannot verify the disc's computer trades setting")
+            cpu_state = cpu.read_settings(payload)
+            m._require(cpu_state["status"] in ("retail", "applied"), "Cannot verify the disc's computer trades setting")
+            installed = "realistic" if cpu_state["status"] == "applied" else "retail"
+            named = effective.get("cpu_trades")
+            if named is not None:
+                m._require(named == installed, "The disc and source recipe select different computer trades settings")
+            else:
+                # What a rebuild of this recipe would install without the key (it follows the quarterback option).
+                try:
+                    follows = mod_build._cpu_trades_plan(build_plan(
+                        {"preset": recipe["preset"],
+                         "overrides": {k: v for k, v in effective.items() if k != "cpu_trades"}}))[0]
+                except (KeyError, ValueError):
+                    follows = None
+                if follows != installed and not (follows is None and installed == "retail"):
+                    effective["cpu_trades"] = installed
     if marks_pack:
         effective["official_marks_pack"] = str(marks_pack)
     from . import nfl2k5_official_marks as marks
@@ -310,6 +329,9 @@ def build_plan(recipe, source="", target=""):
     if "qb_room" not in recipe["overrides"]:
         # b81 qb34 (DESIGN_CHANGES C1): a recipe that does not name the room follows its quarterback injury setting.
         plan.qb_room = None
+    if "cpu_trades" not in recipe["overrides"]:
+        # b81 trades-all (R6): a recipe that does not name computer trades follows its quarterback option.
+        plan.cpu_trades = None
     known = {field.name for field in fields(plan)} - {"source", "target", "overwrite"}
     for key, value in recipe["overrides"].items():
         m._require(key in known, f"Recipe requires an unknown Studio option: {key}")
@@ -317,6 +339,7 @@ def build_plan(recipe, source="", target=""):
     nfl2k5_build_settings.validate_sim_qb_injuries(plan.sim_qb_injuries, plan.sim_qb_injury_rate)
     nfl2k5_build_settings.validate_sim_breakaway_stop(plan.sim_breakaway_stop)
     nfl2k5_build_settings.validate_qb_room(plan.qb_room)
+    nfl2k5_build_settings.validate_cpu_trades(plan.cpu_trades)
     return plan
 
 

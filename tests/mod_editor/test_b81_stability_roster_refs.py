@@ -324,12 +324,16 @@ class Routes(unittest.TestCase):
     def _assert_copy(self, copy, receipt, expected):
         """b81 integration (qb34 merged): the edit also installs the quarterback room on the copy (injuries above zero
         carry its floor), so the copy is the route's quarterback executable (``expected``, checked by its hash) plus
-        the room, and it holds the same injury references as ``expected``."""
+        the room (and, b81 trades-all, the computer trades that follow it), and it holds the same injury references as
+        ``expected``."""
         written = copy.read_bytes()
         self.assertEqual(receipt["sim_qb_source_update"]["result_sha256"], _sha(expected))
         room = receipt["qb_room_source_update"]
         self.assertEqual(room["level"], "realistic")
-        self.assertEqual(_sha(written), room["result_sha256"])
+        # b81 trades-all (R6): computer trades at every position follow the room on the same copy, right after it,
+        # where their needs are installed; the copy is then the room's executable plus them.
+        trades = receipt.get("cpu_trades_source_update") or {}
+        self.assertEqual(_sha(written), trades["result_sha256"] if trades.get("level") else room["result_sha256"])
         self.assertEqual(qb.installed_reference(written), qb.installed_reference(expected))
         self.assertIsNotNone(qb.installed_reference(written))
 

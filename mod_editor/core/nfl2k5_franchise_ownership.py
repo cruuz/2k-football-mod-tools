@@ -4,6 +4,7 @@ from __future__ import annotations
 import struct
 
 from . import nfl2k5_franchise_ownership_code as runtime
+from . import nfl2k5_franchise_ownership_code_b81_prev as runtime_previous
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
@@ -38,18 +39,38 @@ def load_entry(payload: bytes) -> int:
     return row['va'] + runtime.LABELS['ownership_repair_loaded']
 
 
-def code_for(va: int, store_va: int) -> bytes:
-    if not 0 <= store_va <= 0xFFFFFFFF or len(runtime.CODE) > CODE_SIZE:
+def code_for(va: int, store_va: int, module=runtime) -> bytes:
+    if not 0 <= store_va <= 0xFFFFFFFF or len(module.CODE) > CODE_SIZE:
         raise ValueError('Invalid franchise ownership code or IR store')
-    data = bytearray(runtime.CODE)
-    for offset, kind, symbol, value in runtime.RELOCATIONS:
+    data = bytearray(module.CODE)
+    for offset, kind, symbol, value in module.RELOCATIONS:
         if symbol != 'code' or kind not in (1, 2):
             raise ValueError('Unsupported franchise ownership relocation')
         addend = struct.unpack_from('<i', data, offset)[0]
         relocated = va + value + addend - (va + offset if kind == 2 else 0)
         struct.pack_into('<I', data, offset, relocated & 0xFFFFFFFF)
-    struct.pack_into('<I', data, runtime.LABELS['ownership_store'], store_va)
+    struct.pack_into('<I', data, module.LABELS['ownership_store'], store_va)
     return bytes(data).ljust(CODE_SIZE, b'\xCC')
+
+
+# The previous revision (b81 before the trades lane's refusal fix): its hook-site labels equal this revision's, so the
+# sites read the same and an upgrade rewrites the page only.
+PREVIOUS = (runtime_previous,)
+
+
+def revision(payload: bytes, store_va: int = 0) -> str | None:
+    """'current' or 'previous' for an installed page (guard or applied), None when retail or foreign."""
+    try:
+        row = _allocation(payload)
+        if row is None:
+            return None
+        raw = XbeImage(payload).read(row['va'], CODE_SIZE)
+        for name, module in (('current', runtime),) + tuple(('previous', m) for m in PREVIOUS):
+            if any(raw == code_for(row['va'], address, module) for address in {0, store_va}):
+                return name
+    except (TypeError, ValueError, KeyError, IndexError, struct.error, OverflowError):
+        return None
+    return None
 
 
 def sites(va: int):
@@ -69,7 +90,7 @@ def status(payload: bytes, store_va: int = 0) -> str:
         if raw == b'\xCC' * CODE_SIZE:
             return 'retail' if all(image.read(at, len(old)) == old for at, old, _, _ in HOOKS) else 'foreign'
         for mode, address in (('guard', 0), ('applied', store_va)):
-            if (mode == 'applied' and not address) or raw != code_for(va, address):
+            if (mode == 'applied' and not address) or raw not in [code_for(va, address, m) for m in (runtime,) + PREVIOUS]:
                 continue
             for at, original, patched in sites(va):
                 expected = original if mode == 'guard' and at == RELEASE_SITE else patched
@@ -87,13 +108,23 @@ def apply(payload: bytes, store_va: int) -> tuple[bytes, dict]:
     if current == 'foreign':
         raise ValueError('The franchise ownership routines contain unrecognized changes')
     target = 'applied' if store_va else 'guard'
-    if current == target:
+    if current == target and revision(payload, store_va) == 'current':
         return payload, {'owner': OWNER, 'status': 'already_applied', 'changed_bytes': 0}
     row = _allocation(payload)
     if row is None:
         raise ValueError('The standard franchise installer must reserve its ownership code first')
     va = row['va']
-    previous = code_for(va, 0) if current == 'guard' else None
+    if current == target:
+        # the previous revision installed with this mode: rewrite the page in place (the hook sites read the same)
+        installed = XbeImage(payload).read(va, CODE_SIZE)
+        old = next(m for m in PREVIOUS if installed == code_for(va, store_va if store_va else 0, m))
+        filled, _ = space.install_code(payload, OWNER, code_for(va, store_va), previous=code_for(va, store_va, old))
+        if status(filled, store_va) != target or revision(filled, store_va) != 'current':
+            raise ValueError('Franchise ownership upgrade failed verification')
+        return filled, {'owner': OWNER, 'status': 'applied', 'mode': target, 'code_va': hex(va), 'upgraded_from': 'previous',
+                        'edits': [], 'changed_bytes': space.count_differing_bytes(payload, filled)}
+    previous = code_for(va, 0) if current == 'guard' and revision(payload, 0) == 'current' else (
+        code_for(va, 0, PREVIOUS[0]) if current == 'guard' else None)
     filled, _ = space.install_code(payload, OWNER, code_for(va, store_va), previous=previous)
     image = XbeImage(filled)
     output = bytearray(filled)
