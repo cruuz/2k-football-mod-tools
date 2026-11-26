@@ -326,6 +326,12 @@ RC_VALUES = {"momentum": 50, "momentum_collision_level": 50, "cpu_money_downs": 
              "team_number_scale": {"13A0": 1.1, "13H0": 1.1}, "modern_venues_2026": "2026 venue art",
              "roster_capacity": True, "roster_draft_pick_ownership": True, "roster_hback_roles": True}
 RC_VALUES["award_vote"] = False   # b81 awards: the v0.9 pack had no award vote (its honors page installs it from beta 81)
+# b81 awards (review M1): the Studio's v0.9 update installs the award vote on the released v0.9 executable (honors.apply);
+# its fixed page at 0x1531000 carries the v4 pool from 0x1520000 to 0x1532000: 73,728 bytes more file and boot-loaded
+# image, measured on the released default.xbe (d78088f9). RC_VALUES above stays the measured anchor; v09_update_plan() is
+# the pack as the update leaves it, which this model charges at least V09_UPDATE_GROWTH more.
+V09_UPDATE_VALUES = {"award_vote": True}
+V09_UPDATE_GROWTH = 73_728
 
 # Options a 64 MB build cannot have. A plan field, except roster_capacity: roster edits whose document asks for the
 # capacity arena (free_agent_capacity; see roster_capacity_records).
@@ -376,6 +382,11 @@ NOT_SUGGESTED = frozenset(("module_loader", "resource_load_guard")) | frozenset(
 def rc_plan() -> dict:
     """The v0.9 pack's effective options (what the anchor measured), as a flat {field: value} dict."""
     return {**{f: True for f in RC_ON}, **RC_VALUES}
+
+
+def v09_update_plan() -> dict:
+    """The v0.9 pack as the Studio's v0.9 update leaves it (b81: plus the award vote's fixed page)."""
+    return {**rc_plan(), **V09_UPDATE_VALUES}
 
 
 _ROSTER_CACHE: dict = {}

@@ -971,7 +971,8 @@ def dormant_union():
             + return_coverage.REQUESTS  # b779-fixD: matches build_manifest's all_requests so allocation_evidence() needs no allocated=
             + module_loader.REQUESTS + seven.REQUESTS + GADGET_REQUESTS + (BACKFIELD_REQUEST, QB_INJURY_REQUEST)
             + (QB_ROOM_REQUEST, QB_TRADES_REQUEST)  # b81 qb34: the fixed quarterback room pages, then trades (C20)
-            + (HELMET_SIDES_REQUEST,))  # b81 helmet sides: its fixed page after the trades page
+            + (HELMET_SIDES_REQUEST,)  # b81 helmet sides: its fixed page after the trades page
+            + (AWARDS_REQUEST,))  # b81 awards (review S3): the award vote's fixed page after the helmet sides page
 
 
 def is_scaleout(payload):

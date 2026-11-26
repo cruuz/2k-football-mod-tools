@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "7a2880b6dbf6dbc832572bc8a97a50d8e3e43eac959ec5504f3649ab841c4639",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "f272d8d78d7be888af1bc92fa99097240f4ced8c3187eab439fb6a58da5cc4cc",
+        "mod_editor/core/mod_build.py": "37f41c67d7b55782681cd95638a5c17e2b18927eedd7db7eccec496182bd2c9c",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -794,8 +794,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_letter_grades_progress.py": "5088c0b6a545b95efae98f906b5c4c2e030774b22f87a35fd08a2c1c80b31a90",
         "mod_editor/core/nfl2k5_honors.py": "689c879603388b9859827be814ffc6290f88d941d4bd96f906ddff71cc2c48ce",
         "mod_editor/core/nfl2k5_honors_code.py": "5f74c634876b93f5a6fb37073b742d2248f7118f6074651473459791caccef59",
-        "mod_editor/core/nfl2k5_awards.py": "9f8a60ca8981a4ffe498f0d01d1049c80c7aa55e2f2d84a13c0b625e67c941d7",  # b81 awards: the award vote and defensive credit (installed by the honors owner)
-        "mod_editor/core/nfl2k5_awards_code.py": "9bee63ce1c31ec82aa3b76e565323321c2f9aff904a632aa50757f478eb28f06",  # b81 awards: its generated page
+        "mod_editor/core/nfl2k5_awards.py": "23770f8e0e9fa05c378f4aba10b6b76149145100f68878c73f931e3880e3f11e",  # b81 awards: the season award vote and All-Pro team (installed by the honors owner)
+        "mod_editor/core/nfl2k5_awards_code.py": "73d5f0fa734b595b7b68181c3b28fb5d3031247b33c8dfcf5df78ed902fde574",  # b81 awards: its generated page
         "mod_editor/core/nfl2k5_champions.py": "f0291e02e9794d2421b588150e294a5898bc20d5e621eceeed0ed7eec3dcc682",
         "mod_editor/core/nfl2k5_champions_code.py": "d0b7c4b07d849a24fda938e120cf7c6d4f15f0b589ac20183ecde61fb7fa463a",
         "mod_editor/core/nfl2k5_champions_code_b779.py": "c9a7e5bffface03b6ad23a030c652ef4398f8ac2ed26c249b8e815c2056c4407",  # b780 n6: frozen beta-79 runtime
@@ -1103,7 +1103,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "618105e0df3e191353a4e8c340c2cd1a9080b450266f606b2ad67368b8726d55",
+        "mod_editor/core/nfl2k5_xbe_space.py": "aab2f3e9f3a9f31459353137b8f8bb6547fa2432318b3c47bdda509b0853aaa1",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "b63521c9b17119b87558aff36a5a914d0c3fdd42e96240cf7de20065ead644d7",

@@ -13,7 +13,8 @@
            record (24 sacks or 14 interceptions), worth 280 offence points x the larger fraction of the record. Team factor
            40% at .500 or worse to 100% at .750, +10 for one of the league's two best records. Fatigue: -15% for last
            season's MVP and -8% for each other MVP in the four seasons before (cap -30%), from the man's own MVP honors
-           (history field 96).
+           (history field 96). The backs' and defenders' exception never beats a quarterback with an MVP-calibre season
+           (36,000 offence points) on a club at .500 or better.
      OPOY / OROY  offence points against each position's award season (tables), x 80-100% for the club's record.
      DPOY / DROY  10 a sack, 2 a QB hit (field 107), 20 an interception, 6 a forced fumble, 0.3 a tackle, x a position
            weight. The MVP is barred from OPOY and DPOY.
@@ -115,7 +116,13 @@ static const u8 ap_size[A_N] = {1, 1, 1, 3, 1, 2, 2, 1, 2, 2, 2, 2, 2, 1, 1};
 static const u8 slot_cat[9] = {A_QB, A_HB, A_WR, A_TE, A_T, A_DE, A_LB, A_CB, A_K};
 
 typedef struct { u32 score, player, team; } Pick;
-typedef struct { Pick mvp, opoy, dpoy, oroy, droy; Pick ap[A_N][3]; u32 second; } Vote;
+typedef struct { Pick mvp, opoy, dpoy, oroy, droy; Pick ap[A_N][3]; u32 second; Pick mvp_qb, mvp_other; u32 qb_guard; } Vote;
+
+/* An MVP-calibre quarterback season (offence points, hundredths): no non-quarterback has won the MVP in a season with one
+   since 1999 (the best quarterbacks of the non-QB MVP seasons 2000, 2005, 2006 and 2012 scored 26,784 to 35,010; real QB
+   MVPs 25,218 to 42,198, median 35,614; nflverse). With such a quarterback on a club at .500 or better, the backs' and the
+   defenders' exception cannot take the award. */
+#define MVP_CALIBRE 36000u
 
 static void consider(Pick *pick, u32 score, u32 player, u32 team) {
     if (score > pick->score) {
@@ -223,7 +230,13 @@ static void walk(Vote *v, u32 pass, u32 mvp) {
                 u32 tf = pct <= 500 ? 40 : pct >= 750 ? 100 : 40 + (pct - 500) * 60 / 250;
                 if (pct >= v->second)
                     tf += 10;
-                consider(&v->mvp, base * tf * fatigue(p) / 10000, p, team);
+                u32 score = base * tf * fatigue(p) / 10000;
+                if (pos == P_QB) {
+                    consider(&v->mvp_qb, score, p, team);
+                    if (base >= MVP_CALIBRE && pct >= 500)
+                        v->qb_guard = 1;
+                } else
+                    consider(&v->mvp_other, score, p, team);
                 continue;
             }
             if (i < 32)
@@ -265,6 +278,9 @@ void awards_vote(void) {
     }
     v.second = second ? second : 1;
     walk(&v, 0, 0);
+    /* the exception wins only on a higher score and only without an MVP-calibre quarterback on a .500 club */
+    v.mvp = v.mvp_other.player && v.mvp_other.score > v.mvp_qb.score && !v.qb_guard ? v.mvp_other
+            : v.mvp_qb.player ? v.mvp_qb : v.mvp_other;
     walk(&v, 1, v.mvp.player);
     CLASS_SET(saved);
     if (v.mvp.player)

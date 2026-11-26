@@ -38,7 +38,9 @@ class AllocatorPlacementTests(unittest.TestCase):
         self.assertEqual(space.QB_ROOM_REQUEST, ROOM)
         # C20: the trades page (fixed right after the room) follows the room; b81 helmet sides (review 11/22): the
         # side-numbers page, fixed right after the trades page, is the last late owner.
-        self.assertEqual(space.LATE_OWNERS[-3:], (ROOM[0], space.QB_TRADES_OWNER, space.HELMET_SIDES_OWNER))
+        # b81 awards: the award vote's fixed page (0x1531000, above the span) is the last late owner
+        self.assertEqual(space.LATE_OWNERS[-4:], (ROOM[0], space.QB_TRADES_OWNER, space.HELMET_SIDES_OWNER,
+                                                  space.AWARDS_OWNER))
         self.assertIn(ROOM, space.dormant_union())
 
     def test_the_room_alone_and_in_the_dormant_union_sits_at_its_fixed_pages(self):
@@ -49,7 +51,8 @@ class AllocatorPlacementTests(unittest.TestCase):
                 self.assertEqual((row["va"], row["size"], row["align"]), (0x1529000, 0x3000, 0x1000))
                 # C20: the dormant union also carries the trades page right after the room (0x152C000..0x152CFFF) and
                 # (b81 helmet sides) the side-numbers page after it (0x152D000..0x152DFFF).
-                end = 0x152E000 if name == "dormant union" else 0x152C000
+                # b81 awards: and the award vote's fixed page at 0x1531000, so the union's pool ends at 0x1532000
+                end = space.AWARDS_VA + space.AWARDS_SIZE if name == "dormant union" else 0x152C000
                 self.assertEqual(report["file_size"] - space.SCALE3_FILE_SIZE, end - space.POOL_VA)
 
     def test_adding_the_room_moves_no_row_and_does_not_advance_the_cursor(self):
@@ -77,7 +80,9 @@ class AllocatorPlacementTests(unittest.TestCase):
             with self.subTest(room=ROOM in requests):
                 rows = space.plan(requests)["allocations"]
                 placed = next(r for r in rows if r["owner"] == straddle[0])
-                self.assertEqual(placed["va"], space.FIXED_SPAN_END)
+                # b81 awards: from FIXED_SPAN_END its 0x20000 bytes would cover the award vote's fixed page at
+                # 0x1531000, so it steps past that page too
+                self.assertEqual(placed["va"], space.AWARDS_VA + space.AWARDS_SIZE)
                 self.assertEqual(space.FIXED_SPAN_END, 0x152E000)
                 for row in rows:
                     if row["owner"] != ROOM[0]:
@@ -88,7 +93,8 @@ class AllocatorPlacementTests(unittest.TestCase):
         filler = ("aa_synthetic_filler", "code", 0x1528000 - 0x80 - space.POOL_VA - space.PAGE, space.PAGE)
         bumped = ("ab_synthetic_bumped", "code", 0x20000, 16)
         rows = space.plan([filler, bumped, ownership])["allocations"]
-        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x152E000)   # past trades and side numbers
+        # past trades and side numbers, and (b81 awards) past the award page its 0x20000 bytes would cover
+        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], space.AWARDS_VA + space.AWARDS_SIZE)
 
     def test_a_foreign_room_request_is_refused(self):
         for request in (("nfl2k5_qb_room", "code", 0x2000, 0x1000), ("nfl2k5_qb_room", "data", 0x3000, 0x1000)):

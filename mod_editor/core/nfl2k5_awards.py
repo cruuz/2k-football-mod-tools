@@ -27,8 +27,9 @@ What this owner does (one fixed page, ``nfl2k5_xbe_space.AWARDS_VA``, code only)
     MVP: a quarterback's offence points x team factor (40% at .500 or worse to 100% at .750, +10 for one of the league's
     two best records) x fatigue (-15% for last season's MVP, -8% for each other MVP in the four seasons before, cap -30%;
     from the man's own MVP honors, history field 96). Backs, receivers and tight ends only with a historic season (2,000
-    rushing yards, 2,400 scrimmage yards, 26 touchdowns or 1,950 receiving yards); defenders only past a record (24 sacks
-    or 14 interceptions), worth 280 offence points x the larger fraction of the record.
+    rushing yards, 2,400 scrimmage yards, 26 touchdowns or 1,950 receiving yards); defenders only at a record (24 sacks
+    or 14 interceptions), worth 280 offence points x the larger fraction of the record. That exception never beats a
+    quarterback with an MVP-calibre season (``MVP_CALIBRE``, 36,000 offence points) on a club at .500 or better.
     OPOY / OROY: offence points against each position's award season, x 80-100% for the club's record.
     DPOY / DROY: 10 a sack, 2 a QB hit (field 107), 20 an interception, 6 a forced fumble, 0.3 a tackle, x a position weight.
     All-Pro: QB, HB, FB, three WR, TE, two T, two G, C, two DE, two DT, two LB, two CB, two S, K, P (24). The first of each
@@ -62,9 +63,10 @@ CODE_VA = space.AWARDS_VA
 REQUESTS = (space.AWARDS_REQUEST,)
 HELP_TEXT = (
     "Season awards are voted the way they have gone in the modern NFL: the MVP is a quarterback on a winning club unless "
-    "a back or receiver has a historic season (2,000 rushing yards, 26 touchdowns...) or a defender breaks a record (24 "
-    "sacks or 14 interceptions) in a year without a standout quarterback; repeat winners face some voter fatigue. Pass "
-    "rushers and cover men win Defensive Player of the Year, and the All-Pro team has 24 men in the AP shape.")
+    "a back or receiver has a historic season (2,000 rushing yards, 26 touchdowns...) or a defender reaches a record (24 "
+    "sacks or 14 interceptions) in a year without a great quarterback on a .500 club; repeat winners face some voter "
+    "fatigue. Defensive Player of the Year weighs sacks, QB hits and interceptions above tackles, and the All-Pro team "
+    "has 24 men in the AP shape.")
 
 POSITIONS = ("QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB", "C", "G", "T", "DT", "DE")
 P = {name: i for i, name in enumerate(POSITIONS)}
@@ -184,8 +186,8 @@ def status(payload: bytes) -> str:
 
 
 def applied_sites(image) -> list[tuple[str, int, bytes, bytes]]:
-    """This owner's site edits while it reads exactly applied, else []: the honors owner (its 'season awards' guard spans
-    0x116E5A) and the weekly progression owner (its merge-loop guard spans 0x134DF1) mask them back to retail."""
+    """This owner's site edit while it reads exactly applied, else []: the honors owner (its 'season awards' guard spans
+    0x116E5A) masks it back to retail."""
 
     data = image.data if isinstance(image, XbeImage) else image
     try:
@@ -206,7 +208,7 @@ def reservations(payload: bytes) -> list[dict]:
 
 
 def install(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
-    """Reserve the fixed page if needed, fill it and patch both sites. Idempotent."""
+    """Reserve the fixed page if needed, fill it and patch the vote site. Idempotent."""
 
     state, found = owned_state(payload)
     common = {"owner": OWNER, "experimental": True, "code_bytes": len(runtime.CODE), "owner_bytes": CODE_SIZE}
@@ -243,6 +245,11 @@ NOT_VOTED = frozenset(P[n] for n in ("K", "P", "C", "G", "T"))
 HISTORIC = {"rush_yds": 2000, "scrimmage": 2400, "touchdowns": 26, "rec_yds": 1950}
 RECORD = {"sacks2": 46, "def_int": 14}          # 23 sacks (2025), 14 interceptions (1952); the gate is 24 sacks / 14 INT
 DEFENSIVE_MVP_POINTS = 28000                    # a record-level season counts as 280 offence points
+# An MVP-calibre quarterback season (offence points, hundredths). No non-quarterback has won the MVP in a season with one
+# since 1999: the best quarterbacks of the non-QB MVP seasons (2000, 2005, 2006, 2012) scored 26,784..35,010; the real QB
+# MVPs 25,218..42,198 (median 35,614; nflverse). Owner: a non-QB can win "but not when a qb plays like that ... plus team
+# success": with such a quarterback on a club at .500 or better, the backs' and defenders' exception cannot win.
+MVP_CALIBRE = 36000
 FATIGUE = (15, 8, 30)                           # last season's MVP, each other MVP in the four before, cap (percent)
 ALL_PRO = (("QB", 1), ("HB", 1), ("FB", 1), ("WR", 3), ("TE", 1), ("T", 2), ("G", 2), ("C", 1), ("DE", 2), ("DT", 2),
            ("LB", 2), ("CB", 2), ("S", 2), ("K", 1), ("P", 1))
@@ -356,8 +363,20 @@ def choose_awards(players, record, clubs=None) -> dict:
         return pick
 
     rows = [p for p in players if p["pos"] <= 16]
-    mvp = best((p, mvp_base(p) * mvp_team_factor(win_pct1000(record(p["team"])), second) * fatigue(p.get("mvp_ago"))
-                // 10000) for p in rows if p["pos"] not in NOT_VOTED)
+    voters = [p for p in rows if p["pos"] not in NOT_VOTED]
+
+    def mvp_score(p):
+        return mvp_base(p) * mvp_team_factor(win_pct1000(record(p["team"])), second) * fatigue(p.get("mvp_ago")) // 10000
+
+    mvp_qb = best((p, mvp_score(p)) for p in voters if p["pos"] == P["QB"])
+    mvp_other = best((p, mvp_score(p)) for p in voters if p["pos"] != P["QB"])
+    qb_guard = any(p["pos"] == P["QB"] and mvp_base(p) >= MVP_CALIBRE and win_pct1000(record(p["team"])) >= 500
+                   for p in voters)
+    if mvp_other is not None and mvp_score(mvp_other) > (mvp_score(mvp_qb) if mvp_qb is not None else 0) \
+            and not qb_guard:
+        mvp = mvp_other
+    else:
+        mvp = mvp_qb if mvp_qb is not None else mvp_other
     opoy = best((p, offense_award(p, OPOY_REF.get(p["pos"], 0), win_pct1000(record(p["team"]))))
                 for p in rows if p["pos"] in OFFENSE and p is not mvp)
     dpoy = best((p, defense_points(p) * ROLE_WEIGHT[p["pos"]] // 100) for p in rows if p["pos"] in DEFENSE and p is not mvp)

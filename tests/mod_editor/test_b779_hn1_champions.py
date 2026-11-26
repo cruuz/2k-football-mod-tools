@@ -754,7 +754,7 @@ class NativeTests(unittest.TestCase):
 
     def test_otherworldly_seasons_no_longer_take_the_final_mvp_natively(self):
         """b81 (job b81-awards): the champions stage still names the otherworldly season; the award vote that the
-        honors install puts right after it (0x116E5A) writes the MVP again, and it goes to the 14-3 club's 2,400-yard back."""
+        honors install puts right after it (0x116E5A) writes the MVP again, and it goes to the 14-3 club's quarterback."""
         from mod_editor.core import nfl2k5_awards as awards
         vote = awards.labels()["awards_vote"]
         for label, spec in (("edge", ("WONDER", "DE", 2, 6, dict(sacks2=62, tackles=50))),
@@ -768,9 +768,10 @@ class NativeTests(unittest.TestCase):
                 self.assertEqual(got["mvp"], recs[-1])                     # the champions stage
                 self.assertEqual(want["mvp"]["name"], "WONDER")
                 m.call(vote)
-                # after the award vote: RBA (1,900 rushing + 500 receiving yards, 21 TD, 14-3) passes the historic gate
-                # and edges QBA; the otherworldly man on the 6-11 club is nowhere near
-                self.assertEqual(m.get(AWARDS + 0x5800), recs[1])
+                # after the award vote: QBA (4,600 yds, 38 TD, 300 rushing: 36,600 offence points, 14-3) has an
+                # MVP-calibre season on a winning club, so neither RBA's historic 2,400 scrimmage yards nor the
+                # otherworldly man on the 6-11 club can take it (review S6)
+                self.assertEqual(m.get(AWARDS + 0x5800), recs[0])
 
     def test_a_league_without_candidates_keeps_the_retail_winners(self):
         m = self.machine()

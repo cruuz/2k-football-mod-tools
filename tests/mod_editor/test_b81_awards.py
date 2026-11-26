@@ -147,6 +147,20 @@ class TwinTests(unittest.TestCase):
                                       lambda t: self.RECORDS[t])
         self.assertEqual(old["mvp"]["name"], "Reese")
 
+    def test_the_owners_line_a_great_quarterback_on_a_500_club_keeps_the_mvp(self):
+        # review S6: "not when a qb plays like that ... plus team success"; 4,300 yds, 40 TD, 1,000 rushing (44,800 offence
+        # points) on 10-7 against a 15-INT linebacker on 13-4
+        daniels = man("Daniels", "QB", 0, pass_yds=4300, pass_td=40, pass_int=10, rush_yds=1000, rush_td=6)
+        reese = man("Reese", "ILB", 1, tackles=104, sacks2=9, def_int=15, ff=2, qbh=10)
+        self.assertGreaterEqual(awards.mvp_base(daniels), awards.MVP_CALIBRE)
+        self.assertIs(self.vote([daniels, reese], {0: (10, 7, 0), 1: (13, 4, 0)})["mvp"], daniels)
+        self.assertIs(self.vote([daniels, reese], {0: (8, 8, 1), 1: (13, 4, 0)})["mvp"], daniels)     # .500 exactly
+        self.assertIs(self.vote([daniels, reese], {0: (7, 10, 0), 1: (13, 4, 0)})["mvp"], reese)     # a losing club
+        # the threshold: just under it the team factor decides as before
+        under = man("Under", "QB", 0, pass_yds=4000, pass_td=35, pass_int=10, rush_yds=500, rush_td=2)
+        self.assertLess(awards.mvp_base(under), awards.MVP_CALIBRE)
+        self.assertIs(self.vote([under, reese], {0: (10, 7, 0), 1: (13, 4, 0)})["mvp"], reese)
+
     def test_a_record_breaking_defender_still_wins_in_a_year_without_a_standout_quarterback(self):
         qb = man("Average", "QB", 1, pass_yds=3900, pass_td=24, pass_int=12, rush_yds=200, rush_td=1)
         corner = man("Ballhawk", "CB", 0, tackles=70, def_int=15, ff=2)
@@ -286,8 +300,9 @@ class NativeVoteTests(unittest.TestCase):
             self.assertEqual(self.slot(m, off), expected["ptr"] if expected else 0, key)
             if expected:
                 self.assertEqual(self.slot(m, off + 4), m.team_ptr(expected["team"]), key)
-        # RBA's 2,400 scrimmage yards and 21 touchdowns pass the historic gate and beat QBA; QBB won last year (fatigue)
-        self.assertEqual(want["mvp"]["name"], "RBA")
+        # RBA's 2,400 scrimmage yards and 21 touchdowns pass the historic gate, but QBA's 36,600 offence points on a
+        # 14-3 club are an MVP-calibre season (review S6), so the exception cannot take it; QBB won last year (fatigue)
+        self.assertEqual(want["mvp"]["name"], "QBA")
 
     def test_the_reported_seasons_go_to_the_quarterback(self):
         cases = (
@@ -297,6 +312,10 @@ class NativeVoteTests(unittest.TestCase):
             ("2027", [("Good", "QB", 0, 6, dict(pass_yds=4500, pass_td=32, pass_int=11, rush_yds=400, rush_td=3), ()),
                       ("Emmanwori", "CB", 1, 3, dict(tackles=80, def_int=15, ff=2), ())],
              {0: (12, 5, 0), 1: (12, 5, 0)}),
+            # review S6: the 40-TD, 1,000-rushing-yard quarterback on a 10-7 club against the 15-INT linebacker on 13-4
+            ("S6", [("Daniels", "QB", 0, 6, dict(pass_yds=4300, pass_td=40, pass_int=10, rush_yds=1000, rush_td=6), ()),
+                    ("Reese", "ILB", 1, 4, dict(tackles=104, sacks2=9, def_int=15, ff=2, qbh=10), ())],
+             {0: (10, 7, 0), 1: (13, 4, 0)}),
         )
         for label, specs, records in cases:
             with self.subTest(label):
@@ -304,6 +323,26 @@ class NativeVoteTests(unittest.TestCase):
                 recs = self.run_vote(m, specs, records)
                 self.assertEqual(self.slot(m, 0x5800), recs[0])
                 self.assertEqual(self.slot(m, 0x5818), recs[1])          # the defender is the DPOY
+
+    def test_the_exception_still_wins_without_a_great_quarterback_on_a_500_club(self):
+        cases = (
+            # a 15-INT corner on 13-4 against a 3,900-yard, 24-TD quarterback (25,400 offence points) on 11-6
+            ("ordinary QB", [("Average", "QB", 0, 6, dict(pass_yds=3900, pass_td=24, pass_int=12, rush_yds=200, rush_td=1), ()),
+                             ("Ballhawk", "CB", 1, 3, dict(tackles=70, def_int=15, ff=2), ())],
+             {0: (11, 6, 0), 1: (13, 4, 0)}, 1),
+            # the reviewer's 40-TD quarterback, but on a 7-10 club: no longer protected, the linebacker on 13-4 wins
+            ("losing club", [("Daniels", "QB", 0, 6, dict(pass_yds=4300, pass_td=40, pass_int=10, rush_yds=1000, rush_td=6), ()),
+                             ("Reese", "ILB", 1, 4, dict(tackles=104, sacks2=9, def_int=15, ff=2, qbh=10), ())],
+             {0: (7, 10, 0), 1: (13, 4, 0)}, 1),
+        )
+        for label, specs, records, winner in cases:
+            with self.subTest(label):
+                m = self.machine()
+                recs = self.run_vote(m, specs, records)
+                self.assertEqual(self.slot(m, 0x5800), recs[winner])
+                want = awards.choose_awards(self.twin_players(recs, specs), lambda t: records.get(t, (0, 0, 0)),
+                                            clubs=list(range(32)))
+                self.assertEqual(want["mvp"]["name"], specs[winner][0])
 
     def test_all_pro_writes_twenty_four_in_the_ap_shape(self):
         m = self.machine()
@@ -396,6 +435,98 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(awards.status(alone), "applied")
         self.assertEqual(honors.status(alone), "foreign")            # mixed: the vote without the honors owner
         self.assertEqual(rdata.status(alone, awards.sites()), "applied")
+
+
+V09_SHA256 = "d78088f9ba47c6197e99ea540d0bc3d2c9255f7cd49152a77946be70dacab866"   # the released v0.9 default.xbe
+
+
+def _v09() -> bytes:
+    import hashlib
+    import os
+    path = os.environ.get("NFL2K5_V09_RELEASED_XBE")
+    if not path or not Path(path).is_file():
+        raise unittest.SkipTest("NFL2K5_V09_RELEASED_XBE (the released v0.9 default.xbe) is not set")
+    data = Path(path).read_bytes()
+    if hashlib.sha256(data).hexdigest() != V09_SHA256:
+        raise unittest.SkipTest("NFL2K5_V09_RELEASED_XBE does not match the v0.9 release pin")
+    return data
+
+
+class ReleaseV09UpdateTests(unittest.TestCase):
+    """Review M1: the Studio's v0.9 update brings the released disc's honors owner (beta-80, with the champions rule that
+    named 15-interception linebackers MVP) to this release's, award vote included, on the real v0.9 executable."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import mod_build
+        cls.build = mod_build
+        cls.v09 = _v09()
+        cls.upgraded, cls.receipt = mod_build._season_awards_upgrade(cls.v09)
+
+    def test_the_release_reads_previous_and_the_update_makes_it_current(self):
+        self.assertEqual((honors.status(self.v09), champions.status(self.v09), awards.status(self.v09)),
+                         ("previous", "previous", "retail"))
+        self.assertEqual((honors.status(self.upgraded), champions.status(self.upgraded), awards.status(self.upgraded)),
+                         ("applied", "applied", "applied"))
+        self.assertEqual(self.receipt["upgraded_from"], "beta-80")
+        self.assertEqual(self.build._season_awards_upgrade(self.upgraded), (self.upgraded, None))   # once
+        self.assertEqual(self.build._season_awards_upgrade(_retail()), (_retail(), None))           # never adds honors
+
+    def test_no_allocation_moves_and_the_page_is_the_only_growth(self):
+        from mod_editor.core import nfl2k5_memory_budget as budget
+        before = [r for r in space.layout(self.v09)["allocations"] if r["owner"] != space.DIRECTORY_OWNER]
+        after = space.layout(self.upgraded)["allocations"]
+        self.assertEqual([r for r in after if r["owner"] not in (awards.OWNER, space.DIRECTORY_OWNER)], before)
+        self.assertEqual([(r["owner"], r["va"]) for r in after if r["owner"] == awards.OWNER],
+                         [(awards.OWNER, space.AWARDS_VA)])
+        self.assertEqual(len(self.upgraded) - len(self.v09), budget.V09_UPDATE_GROWTH)
+        # the memory model charges the updated pack at least the measured growth (the anchor plan stays as measured)
+        self.assertIn("awards", budget.owners(budget.v09_update_plan(), 128))
+        self.assertNotIn("awards", budget.owners(budget.rc_plan(), 128))
+        self.assertGreaterEqual(budget.xbe_resident(budget.v09_update_plan(), 128) - budget.xbe_resident(budget.rc_plan(), 128),
+                                budget.V09_UPDATE_GROWTH)
+
+    def test_the_history_pool_step_gives_the_same_bytes_in_either_order(self):
+        first = self.build._history_pool_upgrade(self.upgraded)[0]
+        second = self.build._season_awards_upgrade(self.build._history_pool_upgrade(self.v09)[0])[0]
+        self.assertEqual(first, second)
+        self.assertEqual(awards.status(first), "applied")
+
+    def test_every_other_owner_reads_the_same(self):
+        import importlib
+        names = [o for o in space.LATE_OWNERS if o not in (honors.OWNER, champions.OWNER, awards.OWNER)]
+        names += ["nfl2k5_defensive_try", "nfl2k5_history_pool", "nfl2k5_history", "nfl2k5_franchise_economy"]
+        checked = 0
+        for name in dict.fromkeys(names):
+            try:
+                module = importlib.import_module("mod_editor.core." + name)
+            except ImportError:
+                continue
+            if not callable(getattr(module, "status", None)):
+                continue
+            with self.subTest(owner=name):
+                self.assertEqual(module.status(self.upgraded), module.status(self.v09))
+                checked += 1
+        self.assertGreater(checked, 30)
+
+    def test_the_route_writes_it_before_the_gadget_and_history_pool_steps(self):
+        import inspect
+        source = inspect.getsource(inspect.unwrap(self.build._update_v09_disc))
+        self.assertLess(source.index("_season_awards_upgrade(expected)"), source.index("expected, _ = gadget.apply(expected"))
+        self.assertLess(source.index("_season_awards_upgrade(expected)"), source.index("_history_pool_upgrade(expected)"))
+        self.assertIn('receipt["v09_update"].append("season_awards")', source)
+        self.assertLess(source.index("_apply_season_awards_in_place(target"), source.index("_apply_gadget_play(plan, target"))
+        self.assertLess(source.index("_apply_season_awards_in_place(target"), source.index("_apply_history_pool_in_place(target"))
+        # the in-place write on a copy of the executable reads back and is recorded
+        import tempfile
+        with tempfile.TemporaryDirectory() as temp:
+            target = Path(temp) / "default.xbe"
+            target.write_bytes(self.v09)
+            receipt = {"steps": [], "result": {}}
+            self.build._apply_season_awards_in_place(target, receipt, lambda *_: None)
+            self.assertEqual(target.read_bytes(), self.upgraded)
+            self.assertEqual(receipt["result"]["season_awards"], "applied")
+            self.assertEqual([s["step"] for s in receipt["steps"]], ["season_awards"])
 
 
 if __name__ == "__main__":
