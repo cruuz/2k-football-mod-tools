@@ -324,6 +324,21 @@ class Owner(unittest.TestCase):
             self.assertEqual(restored, self.payload)
         self.assertLessEqual(receipt["code_bytes"], 3727)
 
+    def test_the_neighbours_that_pin_its_windows_still_validate(self):
+        # b81 integration: the window at 0x2A8CA0 lies inside weekly prep's pinned preparation kernel span, and weekly
+        # prep validates under the franchise autosave and so under MyCareer; with team building applied all three read
+        # applied (the a3e0a6fbc inventory probe stopped at "install MyCareer before Career Home"), and a window byte
+        # changed by anything else is still foreign to weekly prep
+        from mod_editor.core import nfl2k5_franchise_autosave as autosave, nfl2k5_my_career_mode as mode
+        from mod_editor.core import nfl2k5_weekly_prep as weekly_prep
+        before = {m.__name__: m.status(self.payload) for m in (weekly_prep, autosave, mode)}
+        patched, _ = self.tb.apply(self.payload)
+        self.assertEqual({m.__name__: m.status(patched) for m in (weekly_prep, autosave, mode)}, before)
+        self.assertEqual(weekly_prep.status(patched), "applied")
+        broken = bytearray(patched)
+        broken[self.tb._offset(patched, 0x2A8CA0) + 4] ^= 0xFF
+        self.assertEqual(weekly_prep.status(bytes(broken)), "foreign")
+
     def test_foreign_and_needs(self):
         tb = self.tb
         patched, _ = tb.apply(self.payload)

@@ -99,6 +99,13 @@ def sites(code_va=0):
             for name, va, pin, opcode in HOOKS]
 
 
+# b81 integration (#31 team building): CPU team building writes one of its proven-dead windows (0x2A8CA0, 124 bytes; its
+# template's .tb_e) inside the pinned preparation kernel span above. This span's digest with exactly that window written
+# is accepted only while the complete team-building owner validates as applied; every other byte stays pinned, and
+# team building's Retail puts the window back (the retail digest).
+TEAM_BUILDING_GUARDS = {0x2A82F0: "c87926c1d77d335005a9fb28d415caaaf7f0874b5b11bb28223b29c579516c43"}
+
+
 def _recognize(payload):
     layout = space.layout(payload)  # geometry, ownership, directory and section seals
     image = XbeImage(payload)
@@ -126,7 +133,12 @@ def _recognize(payload):
         for _, at, before, _ in edits:
             if va <= at and at + len(before) <= va + size:
                 raw[at-va:at-va+len(before)] = before
-        require(hashlib.sha256(raw).hexdigest() == digest, f"foreign weekly prep prerequisite at {va:#x}")
+        actual = hashlib.sha256(raw).hexdigest()
+        if actual != digest and actual == TEAM_BUILDING_GUARDS.get(va):
+            from . import nfl2k5_team_building as team_building
+            require(team_building.status(payload) == "applied", f"foreign weekly prep prerequisite at {va:#x}")
+            continue
+        require(actual == digest, f"foreign weekly prep prerequisite at {va:#x}")
     # the hooks are the same in both revisions; a revision-1 body reads "previous"
     return ("previous" if revision == 1 else next(iter(states))), settings
 
