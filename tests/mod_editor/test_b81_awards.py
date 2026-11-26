@@ -388,6 +388,8 @@ class InstallTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.retail = _retail()
+        if cls.retail is None:   # hosted runners carry no retail executable
+            raise unittest.SkipTest("pinned USA XBE required")
         cls.patched, cls.receipt = honors.apply(cls.retail)
 
     def test_honors_installs_the_vote_and_both_read_applied(self):
