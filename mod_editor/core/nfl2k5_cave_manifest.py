@@ -717,7 +717,12 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     helmet_side_numbers=False,
                                     # b81 trades-all: computer trades follow the quarterback option (none here, so
                                     # nothing changes); the preset build observed their fixed pages and site.
-                                    cpu_trades=None),
+                                    cpu_trades=None,
+                                    # b81 integration: modern jersey numbers follow season_2026 (on in the preset), and their
+                                    # fixed page is not in the union, so installing it here grew the probe's XBE (the
+                                    # a3e0a6fbc regeneration stopped there: "During the modern jersey numbers: patch resized
+                                    # the XBE"); the preset build above observed the owner, so the probe leaves it clear.
+                                    modern_numbers=False),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.
