@@ -560,7 +560,9 @@ class FloorRuleTests(unittest.TestCase):
         # (combined levers) it updates the disc's legacy pass protection to this release's centre float first
         # b81 fb-targets: and the disc's season realism from before the fullback target rule, beneath the QB option
         from mod_editor.core import nfl2k5_sim_realism as realism
-        aimed, _ = aim.apply(qb.apply(pressure.apply(realism.apply(source)[0])[0], "realistic")[0])
+        # b81 game outcomes: and the simulated-outcomes page, which rides with the realism owner (after the option)
+        aimed, _ = aim.apply(mod_build._sim_outcomes_with_realism(
+            qb.apply(pressure.apply(realism.apply(source)[0])[0], "realistic")[0])[0])
         # b81 history-pool: and this release's career history pool (the disc carries the v0.9 revision), after
         # b81 rookie-faces: rookie faces' current revision (a GEN1 disc is upgraded in place; others are unchanged)
         aimed = mod_build._history_pool_upgrade(mod_build._rookie_faces_upgrade(aimed)[0])[0]
@@ -649,6 +651,7 @@ class InPlacePreflightTests(unittest.TestCase):
         # The edit updates the legacy pass protection (combined levers), applies the option and writes the CPU kick aim
         from mod_editor.core import nfl2k5_sim_realism as realism   # b81 fb-targets: the pre-rule season realism first
         slice1, _ = qb.apply(pressure.apply(realism.apply(source)[0])[0], "realistic")
+        slice1 = mod_build._sim_outcomes_with_realism(slice1)[0]   # b81 game outcomes: the outcomes page, after the option
         slice1, _ = aim.apply(slice1)  # b81 integration (scoring merged): the edit writes the CPU kick aim too
         slice1 = mod_build._rookie_faces_upgrade(slice1)[0]   # b81 rookie-faces: the GEN1 disc's rookie faces upgraded
         slice1 = mod_build._history_pool_upgrade(slice1)[0]   # b81 history-pool: and this release's history pool
@@ -744,6 +747,7 @@ class InPlaceWithoutDependenciesTests(unittest.TestCase):
         self.assertTrue(mod_build._edit_installed_sim_qb(plan, Path("source.iso"), Path("copy.iso"), image, receipt,
                                                          lambda *_: None, preflight=True, consume=False, reference=None))
         slice1, _ = qb.apply(image, "custom", custom_rate=0.0)
+        slice1 = mod_build._sim_outcomes_with_realism(slice1)[0]   # b81 game outcomes: the outcomes page with realism
         self.assertEqual(receipt["sim_qb_source_update"]["result_sha256"], hashlib.sha256(slice1).hexdigest())
         update = receipt["qb_room_source_update"]
         # Nothing to install and no page to remove: Retail on a source without the room changes nothing.

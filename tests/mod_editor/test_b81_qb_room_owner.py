@@ -38,10 +38,11 @@ class AllocatorPlacementTests(unittest.TestCase):
         self.assertEqual(space.QB_ROOM_REQUEST, ROOM)
         # C20: the trades page (fixed right after the room) follows the room; b81 helmet sides (review 11/22): the
         # side-numbers page, fixed right after the trades page; b81 CPU trades: its two pages after that; b81 integration
-        # (#33, #38): then the classic crowd's and the award vote's fixed pages (fixed pages never advance the cursor, so
-        # their place among the late owners moves nobody)
-        self.assertEqual(space.LATE_OWNERS[-6:], (ROOM[0], space.QB_TRADES_OWNER, space.HELMET_SIDES_OWNER,
-                                                  space.CPU_TRADES_OWNER, space.CLASSIC_CROWD_OWNER, space.AWARDS_OWNER))
+        # (#33, #35, #38): then the outcomes', classic crowd's and award vote's fixed pages (fixed pages never advance
+        # the cursor, so their place among the late owners moves nobody)
+        self.assertEqual(space.LATE_OWNERS[-7:], (ROOM[0], space.QB_TRADES_OWNER, space.HELMET_SIDES_OWNER,
+                                                  space.CPU_TRADES_OWNER, space.SIM_OUTCOMES_OWNER,
+                                                  space.CLASSIC_CROWD_OWNER, space.AWARDS_OWNER))
         self.assertIn(ROOM, space.dormant_union())
 
     def test_the_room_alone_and_in_the_dormant_union_sits_at_its_fixed_pages(self):
@@ -83,10 +84,11 @@ class AllocatorPlacementTests(unittest.TestCase):
             with self.subTest(room=ROOM in requests):
                 rows = space.plan(requests)["allocations"]
                 placed = next(r for r in rows if r["owner"] == straddle[0])
-                # b81 integration (#32, #33, #36, #37, #38): the span ends at 0x1530000 (CPU trades' two pages); from there
-                # the 0x20000-byte owner would straddle the numbers page (0x1530000), then the award vote (0x1531000), the
-                # classic crowd (0x1532000) and the SportsCenter news page (0x1533000), so it steps past all four
-                self.assertEqual(placed["va"], space.SPORTSCENTER_NEWS_VA + space.SPORTSCENTER_NEWS_SIZE)
+                # b81 integration (#32, #33, #35-#38): the span ends at 0x1530000 (CPU trades' two pages); from there the
+                # 0x20000-byte owner would straddle the numbers page (0x1530000), the award vote (0x1531000), the classic
+                # crowd (0x1532000), the SportsCenter news page (0x1533000) and the outcomes page (0x1534000), so it steps
+                # past all five
+                self.assertEqual(placed["va"], space.SIM_OUTCOMES_VA + space.SIM_OUTCOMES_SIZE)
                 self.assertEqual(space.FIXED_SPAN_END, 0x1530000)
                 for row in rows:
                     if row["owner"] != ROOM[0]:
@@ -97,9 +99,9 @@ class AllocatorPlacementTests(unittest.TestCase):
         filler = ("aa_synthetic_filler", "code", 0x1528000 - 0x80 - space.POOL_VA - space.PAGE, space.PAGE)
         bumped = ("ab_synthetic_bumped", "code", 0x20000, 16)
         rows = space.plan([filler, bumped, ownership])["allocations"]
-        # past trades, side numbers and CPU trades, then (b81 integration) past the numbers, award vote, classic crowd and
-        # SportsCenter news pages it would otherwise straddle
-        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x1534000)
+        # past trades, side numbers and CPU trades, then (b81 integration) past the numbers, award vote, classic crowd,
+        # SportsCenter news and outcomes pages it would otherwise straddle
+        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x1535000)
 
     def test_a_foreign_room_request_is_refused(self):
         for request in (("nfl2k5_qb_room", "code", 0x2000, 0x1000), ("nfl2k5_qb_room", "data", 0x3000, 0x1000)):
@@ -170,7 +172,9 @@ class OwnerTests(unittest.TestCase):
         # b81 integration merge of qb34 (scoring + stability revision 4): f3a22805 (was 501b8412 at 5854e5144, 9f435b38
         # for slice 1 alone)
         # combined calibration levers (merge queue item 15: QB_CHANCE_SCALE 1.06, breakaway stop 68): 68c9db2e (was f3a22805)
-        self.assertEqual(hashlib.sha256(self.slice1).hexdigest()[:8], "68c9db2e")
+        # b81 game outcomes (QB option revision 5: the kicker and punter rows, only while both specialists play):
+        # 1acfdcae (was 68c9db2e)
+        self.assertEqual(hashlib.sha256(self.slice1).hexdigest()[:8], "1acfdcae")
         self.assertEqual(room.read_settings(self.slice1), {"status": "retail", "mode": "retail", "reserved": False,
                                                            "va": None})
         settings = room.read_settings(self.applied)
@@ -488,17 +492,20 @@ class PreviousRevisionTests(unittest.TestCase):
     # Combined calibration levers (merge queue item 15): re-pinned once more; every rebuild differs from its
     # practice-squad-merge rebuild exactly where the injury option's executable differs (the QB bank's tables for
     # QB_CHANCE_SCALE 1.06, the scoring site's breakaway stop 68, the registry hash and digests).
-    D1D2_SHA = "dd02160e32c8fb083b60afd2fcac676362c0737b704ec47bb0ec4c253c3cda4b"
-    REVIEW_67_SHA = "0962b31e580a7f07cfdd326a006eef7671cd4b6cf0599685a205640d725c5744"
-    REVIEW_64_SHA = "92887acc8daea7a6324239b96af8df7383d6dc0377bec9955d8b7caf34821143"
-    FLOOR_SHA = "8c7b1095af3e57949964c6a04479ebfb11d469466b7acf5b87c53859b1e413b8"
-    FLOOR_EMPTY_SHA = "35af3cb703e303e8de34dda5eaae75767e2089e939f98b79f590b8391b4cf836"
-    STAGE_3A_SHA = "5b3c065a543ea4cc7eb4e56c24709d9c5706406824db7c48e6cf1bdf2d863477"
-    STAGE_3A_EMPTY_SHA = "0af4c40fa91dc267ad3f07c92f6d3fe354b49f9f04dd0b3ea0e4c78d494159df"
+    # b81 integration (#36 CPU trades + #35 game outcomes merge): both lanes re-pinned these rebuilt previous executables
+    # for their own change (the trades owner's pages and registry; the QB option's revision 5 bank); with both merged
+    # every one moves again. Re-measured on the merged code; the upgrade and restore round trips below pass on it.
+    D1D2_SHA = "5a2e92842f8d29600ccfaa7425fafddfdc75fe6fb05d905c1fce424d3dc8f4eb"
+    REVIEW_67_SHA = "2f739fec1299749bdd71cb102503e6db10926560415667d4f2dbcb45842a39bf"
+    REVIEW_64_SHA = "63a10dd9fbdace61199c2876248487ed75b69940f200f1eb6f8c5f931f416ad0"
+    FLOOR_SHA = "6b999c0c915fa1e3bb1e1c0f5895b763ab5c53b2a6673c073247e713b7d420e5"
+    FLOOR_EMPTY_SHA = "7d267845a68f939c8c4a3be003ee33300b484881828eda60ba1c27fb4bc109f4"
+    STAGE_3A_SHA = "0831d7c65b635b2c29984753d7d27c448c65d9b8a787abcb0c2fdc76614e9f90"
+    STAGE_3A_EMPTY_SHA = "16f05ec4a5997bd9b718a2f110c342031634c01f46f51f1edc65d6930b40c27a"
     # b2672e398's page (C21/C23 freeze it as "previous"): the P5 and P6-5ff panels ran f5270f4d (67) and 35ce7727 (64)
     # on slice 1 alone; rebuilt here at the merged head.
-    HANDOVER_67_SHA = "114e403140402abe7c76bf3c236ff01a47464fa0e20cd9ab7498b6092992b9e9"
-    HANDOVER_64_SHA = "eca5b56d1fb1731c69babc30ae5d4d421bca2e3cb52560fc61aaa4d81f01b827"
+    HANDOVER_67_SHA = "bfd24a582456e0ba0d77f07c3a4a7dd62548b2eaaa08bb0cc2437ab0196a620f"
+    HANDOVER_64_SHA = "99b8546f2da2d94368e66296b8ce9571f9f0027ca85af0e8567c0021f089aaa7"
 
     @classmethod
     # b81 modern numbers (modern IR's number-rights revision, 866fe3a8d / 911e590e3): the fixture's base is built with

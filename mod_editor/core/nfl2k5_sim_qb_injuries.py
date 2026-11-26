@@ -27,9 +27,11 @@ MARK = struct.Struct('<8sIII')
 # Slices 1 (QBMEDv1), 2 (QBMEDv2) and 3 (QBMEDv3) are read and reversed through their frozen code modules; every apply
 # writes the current revision. Slice 2 added the line, edge and ball-carrier checks and parks the weekly running-back
 # roll; slice 3 added receivers, tight ends, fullbacks, defensive tackles, linebackers and defensive backs; revision 4
-# (QBMEDv4) adds the long-franchise stability factor (pos3/DESIGN.md addendum).
-SIGNATURES = {1: b'QBMEDv1\0', 2: b'QBMEDv2\0', 3: b'QBMEDv3\0', 4: b'QBMEDv4\0'}
-REVISION = 4
+# (QBMEDv4) adds the long-franchise stability factor (pos3/DESIGN.md addendum); revision 5 (QBMEDv5, b81 game outcomes)
+# adds the kicker and punter classes. Revision 4 is read through its frozen module and upgraded keeping its references.
+SIGNATURES = {1: b'QBMEDv1\0', 2: b'QBMEDv2\0', 3: b'QBMEDv3\0', 4: b'QBMEDv4\0', 5: b'QBMEDv5\0'}
+REVISION = 5
+REFERENCE_REVISIONS = (4, 5)     # the revisions whose bank holds the thirteen stability references
 SIGNATURE = SIGNATURES[REVISION]
 ERRORS = (ValueError, TypeError, IndexError, KeyError, OverflowError, struct.error)
 
@@ -77,6 +79,8 @@ def _runtime(revision):
         from . import nfl2k5_sim_qb_injuries_code_b81_slice2 as code
     elif revision == 3:
         from . import nfl2k5_sim_qb_injuries_code_b81_slice3 as code
+    elif revision == 4:
+        from . import nfl2k5_sim_qb_injuries_code_b81_v4 as code
     else:
         from . import nfl2k5_sim_qb_injuries_code as code
     _require(code.MARK_SIGNATURE == SIGNATURES[revision] if revision > 1 else not hasattr(code, 'MARK_SIGNATURE'),
@@ -146,7 +150,7 @@ def restabilize(payload, reference):
 
 
 def installed_reference(payload):
-    """The stability references a revision 4 install holds, or None (Retail, foreign, or an earlier revision)."""
+    """The stability references a revision 4 or 5 install holds, or None (Retail, foreign, or an earlier revision)."""
     try:
         setting, _ = _state(bytes(payload))
     except ERRORS:
@@ -309,8 +313,8 @@ def _state(payload: bytes):
         return None, payload
     marker = image.read(allocation['va'] + code.MARK_OFFSET, MARK.size)
     setting = _Setting.from_marker(marker)
-    if setting.revision == REVISION:
-        at = allocation['va'] + code.LABELS['stab_reference']
+    if setting.revision in REFERENCE_REVISIONS:
+        at = allocation['va'] + _runtime(setting.revision).LABELS['stab_reference']
         setting = replace(setting, reference=_reference32(struct.unpack('<13f', image.read(at, 52))))
     # An option installed before the scoring slice has retail scoring sites; apply() upgrades it in place.
     kicking, installed = scoring.installed(payload)
@@ -347,7 +351,7 @@ def apply(payload, level='realistic', *, custom_rate=0.310, breakaway_stop=None,
 
     A slice 1, 2 or 3 install is reversed exactly and the current revision written fresh, even at the same mode and
     rate. ``reference`` is the thirteen stability references for the disc's roster (``roster_stability``); None keeps
-    the references a revision 4 install already holds, or writes the frozen calibrated ones.
+    the references a revision 4 or 5 install already holds, or writes the frozen calibrated ones.
     """
     from . import nfl2k5_sim_qb_injuries_code as code
     wanted = _setting(level, custom_rate)
@@ -356,7 +360,7 @@ def apply(payload, level='realistic', *, custom_rate=0.310, breakaway_stop=None,
     XbeImage(source)
     original, physical = _state(source)
     if wanted is not None:
-        kept = original.reference if original is not None and original.revision == REVISION else None
+        kept = original.reference if original is not None and original.revision in REFERENCE_REVISIONS else None
         wanted = replace(wanted, reference=_reference32(
             reference if reference is not None else kept if kept is not None else code.STABILITY_REFERENCE))
     receipt = {'owner':OWNER, 'mode':level, 'custom_rate':wanted.rate / 1000 if wanted else None}

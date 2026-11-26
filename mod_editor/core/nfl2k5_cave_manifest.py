@@ -157,6 +157,10 @@ class Recorder:
             from . import nfl2k5_modern_numbers as numbers
             for name, va, retail, _ in numbers.sites(numbers.PLACEHOLDER_VA):
                 self.reserve(va, len(retail), owner, "full owner site: " + name)
+        if owner == "nfl2k5_sim_outcomes":  # b81 game outcomes: three pinned live sites (commit, two-point, tie roll)
+            from . import nfl2k5_sim_outcomes as outcomes
+            for name, va, retail, _ in outcomes.sites(outcomes.PLACEHOLDER_VA):
+                self.reserve(va, len(retail), owner, "full owner site: " + name)
         if owner == "nfl2k5_qb_room":  # b81 qb34: whole weekly-advance calls, every stage's site
             from . import nfl2k5_qb_room_code as room_runtime
             for va, before, _label, _stage in room_runtime.HOOKS:
@@ -456,6 +460,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_sim_qb_injuries as sim_qb_injuries
     from . import nfl2k5_qb_room as qb_room  # b81 qb34: installed by the observed Experimental build (its preset selects it)
     from . import nfl2k5_modern_numbers as modern_numbers  # b81 modern numbers: the same (its fixed page)
+    from . import nfl2k5_sim_outcomes as sim_outcomes  # b81 game outcomes: installed with Simulated season realism
     from . import nfl2k5_helmet_side_numbers as helmet_sides  # b81 helmet-sides: the same (the last late owner)
     from . import nfl2k5_classic_crowd as classic_crowd  # b81-seamen: its fixed page, observed on the preset build
     from . import nfl2k5_cpu_trades as cpu_trades  # b81 trades-all: installed by the observed Experimental build (it follows the room)
@@ -594,6 +599,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     modules[gadget_play.__name__] = gadget_play
     modules[qb_room.__name__] = qb_room
     modules[modern_numbers.__name__] = modern_numbers  # b81 modern numbers: installed by the observed preset build
+    modules[sim_outcomes.__name__] = sim_outcomes  # b81 game outcomes: installed by the observed preset build
     modules[helmet_sides.__name__] = helmet_sides  # b81 helmet-sides: installed last by the observed Experimental build
     modules[classic_crowd.__name__] = classic_crowd  # b81-seamen: installed after the classic teams by the same build
     modules[cpu_trades.__name__] = cpu_trades  # b81 trades-all: right after the room in the observed Experimental build

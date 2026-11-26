@@ -43,17 +43,22 @@ SLICE3_WALK = ((5, OFFENSE, 4, 0), (5, OFFENSE, 5, 0), (5, OFFENSE, 6, 0), (5, O
                (7, OFFENSE, 2, 2), (8, DEFENSE, 17, 0), (8, DEFENSE, 18, 0), (9, DEFENSE, 19, 0), (9, DEFENSE, 20, 0),
                (9, DEFENSE, 21, 0), (9, DEFENSE, 22, 0x40), (10, DEFENSE, 24, 0), (10, DEFENSE, 25, 0),
                (10, DEFENSE, 26, 0), (11, DEFENSE, 23, 0), (11, DEFENSE, 27, 0), (11, DEFENSE, 28, 0x40))
-WALK = SLICE2_WALK + SLICE3_WALK
-CLASS_SLOT = {0: 12, 1: 10, 2: 9, 3: 15, 4: 1, 5: 4, 6: 8, 7: 2, 8: 17, 9: 19, 10: 24, 11: 23}
-ZERO_POINTS = (110, 110, 110, 100, 100, 100, 100, 105, 100, 100, 100, 100)   # fixed by the two designs
+# b81 game outcomes (revision 5): the kicker (lineup slot 32) and punter (slot 14) of the offense, walked last.
+KP_WALK = ((12, OFFENSE, 32, 3), (13, OFFENSE, 14, 3))   # rule 3: only while both specialist slots hold specialists
+SPECIALIST = {32: 1, 14: 2}            # lineup slot -> the stored position (+0x35) that slot's specialist holds
+WALK = SLICE2_WALK + SLICE3_WALK + KP_WALK
+CLASS_SLOT = {0: 12, 1: 10, 2: 9, 3: 15, 4: 1, 5: 4, 6: 8, 7: 2, 8: 17, 9: 19, 10: 24, 11: 23, 12: 32, 13: 14}
+ZERO_POINTS = (110, 110, 110, 100, 100, 100, 100, 105, 100, 100, 100, 100, 100, 100)   # the two designs; K, P 100
 SIDE_OF = {slot: side for _, side, slot, _ in WALK}
 CLASSES = len(rules.POSITION_CLASSES)
 
 
-def exposed_on(flags, site, player, carrier):
+def exposed_on(flags, site, player, carrier, specialists=True):
     rule = flags & 3
     if rule == 0:
         return True
+    if rule == 3:                       # b81 game outcomes: the kicker and punter rows, on every play while both play
+        return specialists
     if site != RUSH:
         return False
     return player == carrier if rule == 1 else True
@@ -269,10 +274,34 @@ class PositionGate(NativeFixture):
         record = bytearray(0x80)
         struct.pack_into('<II', record, 0x20, health, status)
         record[0x3B] = durability
+        if side == OFFENSE and slot in SPECIALIST:
+            record[0x35] = SPECIALIST[slot]
         self.uc.mem_write(player, bytes(record))
         self.write(self.sides[side] + 8 + 4 * slot, player)
         self.players[(side, slot)] = player
+        if side == OFFENSE and slot in SPECIALIST:
+            self._partner(slot)
         return player
+
+    def _partner(self, slot):
+        """b81 game outcomes, rule 3: a specialist row counts only while both specialist slots hold specialists. When a
+        test places one alone, the other slot gets an immune specialist (Durability 100: no chance) outside the model's
+        players, so the placed one is exposed exactly as before."""
+        other = 46 - slot                          # 32 <-> 14
+        at = self.sides[OFFENSE] + 8 + 4 * other
+        if struct.unpack('<I', bytes(self.uc.mem_read(at, 4)))[0]:
+            return
+        partner = self.ROOT + 0xA000 + 0x80 * self.allocated
+        self.allocated += 1
+        record = bytearray(0x80)
+        record[0x3B], record[0x35] = 100, SPECIALIST[other]
+        self.uc.mem_write(partner, bytes(record))
+        self.write(at, partner)
+
+    def specialists_ready(self, side):
+        read = lambda at: struct.unpack('<I', bytes(self.uc.mem_read(at, 4)))[0]
+        held = [read(self.sides[side] + 8 + 4 * slot) for slot in (32, 14)]
+        return all(held) and all(self.uc.mem_read(p + 0x35, 1)[0] == SPECIALIST[slot] for p, slot in zip(held, (32, 14)))
 
     def clear(self):
         for side in self.sides:
@@ -291,7 +320,7 @@ class PositionGate(NativeFixture):
         result = []
         for index, side, slot, flags in WALK:
             player = self.players.get((side, slot))
-            if player is None or not exposed_on(flags, site, player, carrier):
+            if player is None or not exposed_on(flags, site, player, carrier, self.specialists_ready(side)):
                 result.append(None)
                 continue
             rating = self.uc.mem_read(player + 0x3B, 1)[0] if durability is None else durability
@@ -377,6 +406,40 @@ class PositionDecisions(PositionGate):
                         self.assert_proposed(proposal, slot)
                     else:
                         self.assertIsNone(proposal)
+        self.assert_isolated()
+
+    def test_kicker_and_punter_only_while_both_specialists_play(self):
+        """b81 game outcomes, coordinator's R3 ruling: the kicker (slot 32) and punter (slot 14) rows count only while
+        slot 32 holds a kicker and slot 14 a punter. Calibration's confirmation saw one club lose both in two weeks and
+        play a quarterback at both jobs; with either specialist out the other covers both jobs unexposed, so injuries
+        alone cannot take both. (A quarterback can still punt for the rest of a game in which the kicker was hurt: that
+        is the game's own in-game substitution, outside this walk.)"""
+        self.load_rate(100_000)                         # sample 0 proposes any exposed, positive threshold
+        def lineup(kicker_position, punter_position, kicker_rating=60, punter_rating=60):
+            self.clear()
+            kicker = self.place(32, kicker_rating)
+            punter = self.place(14, punter_rating)
+            self.uc.mem_write(kicker + 0x35, bytes((kicker_position,)))
+            self.uc.mem_write(punter + 0x35, bytes((punter_position,)))
+            self.write(CARRIER, kicker)
+            return kicker, punter
+        lineup(1, 2)                                    # both specialists: the kicker's row comes first
+        self.assert_proposed(self.play(force=0), 32)
+        lineup(1, 2, kicker_rating=100)                 # the kicker immune: the punter's row is reached
+        self.assert_proposed(self.play(force=0), 14)
+        for kicker_position, punter_position, case in ((2, 2, "the punter kicks (kicker out)"),
+                                                       (1, 1, "the kicker punts (punter out)"),
+                                                       (0, 2, "a quarterback kicks"), (1, 0, "a quarterback punts"),
+                                                       (1, 7, "a halfback punts")):
+            with self.subTest(case=case):
+                lineup(kicker_position, punter_position)
+                self.assertIsNone(self.play(force=0))
+                self.assertEqual([value for value in self.model_thresholds(.5)[-2:]], [None, None])
+        self.clear()                                    # an empty specialist slot: the other is not exposed either
+        kicker = self.place(32, 60)
+        self.write(self.sides[OFFENSE] + 8 + 4 * 14, 0)
+        self.write(CARRIER, kicker)
+        self.assertIsNone(self.play(force=0))
         self.assert_isolated()
 
     def test_rate_zero_never_proposes_and_writes_only_the_stack(self):
@@ -488,9 +551,9 @@ class PositionDecisions(PositionGate):
         self.assert_proposed(self.play(force=0), 16, side=DEFENSE)
         self.assert_isolated()
 
-    def test_one_sample_gives_each_of_the_27_slots_its_own_interval_in_walk_order(self):
+    def test_one_sample_gives_each_walked_slot_its_own_interval_in_walk_order(self):   # 29 slots since revision 5
         ratings = (93, 70, 91, 60, 99, 81, 40, 83, 55, 78, 66, 90, 50, 80, 85, 70, 88, 62, 79, 95, 58, 74, 81, 64, 78,
-                   92, 45)
+                   92, 45, 70, 65)   # b81 game outcomes: + the kicker and punter rows (revision 5)
         self.load_rate(min(rate_with_room(ratings, 2_000, .8, carrier=carrier) for carrier in (7, 8)))
         for (_, side, slot, _), rating in zip(WALK, ratings):
             self.place(slot, rating, side=side)
@@ -856,9 +919,19 @@ class NativeMachine(unittest.TestCase):
             player = self.area + 0x10000 + 0x100 * len(self.players)
             record = bytearray(0x100)
             record[0x3B] = durability
+            if side == OFFENSE and slot in SPECIALIST:
+                record[0x35] = SPECIALIST[slot]
             self.m.uc.mem_write(player, bytes(record))
             self.m.put(self.sides[side] + 8 + 4 * slot, player)
             self.players[(side, slot)] = player
+        placed = {slot for side, slot, _ in placements if side == OFFENSE}
+        for slot in SPECIALIST:                # b81 game outcomes, rule 3: an immune partner for a lone specialist
+            if slot in placed and 46 - slot not in placed:
+                partner = self.area + 0x1F000
+                record = bytearray(0x100)
+                record[0x3B], record[0x35] = 100, SPECIALIST[46 - slot]
+                self.m.uc.mem_write(partner, bytes(record))
+                self.m.put(self.sides[OFFENSE] + 8 + 4 * (46 - slot), partner)
 
     def heal(self):
         for player in self.players.values():
@@ -950,7 +1023,7 @@ class NativeCommit(NativeMachine):
 
     def test_no_write_or_draw_outside_the_bank_the_stack_and_the_victims_health(self):
         ratings = (93, 70, 91, 60, 99, 81, 40, 83, 55, 78, 66, 90, 50, 80, 85, 70, 88, 62, 79, 95, 58, 74, 81, 64, 78,
-                   92, 45)
+                   92, 45, 70, 65)   # b81 game outcomes: + the kicker and punter rows (revision 5)
         rate = min(rate_with_room(ratings, 3_000, .95, carrier=carrier) for carrier in (7, 8))
         self.link(rules, rate)
         self.lineup(tuple((side, slot, rating) for (_, side, slot, _), rating in zip(WALK, ratings)))
@@ -1130,6 +1203,64 @@ class SliceTwoUnchanged(NativeMachine):
                     self.assertGreater(kept, 0)
 
 
+class KickerPunterAppended(NativeMachine):
+    """b81 game outcomes (revision 5): the kicker and punter rows are walked last, so on an identical script of plays
+    every proposal, decision and commit of the twelve earlier classes is the frozen revision 4 bank's; the new classes
+    only propose on plays where revision 4 proposed nothing, and they do propose."""
+    RATINGS = (93, 70, 91, 60, 99, 81, 40, 83, 55, 72, 64, 58, 77, 69, 61, 74, 66, 59, 71, 63, 57, 68, 60, 52, 70, 62, 65,
+               61, 70)   # the 29 walked slots in WALK order; the kicker and punter last
+
+    def script(self, module, rate):
+        from unicorn import UC_HOOK_CODE
+
+        self.link(module, rate)
+        self.lineup(tuple((side, slot, rating) for (_, side, slot, _), rating in zip(WALK, self.RATINGS)))
+        L = module.LABELS
+        by_play, current = {}, [None]
+
+        def at_proposal(uc, pc, size, data):
+            by_play.setdefault(current[0], []).append(
+                (self.m.get(self.BANK + L['victim_side']), self.m.get(self.BANK + L['victim_slot']),
+                 self.m.get(self.BANK + L['pos_class']), self.m.get(self.m.reg('ESP') + 8)))
+
+        entry = self.BANK + L['pos_descriptor']
+        handle = self.m.uc.hook_add(UC_HOOK_CODE, at_proposal, begin=entry, end=entry)
+        self.m.uc.ctl_remove_cache(self.BANK, self.BANK + rules.CODE_SIZE)
+        rows = {}
+        try:
+            for number in range(240):
+                current[0] = number
+                a, b = (1000, 3000) if number % 2 else (3000, 1000)
+                self.m.put(self.side, self.teams + a)
+                self.m.put(self.other, self.teams + b)
+                self.m.put(CARRIER, self.players[(OFFENSE, (1, 3)[number % 3 == 0])])
+                events = self.play((RUSH, RUSH, PASS, SACK_ESCAPE)[number % 4])
+                rows[number] = [e for e in events if e[0] in ('decide', 'commit', 'substitute')]
+                self.heal()
+        finally:
+            self.m.uc.hook_del(handle)
+        return by_play, rows
+
+    def test_twelve_classes_unchanged_and_the_specialists_propose(self):
+        from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_v4 as frozen4
+        busy = rate_with_room(self.RATINGS, 3_000, .6, carrier=7)
+        for rate in (rules.DEFAULT_RATE, busy):
+            with self.subTest(rate=rate):
+                old_props, old_rows = self.script(frozen4, rate)
+                new_props, new_rows = self.script(rules, rate)
+                specialists = 0
+                for number in range(240):
+                    old, new = old_props.get(number, []), new_props.get(number, [])
+                    if old:
+                        self.assertEqual(new, old, f'play {number}: an earlier class changed')
+                        self.assertEqual(new_rows[number], old_rows[number], f'play {number}: its decision changed')
+                    else:
+                        self.assertTrue(all(cls in (12, 13) and slot in (32, 14) for _, slot, cls, _ in new), new)
+                        specialists += len(new)
+                if rate == busy:
+                    self.assertGreater(specialists, 0, 'the kicker and punter rows never proposed')
+
+
 @unittest.skipUnless(HAVE_UC, 'Unicorn is required for the native branch witnesses')
 class SlotTwentyEight(unittest.TestCase):
     """The second free safety (defensive slot 28) has never been written by any injury code. A slice 3 commit there
@@ -1223,7 +1354,7 @@ QUARTERBACK = 12
 # stored position -> (class, starters counted): QB K P WR CB FS SS HB FB TE OLB ILB C G T DT DE; K and P are not counted
 POSITION_RULE = {0: (12, 1), 3: (5, 3), 4: (10, 3), 5: (11, 1), 6: (11, 1), 7: (4, 2), 8: (7, 1), 9: (6, 1),
                  10: (9, 3), 11: (9, 3), 12: (2, 1), 13: (1, 2), 14: (0, 2), 15: (8, 2), 16: (3, 2)}
-ZERO_K = ZERO_POINTS + (100,)
+ZERO_K = ZERO_POINTS[:12] + (100,)   # the twelve stability classes (no K or P), then the quarterback
 LEAGUE, RECORD = 0x2400000, 0x40        # synthetic league player records (each stability fixture maps them)
 RETURN_STUB = 0x3003100                 # return address of a direct call of the piece (mapped by NativeFixture)
 PRECISION = {0: 24, 2: 53, 3: 64}
@@ -1494,6 +1625,15 @@ class StabilityFactors(StabilityGate):
                         player = self.place(slot, 60)
                         self.write(CARRIER, player)
                         self.write(0xE576B4, 100 + index)       # a new fixture: its first play computes the factors
+                        if index >= 12:
+                            # b81 game outcomes: the kicker and punter (revision 5) take no stability factor
+                            unscaled = threshold(effective(scales[index], slider, fpcw), zeros[index], 60)
+                            self.assert_proposed(self.play(slider=slider, force=unscaled - 1, fpcw=fpcw), slot)
+                            self.assertEqual(self.factors(), [bits32(.8)] * STABILITY_CLASSES)
+                            self.assertEqual(self.table('pos_effective', CLASSES)[index],
+                                             effective(scales[index], slider, fpcw))
+                            self.assertIsNone(self.play(slider=slider, force=unscaled, fpcw=fpcw))
+                            continue
                         limit = threshold(effective_scaled(scales[index], slider, bits32(.8), fpcw), zeros[index], 60)
                         unscaled = threshold(effective(scales[index], slider, fpcw), zeros[index], 60)
                         self.assertLess(limit, unscaled)
@@ -1789,8 +1929,9 @@ class StabilityIdentity(UnscaledQuarterback, NativeMachine):
             for handle in handles:
                 self.m.uc.hook_del(handle)
         factors = (struct.unpack('<13I', self.m.uc.mem_read(self.label('stab_factor'), 52)) if stability else None)
-        result = (rows, samples, thresholds, proposals, list(self.counters('pos_hits')),
-                  list(self.counters('pos_commits')))
+        hits, commits = list(self.counters('pos_hits')), list(self.counters('pos_commits'))
+        self.assertEqual(hits[12:] + commits[12:], [0] * (2 * (len(hits) - 12)))   # b81: no kicker/punter seated here
+        result = (rows, samples, thresholds, proposals, hits[:12], commits[:12])
         return result, factors, quarterback
 
     def league(self):

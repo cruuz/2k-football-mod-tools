@@ -2074,6 +2074,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_sim_cb_tackles", "Cornerback tackle credit", lambda p: p.sim_cb_tackles),  # b778-cb1
     ("nfl2k5_sim_rb_injuries", "Simulated RB short injuries", lambda p: p.sim_rb_injuries),  # b779-sim2
     ("nfl2k5_sim_realism", "Simulated season realism", lambda p: p.sim_realism),  # b779-sim2 r4
+    ("nfl2k5_sim_outcomes", "Simulated season realism", lambda p: p.sim_realism),  # b81 game outcomes (fixed page)
     ("nfl2k5_sim_qb_injuries", "Simulated injuries (all positions)", lambda p: p.sim_qb_injuries in ("realistic", "custom")),
     ("nfl2k5_qb_room", "Quarterback room rules", lambda p: _qb_room_level(p) == "realistic"),  # b81 qb34
     ("nfl2k5_cpu_trades", "Computer trades at every position",
@@ -2973,6 +2974,34 @@ def _apply_sim_realism(plan: "BuildPlan", target: Path, receipt: dict, progress)
         raise RuntimeError("Simulated season realism: the output does not read back as applied")
     receipt["steps"].append({"step": "sim_realism", **{k: v for k, v in realism_receipt.items() if k != "reservations"}})
     receipt["result"]["sim_realism"] = "applied"
+    _apply_sim_outcomes_in_place(target, receipt, progress)
+
+
+def _sim_outcomes_with_realism(payload):
+    """b81 game outcomes (coordinator R7: the same Studio option as Simulated season realism): home field, game-day form,
+    the simulator's Modern 2 two-point chart and its tie roll ride with nfl2k5_sim_realism, so a full build and every
+    in-place copy (update-v09, edit-sim-qb) that carries the realism owner carry them too. Returns (payload, receipt or
+    None when the executable has no realism owner)."""
+    module = _core_module("nfl2k5_sim_outcomes")
+    realism = _core_module("nfl2k5_sim_realism")
+    if module is None or realism is None or realism.status(payload) != "applied":
+        return payload, None
+    if module.status(payload) == "foreign":
+        raise ValueError("The simulated game outcomes in this disc were changed by another tool." + _REBUILD_HINT)
+    return module.apply(payload)                 # idempotent; a fixed page, so it moves nothing
+
+
+def _apply_sim_outcomes_in_place(target, receipt, progress):
+    patched, outcomes = _sim_outcomes_with_realism(_xbe_bytes(target))
+    if outcomes is None:
+        return
+    progress("Simulated games: home field, form, two-point chart and ties", 0, 0)
+    if not outcomes.get("already_applied"):
+        _write_xbe_bytes(target, patched)
+        if _xbe_bytes(target) != patched or _core_module("nfl2k5_sim_outcomes").status(patched) != "applied":
+            raise RuntimeError("Simulated game outcomes: the output does not read back as applied")
+    receipt["steps"].append({"step": "sim_outcomes", **{k: v for k, v in outcomes.items() if k != "reservations"}})
+    receipt["result"]["sim_outcomes"] = "applied"
 
 
 def _verify_sim_qb_injuries(plan, module, payload):
@@ -3301,6 +3330,12 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
                                   breakaway_stop=plan.sim_breakaway_stop, reference=references)
     if stability is not None:
         patch = {**patch, "stability_reference": stability}
+    # b81 game outcomes: the copy carries the simulated-game outcomes with the realism owner, as a full build does.
+    outcomes = None
+    if plan.sim_realism:
+        patched, outcomes = _sim_outcomes_with_realism(patched)
+        if outcomes is not None:
+            patch = {**patch, "sim_outcomes": {k: v for k, v in outcomes.items() if k != "reservations"}}
     # b81 scoring: an in-place copy gets the same kicking as a full build of a disc with the kicking fixes.
     patched, aim_receipt = _cpu_kick_aim_with_kicking(patched)
     if aim_receipt is not None:
@@ -3358,6 +3393,8 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
         "rookie_faces_upgraded": faces_upgrade is not None,
         "history_pool_upgraded": history_upgrade is not None,
         "overtime_crash_fix": sorted(crash_fix) if crash_fix else [],
+        # b81 game outcomes: whether the copy gained the simulated-outcomes page (it rides with season realism)
+        "sim_outcomes_added": bool(outcomes) and not outcomes.get("already_applied"),
         "stability_reference": stability,
     }
     if room_level is not None or room_note:
@@ -4425,6 +4462,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     if plan.sim_qb_injuries is not None:
         if plan.sim_realism:
             expected, _ = _core_module("nfl2k5_sim_realism").apply(expected)
+            expected, _ = _sim_outcomes_with_realism(expected)  # b81 game outcomes: as _apply_sim_realism writes it
         if plan.sim_qb_injuries in ("realistic", "custom"):
             expected, _ = _upgrade_legacy_pass_protection(expected)
         medical = _core_module("nfl2k5_sim_qb_injuries")
@@ -5258,6 +5296,8 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     out["sim_rb_injuries"] = rb_injuries.status(_xbe_bytes(source)) if rb_injuries is not None else "unavailable"
     sim_realism = _core_module("nfl2k5_sim_realism")  # b779-sim2 r4
     out["sim_realism"] = sim_realism.status(_xbe_bytes(source)) if sim_realism is not None else "unavailable"
+    outcomes = _core_module("nfl2k5_sim_outcomes")  # b81 game outcomes
+    out["sim_outcomes"] = outcomes.status(_xbe_bytes(source)) if outcomes is not None else "unavailable"
     qb_injuries = _core_module("nfl2k5_sim_qb_injuries")
     qb_settings = qb_injuries.read_settings(_xbe_bytes(source)) if qb_injuries is not None else {"status": "unavailable"}
     out["sim_qb_injuries"] = qb_settings["status"]

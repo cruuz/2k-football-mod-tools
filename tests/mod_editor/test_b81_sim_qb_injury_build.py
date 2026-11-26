@@ -105,8 +105,11 @@ class ProjectSettings(unittest.TestCase):
                     from mod_editor.core import nfl2k5_history_pool as history
                     from mod_editor.core import nfl2k5_rookie_faces as faces
                     self.assertEqual(history.status(before), "previous")
+                    # b81 game outcomes: and the simulated-outcomes page that rides with the realism owner, then
+                    # b81 rookie-faces: rookie faces' current revision (the discs carry GEN1)
+                    paged, outcomes = mod_build._sim_outcomes_with_realism(current)
                     self.assertEqual(faces.xbe_revision(before), "gen1")
-                    result = history.apply(faces.upgrade_xbe(aim.apply(current)[0])[0])[0]
+                    result = history.apply(faces.upgrade_xbe(aim.apply(paged)[0])[0])[0]
                     self.assertEqual(faces.xbe_status(result), "applied")
                     # b81 ot-crash review D3: then the playoff overtime crash fix (both discs: overtime "previous")
                     result, crash_fix = mod_build._overtime_crash_fix_upgrade(result)
@@ -117,6 +120,7 @@ class ProjectSettings(unittest.TestCase):
                         "rookie_faces_upgraded": True, "history_pool_upgraded": True,
                         "overtime_crash_fix": sorted(crash_fix) if crash_fix else [],
                         "settings": medical.read_settings(current),
+                        "sim_outcomes_added": not outcomes["already_applied"],
                         "stability_reference": {"source": "disc roster", "roster_sha256": roster,
                                                 "starters": [list(row) for row in code.STABILITY_CALIBRATION],
                                                 "reference": list(code.STABILITY_REFERENCE)},
@@ -342,8 +346,9 @@ class StudioControls(unittest.TestCase):
         self.assertEqual(panel.plan().sim_qb_injuries, "retail")
         self.assertTrue(panel.has_work())
         self.assertIn("Simulated injuries (Retail)", panel.selected_labels())
-        # An earlier revision (slices 1, 2 and 3) at the same mode is still a change: Build upgrades it in place.
-        for revision, labelled in ((1, True), (2, True), (3, True), (4, False)):
+        # An earlier revision (slices 1, 2 and 3, and revision 4 since the kicker and punter rows) at the same mode is
+        # still a change: Build upgrades it in place.
+        for revision, labelled in ((1, True), (2, True), (3, True), (4, True), (5, False)):
             with self.subTest(installed_revision=revision):
                 panel.apply_state({**self.retail_state, "sim_qb_injuries": "applied", "sim_qb_injury_settings": {
                     "status": "applied", "mode": "realistic", "custom_rate": .310, "revision": revision}})

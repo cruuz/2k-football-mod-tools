@@ -1,5 +1,6 @@
 """b81 slices 2 and 3 and the long-franchise stability (pos2/DESIGN.md and pos3/DESIGN.md section 6 test 4, addendum A.6
-test 3): Simulated injuries through the real Studio build path, revision 4.
+test 3): Simulated injuries through the real Studio build path, revision 4 (revision 5 since b81 game outcomes: the
+kicker and punter rows; revision 4 installs, written with the frozen module, upgrade in place like slices 1-3).
 
 The first pass is the branch's own request expression, evaluated inside mod_build._build on the resolved plan
 (read-only preflight on the private retail disc). Every later step is the real installer: K128, the running-back
@@ -91,7 +92,8 @@ def _older_install(physical, mode, rate, revision):
     from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice1 as slice1
     from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice2 as slice2
     from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice3 as slice3
-    frozen = {1: slice1, 2: slice2, 3: slice3}[revision]
+    from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_v4 as v4   # b81 game outcomes: revision 5 is current
+    frozen = {1: slice1, 2: slice2, 3: slice3, 4: v4}[revision]
     physical = _reserved(physical)
     image = XbeImage(physical)
     bank, = (r for r in space.layout(physical)["allocations"] if r["owner"] == qb.OWNER)
@@ -225,7 +227,7 @@ class _BuildPath(unittest.TestCase):
                 fresh = self.run_order(start, order, self.steps["option"])
                 blank = self.run_order(start, order, _reserved)
                 older = {revision: self.run_order(start, order, lambda x, r=revision: _older_install(
-                    x, plan.sim_qb_injuries, units, r)) for revision in (1, 2, 3)}
+                    x, plan.sim_qb_injuries, units, r)) for revision in (1, 2, 3, 4)}
                 self.assertEqual(_rows(fresh), _rows(blank))
                 for old in older.values():
                     self.assertEqual(_rows(old), _rows(blank))
@@ -255,7 +257,7 @@ class _BuildPath(unittest.TestCase):
                     self.assertEqual(qb.read_settings(old).get("revision"), revision)
                 settings = qb.read_settings(fresh)
                 self.assertEqual((settings["status"], settings["mode"], settings.get("revision"),
-                                  settings.get("positions")), ("applied", plan.sim_qb_injuries, 4, units > 0))
+                                  settings.get("positions")), ("applied", plan.sim_qb_injuries, qb.REVISION, units > 0))
                 self.assertEqual(round(settings["custom_rate"] * 1000), units)
                 self.assertEqual(qb.apply(restored, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)[0], fresh)
                 finals[label] = fresh
@@ -384,7 +386,10 @@ class InPlaceUpgrades(_BuildPath):
         # b81 combined calibration: Realistic and Custom also update v0.9's pass protection (its centre read the retail
         # .rdata float) to this release's centre float; Retail leaves it as v0.9 shipped it.
         self.assertEqual((pressure.status(source), pressure.status(without)), ("legacy", "legacy"))
-        blank = space.extend_scaleout(pressure.apply(simulator.apply(without)[0])[0], qb.REQUESTS)[0]
+        # b81 game outcomes: with Simulated season realism the route also installs the simulated-outcomes page (after
+        # the simulator, before pass protection: _update_v09_disc's order)
+        outcomes = lambda payload: mod_build._sim_outcomes_with_realism(payload)[0]
+        blank = space.extend_scaleout(pressure.apply(outcomes(simulator.apply(without)[0]))[0], qb.REQUESTS)[0]
         rows = _rows(source)
         for mode, rate in (("realistic", .310), ("custom", 0.0), ("custom", 100.0)):
             with self.subTest(mode=mode, custom_rate=rate):
@@ -403,18 +408,18 @@ class InPlaceUpgrades(_BuildPath):
                 # The same route as slices 1 and 2 wrote it, upgraded in place (the route updates pass protection
                 # before the option); Retail from each.
                 older = {revision: _older_install(simulator.apply(without)[0], mode, units, revision)
-                         for revision in (1, 2, 3)}
+                         for revision in (1, 2, 3, 4)}
                 self.assertNotEqual(older[3], fresh)
                 for revision, old in older.items():
                     self.assertEqual(pressure.status(old), "legacy")
-                    upgraded, receipt = qb.apply(pressure.apply(old)[0], mode, custom_rate=rate)
+                    upgraded, receipt = qb.apply(pressure.apply(outcomes(old))[0], mode, custom_rate=rate)
                     self.assertEqual(receipt.get("upgraded_from"), f"slice{revision}")
                     self.assertEqual(upgraded, fresh)
                     self.assertEqual(qb.apply(old, "retail")[0], legacy_blank)
                     self.assertEqual(qb.read_settings(old).get("revision"), revision)
                 settings = qb.read_settings(fresh)
                 self.assertEqual((settings["mode"], settings.get("revision"), settings.get("positions")),
-                                 (mode, 4, units > 0))
+                                 (mode, qb.REVISION, units > 0))
                 self.record(f"update-v09 {mode} {units}", option=fresh, retail=blank, slice1=older[1], slice2=older[2],
                             slice3=older[3])
 
@@ -468,7 +473,7 @@ class InPlaceUpgrades(_BuildPath):
         self.assertEqual(receipt.get("upgraded_from"), "slice1")
         settings = qb.read_settings(source)
         self.assertEqual((settings["mode"], settings.get("revision"), settings.get("positions")), ("realistic", 1, False))
-        self.assertEqual(qb.read_settings(upgraded).get("revision"), 4)
+        self.assertEqual(qb.read_settings(upgraded).get("revision"), qb.REVISION)   # 5 since the kicker and punter
         self.assertEqual(qb.apply(retail, "realistic")[0], upgraded)
         # Slice 2 and slice 3 installs on the same executable upgrade to the same bytes.
         later = {revision: _older_install(retail, "realistic", 310, revision) for revision in (2, 3)}

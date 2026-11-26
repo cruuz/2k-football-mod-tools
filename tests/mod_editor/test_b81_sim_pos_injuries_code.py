@@ -21,6 +21,7 @@ from mod_editor.core import nfl2k5_sim_qb_injuries_code as rules
 from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice1 as frozen
 from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice2 as frozen2
 from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_slice3 as frozen3
+from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_v4 as frozen4  # b81 game outcomes
 from mod_editor.core import nfl2k5_sim_rb_injuries as running_backs
 from mod_editor.core import nfl2k5_xbe_space as space
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
@@ -36,6 +37,7 @@ SLICE1_SHA256 = 'ab914dbc3989ecaf33799f95c0e555027c2ae097758e97b425b655227ceded3
 SLICE2_SHA256 = '392af556f5f034cc72da325931885b7a5b109f34d3e7112a8c5792b8f7e23329'
 # The bytes of `git show 712835585:mod_editor/core/nfl2k5_sim_qb_injuries_code.py`, the handed-over slice 3 head.
 SLICE3_SHA256 = '91184562d94f80fe78feec3cc80d78d2ab5df39dc90213e55ca0419df15f232f'
+V4_SHA256 = 'd0c34226fe9ed023c88ee57ec105d76d00c349e86166244b430893d7338e2284'   # b81 game outcomes: revision 4 (bb5a408b1), frozen when revision 5 added K and P
 # The only template bytes that differ from the frozen slice 2 template: inside the positions piece, which now ends at
 # 0x1AF5 (slice 2's ended at 0x1B39; the rest of both is 0xCC fill up to 0x2000).
 CHANGED_FROM_SLICE2 = (0x1402, 0x1B39)
@@ -73,6 +75,61 @@ def _without_stability(build):
     for name in ('STABILITY', 'STAB_FACTOR'):
         del build.LOCAL[name]
     del build.EXPORTED['stability']
+
+
+# b81 game outcomes, revision 5: every positions.S change it made (current lines -> revision 4 lines; a tuple is a run
+# of consecutive lines, matched exactly once; an empty replacement deletes it).
+KICKER_PUNTER_EDITS = (
+    (('.set SLOT_COUNT, 29', '.set CLASS_COUNT, 14',
+      '.set STAB_CLASSES, 12                  # classes with a long-franchise factor; kicker and punter (12, 13) take none'),
+     ('.set SLOT_COUNT, 27', '.set CLASS_COUNT, 12')),
+    (('    cmp ecx, STAB_CLASSES',
+      '    jae no_factor                       # b81 game outcomes: the kicker and punter classes have no stability factor',
+      '    fmul DWORD PTR [STAB_FACTOR+ecx*4]  # the class\'s factor, exactly 1.0 in seasons one and two',
+      'no_factor:'),
+     ('    fmul DWORD PTR [STAB_FACTOR+ecx*4]  # the class\'s factor, exactly 1.0 in seasons one and two',)),
+    (('    and eax, 3                          # rule: 0 every scrimmage play, 1 rushing ball carrier, 2 rush play, 3 specialists',
+      '    jz exposed',
+      '    cmp eax, 3',
+      '    je specialists'),
+     ('    and eax, 3                          # rule: 0 every scrimmage play, 1 rushing ball carrier, 2 rush play',
+      '    jz exposed')),
+    (('    jne next',
+      '    jmp exposed',
+      'specialists:',
+      '    # rule 3 (b81 game outcomes, coordinator R3 ruling): the kicker and punter rows count only while both specialist',
+      '    # slots of that side hold their own specialists (stored position 1 in slot 32, 2 in slot 14). While either is out,',
+      '    # the other covers both jobs unexposed, so injuries alone cannot leave a club without both specialists.',
+      '    mov eax, [ecx+32*4+8]', '    test eax, eax', '    jz next', '    cmp BYTE PTR [eax+0x35], 1', '    jne next',
+      '    mov eax, [ecx+14*4+8]', '    test eax, eax', '    jz next', '    cmp BYTE PTR [eax+0x35], 2', '    jne next',
+      'exposed:'),
+     ('    jne next', 'exposed:')),
+    (('pos_hits: .zero 4*CLASS_COUNT',), ('pos_hits: .zero 48',)),
+    (('pos_commits: .zero 4*CLASS_COUNT',), ('pos_commits: .zero 48',)),
+    (('pos_effective: .zero 4*CLASS_COUNT',), ('pos_effective: .zero 48',)),
+    (('pos_scale: .zero 4*CLASS_COUNT          # CLASS_COUNT floats, installer',),
+     ('pos_scale: .zero 48                     # CLASS_COUNT floats, installer',)),
+    (('pos_zero: .zero 4*CLASS_COUNT           # CLASS_COUNT dwords, installer: the zero point K per class',),
+     ('pos_zero: .zero 48                      # CLASS_COUNT dwords, installer: the zero point K per class',)),
+    (('pos_accept: .zero 24*CLASS_COUNT        # CLASS_COUNT tables of six thresholds by week group, installer',),
+     ('pos_accept: .zero 288                   # CLASS_COUNT tables of six thresholds by week group, installer',)),
+    (('    # b81 game outcomes (coordinator R2/R3): the kicker (lineup slot 32) and the punter (slot 14) of the offense, on every',
+      '    # scrimmage play of their offense while both slots hold their own specialists (rule 3), LAST in the walk so every',
+      '    # earlier entry\'s hit decision is unchanged.',
+      '    .byte 12, 0, 32, 3',
+      '    .byte 13, 0, 14, 3'), ()),
+)
+
+
+def _revert_kicker_punter(folder):
+    """Turn copied revision 5 sources back into revision 4's (each changed run of lines exactly once)."""
+    text = (folder / 'positions.S').read_text().split('\n')
+    for current, original in KICKER_PUNTER_EDITS:
+        found = [n for n in range(len(text) - len(current) + 1)
+                 if [line.rstrip() for line in text[n:n + len(current)]] == list(current)]
+        assert len(found) == 1, (current[0], found)
+        text[found[0]:found[0] + len(current)] = list(original)
+    (folder / 'positions.S').write_text('\n'.join(text))
 # pos2/DESIGN.md section 2 and pos3/DESIGN.md section 1: class, side (0 offense, 1 defense), lineup slot, flags
 # (bits 0-1 the rule: 0 every scrimmage play, 1 rushing ball carrier, 2 rush play; bits 4-7 the weight in sixteenths).
 SLOTS = ((0, 0, 12, 0), (0, 0, 13, 0), (1, 0, 10, 0), (1, 0, 11, 0), (2, 0, 9, 0), (3, 1, 15, 0), (3, 1, 16, 0),
@@ -80,6 +137,8 @@ SLOTS = ((0, 0, 12, 0), (0, 0, 13, 0), (1, 0, 10, 0), (1, 0, 11, 0), (2, 0, 9, 0
          (5, 0, 4, 0), (5, 0, 5, 0), (5, 0, 6, 0), (5, 0, 7, 0x40), (6, 0, 8, 0), (7, 0, 2, 0x02), (8, 1, 17, 0),
          (8, 1, 18, 0), (9, 1, 19, 0), (9, 1, 20, 0), (9, 1, 21, 0), (9, 1, 22, 0x40), (10, 1, 24, 0),
          (10, 1, 25, 0), (10, 1, 26, 0), (11, 1, 23, 0), (11, 1, 27, 0), (11, 1, 28, 0x40))
+# b81 game outcomes, revision 5: the offense's kicker (slot 32) and punter (slot 14), every scrimmage play, walked last.
+KICKER_PUNTER_SLOTS = ((12, 0, 32, 3), (13, 0, 14, 3))   # rule 3: while both specialists play
 # pos3/DESIGN.md section 2: weeks 0-1, 2, 3, 4-7, 8-15, 16-31.
 WEEK_GROUPS = (0, 0, 1, 2) + (3,) * 4 + (4,) * 8 + (5,) * 16
 
@@ -182,7 +241,8 @@ class GeneratedTemplate(unittest.TestCase):
         self.assertLess(POSITIONS_END, 0x2000)
 
     def test_the_frozen_modules_are_slices_1_2_and_3_byte_for_byte_under_two_comment_lines(self):
-        for module, digest in ((frozen, SLICE1_SHA256), (frozen2, SLICE2_SHA256), (frozen3, SLICE3_SHA256)):
+        for module, digest in ((frozen, SLICE1_SHA256), (frozen2, SLICE2_SHA256), (frozen3, SLICE3_SHA256),
+                               (frozen4, V4_SHA256)):
             first, second, body = Path(module.__file__).read_bytes().split(b'\n', 2)
             self.assertTrue(first.startswith(b'# FROZEN') and second.startswith(b'# '))
             self.assertEqual(hashlib.sha256(body).hexdigest(), digest)
@@ -190,7 +250,8 @@ class GeneratedTemplate(unittest.TestCase):
         self.assertFalse(hasattr(frozen, 'MARK_SIGNATURE'))
         self.assertEqual(frozen2.MARK_SIGNATURE, b'QBMEDv2\0')
         self.assertEqual(frozen3.MARK_SIGNATURE, b'QBMEDv3\0')
-        self.assertEqual(rules.MARK_SIGNATURE, b'QBMEDv4\0')
+        self.assertEqual(frozen4.MARK_SIGNATURE, b'QBMEDv4\0')
+        self.assertEqual(rules.MARK_SIGNATURE, b'QBMEDv5\0')   # b81 game outcomes: + kicker and punter classes
         self.assertEqual((rules.MARK_OFFSET, rules.MARK_SIZE), (frozen3.MARK_OFFSET, frozen3.MARK_SIZE))
         self.assertEqual(rules._TEMPLATE[rules.MARK_OFFSET:rules.MARK_OFFSET + rules.MARK_SIZE], b'\xcc' * rules.MARK_SIZE)
         self.assertEqual(frozen3.MARK_SIZE, struct.calcsize('<8sIII'))
@@ -199,7 +260,9 @@ class GeneratedTemplate(unittest.TestCase):
 
 class StabilityTemplate(unittest.TestCase):
     """pos3/DESIGN.md addendum A.6 test 2: build.py --check, and the template equals the frozen slice 3 template outside
-    the stability piece and the two edits in each of the clinical and positions pieces (and what follows them)."""
+    the stability piece and the two edits in each of the clinical and positions pieces (and what follows them).
+    Since revision 5 (b81 game outcomes) these are facts of the frozen revision 4 module; KickerPunterTemplate below
+    relates revision 5 to it."""
 
     def test_build_check_passes_and_slice_3_sources_changed_only_by_the_four_lines_and_the_piece(self):
         _toolchain()
@@ -214,6 +277,7 @@ class StabilityTemplate(unittest.TestCase):
             for source in TOOLS.iterdir():
                 if source.suffix in ('.S', '.c') and source.name != 'stability.S':
                     shutil.copy(source, folder / source.name)
+            _revert_kicker_punter(folder)
             _strip_stability(folder)
             build.HERE = folder
             _without_stability(build)
@@ -222,6 +286,7 @@ class StabilityTemplate(unittest.TestCase):
         self.assertEqual(text[text.index(build.DIVIDER):], generated)
 
     def test_template_equals_the_frozen_slice_3_template_outside_the_stated_ranges(self):
+        rules = frozen4                                  # revision 4's template (frozen since revision 5)
         old, new = frozen3._TEMPLATE, rules._TEMPLATE
         self.assertEqual((len(old), len(new)), (rules.CODE_SIZE, rules.CODE_SIZE))
         differ = [n for n in range(len(new)) if old[n] != new[n]]
@@ -267,6 +332,11 @@ class StabilityTemplate(unittest.TestCase):
         self.assertEqual({name: rules.LABELS[name] for name in unmoved}, {name: frozen3.LABELS[name] for name in unmoved})
 
     def test_the_four_lines_link_to_the_piece_and_its_factor_table(self):
+        for module in (frozen4, rules):                  # revision 4 and revision 5 (the same four lines)
+            with self.subTest(revision=module.MARK_SIGNATURE):
+                self._four_lines(module)
+
+    def _four_lines(self, rules):
         linked = rules._link_authored(BANK, SIM, DATA, LINEUP + 0x455)
         L = rules.LABELS
         factor = BANK + L['stab_factor']
@@ -276,12 +346,56 @@ class StabilityTemplate(unittest.TestCase):
         # evaluate_gate: fld [table]; fmul [slider]; fmul [stab_factor+48]; fild [gate sample]
         self.assertEqual(clinical.count(b'\xd8\x0d' + struct.pack('<I', 0xE60204) + b'\xd8\x0d' + struct.pack('<I', factor + 48)
                                         + b'\xdb\x05' + struct.pack('<I', BANK + L['private_rng'] - 20)), 1)
-        # effective: fld [pos_scale+ecx*4]; fmul [slider]; fmul [stab_factor+ecx*4]; fistp qword [pos_wide]
+        # effective: fld [pos_scale+ecx*4]; fmul [slider]; fmul [stab_factor+ecx*4]; fistp qword [pos_wide]. Revision 5
+        # (b81 game outcomes) skips the factor for classes 12 and 13 (kicker, punter): cmp ecx, 12; jae over the fmul.
+        skip = b'\x83\xf9\x0c\x73\x07' if rules.MARK_SIGNATURE == b'QBMEDv5\0' else b''
         positions = bytes(linked[0x1400:0x1C00])
-        self.assertEqual(positions.count(b'\xd8\x0d' + struct.pack('<I', 0xE60204) + b'\xd8\x0c\x8d'
+        self.assertEqual(positions.count(b'\xd8\x0d' + struct.pack('<I', 0xE60204) + skip + b'\xd8\x0c\x8d'
                                          + struct.pack('<I', factor) + b'\xdf\x3d' + struct.pack('<I', BANK + L['pos_wide'])), 1)
         self.assertEqual(L['stab_count'], L['stab_sum'] + 52)            # one loop clears both
         self.assertEqual(L['stab_factor'] % 4, 0)
+
+
+class KickerPunterTemplate(unittest.TestCase):
+    """b81 game outcomes, revision 5: the current sources less exactly the kicker and punter edits regenerate the frozen
+    revision 4 module byte for byte, and the template differs from revision 4's only inside the positions piece."""
+
+    def test_current_sources_without_the_kicker_punter_edits_regenerate_revision_4(self):
+        _toolchain()
+        build = _build_module()
+        with tempfile.TemporaryDirectory(prefix='2k5-v4-') as folder:
+            folder = Path(folder)
+            for source in TOOLS.iterdir():
+                if source.suffix in ('.S', '.c'):
+                    shutil.copy(source, folder / source.name)
+            _revert_kicker_punter(folder)
+            build.HERE = folder
+            generated = build.render()
+        text = Path(frozen4.__file__).read_text(encoding='utf-8')
+        self.assertEqual(text[text.index(build.DIVIDER):], generated)
+
+    def test_template_differs_from_revision_4_only_inside_the_positions_piece(self):
+        old, new = frozen4._TEMPLATE, rules._TEMPLATE
+        self.assertEqual((len(old), len(new)), (rules.CODE_SIZE, rules.CODE_SIZE))
+        differ = [n for n in range(len(new)) if old[n] != new[n]]
+        self.assertEqual(hex(differ[0]), '0x1402')
+        end = max(n for n in range(0x1400, 0x1C00) if new[n] != 0xCC) + 1
+        self.assertLessEqual(differ[-1] + 1, end)
+        self.assertEqual(new[end:0x1C00], b'\xcc' * (0x1C00 - end))      # still ends before the stability piece
+        self.assertEqual(set(rules.LABELS), set(frozen4.LABELS))
+        moved = {name for name in rules.LABELS if rules.LABELS[name] != frozen4.LABELS[name]}
+        self.assertTrue(all(0x1400 <= frozen4.LABELS[name] < 0x1C00 and 0x1400 <= rules.LABELS[name] < 0x1C00
+                            for name in moved), moved)
+        # Relocations outside the piece are revision 4's, only with the moved labels' new offsets.
+        new_offset = {frozen4.LABELS[name]: rules.LABELS[name] for name in moved}
+        outside = lambda rows: [row for row in rows if not 0x1400 <= row[0] < 0x1C00]
+        self.assertEqual(outside(rules._RELOCATIONS),
+                         [(at, relative, family, new_offset.get(addend, addend) if family == 'bank' else addend)
+                          for at, relative, family, addend in outside(frozen4._RELOCATIONS)])
+        self.assertEqual(rules._LOCAL_FUNCTIONS, frozen4._LOCAL_FUNCTIONS)
+        self.assertEqual(rules.LABELS['pos_slots'] + 4 * 29, rules.LABELS['pos_enabled'])   # 29 rows of four bytes
+        self.assertEqual(bytes(new[rules.LABELS['pos_slots'] + 4 * 27:rules.LABELS['pos_slots'] + 4 * 29]),
+                         bytes((12, 0, 32, 3, 13, 0, 14, 3)))   # rule 3: only while both specialists play
 
 
 class StabilityTables(unittest.TestCase):
@@ -304,7 +418,11 @@ class StabilityTables(unittest.TestCase):
     def test_constants_are_the_measured_references_and_the_designs_rule(self):
         self.assertEqual(rules.STABILITY_REFERENCE, (17.627, 18.847, 18.803, 19.526, 17.703, 22.138, 20.803, 21.261,
                                                      20.343, 20.551, 23.144, 21.840, 25.807))   # order S0, 64001-64004
-        self.assertEqual(rules.STABILITY_CLASS_NAMES, tuple(p.name for p in rules.POSITION_CLASSES) + ('quarterback',))
+        # Revision 5 (b81 game outcomes): the kicker and punter classes take no factor; the thirteen stay these.
+        self.assertEqual(rules.STABILITY_POSITION_CLASSES, rules.POSITION_CLASSES[:12])
+        self.assertEqual(tuple(p.name for p in rules.POSITION_CLASSES[12:]), ('kicker', 'punter'))
+        self.assertEqual(rules.STABILITY_CLASS_NAMES, tuple(p.name for p in rules.STABILITY_POSITION_CLASSES) + ('quarterback',))
+        self.assertEqual(rules.STABILITY_CLASS_NAMES, frozen4.STABILITY_CLASS_NAMES)
         self.assertEqual((rules.STABILITY_MODE, rules.STABILITY_CLASSES_OFF, rules.STABILITY_YEAR_SLOPE),
                          ('adaptive', (), .055))
         self.assertEqual(rules.STABILITY_MODES, {'off': 0, 'year': 1, 'adaptive': 2})
@@ -389,16 +507,17 @@ class PositionTables(unittest.TestCase):
                 bank = rules.bank_bytes(self.image.read, BANK, SIM, DATA, LINEUP, rate=rate)
                 self.assertEqual(self.installed(bank), self.expected(rate))
                 L = rules.LABELS
-                self.assertEqual(bank[L['pos_slots']:L['pos_slots'] + 4 * len(SLOTS)], bytes(sum(SLOTS, ())))
-                self.assertEqual(L['pos_enabled'], L['pos_slots'] + 4 * len(SLOTS))
+                walk = SLOTS + KICKER_PUNTER_SLOTS
+                self.assertEqual(bank[L['pos_slots']:L['pos_slots'] + 4 * len(walk)], bytes(sum(walk, ())))
+                self.assertEqual(L['pos_enabled'], L['pos_slots'] + 4 * len(walk))
                 self.assertEqual(bank[L['pos_week_group']:L['pos_week_group'] + 32], bytes(WEEK_GROUPS))
                 self.assertEqual(struct.unpack_from('<4i', bank, L['pos_year']), (-1, -1, -1, -1))
                 self.assertEqual([L[name] - L['pos_year'] for name in ('pos_week', 'pos_club_a', 'pos_club_b')],
                                  [4, 8, 12])
                 for name, size in (('pos_key', 4), ('pos_seq', 4), ('pos_hash', 4), ('pos_sample', 4),
                                    ('pos_wide', 8), ('pos_class', 4), ('victim_side', 4), ('victim_slot', 4),
-                                   ('accept_ptr', 4), ('pos_plays', 4), ('pos_hits', 48), ('pos_commits', 48),
-                                   ('pos_effective', 48)):
+                                   ('accept_ptr', 4), ('pos_plays', 4), ('pos_hits', 56), ('pos_commits', 56),
+                                   ('pos_effective', 56)):   # 14 classes since revision 5
                     self.assertEqual(bank[L[name]:L[name] + size], bytes(size), name)
         with mock.patch.object(rules, 'HALFBACK_SUPPLEMENT', False):
             bank = rules.bank_bytes(self.image.read, BANK, SIM, DATA, LINEUP, rate=rules.DEFAULT_RATE)
@@ -409,8 +528,14 @@ class PositionTables(unittest.TestCase):
                          [('tackle', 110, 93), ('guard', 110, 91), ('center', 110, 91), ('end', 100, 81),
                           ('halfback', 100, 83), ('receiver', 100, 78), ('tight_end', 100, 80), ('fullback', 105, 85),
                           ('defensive_tackle', 100, 80), ('linebacker', 100, 79), ('cornerback', 100, 78),
-                          ('safety', 100, 78)])
+                          ('safety', 100, 78), ('kicker', 100, 85), ('punter', 100, 88)])
         self.assertEqual(rules.POSITION_CLASSES[:5], frozen2.POSITION_CLASSES)   # slice 2's rows are not touched
+        self.assertEqual(rules.POSITION_CLASSES[:12], frozen4.POSITION_CLASSES)  # revision 4's rows are not touched
+        # Revision 5: kicker and punter onsets start at the slices' 0.8 targets (coordinator R2: 1.22 and 0.53 per 100
+        # starter-games), the starters' base-roster Durability as reference, and the tight end's acceptance by week.
+        tight_end = rules.POSITION_CLASSES[6]
+        self.assertEqual([(p.base_chance, p.accept) for p in rules.POSITION_CLASSES[12:]],
+                         [(229_000, tight_end.accept), (99_000, tight_end.accept)])
         self.assertEqual(rules.ACCEPT_WEEK_BOUNDARIES, (1, 2, 3, 7, 15, 31))
         self.assertEqual(rules.POSITION_WEEK_GROUPS, WEEK_GROUPS)
         self.assertIs(rules.HALFBACK_SUPPLEMENT, True)

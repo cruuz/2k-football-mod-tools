@@ -144,6 +144,7 @@ OWNER_BYTES = {
     "awards": (space.AWARDS_SIZE, 0, 0, 0, 0),  # b81 awards: the season vote and All-Pro team, one fixed page
     "franchise_ownership": (space.FRANCHISE_OWNERSHIP_SIZE, 0, 0, 0, 0),
     "injured_reserve": (6144, 0, 0, 0, 5312),  # Modern IR, franchise ownership checks and the 32-club IR store.
+    "sim_outcomes": (space.SIM_OUTCOMES_SIZE, 0, 0, 0, 0),  # b81 game outcomes: one fixed page, with Simulated realism
 }
 
 # Keep the calibrated release layout for comparisons against the actual RC executable.
@@ -163,6 +164,9 @@ INFRASTRUCTURE = ("xbe_space_directory", "boot_logo", "moment_context")
 def _modern(value):
     return value not in (None, False, "", "retail", 0)
 
+
+# b81 game outcomes: one fixed page at space.SIM_OUTCOMES_VA (after the modern jersey numbers page)
+LEGACY_REQUESTS["sim_outcomes"] = (("code", 4096, 4096),)
 
 # owner -> the plan fields that install it (any of them); INFRASTRUCTURE rides with any space owner
 # b81 modern numbers: one fixed page at space.MODERN_NUMBERS_VA (after the CPU trades lane's two pages)
@@ -335,7 +339,10 @@ team_sleeves the1wam_lineman_rating throw trophy_room weather_haze weekly_prep w
 weekly_progression widescreen xemu_display_list_fix zone_drop_cap""".split())
 RC_VALUES = {"momentum": 50, "momentum_collision_level": 50, "cpu_money_downs": "modern2", "cpu_scrambles": "modern",
              "team_number_scale": {"13A0": 1.1, "13H0": 1.1}, "modern_venues_2026": "2026 venue art",
-             "roster_capacity": True, "roster_draft_pick_ownership": True, "roster_hback_roles": True}
+             "roster_capacity": True, "roster_draft_pick_ownership": True, "roster_hback_roles": True,
+             # b81 game outcomes: the RC predates the simulated-outcomes page that now rides with sim_realism (a pseudo
+             # field: a plan without it, a Studio build of this release, gets the page with Simulated season realism)
+             "sim_outcomes_page": False}
 RC_VALUES["modern_numbers"] = False   # b81 modern numbers: the v0.9 pack had none (its season_2026 would select it)
 RC_VALUES["award_vote"] = False   # b81 awards: the v0.9 pack had no award vote (its honors page installs it from beta 81)
 # b81 awards (review M1): the Studio's v0.9 update installs the award vote on the released v0.9 executable (honors.apply);
@@ -556,6 +563,10 @@ def owners(opts: dict, target_mb: int = 64) -> list:
     value = opts.get("award_vote")
     if value is True or (value is None and on(opts, "honors_page")):
         out.append("awards")
+    # b81 game outcomes: the simulated-outcomes page rides with Simulated season realism (not on the v0.9 RC or v0.8,
+    # whose anchors predate it: their plans carry sim_outcomes_page False)
+    if on(opts, "sim_realism") and opts.get("sim_outcomes_page", True) is not False:
+        out.append("sim_outcomes")
     return out + list(INFRASTRUCTURE) if out else out
 
 
@@ -607,6 +618,9 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     if "awards" in found:  # b81 awards: its fixed page at 0x1531000 (installed with the honors owner)
         last = space.AWARDS_VA + space.AWARDS_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "sim_outcomes" in found:  # b81 game outcomes: its fixed page after the modern jersey numbers page
+        last = space.SIM_OUTCOMES_VA + space.SIM_OUTCOMES_SIZE - space.POOL_VA
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     return RETAIL_RESIDENT + LEGACY_SPACE + SCALEOUT_V3 + pool + extra
 
@@ -856,7 +870,7 @@ PROFILE_64_TRIM = ("scorebug", "scorebug_runtime", "hair_styles", "kick_meter_20
 # b81 ot-crash: the show block guard (five in-place sites, a retail crash path after an overtime score; no allocation).
 PROFILE_64_ON = ("history_pool", "load_user_team_guard", "save_list_type_guard", "edition_save_notes", "show_block_guard")
 PSEUDO_FIELDS = frozenset(("roster_capacity", "roster_draft_pick_ownership", "roster_hback_roles",
-                           "cpu_money_downs_modern2"))
+                           "cpu_money_downs_modern2", "sim_outcomes_page"))
 PROFILE_64_ROSTER = ("roster edits at retail capacity without the draft_pick_ownership and hback_roles sections: "
                      "tools/nfl2k5_roster_retail_fit.py fit --drop-xbe-sections")
 

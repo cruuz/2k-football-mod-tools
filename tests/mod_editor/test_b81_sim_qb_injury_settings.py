@@ -52,7 +52,7 @@ class NativeSettingsTests(unittest.TestCase):
             with self.subTest(percent=custom_rate):
                 reviewed, _ = qb.apply(self.enabled, 'custom', custom_rate=custom_rate)
                 self.assertEqual(qb.read_settings(reviewed), {'mode':'custom','status':'applied','custom_rate':custom_rate,
-                                                              'revision':4,'positions':custom_rate > 0})
+                                                              'revision':qb.REVISION,'positions':custom_rate > 0})
                 self.assertEqual(qb.physical_view(reviewed), blank)
                 self.assertEqual(qb.apply(reviewed)[0], self.enabled)
                 self.assertEqual(qb.apply(reviewed, 'retail')[0], blank)
@@ -175,6 +175,99 @@ class NativeSettingsTests(unittest.TestCase):
         enabled=qb.apply(foreign)[0]
         self.assertEqual(senior.status(enabled),'foreign')
         self.assertEqual(qb.apply(enabled,'retail')[0],foreign)
+
+
+
+class RevisionFourUpgradesInPlace(unittest.TestCase):
+    """b81 game outcomes (revision 5, the kicker and punter rows): a disc built before revision 5 holds a revision 4
+    bank. It reads as revision 4 through the frozen revision 4 module (not "foreign"), keeps its thirteen stability
+    references and its kicking parameters through an in-place upgrade, and Retail restores the same physical bytes from
+    either revision. The revision 4 bank is linked by the frozen module, whose bytes are pinned on retail in
+    test_b81_sim_qb_injuries_code.py; the real-disc counterpart is RealDiscRevisionFour below."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_v4 as v4
+        from mod_editor.core import nfl2k5_sim_scoring as scoring
+        clean = retail_bytes()
+        labeled = positions.apply(edge.apply(clean)[0])[0]
+        paired = pools.apply(labeled, roster_has_olb=True)[0]
+        standard = space.apply(paired, (*memory.REQUESTS, *simulator.REQUESTS, *lineup.REQUESTS), scaleout=True)[0]
+        standard = simulator.apply(memory.apply(standard, require=True)[0])[0]
+        cls.roles = lineup.apply(standard, third_down=False)[0]
+        cls.blank = space.extend_scaleout(cls.roles, qb.REQUESTS)[0]
+        # A disc stability-measured to other references, so "kept" cannot pass by coincidence with the frozen R.
+        cls.reference = qb._reference32(tuple(value + 1.5 for value in v4.STABILITY_REFERENCE))
+        setting = qb._Setting('realistic', qb.REALISTIC_RATE, 4, cls.reference)
+        bank = qb._bank_allocation(cls.blank)
+        cls.kick = scoring.parameters(breakaway_stop_beyond=70)
+        cls.v4 = qb._transform(cls.blank, qb._edits(cls.blank, bank, setting, kicking=cls.kick), restoring=False)
+        cls.v4_bank = (bank['va'], bank['size'])
+
+    def test_revision_four_reads_as_itself(self):
+        from mod_editor.core import nfl2k5_sim_qb_injuries_code_b81_v4 as v4
+        self.assertEqual(qb.read_settings(self.v4), {'status': 'applied', 'mode': 'realistic', 'custom_rate': .31,
+                                                     'revision': 4, 'positions': True})
+        self.assertEqual(qb.installed_reference(self.v4), self.reference)
+        self.assertEqual(qb.physical_view(self.v4), self.blank)
+        image = XbeImage(self.v4)
+        self.assertEqual(image.read(self.v4_bank[0] + v4.MARK_OFFSET, 8), b'QBMEDv4\0')
+
+    def test_upgrade_in_place_keeps_references_kicking_and_allocations(self):
+        from mod_editor.core import nfl2k5_sim_scoring as scoring
+        upgraded, receipt = qb.apply(self.v4, 'realistic', breakaway_stop=self.kick['breakaway_stop_beyond'])
+        self.assertEqual((receipt['status'], receipt['revision'], receipt['upgraded_from']), ('applied', qb.REVISION, 'slice4'))
+        self.assertEqual(receipt['file_growth'], 0)
+        self.assertEqual(qb.read_settings(upgraded)['revision'], qb.REVISION)
+        self.assertEqual(qb.installed_reference(upgraded), self.reference)
+        self.assertEqual(scoring.installed(upgraded), ('applied', self.kick))
+        self.assertEqual(space.layout(upgraded)['allocations'], space.layout(self.v4)['allocations'])
+        self.assertEqual(qb.physical_view(upgraded), self.blank)
+        self.assertEqual(qb.apply(upgraded, 'retail')[0], qb.apply(self.v4, 'retail')[0])
+        # The same setting written fresh over the physical executable gives the same bytes as the upgrade.
+        fresh, _ = qb.apply(self.blank, 'realistic', breakaway_stop=self.kick['breakaway_stop_beyond'],
+                            reference=self.reference)
+        self.assertEqual(upgraded, fresh)
+
+
+class RealDiscRevisionFour(unittest.TestCase):
+    """The frozen combined candidate 8b180ed5 (pos3 combined freeze; the base of every b81 season panel) is a real disc
+    built before revision 5: Realistic, revision 4, roster references, breakaway stop 68. It reads as revision 4 and
+    is upgraded in place. Private game data: the path comes from NFL2K5_B81_SIM_OUTCOMES_XBE or
+    B81_HISTORY_POOL_FULL_XBE (skipped when absent)."""
+    SHA256 = "8b180ed5bd69647c99ba7eb5f63c95471b1785d89afe4b489f2492ace37aa8aa"
+
+    @classmethod
+    def setUpClass(cls):
+        import hashlib
+        import os
+        from pathlib import Path
+        for variable in ("NFL2K5_B81_SIM_OUTCOMES_XBE", "B81_HISTORY_POOL_FULL_XBE"):
+            path = Path(os.environ.get(variable) or "/nonexistent")
+            if path.is_file():
+                cls.disc = path.read_bytes()
+                break
+        else:
+            raise unittest.SkipTest("the frozen combined candidate executable is absent")
+        if hashlib.sha256(cls.disc).hexdigest() != cls.SHA256:
+            raise unittest.SkipTest("the named executable is not the frozen combined candidate 8b180ed5")
+
+    def test_reads_as_revision_four_and_upgrades_in_place(self):
+        from mod_editor.core import nfl2k5_sim_scoring as scoring
+        settings = qb.read_settings(self.disc)
+        self.assertEqual((settings['status'], settings['mode'], settings['revision']), ('applied', 'realistic', 4))
+        reference, kick = qb.installed_reference(self.disc), scoring.installed(self.disc)
+        self.assertIsNotNone(reference)
+        self.assertEqual(kick[0], 'applied')
+        upgraded, receipt = qb.apply(self.disc, 'realistic', custom_rate=settings['custom_rate'],
+                                     breakaway_stop=kick[1]['breakaway_stop_beyond'])
+        self.assertEqual((receipt['revision'], receipt['upgraded_from'], receipt['file_growth']), (qb.REVISION, 'slice4', 0))
+        self.assertEqual(qb.installed_reference(upgraded), reference)
+        self.assertEqual(scoring.installed(upgraded), kick)
+        self.assertEqual(space.layout(upgraded)['allocations'], space.layout(self.disc)['allocations'])
+        self.assertEqual(simulator.status(upgraded), simulator.status(self.disc))
+        self.assertEqual(qb.physical_view(upgraded), qb.physical_view(self.disc))
+        self.assertEqual(qb.apply(upgraded, 'retail')[0], qb.apply(self.disc, 'retail')[0])
 
 
 if __name__ == "__main__":

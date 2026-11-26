@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "4870c5541453fb9c4eb8c3ecd5cc4db9b06e3c01d26129d9e8f5e2ee67fc801a",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "4006f104bfbbe18e2a173188ce34e278d0f3c1801dc99281f7c789534ee84a80",
+        "mod_editor/core/mod_build.py": "40ddd24469cff2715ee027e774d9b10e16a54d7ceab4fbbb03fbcfa09be34ed2",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -999,12 +999,13 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_cb_tackles.py": "0b5655021e33a2c28bff7523399321f588aa4f925cf84823b9603c474c94f7a7",  # b778-cb1
         "mod_editor/core/nfl2k5_sim_rb_injuries.py": "fff7c4941204b4332cab4d3b2ddb3c760f8cabd0e02a1fb894d79e90ef00396c",  # b779-sim2
         "mod_editor/core/nfl2k5_sim_rb_injuries_b779.py": "87b8403aaba06c2fe1879de873188e465383abc636f7cd9f69ed51f8a6100a00",  # b780 hunt1: frozen beta-79 roll for the previous state
-        "mod_editor/core/nfl2k5_sim_qb_injuries.py": "f5883386b95b018436faa19cdb9e2184ae68b142bf5ea748ae13683e10206fca",
-        "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "d0c34226fe9ed023c88ee57ec105d76d00c349e86166244b430893d7338e2284",
+        "mod_editor/core/nfl2k5_sim_qb_injuries.py": "848bef27ce8308213859732c4c3e438ff53c3a38ec9b8e7a5079e0fb277ea0c0",
+        "mod_editor/core/nfl2k5_sim_qb_injuries_code.py": "2c6397607463d932b41bcbb802f379f8e5e472d8e9c8b61c489d44ca2d882280",
         "mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice1.py": "bb25da81abf8bd62c615d1cc676401a5050f4ab0f982fff243dea14af53cdfd0",  # b81 slice 2: frozen slice 1 bank, read to reverse a QBMEDv1 install
         "mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice2.py": "a893ed713c2a16ec9a4fbf33d8e3cdc330d6f80578cd3d3eefe04dd9ee211873",  # b81 slice 3: frozen slice 2 bank, read to reverse a QBMEDv2 install
         "mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_slice3.py": "ec6737ce9bab5695714c7956c932272af6fe33a63b8f4411cbe1f8de6497aff3",  # b81 stability: frozen slice 3 bank, read to reverse a QBMEDv3 install
         "mod_editor/core/nfl2k5_qb_room.py": "d196f65f8a23e4edf8b2931a018dbe74fa490641619794ae5415ad55b3f9e49f",  # b81 qb34: mod_build loads it by name
+        "mod_editor/core/nfl2k5_sim_qb_injuries_code_b81_v4.py": "0083482b02da5f50dcd361a0faa48a47a98aba1a90046e624d31655941a3b474",  # b81 game outcomes: frozen revision 4 bank, read to upgrade a QBMEDv4 install
         "mod_editor/core/nfl2k5_qb_room_code.py": "f4beb936955b748d938bbd24700ce62c7dbd9d5335f268c037f6314afb5762b7",  # b81 qb34: its generated page template
         "mod_editor/core/nfl2k5_qb_room_code_b81_floor.py": "fca60cc8cb3b41a8dbb6756110d33ee0ef1ef70581420b7ecf73dbb0c91cbca4",  # b81 qb34: frozen floor handover template ("previous")
         "mod_editor/core/nfl2k5_qb_room_code_b81_3a.py": "892a6ba85e94f55151423b4842825d521b85e54c9dcf7162d41b9344bee513f8",  # b81 qb34: frozen stage 0 + 3a template ("previous")
@@ -1024,6 +1025,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_realism.py": "6d0be46b7eec8c8c72be956aafa4041977ba91067fe14d993d00d8e29162c674",  # b779-sim2 r6
         "mod_editor/core/nfl2k5_classic_crowd.py": "a1f1d6ed85e1b276fd69216606f86bbb3086d44965400c9369edc9f9e65f458c",  # b81-seamen: the Seamen's crowd, its fixed page (mod_build loads it by name; throw_tuning imports it for the cave manifest recorder)
         "mod_editor/core/nfl2k5_modern_fans.py": "2252c602b9ddb4a543836124ffeaacbcea3824a182587cf12357aae3ee307514",  # b81-seamen: the crowd composer refits its spans with the 2026 fans writer
+        "mod_editor/core/nfl2k5_sim_outcomes.py": "9a4b36b7e5853453511e61be24045b8ce4485a5288f9d7c96ad944c5dd86fddd",  # b81 game outcomes: rides with Simulated season realism
         "mod_editor/core/nfl2k5_sim_scoring.py": "7c3681cef1f94638ab0137d966f08d80fcde3dfc335874ae24c5fd9491815f96",  # b81 scoring: in-place simulated kicking, installed by the QB option
         "mod_editor/core/nfl2k5_cpu_kick_aim.py": "cc41567cdd80d6149af319cb2502b62f8d8ff32ea9263b1cdeee388bb9463f99",  # b81 scoring: CPU place-kick aim (imported by throw_tuning)
         "mod_editor/core/nfl2k5_sim_realism_b779.py": "687a35375780ce07948ba555a8c189167586393c5de6f48d954c2902a71010ad",  # b780 n6: frozen beta-79 revision
@@ -1122,7 +1124,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "9ed1f38c80ea7e82a5cef5a82c503637a20e2724405571a503284186043a443c",
+        "mod_editor/core/nfl2k5_xbe_space.py": "6fd0ce5cdb963803b2423845bf5da0ff42db629401dec9670c0dd1ace7baf6df",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "b63521c9b17119b87558aff36a5a914d0c3fdd42e96240cf7de20065ead644d7",
