@@ -7,6 +7,7 @@ reach the pack without the cutout step.
 """
 from __future__ import annotations
 
+import importlib.util
 import json
 import sys
 import unittest
@@ -133,7 +134,7 @@ class Tool(unittest.TestCase):
         hair[:40, 30:100, 3] = 255                     # big hair off the top edge, wall clear at the sides
         self.assertGreater(pc.border_transparent(hair), 0.7)
 
-    @unittest.skipUnless(__import__("importlib").util.find_spec("scipy"), "scipy not installed")
+    @unittest.skipUnless(importlib.util.find_spec("scipy"), "scipy not installed")
     def test_clean_drops_speckle_and_fills_holes(self):
         alpha = np.zeros((128, 128), np.float32)
         alpha[30:120, 30:100] = 1.0
@@ -152,7 +153,7 @@ class Tool(unittest.TestCase):
             self.assertTrue(rows)
             self.assertTrue(all(r[2] >= pc.BORDER_TRANSPARENT_MIN for r in rows), folder)
 
-    @unittest.skipUnless(__import__("importlib").util.find_spec("pymatting"), "pymatting not installed")
+    @unittest.skipUnless(importlib.util.find_spec("pymatting"), "pymatting not installed")
     def test_a_solid_pixel_keeps_its_colour_and_an_edge_pixel_loses_the_wall(self):
         wall = (110, 112, 118)
         rgb = np.zeros((32, 32, 3), np.uint8)
