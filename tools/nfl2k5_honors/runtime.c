@@ -37,6 +37,10 @@ typedef short i16;
 #define AWAY_TEAM  ((u32 (FC *)(u32, u32))0x000C4E20)
 #define TEAM_FIRST ((u32 (FC *)(u32))0x000C3E70)
 #define TEAM_NEXT  ((u32 (FC *)(u32, u32))0x000C3E80)
+/* the club's injured reserve: count and i-th player (retail 0x246E50 / 0x246EC0; with modern injured reserve installed
+   both jump to that owner's store, so this reads whichever list the game keeps) */
+#define IR_COUNT   ((u32 (FC *)(u32))0x00246E50)
+#define IR_GET     ((u32 (FC *)(u32, u32))0x00246EC0)
 
 #define CARD_PLAYER 0x00C90248u     /* the Player Card's player record */
 #define CARD_YEAR_IMM 0x003204ADu   /* the card's own Yr base: mov ecx, base_year + 11 */
@@ -69,7 +73,6 @@ static const u16 slot_label[HONORS][12] = {
     {'R','U','S','H',' ','T','I','T','L','E','S',0},
 };
 /* rating slot i shows honor slot_honor[i]: left column MVP OPOY DPOY OROY DROY, right SB SBMVP PB AP RUSH */
-static const unsigned char slot_honor[HONORS] = {H_MVP, H_OPOY, H_DPOY, H_OROY, H_DROY, H_SB, H_SBMVP, H_PB, H_AP, H_RUSH};
 static const float slot_x[2] = {310.0f, 490.0f};
 static const float slot_y[5] = {318.0f, 333.0f, 347.0f, 362.0f, 377.0f};
 /* year lines: honors in importance order, their labels */
@@ -202,7 +205,7 @@ void honors_counts(void) {
         text_start(ctx, 3, 2);
         TEXT_POS(ctx, x - 8.0f, y, 20.0f);
         TEXT_DRAW(ctx, slot_label[i]);
-        *put_uint(value, t.count[slot_honor[i]]) = 0;
+        *put_uint(value, t.count[i]) = 0;               /* rating slot i shows honor i */
         TEXT_ALIGN(ctx, 1);
         TEXT_POS(ctx, x, y, 20.0f);
         TEXT_DRAW(ctx, value);
@@ -297,9 +300,12 @@ void commit_sb(void) {
     i32 home = HOME_SCORE(week, cell), away = AWAY_SCORE(week, cell);
     if (home != away) {
         u32 team = home > away ? HOME_TEAM(week, cell) : AWAY_TEAM(week, cell);
-        if (team)
+        if (team) {
             for (u32 p = TEAM_FIRST(team); p; p = TEAM_NEXT(team, p))
                 set_honor(p, H_SB);
+            for (u32 i = 0, n = IR_COUNT(team); i < n; i++)   /* b81: and the winners on injured reserve */
+                set_honor(IR_GET(team, i), H_SB);
+        }
     }
     set_honor(G(AWARDS + 0x5888), H_SBMVP);
 }

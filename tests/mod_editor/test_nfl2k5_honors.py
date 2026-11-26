@@ -28,18 +28,23 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from mod_editor.core import nfl2k5_champions as champions  # noqa: E402
 from mod_editor.core import nfl2k5_honors as honors  # noqa: E402
 from mod_editor.core import nfl2k5_honors_code as runtime  # noqa: E402
 from mod_editor.core import nfl2k5_rdata_sites as rdata  # noqa: E402
 from mod_editor.core import nfl2k5_xbe_space as space  # noqa: E402
 from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256, XbeImage  # noqa: E402
 
-XBE = Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION",
-                          "/media/noah/Storage/for codex 1.0/extracted")) / "ESPN NFL 2K5 (USA)" / "default.xbe"
+# The pinned USA default.xbe from the environment only (as hist1): NFL2K5_RETAIL_XBE, or NFL2K5_RETAIL_EXTRACTION's
+# extracted retail folder; without either the native classes skip.
+XBE = (Path(os.environ["NFL2K5_RETAIL_XBE"]) if os.environ.get("NFL2K5_RETAIL_XBE") else
+       Path(os.environ.get("NFL2K5_RETAIL_EXTRACTION", "/nonexistent")) / "ESPN NFL 2K5 (USA)" / "default.xbe")
 HAVE_UC = importlib.util.find_spec("unicorn") is not None
 
 CARD_PLAYER, SEASONS, LEAGUE_MODE, STAGE, WEEK, CELL = 0xC90248, 0xE576B8, 0xE576A0, 0xE576A4, 0xE576B4, 0xE576BC
 CLASS, ROSTER, AWARDS, LEAGUE_TEAMS, SCORES, PADS = 0xBD7F98, 0xB72918, 0xE5A2F0, 0xE5786C, 0xE587F0, 0xB37A70
+LEAGUE_TEAM_COUNT = 0xE576AC
+IR_TABLE = 0xE421E0     # the retail injured reserve: 32 clubs x 5 player pointers (read by 0x246E50 / 0x246EC0)
 TEXT = {"init": 0x46920, "font": 0x469B0, "align": 0x46A00, "pos": 0x46A70, "colour": 0x46B50, "width": 0x46C50,
         "draw": 0xF1C70, "font_get": 0xEF850}
 
@@ -619,6 +624,7 @@ class NativeTests(unittest.TestCase):
         m.uc.mem_write(scores, bytes([home_points, 0, 0, 0, 0, away_points, 0, 0, 0, 0]))
         for i in range(34):
             m.put(LEAGUE_TEAMS + 4 * i, m.TEAMS + i * 0x1F4)
+        m.put(LEAGUE_TEAM_COUNT, 34)      # b81: the franchise club count (0xC4BE0), read by the club index the IR uses
 
     def team(self, m, index, players):
         base = m.TEAMS + index * 0x1F4
@@ -646,6 +652,89 @@ class NativeTests(unittest.TestCase):
         m.put(AWARDS + 0x5888, players[3])
         m.call(self.at["honors_sb_hook"])
         self.assertEqual(honors_in(m.stream(players[3])), {(101, 6): (1, False), (102, 6): (1, False)})
+
+    def test_the_winners_on_injured_reserve_are_champions_too(self):
+        # b81 sb-ir-honors: the men on the winning club's injured reserve get the Super Bowl champion honor (through the
+        # game's own IR count and get routines, so a sparse table is read the game's way); the losers' do not, and the
+        # MVP and the roster men are as before
+        m = self.machine()
+        players = m.roster([(4, [word(0, 4, 17)]), (2, [word(0, 2, 17)]), (9, [word(0, 9, 17)]), (6, []),
+                            (3, [word(0, 3, 17)]), (7, [word(0, 7, 17)]), (5, [word(0, 5, 17)])])
+        self.team(m, 4, players[:2])
+        self.team(m, 9, players[2:4])
+        self.super_bowl(m, 27, 20)
+        m.put(IR_TABLE + 4 * 20 + 4, players[4])                   # the winner's IR: slots 1 and 4 (slot 0 empty)
+        m.put(IR_TABLE + 4 * 20 + 16, players[5])
+        m.put(IR_TABLE + 9 * 20, players[6])                       # the loser's IR
+        m.put(AWARDS + 0x5888, players[1])
+        m.record(0x1C1C80, "restore")
+        m.call(self.at["honors_sb_hook"])
+        self.assertEqual(honors_in(m.stream(players[4])), {(101, 3): (1, False)})
+        self.assertEqual(honors_in(m.stream(players[5])), {(101, 7): (1, False)})
+        self.assertEqual(honors_in(m.stream(players[6])), {})
+        self.assertEqual(honors_in(m.stream(players[0])), {(101, 4): (1, False)})
+        self.assertEqual(honors_in(m.stream(players[1])), {(101, 2): (1, False), (102, 2): (1, False)})
+        self.assertEqual(honors_in(m.stream(players[2])), {})
+        m.put(LEAGUE_MODE, 1)                                      # not a Franchise: the IR is not read at all
+        players2 = m.roster([(4, [word(0, 4, 17)]), (3, [word(0, 3, 17)])])
+        self.team(m, 4, players2[:1])
+        m.put(IR_TABLE + 4 * 20 + 4, players2[1])
+        m.call(self.at["honors_sb_hook"])
+        self.assertEqual(honors_in(m.stream(players2[1])), {})
+
+    def test_the_winners_on_modern_injured_reserve_are_champions_too(self):
+        # b81 integration (#23, the reviewer's probe review/modern_ir_probe.py): every standard build installs modern
+        # injured reserve, whose store the game's IR count and get routines (0x246E50 / 0x246EC0) then read. With it the
+        # winning club's IR men get the Super Bowl champion honor, the losers' IR man and roster get nothing, the roster
+        # men and the MVP are as before, and a second call adds nothing to the pool.
+        from mod_editor.core import nfl2k5_injured_reserve as ir
+        payload = ir.apply(self.patched, "modern")[0]
+        self.assertEqual((honors.status(payload), ir.status(payload)), ("applied", "applied"))
+        store = ir.store_va(payload)
+        m = self.machine(payload)
+        players = m.roster([(4, [word(0, 4, 17)]), (2, [word(0, 2, 17)]), (9, [word(0, 9, 17)]), (6, []),
+                            (3, [word(0, 3, 17)]), (7, [word(0, 7, 17)]), (5, [word(0, 5, 17)])])
+        self.team(m, 4, players[:2])
+        self.team(m, 9, players[2:4])
+        self.super_bowl(m, 27, 20)
+
+        def ir_set(club, men):
+            base = store + 0x40 + club * 0xA4                  # the modern IR store: a count byte, then 8-byte entries
+            m.uc.mem_write(base, bytes([len(men)]))
+            for i, man in enumerate(men):
+                m.put(base + 4 + 8 * i, man)
+        ir_set(4, [players[4], players[5]])                    # the winner's IR: two men
+        ir_set(9, [players[6]])                                # the loser's IR: one man
+        m.put(AWARDS + 0x5888, players[1])
+        m.record(0x1C1C80, "restore")
+        m.call(self.at["honors_sb_hook"])
+        self.assertEqual(honors_in(m.stream(players[4])), {(101, 3): (1, False)})
+        self.assertEqual(honors_in(m.stream(players[5])), {(101, 7): (1, False)})
+        self.assertEqual(honors_in(m.stream(players[6])), {})
+        self.assertEqual(honors_in(m.stream(players[0])), {(101, 4): (1, False)})
+        self.assertEqual(honors_in(m.stream(players[1])), {(101, 2): (1, False), (102, 2): (1, False)})
+        self.assertEqual(honors_in(m.stream(players[2])), {})
+        used = m.get(m.ROOT + 0x40)
+        m.call(self.at["honors_sb_hook"])
+        self.assertEqual(m.get(m.ROOT + 0x40), used)
+        self.assertEqual(honors_in(m.stream(players[4])), {(101, 3): (1, False)})
+
+    def test_the_earlier_runtime_reads_previous_and_upgrades_in_place(self):
+        # b81 sb-ir-honors: an install of the beta-79 .. beta 81 integration runtime (beside a current champions owner)
+        # reads "previous", and apply() installs this runtime over it: the result equals a fresh install
+        found = honors.allocations(self.patched)
+        code_va, data_va = found["code"]["va"], found["data"]["va"]
+        champs_va = champions.allocations(self.patched)["code"]["va"]
+        current = XbeImage(self.patched).read(code_va, honors.CODE_SIZE)
+        earlier, _ = space.install_code(self.patched, honors.OWNER,
+                                        honors.code_for(code_va, data_va, champs_va, honors_previous=True),
+                                        previous=current)
+        self.assertEqual(honors.status(earlier), "previous")
+        self.assertEqual(honors.read_settings(earlier)["revision"], honors.HONORS_PREVIOUS_REVISION)
+        upgraded, receipt = honors.apply(earlier)
+        self.assertEqual(honors.status(upgraded), "applied")
+        self.assertEqual(receipt["upgraded_from"], honors.HONORS_PREVIOUS_REVISION)
+        self.assertEqual(upgraded, self.patched)
 
     def test_other_games_write_nothing(self):
         m = self.machine()
