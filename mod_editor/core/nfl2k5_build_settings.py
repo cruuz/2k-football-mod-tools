@@ -95,6 +95,7 @@ FEATURE_KEYS += ("franchise_history",)  # b780 j23: franchise history and record
 FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Contracts null-college crash guard, late executable owner
 FEATURE_KEYS += ("load_user_team_guard",)  # b780 mc1: Franchise load with no human club, in-place sites
 FEATURE_KEYS += ("save_list_type_guard",)  # b780 mc1: boot save list with a NULL save type, in-place sites
+FEATURE_KEYS += ("show_block_guard",)  # b81 ot-crash: the show and the replay share one block, in-place sites
 FEATURE_KEYS += ("edition_save_notes",)  # beta 81 review M1: 64 MB save messages for a 128 MB save, in-place text
 FEATURE_KEYS += ("coach_career_fix",)  # b780 c1 (wired at b780-int): coach Super Bowl trip counter fix, in-place site
 FEATURE_KEYS += ("history_pool",)  # b780 hist1: career history pool (no wrapped totals, chunked collection), in-place sites

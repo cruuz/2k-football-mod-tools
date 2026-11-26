@@ -749,6 +749,14 @@ class BuildPlan:
     # matcher prologue and a 15-byte routine in retail .text padding) return no match for a NULL string. A retail crash
     # path shared with v0.8: on in every preset and in the 64 MB profile (no allocation).
     save_list_type_guard: bool = False
+    # b81 ot-crash (played wild card witness, 2026-11-24): the halftime/postgame show loader 0xDA4D0 and the replay
+    # system 0x83F10 share one 0x148000-byte block and never check that 0xF6070 gave it to them; after an overtime score
+    # the show was asked for while the block was taken and built its heap at address 0 (bugcheck 0x1E at 0x4865C).
+    # Five in-place sites (nfl2k5_show_block_guard: the loader, the show release, the show task, the period start and
+    # the replay setup, each within its own extent) skip the show or the replay zones without the block, give back only
+    # a block they hold, and release a show still loaded when a period starts (continued playoff overtime periods).
+    # A retail crash path: on in every preset and in the 64 MB profile (no allocation).
+    show_block_guard: bool = False
     # beta 81 review (M1): the compact 64 MB game lists a franchise saved by the standard 128 MB edition as Damaged
     # and offers to delete it. Text only, in place (nfl2k5_edition_save_notes): the Delete confirmation and the load
     # error say a 128 MB save shows as Damaged there and still loads on the standard edition. On only in the 64 MB
@@ -932,7 +940,7 @@ class BuildPlan:
                 or self.guardian_overlay or self.my_career or self.screen_hooks or self.coverage_trail or self.franchise_edit_player or self.cpu_money_downs != "retail" or self.accelerated_clock or self.coin_defer or self.decided_clock or self.cpu_scrambles == "modern" or self.weather_haze or self.number_kerning or self.modern_color or self.weekly_prep or self.weekly_prep_cpu or self.weekly_prep_remember or self.coach_ai or self.playbook_pair or self.deep_zone_facing or self.deep_zone_bail or self.reserves_16 or bool(self.created_teams_extra) or self.franchise_autosave or self.historic_teams_quick_game or self.espn25_more_moments or self.historic_stock_books or self.espn25_era_rules or self.k128_memory or self.team_ratings or self.play_art_routes or self.letter_grades or self.honors_page or self.sim_cb_tackles or self.sim_stats or self.option_defaults or self.sim_rb_injuries or self.sim_realism or self.coach_carousel or self.history_screen
                 or self.momentum_collisions or self.scorebug_runtime or self.indicator_names_style != "retail" or self.momentum > 0 or self.momentum_contact or self.defensive_try or self.zone_drop_cap or self.all_stadiums or self.music_shuffle or self.practice_squad_screen or self.abilities or self.qb_spy or self.calendar_engine or self.coverage_slider or self.scramble_tuning or self.flatter_deep_ball or self.chop_block_toggle or self.music_policy != "retail" or self.music_unlock or self.music_userlist
                 or bool(self.music_library and _music_library_document(self.music_library)["bank"] == "cribmusic")
-                or self.pass_protection or self.pass_rush_stats or self.standings_records or self.cpu_passer_iq or self.cpu_clock2 or self.scramble_blocking or self.protection_calls or self.audible_legend or self.intro_autoskip or self.modern_injured_reserve or self.load_user_team_guard or self.save_list_type_guard or self.edition_save_notes)  # b778-pr1, b779-st1, b780-j1, b780 mc1, b81 M1
+                or self.pass_protection or self.pass_rush_stats or self.standings_records or self.cpu_passer_iq or self.cpu_clock2 or self.scramble_blocking or self.protection_calls or self.audible_legend or self.intro_autoskip or self.modern_injured_reserve or self.load_user_team_guard or self.save_list_type_guard or self.show_block_guard or self.edition_save_notes)  # b778-pr1, b779-st1, b780-j1, b780 mc1, b81 M1
 
     def to_recipe(self) -> dict[str, Any]:
         d = asdict(self)
@@ -1425,6 +1433,7 @@ for _preset in PRESETS.values():
     _preset["contract_college_guard"] = True
     _preset["load_user_team_guard"] = True  # b780 mc1: Franchise load with no human club (a retail crash path)
     _preset["save_list_type_guard"] = True  # b780 mc1: boot save list with a NULL save type (a retail crash path)
+    _preset["show_block_guard"] = True  # b81 ot-crash: the show and the replay share one block (a retail crash path)
     # b780 c1 (wired at b780-int): the coach career counter fix is a records bug fix: on in every preset
     _preset["coach_career_fix"] = True
     # b780 hist1: the history pool fix is a 2004 bug fix (wrapped career totals, a stalled full pool): on in every preset
@@ -3071,6 +3080,11 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     patched, history_upgrade = _history_pool_upgrade(patched)
     if history_upgrade is not None:
         patch = {**patch, "history_pool": history_upgrade}
+    # b81 ot-crash review D3: the copy carries the playoff overtime crash fix, as a full build does.
+    patched, crash_fix = _overtime_crash_fix_upgrade(patched)
+    if crash_fix is not None:
+        patch = {**patch, "overtime_crash_fix": {k: {kk: vv for kk, vv in v.items() if kk not in ("edits", "reservations")}
+                                                 for k, v in crash_fix.items()}}
     settings = _verify_sim_qb_injuries(plan, module, patched)
     # b81 qb34: the quarterback room rules ride with this option (DESIGN_CHANGES C1) on the same executable.
     room_level, room_stages, room_note = _qb_room_plan(plan, patched)
@@ -3102,6 +3116,7 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
         "pass_protection_upgraded": pressure is not None,
         "rookie_faces_upgraded": faces_upgrade is not None,
         "history_pool_upgraded": history_upgrade is not None,
+        "overtime_crash_fix": sorted(crash_fix) if crash_fix else [],
         "stability_reference": stability,
     }
     if room_level is not None or room_note:
@@ -3269,12 +3284,14 @@ def _edit_installed_gadget(plan, source, target, original, receipt, progress, *,
         patched, patch = gadget.remove(original)
     patched, faces_upgrade = _rookie_faces_upgrade(patched)  # b81 rookie-faces: as a full build
     patched, history_upgrade = _history_pool_upgrade(patched)  # b81 history-pool: as a full build
+    patched, crash_fix = _overtime_crash_fix_upgrade(patched)  # b81 ot-crash review D3: as a full build
     receipt["installed_gadget_only"] = True
     receipt["gadget_source_update"] = {"source_sha256": sha256(original).hexdigest(),
                                        "result_sha256": sha256(patched).hexdigest(),
                                        "source_state": gadget.status(original, books),
                                        "rookie_faces_upgraded": faces_upgrade is not None,
-                                       "history_pool_upgraded": history_upgrade is not None}
+                                       "history_pool_upgraded": history_upgrade is not None,
+                                       "overtime_crash_fix": sorted(crash_fix) if crash_fix else []}
     if preflight:
         return True
     _copy_private_build_source(source, target, receipt, progress, consume)
@@ -3786,6 +3803,45 @@ def _verify_gadget_play(plan, target, receipt):
         raise ValueError(f"The gadget player on gadget plays did not survive the final archive pass ({settings})")
 
 
+def _overtime_crash_fix_upgrade(payload):
+    """b81 ot-crash review D3: an in-place copy (update-v09, edit-sim-qb, edit-gadget) carries the playoff overtime crash
+    fix, as a full build does. The overtime owner's earlier revision ("previous": beta-79 .. v0.9, whose continued
+    playoff overtime period loads the postgame show into play) is upgraded in place first, then the show block guard is
+    added where it reads retail. Disjoint bytes from every other route writer (overtime main cave 0x1AFDF0..0x1AFF1B;
+    guard 0x83F10, 0x9F940, 0xDA4D0..0xDA72F); each recomputes the .text digest. A disc without the overtime owner is
+    returned unchanged: retail never continues an overtime period with different scores, and a single-setting route
+    never adds an option. A foreign guard is left as it is. Returns (payload, receipt or None)."""
+    receipt = {}
+    overtime = _core_module("nfl2k5_overtime")
+    state = None if overtime is None else overtime.status(payload)
+    if state not in ("applied", "previous"):
+        return payload, None
+    if state == "previous":
+        payload, receipt["overtime"] = overtime.apply(payload)
+    guard = _core_module("nfl2k5_show_block_guard")
+    if guard is not None and guard.status(payload) == "retail":
+        payload, receipt["show_block_guard"] = guard.apply(payload)
+    return payload, (receipt or None)
+
+
+def _apply_overtime_crash_fix_in_place(target, receipt, progress):
+    """The in-place routes' write of _overtime_crash_fix_upgrade, after the route's own writers."""
+    patched, upgrade = _overtime_crash_fix_upgrade(_xbe_bytes(target))
+    if upgrade is None:
+        return
+    progress("Playoff overtime crash fix", 0, 0)
+    _write_xbe_bytes(target, patched)
+    written = _xbe_bytes(target)
+    if written != patched:
+        raise RuntimeError("The playoff overtime crash fix did not read back as written.")
+    if "overtime" in upgrade and _core_module("nfl2k5_overtime").status(written) != "applied":
+        raise RuntimeError("The overtime rules update did not read back as applied.")
+    if "show_block_guard" in upgrade and _core_module("nfl2k5_show_block_guard").status(written) != "applied":
+        raise RuntimeError("The show block guard did not read back as applied.")
+    for step, value in upgrade.items():
+        receipt["steps"].append({"step": step, **{k: v for k, v in value.items() if k not in ("edits", "reservations")}})
+
+
 def _update_v09_disc(plan, progress, *, preflight, project):
     if project or plan != v09_disc_update(
             plan.source, plan.target, save_list_type_guard=plan.save_list_type_guard,
@@ -3878,6 +3934,11 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     expected, history_upgrade = _history_pool_upgrade(expected)  # b81 history-pool: every v0.9 update, as a full build
     if history_upgrade is not None:
         receipt["v09_update"].append("history_pool")
+    # b81 ot-crash review D3: the released v0.9 disc carries the playoff overtime crash trigger; every v0.9 update gets
+    # the overtime rule's current revision and the show block guard, as a full build has them
+    expected, crash_fix = _overtime_crash_fix_upgrade(expected)
+    if crash_fix is not None:
+        receipt["v09_update"] += [step for step in ("overtime", "show_block_guard") if step in crash_fix]
     if preflight:
         from .modpack import hash_file
         if hash_file(source, progress=progress) != release["image_sha256"]:
@@ -3903,6 +3964,7 @@ def _update_v09_disc(plan, progress, *, preflight, project):
         _apply_gadget_play(plan, target, receipt, progress)
     _apply_rookie_faces_in_place(target, receipt, progress)  # b81 rookie-faces (before the history pool, as above)
     _apply_history_pool_in_place(target, receipt, progress)  # b81 history-pool
+    _apply_overtime_crash_fix_in_place(target, receipt, progress)  # b81 ot-crash review D3 (the expected chain's order)
     _compact_build_disc(target, source, receipt, progress)
     _step("final_checks")
     if _xbe_bytes(target) != expected:
@@ -3996,6 +4058,24 @@ def _apply_load_user_team_guard(plan: "BuildPlan", target: Path, receipt: dict, 
         raise RuntimeError("The Franchise load guard: the output does not read back as applied")
     receipt["steps"].append({"step": "load_user_team_guard", **{k: v for k, v in guard_receipt.items() if k != "reservations"}})
     receipt["result"]["load_user_team_guard"] = "applied"
+
+@_core_step("show_block_guard")
+def _apply_show_block_guard(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
+    """b81 ot-crash: the show loader, release and task, the period start and the replay setup check the show block,
+    in place (five sites)."""
+    if not plan.show_block_guard:
+        return
+    module = _core_module("nfl2k5_show_block_guard")
+    if module is None:
+        raise RuntimeError("The show block guard needs nfl2k5_show_block_guard.")
+    progress(module.BUILD_CAPTION, 0, 0)
+    payload, guard_receipt = module.apply(_xbe_bytes(target))
+    _write_xbe_bytes(target, payload)
+    final = _xbe_bytes(target)
+    if final != payload or module.status(final) != "applied":
+        raise RuntimeError("The show block guard: the output does not read back as applied")
+    receipt["steps"].append({"step": "show_block_guard", **{k: v for k, v in guard_receipt.items() if k != "reservations"}})
+    receipt["result"]["show_block_guard"] = "applied"
 
 @_core_step("save_list_type_guard")
 def _apply_save_list_type_guard(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
@@ -4309,6 +4389,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("modern_injured_reserve", "nfl2k5_injured_reserve"), ("injured_reserve_guard", "nfl2k5_injured_reserve"),  # b780 IR1
                                ("load_user_team_guard", "nfl2k5_load_user_team_guard"),  # b780 mc1
                                ("save_list_type_guard", "nfl2k5_save_list_type_guard"),  # b780 mc1
+                               ("show_block_guard", "nfl2k5_show_block_guard"),  # b81 ot-crash
                                ("edition_save_notes", "nfl2k5_edition_save_notes"),  # beta 81 review M1
                                ("modern_clock_led", "nfl2k5_clock_led"),  # b778-sd4
                                ("letter_grades", "nfl2k5_letter_grades"),
@@ -4661,6 +4742,8 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
     out["load_user_team_guard"] = load_guard.status(_xbe_bytes(source)) if load_guard is not None else "unavailable"
     save_list_guard = _core_module("nfl2k5_save_list_type_guard")  # b780 mc1
     out["save_list_type_guard"] = save_list_guard.status(_xbe_bytes(source)) if save_list_guard is not None else "unavailable"
+    show_guard = _core_module("nfl2k5_show_block_guard")  # b81 ot-crash
+    out["show_block_guard"] = show_guard.status(_xbe_bytes(source)) if show_guard is not None else "unavailable"
     edition_notes = _core_module("nfl2k5_edition_save_notes")  # beta 81 review M1
     out["edition_save_notes"] = edition_notes.status(_xbe_bytes(source)) if edition_notes is not None else "unavailable"
     sim_stats = _core_module("nfl2k5_sim_stats")  # b778-sim1
@@ -7107,6 +7190,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("The Franchise load user-team guard must be Off or On.")
     if type(plan.save_list_type_guard) is not bool:  # b780 mc1
         raise ValueError("The boot save-list type guard must be Off or On.")
+    if type(plan.show_block_guard) is not bool:  # b81 ot-crash
+        raise ValueError("The show block guard must be Off or On.")
     if type(plan.edition_save_notes) is not bool:  # beta 81 review M1
         raise ValueError("The 64 MB save messages must be Off or On.")
     if type(plan.sim_cb_tackles) is not bool:  # b778-cb1
@@ -9960,6 +10045,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _apply_load_user_team_guard(plan, target, receipt, progress)
     # b780 mc1: the boot save-list type guard, in place (the matcher prologue and its .text padding)
     _apply_save_list_type_guard(plan, target, receipt, progress)
+    # b81 ot-crash: the show block guard, in place (loader, release, show task, period start, replay setup)
+    _apply_show_block_guard(plan, target, receipt, progress)
     # beta 81 review M1: the 64 MB edition's save messages (two strings in place; 64 MB profile only)
     _apply_edition_save_notes(plan, target, receipt, progress)
     # b778-cb1: cornerback tackle credit, after the Contracts guard (LATE_OWNERS order)
@@ -10155,6 +10242,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         raise ValueError("the Franchise load user-team guard did not survive the final passes")  # b780 mc1
     if plan.save_list_type_guard and _core_module("nfl2k5_save_list_type_guard").status(_xbe_bytes(target)) != "applied":
         raise ValueError("the boot save-list type guard did not survive the final passes")  # b780 mc1
+    if plan.show_block_guard and _core_module("nfl2k5_show_block_guard").status(_xbe_bytes(target)) != "applied":
+        raise ValueError("the show block guard did not survive the final passes")  # b81 ot-crash
     if plan.edition_save_notes and _core_module("nfl2k5_edition_save_notes").status(_xbe_bytes(target)) != "applied":
         raise ValueError("the 64 MB save messages did not survive the final passes")  # beta 81 review M1
     if plan.sim_rb_injuries and _core_module("nfl2k5_sim_rb_injuries").status(_xbe_bytes(target)) != "applied":

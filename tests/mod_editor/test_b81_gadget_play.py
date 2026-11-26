@@ -409,12 +409,16 @@ class BuildWiringTests(unittest.TestCase):
         expected, _ = gadget.apply(source, books)
         # b81 history-pool: the copy also carries this release's career history pool (the disc has the v0.9 revision)
         # b81 rookie-faces: and rookie faces' current revision first (the disc has GEN1)
+        # b81 ot-crash review D3: then the playoff overtime crash fix (the overtime rule's current revision, the show
+        # block guard), as a full build does
         upgraded, faces = build._rookie_faces_upgrade(expected)
         upgraded, history = build._history_pool_upgrade(upgraded)
+        upgraded, crash_fix = build._overtime_crash_fix_upgrade(upgraded)
         self.assertEqual(receipt["gadget_source_update"]["result_sha256"], _sha(upgraded))
         self.assertEqual(receipt["gadget_source_update"]["rookie_faces_upgraded"], faces is not None)
         self.assertIsNotNone(faces)
         self.assertEqual(receipt["gadget_source_update"]["history_pool_upgraded"], history is not None)
+        self.assertEqual(receipt["gadget_source_update"]["overtime_crash_fix"], sorted(crash_fix) if crash_fix else [])
         self.assertEqual(receipt["gadget_source_update"]["source_state"], "retail")
 
     def test_an_installed_rule_is_replayed_and_an_executable_only_target_is_refused(self):

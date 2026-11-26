@@ -108,11 +108,14 @@ class ProjectSettings(unittest.TestCase):
                     self.assertEqual(faces.xbe_revision(before), "gen1")
                     result = history.apply(faces.upgrade_xbe(aim.apply(current)[0])[0])[0]
                     self.assertEqual(faces.xbe_status(result), "applied")
+                    # b81 ot-crash review D3: then the playoff overtime crash fix (both discs: overtime "previous")
+                    result, crash_fix = mod_build._overtime_crash_fix_upgrade(result)
                     self.assertEqual(receipt["sim_qb_source_update"], {
                         "source_sha256": digest, "result_sha256": hashlib.sha256(result).hexdigest(),
                         "source_simulator": source_state, "simulator_upgraded": source_state == "legacy",
                         "settings": medical.read_settings(current), "pass_protection_upgraded": True,
                         "rookie_faces_upgraded": True, "history_pool_upgraded": True,
+                        "overtime_crash_fix": sorted(crash_fix) if crash_fix else [],
                         "settings": medical.read_settings(current),
                         "stability_reference": {"source": "disc roster", "roster_sha256": roster,
                                                 "starters": [list(row) for row in code.STABILITY_CALIBRATION],

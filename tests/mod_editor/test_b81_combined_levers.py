@@ -394,6 +394,7 @@ class StudioRoutes(unittest.TestCase):
                 expected, history = mod_build._history_pool_upgrade(expected)
                 self.assertIsNotNone(history)
                 self.assertTrue(update["history_pool_upgraded"])
+                expected = mod_build._overtime_crash_fix_upgrade(expected)[0]   # b81 ot-crash review D3
                 self.assertEqual(update["result_sha256"], _sha(expected))
                 self.assertEqual(pp.status(expected), "applied" if upgrade else "legacy")
 

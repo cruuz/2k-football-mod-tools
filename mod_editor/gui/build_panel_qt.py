@@ -308,6 +308,7 @@ from mod_editor.core import nfl2k5_franchise_footer as _franchise_footer  # noqa
 from mod_editor.core import nfl2k5_contract_college_guard as _contract_guard  # noqa: E402
 from mod_editor.core import nfl2k5_load_user_team_guard as _load_guard  # noqa: E402  b780 mc1
 from mod_editor.core import nfl2k5_save_list_type_guard as _save_list_guard  # noqa: E402  b780 mc1
+from mod_editor.core import nfl2k5_show_block_guard as _show_block_guard  # noqa: E402  b81 ot-crash
 from mod_editor.core import nfl2k5_edition_save_notes as _edition_notes  # noqa: E402  beta 81 review M1
 from mod_editor.core import nfl2k5_coach_career_fix as _coach_career_fix  # noqa: E402  b780 c1 (wired at b780-int)
 from mod_editor.core import nfl2k5_history_pool as _history_pool  # noqa: E402  b780 hist1
@@ -374,6 +375,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("contract_college_guard", _contract_guard.BUILD_CAPTION, _contract_guard.HELP_TEXT),  # b778-cr1
                  ("load_user_team_guard", _load_guard.BUILD_CAPTION, _load_guard.HELP_TEXT),  # b780 mc1
                  ("save_list_type_guard", _save_list_guard.BUILD_CAPTION, _save_list_guard.HELP_TEXT),  # b780 mc1
+                 ("show_block_guard", _show_block_guard.BUILD_CAPTION, _show_block_guard.HELP_TEXT),  # b81 ot-crash
                  ("edition_save_notes", _edition_notes.BUILD_CAPTION, _edition_notes.HELP_TEXT),  # beta 81 review M1
                  ("coach_career_fix", _coach_career_fix.BUILD_CAPTION, _coach_career_fix.HELP_TEXT),  # b780 c1
                  ("history_pool", _history_pool.BUILD_CAPTION, _history_pool.HELP_TEXT),  # b780 hist1
@@ -403,7 +405,10 @@ PREVIOUS_UPGRADE_KEYS = {"punter_holder": "saved field-goal holders", "modern_in
                          # b780 hunt6: revision 1 of the franchise record fixes (the v0.9 release candidates)
                          "coach_career_fix": "coach record fix",
                          # b81 history-pool: the v0.9 (beta 80) career history pool, upgraded in place
-                         "history_pool": "career history pool"}
+                         "history_pool": "career history pool",
+                         # b81 ot-crash review D2: the beta-79 .. v0.9 overtime owner (only ot_expiry's tail differs)
+                         # reads "previous"; the owner loop upgrades it in place (nfl2k5_overtime.apply)
+                         "overtime": "modern overtime rules"}
 # b780 studio1: older revisions that read "legacy" and that the build upgrades in place (progression.apply and
 # franchise_economy.apply both accept "retail" or "legacy"). A v0.8 disc reads legacy for both; the boxes were greyed out
 # with no badge and no line in the disc summary, so retirement by age and the economy revision could not be added.
@@ -3635,7 +3640,10 @@ class BuildPanel(QWidget):
         for child, parents in ANNIVERSARY_DEPENDENCIES.items():
             if getattr(plan, child, False):
                 for parent in parents:
-                    if not getattr(plan, parent, False) and self._installed(parent):
+                    # b81 ot-crash review D2: a base installed in its earlier revision ("previous", e.g. the overtime owner
+                    # on the released v0.8 and v0.9 discs) is met too; the build upgrades it in place
+                    previous = parent in PREVIOUS_UPGRADE_KEYS and (self._state or {}).get(parent) == "previous"
+                    if not getattr(plan, parent, False) and (self._installed(parent) or previous):
                         setattr(plan, parent, True)
         return plan
 
@@ -4312,7 +4320,8 @@ class BuildPanel(QWidget):
             # kickoff, defensive try and overtime boxes unticked as installed) Make my disc was blocked for every choice.
             if child_box.isChecked() and child_box.isEnabled():
                 missing = [getattr(self, key + "_check").text() for key in parents
-                           if not getattr(self, key + "_check").isChecked() and not self._installed(key)]
+                           if not getattr(self, key + "_check").isChecked() and not self._installed(key)
+                           and not (key in PREVIOUS_UPGRADE_KEYS and (self._state or {}).get(key) == "previous")]
                 if missing:
                     return child_box.text() + " requires: " + ", ".join(missing) + "."
         gadget = self.gadget_play_check   # b81 relrev M3: said here, never by the build after Make my disc?

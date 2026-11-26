@@ -187,6 +187,7 @@ from . import nfl2k5_intro_autoskip as intro_autoskip_patch  # noqa: F401  b780-
 from . import nfl2k5_injured_reserve as injured_reserve_patch  # noqa: F401  b780 IR1: modern injured reserve (late owner)
 from . import nfl2k5_load_user_team_guard as load_user_team_guard_patch  # noqa: F401  b780 mc1: Franchise load guard (in-place sites); imported so the cave manifest recorder observes it
 from . import nfl2k5_save_list_type_guard as save_list_type_guard_patch  # noqa: F401  b780 mc1: boot save-list guard (in-place sites); imported so the cave manifest recorder observes it
+from . import nfl2k5_show_block_guard as show_block_guard_patch  # noqa: F401  b81 ot-crash: show block guard (in-place sites); imported so the cave manifest recorder observes it
 from . import nfl2k5_edition_save_notes as edition_save_notes_patch  # noqa: F401  beta 81 review M1: 64 MB save messages (in-place text); imported so the cave manifest recorder observes it
 from . import nfl2k5_preseason_warning as preseason_warning_patch  # noqa: F401  b779-int1: rc1's warned flag joins the union (LATE_OWNERS before the sim owners)
 from . import nfl2k5_cpu_passer_iq as cpu_passer_iq_patch  # noqa: F401  b780 a-passer: late owner (CPU quarterbacks throw on time); imported so the cave manifest recorder observes it
@@ -2378,7 +2379,7 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         # b778-pg1: so does progression (the beta-77 curves-only patch gains the NFL career layer in place)
         # b780 sub1: a previous SPECIAL role table (revision 1 or 2) reads "previous"; apply rewrites its role records
         # b780 st1: so does the returner fix (beta-79 and older: the loop only; the KR/PR getter gains its slot check)
-        if state == "retail" or (state == "legacy" and key in ("player_star_patch", "depth_locks_patch", "franchise_economy_patch", "progression_patch", "returner_fix_patch")) or (state == "applied" and key == "team_column_patch" and module.revision(patched) == 1) or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch")) or (state == "previous" and key == "depth_chart_rows_patch"):
+        if state == "retail" or (state == "legacy" and key in ("player_star_patch", "depth_locks_patch", "franchise_economy_patch", "progression_patch", "returner_fix_patch")) or (state == "applied" and key == "team_column_patch" and module.revision(patched) == 1) or (state == "applied" and key in ("practice_squad_patch", "chop_block_toggle_patch", "flatter_deep_ball_patch", "widescreen_patch", "modern_naming_patch", "seven_on_seven_patch", "prospect_names_patch")) or (state == "previous" and key in ("depth_chart_rows_patch", "overtime_patch")):
             patched, sub_receipt = module.apply(patched)
             if state in ("legacy", "previous"):
                 sub_receipt = {**sub_receipt, "upgraded_from": sub_receipt.get("upgraded_from") or state}

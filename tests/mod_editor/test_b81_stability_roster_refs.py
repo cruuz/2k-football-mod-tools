@@ -390,6 +390,7 @@ class Routes(unittest.TestCase):
         # b81 rookie-faces: rookie faces' current revision before the pool (a no-op unless the executable has GEN1)
         expected = mod_build._history_pool_upgrade(mod_build._rookie_faces_upgrade(mod_build._cpu_kick_aim_with_kicking(
             qb.apply(pressure.apply(realism.apply(xbe)[0])[0], "realistic", reference=reference)[0])[0])[0])[0]
+        expected = mod_build._overtime_crash_fix_upgrade(expected)[0]   # b81 ot-crash review D3
         update = receipt["sim_qb_source_update"]
         self.assertEqual(update["result_sha256"], _sha(expected))
         self.assertEqual(update["stability_reference"]["reference"], list(reference))
@@ -543,9 +544,11 @@ class Routes(unittest.TestCase):
                                                              preflight=False, consume=False, reference=None))
         from mod_editor.core import nfl2k5_pass_protection as pressure   # combined levers: the legacy centre updated
         from mod_editor.core import nfl2k5_sim_realism as realism        # b81 fb-targets: season realism updated too
-        # b81 history-pool: the copy also carries this release's career history pool
-        self._assert_copy(copy, receipt, mod_build._history_pool_upgrade(mod_build._rookie_faces_upgrade(  # b81 rookie-faces
-            mod_build._cpu_kick_aim_with_kicking(pressure.apply(realism.apply(frozen)[0])[0])[0])[0])[0])
+        # b81 history-pool: the copy also carries this release's career history pool; b81 ot-crash review D3: then the
+        # playoff overtime crash fix
+        self._assert_copy(copy, receipt, mod_build._overtime_crash_fix_upgrade(mod_build._history_pool_upgrade(
+            mod_build._rookie_faces_upgrade(  # b81 rookie-faces
+                mod_build._cpu_kick_aim_with_kicking(pressure.apply(realism.apply(frozen)[0])[0])[0])[0])[0])[0])
         # The sentence once, next to the floor's own notes (practice squad merge: this disc's earlier economy is
         # upgraded in place for the floor, and the report says so).
         floor_notes = receipt["qb_room_source_update"].get("added") or []
