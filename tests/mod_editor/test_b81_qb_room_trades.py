@@ -1160,9 +1160,12 @@ class TradesPage(unittest.TestCase):
 def _candidate():
     # The trades review's F2: f5270f4d carries economy revision 7, which reads "legacy" since the integration merge
     # (revision 8); the economy is upgraded in place first, as the room's own owner tests and the Studio routes do.
-    from mod_editor.core import nfl2k5_franchise_economy as economy
+    # b81 integration (#32 modern numbers merge): its modern IR revision makes the candidate's IR read "previous"; the
+    # Studio routes update it in place too, so it is upgraded here after the economy.
+    from mod_editor.core import nfl2k5_franchise_economy as economy, nfl2k5_injured_reserve as ir
     _need(CANDIDATE, CANDIDATE_SHA)
-    return economy.apply(CANDIDATE.read_bytes())[0]
+    payload = economy.apply(CANDIDATE.read_bytes())[0]
+    return ir.apply(payload, "modern")[0] if ir.status(payload) == "previous" else payload
 
 
 class TradesAllocation(unittest.TestCase):

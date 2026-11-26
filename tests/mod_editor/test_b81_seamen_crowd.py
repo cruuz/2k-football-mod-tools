@@ -98,7 +98,8 @@ class DesignTests(unittest.TestCase):
         self.assertEqual(space.CLASSIC_CROWD_VA, 0x1532000)
         self.assertIn(crowd.OWNER, space.LATE_OWNERS)
         self.assertIn(crowd.OWNER, space.FIXED_PAGE_OWNERS)
-        self.assertEqual(space.dormant_union()[-1], crowd.REQUESTS[0])
+        # b81 integration: the union now ends with the later lanes' pages (SportsCenter news after the crowd page)
+        self.assertIn(crowd.REQUESTS[0], space.dormant_union())
         self.assertNotIn(crowd.REQUESTS[0], stack.REQUESTS)
         self.assertNotIn(crowd.REQUESTS[0], tt._selected_space_requests(classic_teams=True))
 

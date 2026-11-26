@@ -219,7 +219,9 @@ class AllocatorTests(unittest.TestCase):
         # row at 0x1533000, a late owner placed before the quarterback room).
         # fixed page (one 4 KiB row at 0x152D000); b81 awards: + the award vote's fixed page (one 4 KiB row at 0x1531000,
         # the last late owner).
-        self.assertEqual(len(union) - len(without), 35)
+        # b81 integration: each page lane counted 35 = 34 + its own page; merged, the union carries all four fixed
+        # requests after letter grades (CPU trades, the award vote, the classic crowd, SportsCenter news): 38
+        self.assertEqual(len(union) - len(without), 38)
         plan_with, plan_without = space.plan(union), space.plan(without)
         # b778 xs1/bd3: a union that no longer fits the v3 runs is a v4 image, which adds a second
         # allocator-directory row at POOL_VA; owner_offset keeps the two pages apart.
@@ -246,6 +248,7 @@ class AllocatorTests(unittest.TestCase):
                                         ("nfl2k5_qb_trades", "code"),  # b81 qb34 4b (C20): the trades page
                                         ("nfl2k5_helmet_side_numbers", "code"),  # b81 helmet sides: its fixed page
                                         ("nfl2k5_cpu_trades", "code"),  # b81 CPU trades: its two fixed pages
+                                        ("nfl2k5_classic_crowd", "code"),  # b81-seamen: its fixed page
                                         ("nfl2k5_sportscenter_news", "code"),  # b81 sportscenter: its fixed page
                                         ("nfl2k5_awards", "code"),  # b81 awards: the award vote's fixed page
                                         ("nfl2k5_period_goalposts", "code"), ("nfl2k5_period_goalposts", "read_only"),

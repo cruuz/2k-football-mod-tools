@@ -52,6 +52,15 @@ def _fixture(path, what):
     return Path(path).read_bytes()
 
 
+def _standard():
+    """CPU_TRADES_STANDARD_XBE brought to this release's economy and modern IR revisions in place, as the Studio's routes
+    do (b81 integration: economy revision 10 (#34) reads its revision 9 "legacy", and #32's modern IR revision reads
+    its earlier one "previous"; computer trades need both current)."""
+    from mod_editor.core import nfl2k5_franchise_economy as economy, nfl2k5_injured_reserve as ir
+    payload = economy.apply(_fixture(STANDARD_XBE, "CPU_TRADES_STANDARD_XBE"))[0]
+    return ir.apply(payload, "modern")[0] if ir.status(payload) == "previous" else payload
+
+
 def _full(**fields):
     """A full build plan: the Experimental preset (quarterback injuries Realistic, the room's needs on) plus fields."""
     return replace(mod_build.apply_preset(mod_build.BuildPlan("s.iso", "t.iso"), "softdrink_experimental"), **fields)
@@ -116,7 +125,7 @@ class PlanResolutionTests(unittest.TestCase):
         self.assertEqual(mod_build._cpu_trades_plan(_full(season_2026=False, cpu_trades="retail")), ("retail", None))
 
     def test_needs_judged_on_the_executable_when_one_is_given(self):
-        source = _fixture(STANDARD_XBE, "CPU_TRADES_STANDARD_XBE")
+        source = _standard()
         bare = _fixture(WITHOUT_NEEDS_XBE, "NFL2K5_B81_QB_STANDARD_XBE")
         self.assertTrue(trades.needs_met(source))
         self.assertFalse(trades.needs_met(bare))
@@ -254,7 +263,7 @@ class InPlaceTests(unittest.TestCase):
         return receipt, seen
 
     def test_the_copy_adds_them_after_the_room_where_the_needs_are(self):
-        source = _fixture(STANDARD_XBE, "CPU_TRADES_STANDARD_XBE")
+        source = _standard()
         for named in (None, "realistic"):
             with self.subTest(cpu_trades=named):
                 receipt, seen = self._edit(mod_build.sim_qb_disc_edit("s.iso", "t.iso", "realistic", cpu_trades=named),
@@ -273,7 +282,7 @@ class InPlaceTests(unittest.TestCase):
                 self.assertNotIn(trades.LEFT_OUT, receipt.get("user_notes", []))
 
     def test_retail_removes_them(self):
-        source = _fixture(STANDARD_XBE, "CPU_TRADES_STANDARD_XBE")
+        source = _standard()
         installed, _ = trades.apply(source, "realistic")
         empty = trades._retail(installed)[0]
         for mode, named in (("realistic", "retail"), ("retail", None)):
@@ -314,7 +323,7 @@ class StepTests(unittest.TestCase):
         return disc.payload, receipt
 
     def test_realistic_receipt_and_readback(self):
-        source = _fixture(STANDARD_XBE, "CPU_TRADES_STANDARD_XBE")
+        source = _standard()
         written, receipt = self._step(_full(), source)
         self.assertEqual(written, trades.apply(source, "realistic")[0])
         step, = [s for s in receipt["steps"] if s["step"] == "cpu_trades"]
@@ -328,7 +337,7 @@ class StepTests(unittest.TestCase):
         self.assertEqual(mod_build._verify_cpu_trades(_full(), trades, written)["status"], "applied")
 
     def test_retail_removes_them_and_the_reservation_stays(self):
-        source = _fixture(STANDARD_XBE, "CPU_TRADES_STANDARD_XBE")
+        source = _standard()
         installed, _ = trades.apply(source, "realistic")
         written, receipt = self._step(_full(cpu_trades="retail"), installed)
         self.assertEqual(trades.read_settings(written)["status"], "retail")
@@ -349,7 +358,7 @@ class StepTests(unittest.TestCase):
         self.assertEqual(receipt, {"steps": [], "result": {}})
 
     def test_a_readback_that_differs_is_refused(self):
-        source = _fixture(STANDARD_XBE, "CPU_TRADES_STANDARD_XBE")
+        source = _standard()
         with self.assertRaisesRegex(ValueError, "[Cc]omputer trades"):
             mod_build._verify_cpu_trades(_full(), trades, source)  # Realistic wanted, the executable is retail
         installed, _ = trades.apply(source, "realistic")
@@ -363,7 +372,7 @@ class StepTests(unittest.TestCase):
             mod_build._apply_cpu_trades(_full(), Path("t.iso"), receipt, lambda *_: None)
 
     def test_a_foreign_source_is_refused_before_any_write(self):
-        source = _fixture(STANDARD_XBE, "CPU_TRADES_STANDARD_XBE")
+        source = _standard()
         installed = bytearray(trades.apply(source, "realistic")[0])
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage
         at = XbeImage(bytes(installed)).offset(0x152E000 + 0x10, 1)
@@ -434,7 +443,7 @@ class MemoryAndPackagingTests(unittest.TestCase):
         self.assertIn('if owner == "nfl2k5_cpu_trades":', text)
 
     def test_inspect_reports_them(self):
-        source = _fixture(STANDARD_XBE, "CPU_TRADES_STANDARD_XBE")
+        source = _standard()
         self.assertEqual(mod_build.inspect_cpu_trades(source)["cpu_trades"], "retail")
         installed, _ = trades.apply(source, "realistic")
         report = mod_build.inspect_cpu_trades(installed)

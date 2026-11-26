@@ -212,7 +212,9 @@ class PackExtentResolverTests(unittest.TestCase):
             return {}
 
         target = self.tmp / "built.iso"
-        plan = mod_build.BuildPlan(str(self.image), str(target), season_2026=True)
+        # b81 integration (#32 merge): modern jersey numbers follow season_2026 and would read this fixture's stubbed
+        # executable (b"XBEH") as foreign; the test isolates the schedule writer, so the box is left clear
+        plan = mod_build.BuildPlan(str(self.image), str(target), season_2026=True, modern_numbers=False)
         with (
             mock.patch.object(mod_build, "_core_module", core),
             mock.patch.object(mod_build, "_tools_module", tools),

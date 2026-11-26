@@ -157,9 +157,9 @@ class PlanningTests(unittest.TestCase):
     @staticmethod
     def pool_pages(report):
         """Pool pages used by the directory page and the spills, leaving out the rows at fixed pool addresses."""
-        fixed = {*space.LINEUP_SLOT_VA, space.QB_INJURY_REQUEST[:2], space.QB_ROOM_REQUEST[:2], space.QB_TRADES_REQUEST[:2],
-                 space.HELMET_SIDES_REQUEST[:2], space.SPORTSCENTER_NEWS_REQUEST[:2],
-                 space.AWARDS_REQUEST[:2]}
+        # b81 integration: every owner at a fixed pool address (the lanes' pages included), not a hand-kept list
+        fixed = {*space.LINEUP_SLOT_VA, space.QB_INJURY_REQUEST[:2]}
+        fixed |= {(owner, kind) for owner in space.FIXED_PAGE_OWNERS for kind in ("code", "data", "read_only")}
         ends = [a['va'] + a['size'] for a in report['allocations']
                 if a['va'] >= space.POOL_VA and (a['owner'], a['kind']) not in fixed]
         return -(-(max(ends, default=space.POOL_VA) - space.POOL_VA) // space.PAGE)

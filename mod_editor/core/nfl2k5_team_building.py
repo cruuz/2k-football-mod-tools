@@ -34,7 +34,9 @@ from . import nfl2k5_team_need as tn
 from .nfl2k5_bump_strength import _sections, _section_for_offset, section_digest
 
 STUDIO_LABEL = "CPU team building (needs-based draft and signings)"
-BUILD_CAPTION = "Franchise: CPU clubs draft and sign to their weakest starters (experimental)"
+# b81 integration: Build-tab captions stay at 60 characters or fewer (test_ux_build_plan_coverage_qt); the help text
+# and the progress line keep the long wording (CPU clubs draft and sign to their weakest starters)
+BUILD_CAPTION = "Franchise: CPU clubs draft and sign for need (experimental)"
 HELP_TEXT = ("EXPERIMENTAL. Computer clubs judge each starting spot against the league: when a club's weakest starter at "
              "a position rates in the league's bottom quarter (read one season ahead for aging starters), its draft "
              "takes that position first in every round, quarterbacks included, and its free agency first bids on the "

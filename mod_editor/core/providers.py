@@ -727,7 +727,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_disc_identity.py": "ccfbd9a2209f4d2ce3f28ea85ac3e21577ac0816364a09c858648dc45772ef83",
         "mod_editor/core/nfl2k5_display_list_stability.py": "34649b364e65566cc798df8e0ad60410609f7178973358e95ee3691b2f6e6031",
         "mod_editor/core/nfl2k5_draft_ai.py": "1877897b5c5493845fbbe982d3a04f669eee7985d6bf8d6ac29e7f6f5ae32fbe",
-        "mod_editor/core/nfl2k5_team_building.py": "30756e8cf162392941987e5d2c26f86393552fe04aa66db42a25ffd69911e11b",  # b81 team building: the draft AI loads it
+        "mod_editor/core/nfl2k5_team_building.py": "2cf24764e81ecef91b6263cf2c91c03471adf8529288d47f9a02550796348fec",  # b81 team building: the draft AI loads it
         "mod_editor/core/nfl2k5_team_building_code.py": "b44b91de4d67d232542ff6b45e720282159ef069be5ec57851889a8611829af6",  # b81 team building: its generated template
         "mod_editor/core/nfl2k5_team_need.py": "76377be937b0c09991f15452dbc5c3fbee6774663fb9578494a0ab67f8d5f21b",  # b81: the shared team-need rule (Python mirror)
         "mod_editor/core/nfl2k5_draft_class.py": "9961548abfb4946225b724b6b4ec18b477d9f4db9a5049909c1a3ec7015a9671",  # b780 b1-draft: imported by throw_tuning (the draft fixes)

@@ -85,6 +85,15 @@ def _fixture(path):
     return Path(path)
 
 
+def _standard():
+    """CPU_TRADES_STANDARD_XBE brought to this release's economy and modern IR revisions in place, as the Studio's routes
+    do (b81 integration: economy revision 10 (#34) reads its revision 9 "legacy", and #32's modern IR revision reads
+    its earlier one "previous"; the owner needs both current)."""
+    from mod_editor.core import nfl2k5_franchise_economy as economy, nfl2k5_injured_reserve as ir
+    payload = economy.apply(_fixture(STANDARD_XBE).read_bytes())[0]
+    return ir.apply(payload, "modern")[0] if ir.status(payload) == "previous" else payload
+
+
 class Image:
     """A kept image on its executable with the CPU trades pages and both sites written in (the 4b tests' method)."""
 
@@ -987,7 +996,7 @@ class SignedRoundTrip(unittest.TestCase):
         if wrong:
             raise AssertionError(f"private inputs differ from their pins: {wrong}")
         cls.roster, cls.save = data["rost.body"], data["third-season/SAVEGAME.DAT"]
-        cls.xbe, _ = ct.install(_fixture(STANDARD_XBE).read_bytes(), 7, p8_ppm=1_000_000, p7_ppm=1_000_000)
+        cls.xbe, _ = ct.install(_standard(), 7, p8_ppm=1_000_000, p7_ppm=1_000_000)
 
     def boot(self, raw):
         """Cold-load a signed franchise as test_b81_sim_pos_injury_signed does (frontend, game PRNGs, native load)."""
@@ -1159,7 +1168,7 @@ class Owner(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.source = _fixture(STANDARD_XBE).read_bytes()
+        cls.source = _standard()
 
     def test_realistic_then_retail_is_the_source_plus_an_empty_reservation(self):
         from mod_editor.core import nfl2k5_cpu_trades as ct, nfl2k5_xbe_space as space

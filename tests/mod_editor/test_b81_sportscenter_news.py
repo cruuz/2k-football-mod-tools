@@ -318,9 +318,12 @@ class OwnerTests(unittest.TestCase):
         self.assertEqual(sc.REQUESTS, (space.SPORTSCENTER_NEWS_REQUEST,))
         self.assertIn(space.SPORTSCENTER_NEWS_REQUEST, space.dormant_union())     # review S1: the manifest's union
         self.assertIn(sc.OWNER, space.FIXED_PAGE_OWNERS)
-        self.assertEqual(space.FIXED_SPAN_END, space.HELMET_SIDES_VA + space.HELMET_SIDES_SIZE)
-        self.assertEqual(space.LATE_OWNERS[-4:], (sc.OWNER, space.QB_ROOM_OWNER, space.QB_TRADES_OWNER,
-                                                  space.HELMET_SIDES_OWNER))
+        # b81 integration: CPU trades' two pages extend the span; the news page sits before the quarterback room among
+        # the late owners (fixed pages never advance the cursor)
+        self.assertEqual(space.FIXED_SPAN_END, space.CPU_TRADES_VA + space.CPU_TRADES_SIZE)
+        late = space.LATE_OWNERS
+        self.assertEqual(late[late.index(sc.OWNER) + 1:late.index(sc.OWNER) + 4],
+                         (space.QB_ROOM_OWNER, space.QB_TRADES_OWNER, space.HELMET_SIDES_OWNER))
         va = space.SPORTSCENTER_NEWS_VA
         self.assertEqual([s[1] for s in sc.sites(va, 0)], [sc.RELOAD_VA])
         self.assertEqual([s[1] for s in sc.sites(va, sc.MODE_IR)], [sc.RELOAD_VA, sc.IR_PAGE_VA, sc.IR_SKIP_VA, sc.CLUB_VA])

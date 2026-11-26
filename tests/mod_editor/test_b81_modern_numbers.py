@@ -31,11 +31,10 @@ ROOT = Path(__file__).resolve().parents[2]
 RETAIL_XBE = os.environ.get("NFL2K5_RETAIL_XBE")
 # A kept regular-season opening (2027, stage 8, week 0) of the standard build's ten-season handover panel and the
 # executable it ran on (the QB room's 383 candidate, rookie faces applied, modern IR, practice squad).
-KEPT_IMAGE = Path(os.environ.get("NFL2K5_B81_NUMBERS_IMAGE", "/media/noah/Storage/2K5-project/qb34-builds/"
-                                 "trades-handover-openings/candidate/2501/opening-2027.b81mem.gz"))
+# b81 integration: from the environment only (no machine path in a shipped test), as hist1 and team building do
+KEPT_IMAGE = Path(os.environ.get("NFL2K5_B81_NUMBERS_IMAGE", "/nonexistent"))
 KEPT_IMAGE_SHA = "8793067abf927107eb284264b573d8a7a2e67d60d05415774517ee093507a34d"
-KEPT_XBE = Path(os.environ.get("NFL2K5_B81_NUMBERS_XBE", "/home/noah/2k-worktrees/.b77-scratch/b81/qb34/builds/"
-                               "trades-handover/candidate-383/default.xbe"))
+KEPT_XBE = Path(os.environ.get("NFL2K5_B81_NUMBERS_XBE", "/nonexistent"))
 KEPT_XBE_SHA = "adb55ab91206367836d277e3829bca417968f7765c58b4c0398e0d0166ff619c"
 PAGE = space.MODERN_NUMBERS_VA
 POS = {name: k for k, name in enumerate(mn.POSITIONS)}
@@ -904,7 +903,9 @@ class OwnerStates(unittest.TestCase):
         straddle = ("ab_synthetic_straddle", "code", 0x20000, 16)
         for requests in ([filler, straddle], [filler, straddle, request]):
             rows = space.plan(requests)["allocations"]
-            self.assertEqual(next(r for r in rows if r["owner"] == straddle[0])["va"], PAGE + 0x1000)
+            # b81 integration task 1: past every fixed page above the span (numbers, awards, crowd, news, outcomes)
+            last = space.POST_SPAN_PAGES[-1]
+            self.assertEqual(next(r for r in rows if r["owner"] == straddle[0])["va"], last[1] + last[2])
         self.assertEqual(PAGE, 0x1530000)
         self.assertGreaterEqual(PAGE, space.FIXED_SPAN_END)
 

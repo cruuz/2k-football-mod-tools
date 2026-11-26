@@ -53,9 +53,12 @@ def restore(panel, state):
             # b780-m64b: the target first, so the boxes below land under its rules; an older project reads 128 MB
             panel.set_console_memory(choices.get("console_memory", 128), keep_ticks=False, refresh=False)
         for key, box in panel._boxes().items():
-            value = choices[key]
+            # b81 integration: a recipe leaves modern_numbers out when it is None (it follows season_2026), so it reads
+            # None here; like the preset (build_panel_qt.wanted) only an explicit choice ticks it, and "retail" clears it
+            value = choices.get(key) if key == "modern_numbers" else choices[key]
             box.setChecked(value == "matte" if key == "helmet_finish"
                            else value == "jukebox_menus" if key == "music_policy"
+                           else value in (True, "modern") if key == "modern_numbers"
                            else value != "retail" if key == "cpu_money_downs" else bool(value))
         panel.colour_lighting.set_settings(choices["modern_color_settings"])
         panel.colour_lighting.set_active(choices["modern_color"])
