@@ -1155,6 +1155,34 @@ class RealDisc(unittest.TestCase):
                 ends.append(int(rows[-1, 0]))
             self.assertLessEqual(abs(ends[0] - ends[1]), 1, (selector, ends))
 
+    def test_the_chiefs_chest_patch_is_the_afl_patch(self):
+        # Owner 11/21: "the little circular decal to the right of the NFL badge could also probably be updated to look
+        # better"; 11/26: "Did you fix the AFC or AFL looking circle patch on the Chiefs jersey to make it match?". The real
+        # patch (2026 photographs) is a cream disc with a red merrowed edge, a red eagle and a red ball under a navy-edged A;
+        # the released one was a smaller disc with a gold ring. On the compiled torsos: only the collar shield and the patch
+        # box change against the released texture; the cream field is at least 22 texels across (released: 16), no gold
+        # ring is left, navy and red marks sit inside the disc, and on the road kit the edge is red.
+        cream, gold, navy, red = (0xF3, 0xEA, 0xC4), (0xD8, 0xB2, 0x6A), (0x22, 0x30, 0x7E), (0xE4, 0x28, 0x2E)
+        for selector in ("13H0", "13A0"):
+            painted = self.painted(selector, "jersey00")
+            outside = [p for p in painted if not (155 <= p[0] < 167 and 71 <= p[1] < 87)
+                       and not (186 <= p[0] < 216 and 71 <= p[1] < 101)]
+            self.assertEqual(outside, [], selector)
+            box = self.after(selector, "jersey00")[71:101, 186:216, :3].astype(int)
+            near = lambda colour, tol: np.abs(box - np.array(colour)).sum(-1) <= tol
+            field = near(cream, 24)
+            ys, xs = np.nonzero(field)
+            self.assertGreaterEqual(int(field.sum()), 110, selector)
+            self.assertGreaterEqual(int(xs.max() - xs.min() + 1), 22, selector)
+            self.assertGreaterEqual(int(ys.max() - ys.min() + 1), 22, selector)
+            self.assertEqual(int(near(gold, 30).sum()), 0, selector)
+            self.assertGreaterEqual(int(near(navy, 40).sum()), 10, selector)
+            inner = np.zeros(field.shape, bool)
+            inner[ys.min() + 3:ys.max() - 2, xs.min() + 3:xs.max() - 2] = True
+            self.assertGreaterEqual(int((near(red, 40) & inner).sum()), 35, selector)
+            if selector == "13A0":
+                self.assertGreaterEqual(int(near(red, 40).sum()), 80, selector)
+
     def test_the_commanders_road_shoulder_swoosh_is_one_solid_mark(self):
         # R2 (order R2-C, art director's ruling): the game draws the road shoulder swoosh across the torso texture's
         # front/back seam: a hook of 13 or 14 solid texels on the front panel and a faint sliver of a tail on the back

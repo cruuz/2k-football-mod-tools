@@ -13,7 +13,7 @@
   "data/nfl2k5_kit_fixes_2026.json": "d33818434feb3f30e5d2515eaae1b186f97bfc6344bd477298550885bce96156",
   "data/nfl2k5_kit_fixes_2026_alts.json": "8a15681861c8abbe4c66c25e27fae776e3d37495f8e0ecf68fa4ffc6660ed7f5",
   "data/nfl2k5_kit_fixes_2026_b81.json": "d2a9e3239050947bc69a4ade58491b3578e3859d841831749dfd163ef24d2da7",
-  "data/nfl2k5_kit_fixes_2026_b81u.json": "69e94eba840180d6db585725c2eb0d1d3ff8bcc907c0cfb6d114a800c40539ac",
+  "data/nfl2k5_kit_fixes_2026_b81u.json": "f849672186a91d3aa91d4220cce802ad9015e3d08d7f3eefe7514778df2f03c8",
   "data/nfl2k5_kit_fixes_2026_ku1.json": "9227fb1ef129725bcf72cc8c208a0433eb45b69af14fe5b8a1f99d3c381f62cb",
   "data/nfl2k5_kit_fixes_2026_names.json": "cb354c62aa6b6e8de0ff01e9f25937f0a2e54169bfc37932bd689599529693fb",
   "data/nfl2k5_kit_fixes_2026_ov1.json": "506d9592290de13e4aeb17a23a0febf147e4392b985646ef9c0df5e15765c9c4",
@@ -2295,22 +2295,22 @@
    "13A0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.8193,
+    "edge_overlap": 0.9134,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "16e7258dca519e588a75bb782af37c362e873d7fab5db951a5ba2ff762a61d11"
+    "reason": "authored on a region cleared by rule: AFL chest patch drawn by work/tools/paint_patch.py and patch_design.py as shapes in the patch's own plane on the posed model (red edge, cream field, red eagle, navy stars, slab-serif A, red ball with LH; size and place from the 2026 photographs against the collar shield), 8x supersampled, 4 coverage levels; the old patch cleared by rule; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "73a5320cdd4b05c8c5f5d988e36c7eaaa44f21a0c77a95cfb1aef86702542197"
    },
    "13H0:1:tset": {
     "base_equal": 0,
     "cls": "iii",
-    "edge_overlap": 0.7455,
+    "edge_overlap": 0.7291,
     "erasure": 0,
     "follows_base": false,
     "measured": true,
-    "reason": "authored on a region cleared by rule: league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
-    "sha256": "2440d535edde1f002d82b93c4aabca9e514b04559ad1585333557bfe48ae3131"
+    "reason": "authored on a region cleared by rule: AFL chest patch drawn by work/tools/paint_patch.py and patch_design.py as shapes in the patch's own plane on the posed model (red edge, cream field, red eagle, navy stars, slab-serif A, red ball with LH; size and place from the 2026 photographs against the collar shield), 8x supersampled, 4 coverage levels; the old patch cleared by rule; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
+    "sha256": "318ded4ba50fea2b345bb981054c240976637d5eba0fe4b9bda730450bfbb07c"
    },
    "14A0:1:tset": {
     "base_equal": 0,
