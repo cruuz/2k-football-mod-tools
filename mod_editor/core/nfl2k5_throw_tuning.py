@@ -2396,8 +2396,10 @@ def _apply_all(payload: bytes, wanted: Mapping[str, Sequence[tuple[float, float]
         # It never refuses the build: on an executable whose class sites hold other bytes (a foreign patch, a synthetic
         # test image) the draft AI still installs, and the receipt and the report say the class fix is not there.
         state = draft_class_patch.status(patched)
-        if state == "retail":
+        if state in ("retail", "legacy"):   # b81 economy revision 10: a 9-kicker/9-punter class window is upgraded in place
             patched, class_receipt = draft_class_patch.apply(patched)
+            if state == "legacy":
+                class_receipt = {**class_receipt, "upgraded_from": "legacy"}
             receipt = {**receipt, "draft_class_patch": class_receipt,
                        "changed_byte_count": int(receipt.get("changed_byte_count", 0)) + int(class_receipt["changed_bytes"])}
         elif state == "applied":

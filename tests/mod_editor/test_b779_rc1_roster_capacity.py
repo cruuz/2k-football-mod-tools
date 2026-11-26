@@ -128,7 +128,8 @@ class MyCareerCapacityCreateTests(unittest.TestCase):
 # Revision 4's class mix per 450 (Noah 10/28: deep classes, undrafted players at every position):
 #             QB   K   P  WR  CB  FS  SS  HB  FB  TE OLB ILB   C   G   T  DT  DE
 # b779 ag1: retuned on the 4,096-record arena (sim fastX1 leftovers)
-CLASS_MIX = (21, 9, 9, 37, 44, 18, 14, 25, 9, 25, 18, 18, 30, 28, 44, 49, 52)
+# b81 economy revision 10 (coordinator ruling 6, 11/25): K 9 -> 4, P 9 -> 4, two more each at WR, CB, T, DT, DE
+CLASS_MIX = (21, 4, 4, 39, 46, 18, 14, 25, 9, 25, 18, 18, 30, 28, 46, 51, 54)
 ONE_POOL_MIX = CLASS_MIX[:10] + (0, CLASS_MIX[10] + CLASS_MIX[11]) + CLASS_MIX[12:]   # no rostered OLB: OLB is LB
 
 
@@ -137,6 +138,9 @@ def _revision_three(current, retail):
     from mod_editor.core import nfl2k5_franchise_economy as economy
     from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
     from mod_editor.core.nfl2k5_cave_oracle import XbeImage
+    if getattr(economy, "REVISION", 4) >= 10:             # b81: from revision 10, first back to revision 8
+        from tests.franchise_economy_revision8_sites import as_revision
+        current = as_revision(current, retail, 8)
     image, source, out = XbeImage(current), XbeImage(retail), bytearray(current)
     cut = getattr(economy, "VETERAN_CUT_RELEASE", None)
     for site in economy.sites():
@@ -257,7 +261,7 @@ class DraftClassSupplyTests(unittest.TestCase):
 
     def test_revision_three_reads_legacy_and_upgrades_in_place(self):
         from mod_editor.core import nfl2k5_franchise_economy as economy
-        self.assertIn(economy.REVISION, (4, 5, 6, 7, 8, 9))   # b780 b4-economy revision 5 / hunt1 revision 6 keep every revision-4 site; b81: 8 and 9 too
+        self.assertIn(economy.REVISION, (4, 5, 6, 7, 8, 9, 10))   # b780 b4-economy revision 5 / hunt1 revision 6 keep every revision-4 site; b81: 8 to 10 too
         self.assertEqual(economy.status(self.previous), "legacy")
         upgraded, receipt = economy.apply(self.previous)
         self.assertEqual(upgraded, self.current)
@@ -269,7 +273,11 @@ class DraftClassSupplyTests(unittest.TestCase):
                                 | getattr(economy, "REVISION_6_SITES", frozenset())
                                 | getattr(economy, "REVISION_7_SITES", frozenset())
                                 | getattr(economy, "REVISION_8_NEW", frozenset())   # b81: the practice-squad fill
-                                | getattr(economy, "REVISION_9_NEW", frozenset())))   # b81 team building: the room routine
+                                | getattr(economy, "REVISION_9_NEW", frozenset())   # b81 team building: the room routine
+                                # b81 economy r10: its new windows and two sites and the windows it rewrote (their
+                                # revision-9 digests are PREVIOUS_REVISION_9); the class window is a revision-4 site
+                                | getattr(economy, "REVISION_10_NEW", frozenset())
+                                | frozenset(getattr(economy, "PREVIOUS_REVISION_9", ()))))
 
     def test_a_small_pool_still_gets_a_full_draft_and_keeps_the_vacancies(self):
         # The retail roster has only 241 free agents, mostly young: retiring by age alone frees far fewer than

@@ -65,6 +65,57 @@ WINDOWS = {  # start: (size, sha256 of the retail bytes)
     # b81 team building (revision 9): one unreferenced retail function from the team-building lane's proof (also passes
     # its decode-synchronisation test, tools/team_building/dead_code.py): "roster_v", economy_room_for_signing.
     0x2D82F0: (110, "58e11dd15a15fd5c794376c38955800f8a89a1f94d53811c4f3b4aef314055a3"),
+    # b81 economy revision 10 (assemble.py R10_WINDOWS): 22 more retail functions no code, table or pointer reaches, from the
+    # team-building lane's decode-synchronised candidate list (its tools/team_building/dead_code.py boundary votes; clear of
+    # the reservation inventory and of every built beta 81 executable at 11/25 05:10), less the 30 it took; 0x2B3F40 and
+    # 0x2B3FB0 are adjacent and joined (0x2B3F40..0x2B4016). Re-checked here on the retail executable (economy lane
+    # r10/find_windows.py) and listed in coord/PAGES_AND_SEEDS.md.
+    0x5DE10: (84, "a416917f31c92569edf3815ddf7ca6b45072b946cb4fc26c6350573d715c6b77"),   # r10: r10_casualty
+    0x87DC0: (88, "45a9bbfd6e95ec93b537a9c1e244b67a37563d649d1e5a2510bc3101874a16fc"),   # r10: r10_rank
+    0x8E150: (83, "3529c20c04a95443cf43885f8996b4c98e743f642d4ef162bf01e29fdc26c4d5"),   # r10: r10_tab_a
+    0x975A0: (123, "96b6ae806f961c2bf4d3e028933f2e52f0ae8fa13df76861eea06a45ea968d47"),   # r10: r10_cuttable
+    0xC4930: (83, "127819bc6f1abd7c225adec557875003abed239718d54d48942591d34aecd995"),   # r10: r10_usable
+    0xF3300: (85, "c3ee5ae4a10a7911e72f7d66bbe50a29f1a4cd31b765e7b7bde390abb3e5c580"),   # r10: r10_rbest
+    0x10D210: (82, "3b2184a737175e41cb2d84d2cf477cc00f3c4267fb63585136ab44c319d3dae8"),   # r10: r10_tab_e
+    0x118A40: (100, "d92be35b5891db2d12dff50f25dd9917e60fb56f910ce0d1bd32e5052992f5cc"),   # r10: r10_reserve
+    0x12E110: (82, "3b2184a737175e41cb2d84d2cf477cc00f3c4267fb63585136ab44c319d3dae8"),   # r10: r10_tab_d
+    0x1B6CB0: (93, "d35f07fdd5baddf5f04e3f4c10749daf1dbf575710e0605cd0ab16a654af3994"),   # r10: r10_age
+    0x224420: (104, "7e7909c8240985deaa3d49bc783f54a950ff50c52cdf541678b9a8bb23172f27"),   # r10: r10_tab_c
+    0x25DEE0: (87, "9996390e48cfdec438cba431c2d1d4e398acb6ff8e1286c558c950f385de7e65"),   # r10: r10_tier
+    0x2B3F40: (214, "b26ec31dcc429c0e710a078ebaa0ace0ec593dcac4e0e67e4df2c6c756a39817"),   # r10: r10_camp, r10_overpay
+    0x31EFA0: (103, "dbcf86c6d0030d21b618b3efa31718932ab0acda6e5f24407a7710c053f35fd9"),   # r10: r10_clear
+    0x328CE0: (89, "204c8f57ec690b184b44a1fab8a088a3ff6ec34b0b287a35949470c76a9364f1"),   # r10: r10_best
+    0x332940: (82, "3b2184a737175e41cb2d84d2cf477cc00f3c4267fb63585136ab44c319d3dae8"),   # r10: r10_tab_b
+    0x347F40: (82, "3b2184a737175e41cb2d84d2cf477cc00f3c4267fb63585136ab44c319d3dae8"),   # r10: r10_resign
+    0x351D60: (82, "3b2184a737175e41cb2d84d2cf477cc00f3c4267fb63585136ab44c319d3dae8"),   # r10: r10_most
+    0x39C3F0: (81, "aef02c320b3b1e737e0f3faa0e0ce41f3865c77d8b33da34f467f5d46f154917"),   # r10: r10_ask
+    0x3C8E00: (107, "584184aca675af2dde2bfaf929b08597ffc0baba86dcea8864daf7a8d5eceb8f"),   # r10: r10_camp_pick
+    0x3C98C0: (108, "704783e70d8408dea647fbe7a4263b62990516b5aa6287e5a1297886b136f9d4"),   # r10: r10_rank_club
+    0x3D3390: (81, "ef8bfbaf8b64e1013530787507f9869e3a56deabe6b8cdf9a1c7462d4cfae140"),   # r10: r10_cell
+    0x121900: (84, "620b4d0a07b0b475b62112680a330be15cedca91e299e04259496609d67192e3"),   # r10: r10_bench (the prove-it hole priority)
+    0x17A480: (84, "e71b40560481d14dbbcac0bef95159c3b3c82c239a10be6f5607305e3efab317"),   # r10: r10_hole (the prove-it hole priority)
+    0x256230: (109, "7e3e4d4ef768950751781e7d6d63d8d5cd5575cb4c732cb4597f9aa8486f5999"),   # r10: r10_league (the prove-it hole priority)
+    0x26CB60: (84, "a416917f31c92569edf3815ddf7ca6b45072b946cb4fc26c6350573d715c6b77"),   # r10: r10_each (the prove-it hole priority)
+    0x2EC530: (84, "30a455cfe830fe4df653d6caa045e11678ac1110fb2e8151320a4f510b3a93ed"),   # r10: r10_weakest (the prove-it hole priority)
+    0x2EE400: (85, "156528052eb0fae5ea043bb10762a9115728e51758c77004a6c981f794137247"),   # r10: r10_could (the prove-it hole priority)
+    0x3D62D0: (83, "d6dfaf369d58832c4c1da8418eca627611b2fc7d39696725075a14ac9fd2b86c"),   # r10: r10_seat_in (the prove-it hole priority)
+    0x3E1030: (104, "48b4ba8ad1e9a274bd48ee6a33f75102dada6b2aaea72cc1ba3724f2b80067a1"),   # r10: r10_pts (the prove-it hole priority)
+    0xECCE0: (91, "092083c0c58dc5b42a6d95061454d491fc4b13a54eb5bd32a837c25ceea3f85d"),   # r10: r10_count (the prove-it hole priority)
+    0x9AB90: (84, "9a80ce598a961cfcafea31f99e3c87f2450a8329f51d6c8891a33888e6e325f0"),   # r10: r10_level (the prove-it hole priority)
+    0x35B2F0: (84, "041631f61249f34975cf1985aefd7f7f0ecb3b283325b0ee2ed538c2d96c5409"),   # r10: r10_pool_man + r10_seat_pts (the prove-it hole priority)
+    0x65380: (86, "03b6f083b6e429bc9f815643fb668887d33154b97bc77e11c07a53ab1e451e25"),   # r10: r10_low + r10_club_seats (the prove-it hole priority)
+    0x65940: (86, "20dcb7de3fb8abad5909d06f7de4b1fdccdda7087c1d0bbb6c2a0ec0e9ae2871"),   # r10: r10_prove (the prove-it club: best room, then a hole club)
+    0x6F420: (95, "e5c4bd553d6342316f547b146c89c20c4877e936d6500c8d6ec4624799ae3600"),   # r10: restructure_best + economy_release (retune: the 3-a-club cap; releases prune the trade board)
+    0x15E9D0: (91, "20f03f798baf9489d32685f6bc3115606680117bdb9729e6745a760bfa50b228"),   # r10: restructured: a club's restructured deals (retune)
+    0xFAA20: (94, "ae55f3d068724ec9a0ec7c73e18f546c1895fa21bf9c0c0ae26e6736f4f8abbf"),   # r10: camp_ahead (review M1)
+    0x25CC20: (94, "b4f18b6672a0602cc9a693e1b3b6dba1e1504117c12667d83560666f30f5fd88"),   # r10: camp_keep: the better of the two stays (review M1)
+    0x28D4A0: (94, "ae55f3d068724ec9a0ec7c73e18f546c1895fa21bf9c0c0ae26e6736f4f8abbf"),   # r10: camp_one: one position's camp competition (review M1)
+    0x329C50: (94, "ae55f3d068724ec9a0ec7c73e18f546c1895fa21bf9c0c0ae26e6736f4f8abbf"),   # r10: years_hash: the length draw 0..254 (review S2)
+    0x31B000: (93, "584bae975e91b245a9408bc69c535c992412054a17f2dfbd0ac046bccd599a43"),   # r10: hole_room: a hole club's room less its floor fills (review N1)
+    0x36F380: (93, "3c1a3a86a0640a529e9bca2792f886b899de12bf7251ef54261e2f7e0c1bd8c0"),   # r10: camp_cut: a full camp roster's cut for a missing specialist (G6)
+    0x250B70: (92, "700bd9881c81e5c6a617190012d20015931fb89a07552a265abfd94b1a9ddce6"),   # r10: camp_cuttable + camp_fits (G6, M1)
+    0x1646E0: (88, "82d666317a88531f6c7bf8b94d162473ed2091efe1ecc2f1386f7c035e2d700f"),   # r10: camp_cover: a CPU club with no K or P signs one in camp (G6)
+    0x1D12C0: (88, "08c504bdc413e29bf4740d34454c18fa1da12af8b6434f0639846876f7030546"),   # r10: camp_one: cover, else compete (G6)
 }
 
 

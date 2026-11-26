@@ -26,6 +26,7 @@ from mod_editor.core import nfl2k5_franchise_economy_code as code
 from mod_editor.core import nfl2k5_practice_squad as squad
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from tests.nfl2k5_supersim_draft_fixture import retail_bytes, retail_roster, HAVE_UC
+from tests.franchise_economy_legacy import release_caller  # noqa: E402
 
 MENU = 0x2000000 + 0x1A0000
 
@@ -37,7 +38,7 @@ class Revision3ImageTests(unittest.TestCase):
         cls.current, cls.receipt = economy.apply(cls.retail)
 
     def test_revision_three_sites(self):
-        self.assertIn(economy.REVISION, (3, 4, 5, 6, 7, 8, 9))   # b779 rc1 revision 4 / b780 revision 5 / hunt1 6 / b81 team building 9 keep every revision-3 site
+        self.assertIn(economy.REVISION, (3, 4, 5, 6, 7, 8, 9, 10))   # b779 rc1 revision 4 / b780 revision 5 / hunt1 6 keep every revision-3 site
         image = XbeImage(self.current)
         self.assertEqual(image.read(economy.USER_FLOOR, 7), bytes.fromhex("80b91c01000032"))
         text = image.read(0xE891F0, 120).decode("utf-16-le").split("\0")[0]
@@ -342,7 +343,7 @@ class RestructureBeforeTheVeteranCutTests(unittest.TestCase):
         m.put(0xE576A4, 6)
         m.put(0xE576B4, 0)
         released = []
-        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append((m.reg("EDX"), m.get(m.reg("ESP")))),
+        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append((m.reg("EDX"), release_caller(m))),
                       begin=0x2BD900, end=0x2BD900)
         m.call(0x247D40, ecx=m.ARENA + 0x1A0000, budget=2_000_000_000)
         self.assertEqual(m.reg("ESP"), m.STACK + 4)
@@ -381,10 +382,14 @@ class WeeklyFillPortTests(unittest.TestCase):
         m.put(0xE3C278, 100000)          # every club under the cap: the rebuilt pass has nothing else to do
         m.put(0xE576A4, 8)
         before = sum(m.uc.mem_read(m.team_base + 500 * t + 0x11C, 1)[0] for t in range(32))
+        kept = {p for t in range(32) for p in roster(m, m.team_base + 500 * t)}
         m.call(0x323870, ecx=MENU, args=(0x3F800000, 0x3E4CCCCD), budget=2_000_000_000)
         self.assertGreaterEqual(sum(m.uc.mem_read(m.team_base + 500 * t + 0x11C, 1)[0] for t in range(32)) - before, 10)
+        # b81 economy r10: a man signed this week is priced by economy_value (the market curve by rank) and given
+        # economy_years' length, where revision 2 used q^3 and the native years, so for the signings only who signed
+        # where is compared (test_b81_economy_r10 covers the prices and lengths); every other contract byte for byte.
         return {t: sorted((p, bytes(m.uc.mem_read(p + 10, 2)) + bytes((m.uc.mem_read(p + 0x24, 1)[0],)) +
-                           bytes(m.uc.mem_read(p + 0x26, 2)))
+                           bytes(m.uc.mem_read(p + 0x26, 2)) if p in kept else b"signed")
                           for p in roster(m, m.team_base + 500 * t)) for t in range(32)}
 
     def test_same_signings_as_retail(self):

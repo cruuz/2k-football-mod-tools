@@ -103,9 +103,13 @@ class NativeEconomyTests(unittest.TestCase):
         cls.m.leaf(0x14E540, lambda: cls.m.ret(1), reason='user confirmation only; CPU trade decision stays native')
         cls.m.leaf(0x14E520, lambda: cls.m.ret(), reason='informational rejection display only')
 
-    def player(self, *, pos=0, pro=3, rating=85, value=1000, years=4, bonus=0, kind=2):
+    def player(self, *, pos=0, pro=3, rating=85, value=1000, years=4, bonus=0, kind=2, age=None):
         b = bytearray(84)
         b[8] = 4
+        if age is None:
+            age = 21 + pro   # b81 revision 10: the price ages by age (a first-year player is about 22)
+        season = self.m.get(0x247AC7) + 1                     # season index 0
+        struct.pack_into('<I', b, 24, ((season - age) % 100) << 21)
         struct.pack_into('<H', b, 10, value)
         b[0x24:0x28] = bytes((years, pro, kind | bonus << 4, years))
         b[0x35] = pos
@@ -372,7 +376,9 @@ class NativeEconomyTests(unittest.TestCase):
             m.put(trade + 0x20, m.team_base + 500)
             m.uc.mem_write(trade + 0x18, struct.pack('<H', offered))
             m.uc.mem_write(trade + 0x30, struct.pack('<H', requested))
-            self.assertEqual(m.call(0x2BC380, args=(1,), ebx=trade, budget=5_000_000), expected)
+            # b81 revision 10: each price ranks the man among every rostered player of his group (about 58,000
+            # instructions), so the trade AI's evaluation needs more than the old 5 million.
+            self.assertEqual(m.call(0x2BC380, args=(1,), ebx=trade, budget=60_000_000), expected)
 
     def test_cpu_signing_preserves_cap_roster_and_new_offer_terms(self):
         from tools.franchise_economy.probe import start
@@ -425,12 +431,12 @@ class NativeEconomyTests(unittest.TestCase):
         before = bytes(m.uc.mem_read(p, 84))
         payroll = m.get(team + 0x124)
         m.put(0xE3C278, 1)
-        m.call(0x322EB0, esi=p, edi=team)
+        m.call(0x322EB0, esi=p, edi=team, budget=20_000_000)   # b81 r10: the price and the length rank him
         self.assertEqual(bytes(m.uc.mem_read(p, 84)), before)
         self.assertEqual(m.get(team + 0x124), payroll)
         self.assertEqual(m.reg('ESP'), m.STACK + 4)
         m.put(0xE3C278, 200000)
-        m.call(0x322EB0, esi=p, edi=team)
+        m.call(0x322EB0, esi=p, edi=team, budget=20_000_000)   # b81 r10: the price and the length rank him
         self.assertNotEqual(bytes(m.uc.mem_read(p, 84)), before)
         self.assertEqual(m.call(0x2BF950, ecx=team), 1)
         # Credit the old charge: a renewal can be affordable even when almost
@@ -443,7 +449,7 @@ class NativeEconomyTests(unittest.TestCase):
         payroll = m.get(team + 0x124)
         before = bytes(m.uc.mem_read(p, 84))
         m.put(0xE3C278, payroll + 10)
-        m.call(0x322EB0, esi=p, edi=team)
+        m.call(0x322EB0, esi=p, edi=team, budget=20_000_000)   # b81 r10: the price and the length rank him
         self.assertNotEqual(bytes(m.uc.mem_read(p, 84)), before)
         self.assertLessEqual(m.get(team + 0x124), payroll + 10)
         self.assertEqual(m.call(0x2BF950, ecx=team), 1)

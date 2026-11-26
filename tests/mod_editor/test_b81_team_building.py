@@ -289,15 +289,19 @@ class Owner(unittest.TestCase):
         """A revision-8 economy reads legacy and upgrades in place by its one new window; team building needs it."""
         from mod_editor.core import nfl2k5_franchise_economy as economy
         old = _fixture(STANDARD_XBE)
-        self.assertEqual(economy.REVISION, 9)
+        self.assertIn(economy.REVISION, (9, 10))     # b81 economy lane: revision 10 keeps economy_room_for_signing
         if economy.status(old) == "legacy":
             self.assertFalse(self.tb.needs_met(old))
             with self.assertRaises(self.tb.TeamBuildingError):
                 self.tb.apply(old)
             upgraded, receipt = economy.apply(old)
             changed = [i for i, (a, b) in enumerate(zip(old, upgraded)) if a != b]
-            window = self.tb._offset(old, economy.ROOM_FOR_SIGNING_WINDOW)
-            self.assertTrue(all(window <= i < window + 110 or i < 0x1000 for i in changed))
+            if economy.REVISION == 9:
+                window = self.tb._offset(old, economy.ROOM_FOR_SIGNING_WINDOW)
+                self.assertTrue(all(window <= i < window + 110 or i < 0x1000 for i in changed))
+            else:                                    # b81 revision 10: only economy sites (and the headers) change
+                spans = [(self.tb._offset(old, s.va), self.tb._offset(old, s.va) + len(s.patched)) for s in economy.sites()]
+                self.assertTrue(all(i < 0x1000 or any(a <= i < b for a, b in spans) for i in changed))
         self.assertEqual(economy.status(self.payload), "applied")
         self.assertTrue(self.tb.needs_met(self.payload))
 
@@ -541,6 +545,16 @@ class MidRank(unittest.TestCase):
 def code_economy_cap():
     from mod_editor.core import nfl2k5_franchise_economy_code as economy
     return economy.SYMBOLS["economy_cap"]
+
+
+def economy_symbols():
+    from mod_editor.core import nfl2k5_franchise_economy_code as economy
+    return economy.SYMBOLS
+
+
+def economy_revision():
+    from mod_editor.core import nfl2k5_franchise_economy as economy
+    return economy.REVISION
 
 
 def _load_image(cls):
@@ -818,7 +832,9 @@ class Image(_ImageBase):
             m.call(code.SYMBOLS["tb_view"], args=(view, team), budget=200_000_000)
             room = m.call(0x2D82F0, ecx=team, budget=50_000_000)       # economy_room_for_signing (revision 9)
             cap = m.call(code_economy_cap(), ecx=team, edx=1, args=(0,), budget=50_000_000)
-            self.assertEqual(room, (cap - m.get(team + 0x124) - 10) & 0xFFFFFFFF, club)
+            # b81 economy revision 10: the room a club may spend also leaves its reserve (economy_reserve)
+            reserve = m.call(economy_symbols()["economy_reserve"], ecx=team, budget=50_000_000) if economy_revision() >= 10 else 0
+            self.assertEqual(room, (cap - m.get(team + 0x124) - 10 - reserve) & 0xFFFFFFFF, club)
             room = room - (1 << 32) if room >= 1 << 31 else room
             holes = []
             for p in range(17):

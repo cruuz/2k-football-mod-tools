@@ -168,6 +168,7 @@
     "test_b780_draft_class.py": {"BuildPathTests": "usa_xbe", "ClassOwnerTests": "usa_xbe", "DraftAiHeadTests": "usa_xbe", "NativeClassTurnoverTests": "usa_xbe", "NativeSpecialistCapTests": "signed_franchise"},
     "test_b780_econ3_roster_drift.py": {"NativeTests": "usa_xbe", "SiteTests": "usa_xbe"},
     "test_b780_n4_defense_playcall_sweep.py": {"DefensePlayCallSweepTests": "softdrink_disc"},
+    "test_b81_economy_r10.py": {"NativeTests": "usa_xbe", "OwnerTests": "usa_xbe"},
     "test_b81_gadget_pair_path.py": {"PairedGadgetPathTests": "b81_gadget_disc"},
     "test_b81_practice_squad_fill.py": {"KeptPreseasonImage": "b81_kept_preseason_image", "SiteTests": "usa_xbe"},
     "test_b81_sim_pos_injury_signed.py": {"SignedSlice2Exchange": "b81_signed_standard", "SignedThirdSeasonExchange": "b81_stability_third_season"},

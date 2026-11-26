@@ -20,10 +20,12 @@ from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from tests.nfl2k5_supersim_draft_fixture import HAVE_UC, retail_bytes
 
 POSITIONS = ("QB", "K", "P", "WR", "CB", "FS", "SS", "HB", "FB", "TE", "OLB", "ILB", "C", "G", "T", "DT", "DE")
-MIX = dict(zip(POSITIONS, (21, 9, 9, 37, 44, 18, 14, 25, 9, 25, 18, 18, 30, 28, 44, 49, 52)))
+# b81 economy revision 10 (coordinator ruling 6, 11/25): K 9 -> 4 and P 9 -> 4, the ten slots two each to WR, CB, T, DT, DE.
+MIX = dict(zip(POSITIONS, (21, 4, 4, 39, 46, 18, 14, 25, 9, 25, 18, 18, 30, 28, 46, 51, 54)))
+PREVIOUS_MIX = dict(zip(POSITIONS, (21, 9, 9, 37, 44, 18, 14, 25, 9, 25, 18, 18, 30, 28, 44, 49, 52)))
 # A 380-player class (the retail size, every class without the economy): prospect k = 380..1 takes slot
 # (k - 1) x 151 mod 450, so slots 0..379 of that walk; the 70 unvisited slots fall in three bands.
-MIX_380 = dict(zip(POSITIONS, (21, 9, 9, 37, 31, 12, 10, 25, 9, 25, 18, 12, 20, 20, 44, 43, 35)))
+MIX_380 = dict(zip(POSITIONS, (21, 4, 4, 39, 35, 12, 9, 24, 9, 25, 18, 14, 20, 19, 45, 46, 36)))
 # The b778 dr2 pick head (beta-78 and beta-79, so every SOFTDRINK v0.7 / v0.8 build carries it).
 PREVIOUS_HEAD = bytes.fromhex(
     "5356575581ecfc0000008be98bfa31c031c989048c4183f93b7cf78d84248800000050ff35a4c0e3008b15a8c0e3008bcde87afdffff8b"
@@ -44,6 +46,18 @@ def _walk(size, made=None):
             pos += 1
         out[POSITIONS[pos]] += 1
     return dict(out)
+
+
+def _with_previous_mix(payload):
+    """The image with its class window's mix set back to the 9-kicker/9-punter one of revisions 4 to 9 (beta 79 to the
+    beta 81 discs so far); every other byte of the window as now."""
+    image, out = XbeImage(payload), bytearray(payload)
+    at = image.offset(economy.CLASS_WINDOW + draft_class.MIX_OFFSET, len(POSITIONS))
+    out[at:at + len(POSITIONS)] = bytes(PREVIOUS_MIX.values())
+    from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+    for section in _sections(bytes(out)):
+        out[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(out), section)
+    return bytes(out)
 
 
 def _with_head(payload, head):
@@ -106,6 +120,40 @@ class ClassOwnerTests(unittest.TestCase):
         self.assertEqual(_walk(450), MIX)
         self.assertEqual(_walk(380), MIX_380)
         self.assertEqual(sum(MIX_380.values()), 380)
+
+    def test_four_kickers_and_four_punters_a_class(self):
+        # b81 economy revision 10: every class added 18 specialists nobody drafted (ten-season panel 68001-68004: the
+        # free-agent pool grew from 17 to 72 kickers and 12 to 60 punters). Fails on the 9/9 window.
+        self.assertEqual((draft_class.mix()["K"], draft_class.mix()["P"]), (4, 4))
+        self.assertEqual({k: MIX[k] - PREVIOUS_MIX[k] for k in MIX if MIX[k] != PREVIOUS_MIX[k]},
+                         {"K": -5, "P": -5, "WR": 2, "CB": 2, "T": 2, "DT": 2, "DE": 2})
+
+    def test_a_nine_specialist_window_reads_legacy_and_upgrades_in_place(self):
+        # Every disc built since b779 ag1 carries the 9/9 window, from the draft class owner alone or from the economy.
+        previous = _with_previous_mix(self.patched)
+        image = XbeImage(previous)
+        import hashlib
+        window = image.read(economy.CLASS_WINDOW, len(economy.WINDOWS[economy.CLASS_WINDOW]))
+        self.assertEqual(hashlib.sha256(window).hexdigest(), economy.PREVIOUS_CLASS_WINDOW)
+        self.assertEqual(draft_class.status(previous), "legacy")
+        self.assertEqual(economy.status(previous), "retail")          # the economy is not installed there
+        upgraded, receipt = draft_class.apply(previous)
+        self.assertEqual(upgraded, self.patched)
+        self.assertEqual(receipt["mix_per_450"], MIX)
+        # the economy's own image with the 9/9 window: legacy, and its upgrade is the current image byte for byte
+        current = economy.apply(self.retail)[0]
+        old = _with_previous_mix(current)
+        self.assertEqual((economy.status(old), draft_class.status(old)), ("legacy", "legacy"))
+        again, receipt = economy.apply(old)
+        self.assertEqual(again, current)
+        self.assertEqual(receipt.get("upgraded_from"), "legacy")
+        # a 9/9 window with any other byte changed is not that window: foreign, never rewritten
+        broken = bytearray(previous)
+        broken[image.offset(economy.CLASS_WINDOW + 0x10, 1)] ^= 0xFF
+        from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+        for section in _sections(bytes(broken)):
+            broken[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(broken), section)
+        self.assertEqual(draft_class.status(bytes(broken)), "foreign")
 
     def test_a_revision_three_image_with_the_class_sites_still_upgrades(self):
         # Someone rebuilds a beta-78 / v0.7 SOFTDRINK disc (economy revision 3) with the economy left off: the draft

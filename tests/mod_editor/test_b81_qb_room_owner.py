@@ -495,17 +495,23 @@ class PreviousRevisionTests(unittest.TestCase):
     # b81 integration (#36 CPU trades + #35 game outcomes merge): both lanes re-pinned these rebuilt previous executables
     # for their own change (the trades owner's pages and registry; the QB option's revision 5 bank); with both merged
     # every one moves again. Re-measured on the merged code; the upgrade and restore round trips below pass on it.
-    D1D2_SHA = "5a2e92842f8d29600ccfaa7425fafddfdc75fe6fb05d905c1fce424d3dc8f4eb"
-    REVIEW_67_SHA = "2f739fec1299749bdd71cb102503e6db10926560415667d4f2dbcb45842a39bf"
-    REVIEW_64_SHA = "63a10dd9fbdace61199c2876248487ed75b69940f200f1eb6f8c5f931f416ad0"
-    FLOOR_SHA = "6b999c0c915fa1e3bb1e1c0f5895b763ab5c53b2a6673c073247e713b7d420e5"
-    FLOOR_EMPTY_SHA = "7d267845a68f939c8c4a3be003ee33300b484881828eda60ba1c27fb4bc109f4"
-    STAGE_3A_SHA = "0831d7c65b635b2c29984753d7d27c448c65d9b8a787abcb0c2fdc76614e9f90"
-    STAGE_3A_EMPTY_SHA = "16f05ec4a5997bd9b718a2f110c342031634c01f46f51f1edc65d6930b40c27a"
+    # b81 integration (#34 economy rev 10 merge): the economy lane's note, then re-measured again:
+    # Economy revision 10 (with team building's revision 9 and its 6c5a4ec17 review fixes, and the hole rule on the
+    # mid-rank header, then the one retune round of 11/25 the review fixes and the 11/25 constants): re-pinned. Every rebuild differs from the same rebuild on
+    # 3647cabab only inside the economy's own sites (revisions 9 and 10) plus two section digests (40 bytes). The
+    # earlier values were D1D2 5d471c14, REVIEW_67 08087d17, REVIEW_64 c22d95b6, FLOOR 55e52233 / 8652889e,
+    # STAGE_3A 5b3c065a / 0af4c40f, HANDOVER 61724296 / 58e85935 (3647cabab's revision 9 had already moved them).
+    D1D2_SHA = "a7667035f56037b5f88979f8792889fb2c6fbacde1a8918b5e7eca30468fd5c7"
+    REVIEW_67_SHA = "2860ea735f7ccf4f83aede49ebcb741b588d40ee85c703de6d6c0c768419faba"
+    REVIEW_64_SHA = "e53ef640641e590326249cc0a474040b33f2603493c85919f29703873f6f4bb6"
+    FLOOR_SHA = "a4d3322e693c2d2079b1a46996d511afdd174481d67b33b05bbed35ada4d624e"
+    FLOOR_EMPTY_SHA = "a9f8c440b9ff57d35c0572c155fb0b9faff2d0a06b51a1e91e6e7374a9077b63"
+    STAGE_3A_SHA = "5faed0e6032f871ba099a34bd46bdeca7c6ca8f2f507173b4b58a92bc96133e8"
+    STAGE_3A_EMPTY_SHA = "f70579bd36c121fcff6be3f174e8d609444bb3f11a5c734dc9f81cf9cd05378c"
     # b2672e398's page (C21/C23 freeze it as "previous"): the P5 and P6-5ff panels ran f5270f4d (67) and 35ce7727 (64)
     # on slice 1 alone; rebuilt here at the merged head.
-    HANDOVER_67_SHA = "bfd24a582456e0ba0d77f07c3a4a7dd62548b2eaaa08bb0cc2437ab0196a620f"
-    HANDOVER_64_SHA = "99b8546f2da2d94368e66296b8ce9571f9f0027ca85af0e8567c0021f089aaa7"
+    HANDOVER_67_SHA = "a3560aa2b6e185b3eca79452a3500a74527c2b5f07cfc50989423922f7dc5788"
+    HANDOVER_64_SHA = "926cbb2d2b48e5c40c677ba7073cf1786721830c4d5d1328803348bb8c22f2e0"
 
     @classmethod
     # b81 modern numbers (modern IR's number-rights revision, 866fe3a8d / 911e590e3): the fixture's base is built with
@@ -698,6 +704,11 @@ class TestOnlyInstallTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_qb_room as room, nfl2k5_sim_qb_injuries as qb
         source = _private("NFL2K5_B81_REVIEWED_TEST_DISC", HELMET_XBE_SHA)
         slice1, _ = qb.apply(source, "realistic")
+        # b81 economy r10: the floor authenticates the CURRENT economy's restructure, and revision 10 changed it (no
+        # restructure under 3 years left, no 6-to-2 deal), so the helmet disc's revision 7 economy is upgraded first, as
+        # the Studio routes and PreviousRevisionTests do.
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        slice1, _ = economy.apply(slice1)
         stages = room.STAGE_FLOOR
         with self.assertRaisesRegex(ValueError, "modern injured reserve"):
             room.install_stages(slice1, stages)

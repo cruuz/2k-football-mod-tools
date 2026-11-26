@@ -26,6 +26,7 @@ from mod_editor.core import nfl2k5_franchise_economy as economy
 from mod_editor.core import nfl2k5_star_retention as star_retention
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from tests.nfl2k5_supersim_draft_fixture import HAVE_UC, retail_bytes, retail_roster
+from tests.franchise_economy_legacy import release_caller  # noqa: E402
 
 K, P, CUT_RETURN = 1, 2, 0x2BFBC2
 NATIVE_RELEASE_CALL = bytes.fromhex("e83eddffff")      # call 0x2BD900 at 0x2BFBBD
@@ -68,7 +69,7 @@ def with_revision_five_gate(payload: bytes) -> bytes:
 
 class SiteTests(unittest.TestCase):
     def test_the_release_guard_is_revision_six_and_reads_back(self):
-        self.assertIn(economy.REVISION, (6, 7, 8))     # b780 econ3: revision 7 keeps the guard's call (its pick moved); b81: 8 too
+        self.assertIn(economy.REVISION, (6, 7, 8, 9, 10))     # b780 econ3: revision 7 keeps the guard's call (its pick moved); b81: 8 too
         site = next(s for s in economy.sites() if s.va == economy.VETERAN_CUT_RELEASE)
         self.assertEqual(site.patched[:1], b"\xe8")
         target = (economy.VETERAN_CUT_RELEASE + 5 + struct.unpack_from("<i", site.patched, 1)[0]) & 0xFFFFFFFF
@@ -190,7 +191,7 @@ class NativeStageSixTests(unittest.TestCase):
         m.put(0xE576A4, 6)
         m.put(0xE576B4, 0)
         released = []
-        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append((m.reg("EDX"), m.get(m.reg("ESP")))),
+        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append((m.reg("EDX"), release_caller(m))),
                       begin=0x2BD900, end=0x2BD900)
         m.call(0x247D40, ecx=m.ARENA + 0x1A0000, budget=2_000_000_000)
         self.assertEqual(m.reg("ESP"), m.STACK + 4)
@@ -305,6 +306,20 @@ def without_cover(payload: bytes, roster_a: bytes) -> bytes:
     return bytes(out)
 
 
+def cover_off(payload: bytes) -> bytes:
+    """``payload`` with the in-season cover returning at once (its first byte ``ret``; economy_cover is naked fastcall,
+    no stack arguments) and the rest of the upkeep as built. b81 economy r10: the released upkeep spliced in by
+    without_cover calls the economy's own helpers at their revision 4-9 addresses (0x2BFBEF, 0x3BA083), which revision
+    10 moved, so that hybrid faults in a season; turning the cover off in place keeps the claim independent of layout."""
+    from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+    out = bytearray(payload)
+    at = XbeImage(payload).offset(economy.SYMBOLS["economy_cover"], 1)
+    out[at] = 0xC3
+    for section in _sections(bytes(out)):
+        out[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(out), section)
+    return bytes(out)
+
+
 def released_roster_a() -> bytes | None:
     import os
     for name in ("NFL2K5_V08_XBE", "NFL2K5_B780_RC_XBE"):
@@ -326,8 +341,7 @@ class InSeasonCoverTests(unittest.TestCase):
     def setUpClass(cls):
         cls.after, _ = economy.apply(retail_bytes())
         cls.body = retail_roster()
-        roster_a = released_roster_a()
-        cls.before = without_cover(cls.after, roster_a) if roster_a is not None else None
+        cls.before = cover_off(cls.after)
 
     def season(self, payload, *, hurt=True, size=53, stage=8, direct=False):
         from tools.franchise_economy.probe import start
@@ -401,8 +415,6 @@ class InSeasonCoverTests(unittest.TestCase):
         self.assertEqual((got["healthy"], got["signed"].count(K)), (0, 0))
 
     def test_before_the_cover_the_club_kept_only_its_hurt_kicker(self):
-        if self.before is None:
-            self.skipTest("no released v0.8 / v0.9 RC executable in this scratch")
         got = self.season(self.before)
         self.assertEqual((got["count"], got["healthy"], got["signed"].count(K)), (53, 0, 0))
 

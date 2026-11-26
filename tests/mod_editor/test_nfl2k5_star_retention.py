@@ -19,6 +19,7 @@ from mod_editor.core import nfl2k5_xbe_space as space
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from tests.mod_editor.test_nfl2k5_owner_pairwise_composition import retail_xbe, repin_edit
 from tests.nfl2k5_supersim_draft_fixture import HAVE_UC, retail_roster
+from tests.franchise_economy_legacy import release_caller  # noqa: E402
 
 # The cave as installed at 0x14EC5D0 (the first free late-owner slot of the released v0.6.1 executable).
 CAVE_AT_14EC5D0 = ("5152ba01000000e8a4a7d5fe5a5952ba08c64e01807935007505ba0cc64e01d81adfe05af6c4417508b8ffff0000"
@@ -144,7 +145,7 @@ class NativeStageSixTests(unittest.TestCase):
         m.put(0xE576B4, 0)
         m.put(0xE576B8, 1)
         released = []
-        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append((m.reg("EDX"), m.get(m.reg("ESP")))),
+        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append((m.reg("EDX"), release_caller(m))),
                       begin=0x2BD900, end=0x2BD900)
         m.call(0x247D40, ecx=m.ARENA + 0x1A0000, budget=2_000_000_000)
         self.assertEqual(m.reg("ESP"), m.STACK + 4)

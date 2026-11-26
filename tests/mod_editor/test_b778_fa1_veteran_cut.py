@@ -28,6 +28,7 @@ from mod_editor.core import nfl2k5_practice_squad as squad
 from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
 from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from tests.nfl2k5_supersim_draft_fixture import retail_bytes, retail_roster, HAVE_UC
+from tests.franchise_economy_legacy import release_caller  # noqa: E402
 
 SITE = 0x2BFB61
 RETAIL = bytes.fromhex("6a01")                 # push 1: surplus on
@@ -128,7 +129,7 @@ class NativeStageSixTests(unittest.TestCase):
         m.put(0xE576B4, 0)
         entered, released = [], []
         m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: entered.append(m.reg("ECX")), begin=0x2BFAF0, end=0x2BFAF0)
-        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append((m.reg("EDX"), m.get(m.reg("ESP")))),
+        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append((m.reg("EDX"), release_caller(m))),
                       begin=0x2BD900, end=0x2BD900)
         m.call(0x247D40, ecx=m.ARENA + 0x1A0000, budget=2_000_000_000)
         self.assertEqual(m.reg("ESP"), m.STACK + 4)
@@ -176,7 +177,7 @@ class NativeStageSixTests(unittest.TestCase):
         m.put(0xE576A4, 6)
         m.put(0xE576B4, 0)
         released = []
-        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append((m.reg("EDX"), m.get(m.reg("ESP")))),
+        m.uc.hook_add(m.u.UC_HOOK_CODE, lambda *_: released.append((m.reg("EDX"), release_caller(m))),
                       begin=0x2BD900, end=0x2BD900)
         m.call(0x247D40, ecx=m.ARENA + 0x1A0000, budget=2_000_000_000)
         # b780 econ3 (revision 7): the overpaid veteran triggers the cut, whose release is the least value lost that
