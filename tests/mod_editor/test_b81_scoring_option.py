@@ -168,8 +168,9 @@ class InPlaceRoutes(unittest.TestCase):
                 if plan.sim_realism:      # b81 game outcomes: the outcomes page rides with the realism owner
                     expected = mod_build._sim_outcomes_with_realism(expected)[0]
                 expected = aim.apply(expected)[0]
-                # b81 history-pool: the copy also carries this release's career history pool (the disc has v0.9's)
-                expected = mod_build._history_pool_upgrade(expected)[0]
+                # b81 history-pool: the copy also carries this release's career history pool (the disc has v0.9's),
+                # b81 rookie-faces: after rookie faces' current revision (the disc has GEN1)
+                expected = mod_build._history_pool_upgrade(mod_build._rookie_faces_upgrade(expected)[0])[0]
                 with self.subTest(mode=mode):
                     self.assertEqual(result, hashlib.sha256(expected).hexdigest())
                     self.assertEqual(XbeImage(expected).read(aim.SITE_VA, aim.SITE_SIZE), aim.site_bytes())

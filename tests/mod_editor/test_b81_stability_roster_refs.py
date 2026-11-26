@@ -395,8 +395,10 @@ class Routes(unittest.TestCase):
         # updates it first, beneath the installed QB option
         # b81 game outcomes: and the simulated-game outcomes that ride with the realism owner (as a full build)
         from mod_editor.core import nfl2k5_sim_realism as realism
-        expected = mod_build._history_pool_upgrade(mod_build._cpu_kick_aim_with_kicking(mod_build._sim_outcomes_with_realism(
-            qb.apply(pressure.apply(realism.apply(xbe)[0])[0], "realistic", reference=reference)[0])[0])[0])[0]
+        # b81 rookie-faces: rookie faces' current revision before the pool (a no-op unless the executable has GEN1)
+        expected = mod_build._history_pool_upgrade(mod_build._rookie_faces_upgrade(mod_build._cpu_kick_aim_with_kicking(
+            mod_build._sim_outcomes_with_realism(
+                qb.apply(pressure.apply(realism.apply(xbe)[0])[0], "realistic", reference=reference)[0])[0])[0])[0])[0]
         update = receipt["sim_qb_source_update"]
         self.assertEqual(update["result_sha256"], _sha(expected))
         self.assertEqual(update["stability_reference"]["reference"], list(reference))
@@ -551,9 +553,10 @@ class Routes(unittest.TestCase):
         from mod_editor.core import nfl2k5_pass_protection as pressure   # combined levers: the legacy centre updated
         from mod_editor.core import nfl2k5_sim_realism as realism        # b81 fb-targets: season realism updated too
         # b81 history-pool: the copy also carries this release's career history pool
-        # b81 game outcomes: and the simulated-game outcomes that ride with the realism owner
-        self._assert_copy(copy, receipt, mod_build._history_pool_upgrade(mod_build._cpu_kick_aim_with_kicking(
-            mod_build._sim_outcomes_with_realism(pressure.apply(realism.apply(frozen)[0])[0])[0])[0])[0])
+        # b81 game outcomes: and the simulated-game outcomes that ride with the realism owner; b81 rookie-faces
+        self._assert_copy(copy, receipt, mod_build._history_pool_upgrade(mod_build._rookie_faces_upgrade(
+            mod_build._cpu_kick_aim_with_kicking(mod_build._sim_outcomes_with_realism(
+                pressure.apply(realism.apply(frozen)[0])[0])[0])[0])[0])[0])
         # The sentence once, next to the floor's own notes (practice squad merge: this disc's earlier economy is
         # upgraded in place for the floor, and the report says so).
         floor_notes = receipt["qb_room_source_update"].get("added") or []

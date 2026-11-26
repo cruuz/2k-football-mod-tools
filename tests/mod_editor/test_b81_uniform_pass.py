@@ -1125,6 +1125,36 @@ class RealDisc(unittest.TestCase):
             self.assertTrue((np.abs(socks[..., :3].astype(int) - np.array((0x18, 0x19, 0x1B))).max(-1) <= 2).all(), selector)
             self.assertTrue((np.abs(pants[240:, :, :3].astype(int) - 0x19).max(-1) <= 2).all(), selector)
 
+    def test_the_patriots_shoulder_stripes_run_straight_down_the_back(self):
+        # Owner 11/25: "the Patriot shoulder stripes are almost good, but they aren't smooth and straight. They kind of
+        # curve over near the back ... They should just be one streamlined stripe that is straight". On the back of the
+        # torso texture (rows 25-84, the back face below the shoulder top, where the texture follows the body almost
+        # linearly) the middle stripe of each set keeps to one straight line (the 11/22 set bent off it by 4 texels and
+        # the released v0.9 set by 6.6), the set keeps its width, and both sets end on the same row (level on the body).
+        red = np.array((200, 16, 46))
+        for selector, middle in (("16H0", (255, 255, 255)), ("16A0", (10, 37, 80))):
+            torso = self.after(selector, "jersey00")[..., :3].astype(int)
+            is_red = np.abs(torso - red).sum(-1) <= 30
+            is_mid = np.abs(torso - np.array(middle)).sum(-1) <= 30
+            ends = []
+            for x0, x1 in ((280, 384), (384, 505)):          # the left and the right shoulder's set on the back
+                centres, widths = [], []
+                for y in range(25, 100):
+                    reds = np.flatnonzero(is_red[y, x0:x1])
+                    if len(reds) < 4:
+                        continue
+                    inside = np.flatnonzero(is_mid[y, x0 + reds.min():x0 + reds.max()])
+                    if len(inside) >= 2:
+                        centres.append((y, inside.mean() + reds.min()))
+                        widths.append(int(reds.max() - reds.min() + 1))
+                rows = np.array(centres)
+                self.assertGreaterEqual(len(rows), 55, (selector, x0))
+                slope, at = np.polyfit(rows[:, 0], rows[:, 1], 1)
+                self.assertLessEqual(float(np.abs(rows[:, 1] - (at + slope * rows[:, 0])).max()), 1.5, (selector, x0))
+                self.assertLessEqual(max(widths) - min(widths), 5, (selector, x0, widths))
+                ends.append(int(rows[-1, 0]))
+            self.assertLessEqual(abs(ends[0] - ends[1]), 1, (selector, ends))
+
     def test_the_commanders_road_shoulder_swoosh_is_one_solid_mark(self):
         # R2 (order R2-C, art director's ruling): the game draws the road shoulder swoosh across the torso texture's
         # front/back seam: a hook of 13 or 14 solid texels on the front panel and a faint sliver of a tail on the back
@@ -1386,8 +1416,10 @@ def measure_strip(rgba, widths, fill):
     e = cell("E", is_fill)
     right = int(np.flatnonzero(e.any(0)).max()) - 1
     bar = int(np.flatnonzero(~e[4:, right]).min())
-    counters = {ch: int(nf._enclosed(~(cell(ch, rgba[..., 3] > 0))).sum()) for ch in "ABDOPQR"}
-    o = nf._enclosed(~cell("O", rgba[..., 3] > 0))
+    # b81-nameplates: a counter texel is one at least half clear (the smoothed edges give a small counter's texels some
+    # coverage)
+    counters = {ch: int(nf._enclosed(~(cell(ch, rgba[..., 3] >= 128))).sum()) for ch in "ABDOPQR"}
+    o = nf._enclosed(~cell("O", rgba[..., 3] >= 128))
     return dict(cap=(rows[0], rows[-1]), stem=stem, bar=bar, counters=counters,
                 o_counter_width=int(o.sum(1).max()))
 
@@ -1417,8 +1449,11 @@ class NameplateDocument(unittest.TestCase):
             self.assertTrue(all(1 <= w <= 32 for w in n["widths"]), selector)
             self.assertNotEqual(n["before_sha256"], n["after_sha256"])
 
-    def test_strips_are_crisp_and_wear_only_the_kits_colours(self):
-        folder = gf.art_folder(gf.digits_b81())
+    def test_strips_have_smooth_edges_and_wear_only_the_kits_colours(self):
+        # b81-nameplates (owner 11/25, the Colts road plate: "the last name font is pixelated and not good"): the R2
+        # strips were drawn with every texel fully on or off, and the game magnifies the plate, so every texel step
+        # showed. Every strip now carries its letters' coverage on the edges (``smooth_letters``), as the released
+        # v0.9 strips do (117 to 227 alpha levels there).
         for row in names_rows("names_png"):
             if row["selector"] in RECOLOURED_NAMES:
                 continue
@@ -1428,11 +1463,38 @@ class NameplateDocument(unittest.TestCase):
                 continue
             name = row.get("png", row["selector"])
             self.assertEqual(rgba.shape, (32, 1024, 4))
-            self.assertEqual(set(np.unique(rgba[..., 3]).tolist()), {0, 255}, name)        # no soft edges
-            opaque = {tuple(int(v) for v in c) for c in np.unique(rgba[rgba[..., 3] == 255][:, :3], axis=0)}
-            self.assertEqual(opaque, {hex_rgb(fill)} | ({hex_rgb(outline)} if outline else set()), name)
-            clear = {tuple(int(v) for v in c) for c in np.unique(rgba[rgba[..., 3] == 0][:, :3], axis=0)}
+            alpha = rgba[..., 3]
+            self.assertGreaterEqual(len(np.unique(alpha)), 10, name)                         # soft edges
+            self.assertGreater(((alpha > 0) & (alpha < 255)).sum(), 0.05 * (alpha == 255).sum(), name)
+            seen = {tuple(int(v) for v in c) for c in np.unique(rgba[alpha > 0][:, :3], axis=0)}
+            if outline is None:
+                self.assertEqual(seen, {hex_rgb(fill)}, name)
+            else:                                   # the edge colour, the fill and their blends in eighths
+                f, o = np.array(hex_rgb(fill)), np.array(hex_rgb(outline))
+                blends = {tuple(int(v) for v in (o * (8 - k) + f * k + 4) // 8) for k in range(9)}
+                self.assertLessEqual(seen, blends, name)
+                self.assertIn(hex_rgb(fill), seen, name)
+                self.assertIn(hex_rgb(outline), seen, name)
+            clear = {tuple(int(v) for v in c) for c in np.unique(rgba[alpha == 0][:, :3], axis=0)}
             self.assertEqual(clear, {hex_rgb(outline or fill)}, name)     # a filtered edge never fades to black
+
+    def test_stroke_weight_is_the_measured_one(self):
+        # the H's left stem as coverage (texels of ink across rows 7 to 12): the Colts letters at the measured real
+        # weight (stem/cap 0.14 of the 24 cap rows: BUCKNER, STEWART, TAYLOR), every other club at its drawn 3 texels
+        # (an edged strip: the fill and its edge on both sides)
+        widths = {r["selector"]: r["widths"] for r in names_rows("name_widths")}
+        for row in names_rows("names_png"):
+            if row["selector"] in RECOLOURED_NAMES:
+                continue
+            rgba = strip_picture(row)
+            if rgba is None:
+                continue
+            i = NAME_GLYPHS.index("H")
+            cell = rgba[7:13, 32 * (i + 1):32 * (i + 1) + 6, 3].astype(float) / 255
+            stem = float(np.median(cell.sum(1)))
+            fill, outline, drawn, _bar = NAMEPLATES[row["selector"]]
+            want = 0.14 * 24 if row["selector"].startswith("11") else drawn + (2 if outline else 0)
+            self.assertAlmostEqual(stem, want, delta=0.2, msg=row["selector"])
 
     def test_every_glyph_starts_on_its_offset_and_fits_its_stored_width(self):
         folder = gf.art_folder(gf.digits_b81())

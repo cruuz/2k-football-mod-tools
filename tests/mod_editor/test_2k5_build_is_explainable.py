@@ -249,6 +249,9 @@ class DefenseBuildOrderingTests(unittest.TestCase):
         uniforms = SimpleNamespace(apply_to_image=lambda target: {"synthetic": True})
         modules = {"nfl2k5_playbook_pack": packs, "nfl2k5_position_pools": pools, "nfl2k5_depth_roles": roles,
                    "nfl2k5_menu_icon_orientation": SimpleNamespace(apply_to_image=lambda target: {}),
+                   # b81 sb-booth: the pregame welcome and stale booth lines run on every disc image
+                   "nfl2k5_stadium_welcome": SimpleNamespace(apply_to_image=lambda target, **kw: {"state": "not_needed"}),
+                   "nfl2k5_stale_speech": SimpleNamespace(apply_to_image=lambda target, **kw: {"state": "not_needed"}),
                    "nfl2k5_unc_bowl_uniforms": uniforms,
                    "nfl2k5_nyg_numbers": SimpleNamespace(apply_to_image=lambda target: {"state": "other_uniform"}),
                    "nfl2k5_kit_fixes_2026": SimpleNamespace(apply_to_image=lambda target: {"state": "other_uniform"},
@@ -293,7 +296,8 @@ class DefenseBuildOrderingTests(unittest.TestCase):
         self.assertEqual(events, [("defense.2k5book",), "recode", ("offense.2k5book",), "roles"])
         self.assertEqual([s["step"] for s in receipt["steps"]],
                          ["xbe", "defense_playbook_packs", "position_pools", "playbook_packs", "depth_roles",
-                          "position_pool_filters", "unc_bowl_uniforms", "nameplate_fixes_2026", "menu_icon_orientation"])
+                          "position_pool_filters", "unc_bowl_uniforms", "nameplate_fixes_2026", "menu_icon_orientation",
+                          "stadium_welcome", "stale_speech"])   # b81 sb-booth: the booth steps close every disc build
         self.assertFalse(receipt["steps"][1]["witnessed"])
 
 

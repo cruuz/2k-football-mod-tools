@@ -152,7 +152,7 @@ class PortraitPreviews:
                 bank = json.loads(rookie.BANK_JSON.read_text(encoding="utf-8"))
                 pins = {a["file"]: a["sha256"] for a in bank["atlases"]}
                 for face in bank["faces"]:
-                    row = {**face, "_dir": rookie.DATA_DIR, "_pins": pins, "_rgba": False}
+                    row = {**face, "_dir": rookie.DATA_DIR, "_pins": pins, "_rgba": True}
                     for key in ("id", "legacy_id"):
                         if face.get(key) is not None:
                             self._rookie[int(face[key])] = row

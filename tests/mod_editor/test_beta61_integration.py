@@ -67,6 +67,9 @@ class BuildIntegrationTests(unittest.TestCase):
                            'nfl2k5_scorebug_ingame':SimpleNamespace(runtime_apply_in_place=runtime),
                            'nfl2k5_unc_bowl_uniforms':SimpleNamespace(apply_to_image=lambda target: {'synthetic': True}),
                            'nfl2k5_menu_icon_orientation':SimpleNamespace(apply_to_image=lambda target: {'state': 'not_applicable', 'written': 0}),
+                           # b81 sb-booth: the pregame welcome and stale booth lines run on every disc image
+                           'nfl2k5_stadium_welcome':SimpleNamespace(apply_to_image=lambda target, **kw: {'state': 'not_needed'}),
+                           'nfl2k5_stale_speech':SimpleNamespace(apply_to_image=lambda target, **kw: {'state': 'not_needed'}),
                            'nfl2k5_menu_icon_uf3':SimpleNamespace(apply_to_image=lambda target: {'state': 'not_applicable', 'written': 0}),
                            # b772 ny1/uf1/uf2: the uniform block's pinned kit repairs; a synthetic image matches none
                            'nfl2k5_nyg_numbers':SimpleNamespace(apply_to_image=lambda target: {'state': 'retail'}),
@@ -108,7 +111,7 @@ class BuildIntegrationTests(unittest.TestCase):
                     else:
                         receipt = build.build(selected)
                         self.assertEqual(target.read_bytes(), b'original runtime music')
-                        self.assertEqual([r['step'] for r in receipt['steps']], ['copy','scorebug_runtime','music_library','unc_bowl_uniforms','nameplate_fixes_2026','menu_icon_orientation'])
+                        self.assertEqual([r['step'] for r in receipt['steps']], ['copy','scorebug_runtime','music_library','unc_bowl_uniforms','nameplate_fixes_2026','menu_icon_orientation','stadium_welcome','stale_speech'])
                         # every step ran: none was left out (a stale stand-in module above would be)
                         self.assertNotIn('left_out', receipt)
                         # macOS temp paths resolve under /private/var: compare resolved paths.
