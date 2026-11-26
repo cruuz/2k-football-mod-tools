@@ -638,7 +638,13 @@ class CaveReferenceTests(unittest.TestCase):
             # legacy-page gate above is still empty.
             # b780 pres2 (Q51, 9b9d86f38): the sprite scorebug spills to the pool, which grows from 3 to 4 pages; the 12 raw
             # candidates on the new page 0x150E000 are the whole change (test_nfl2k5_xbe_space pins the same 1,140).
-            self.assertEqual(len(proof["encoded_references"]), 1140)  # 1,128 + 12
+            # b81 awards (queue item 38): honors.apply installs the season vote on its fixed page 0x1531000, so the v4
+            # pool mapping runs 0x150B000..0x1532000 (was ..0x150F000). The 356 new raw candidates are 5 on the awards
+            # page and 351 on the 34 mapped pages between; no allocation moved and the legacy gate above is still empty.
+            # The bounded REQUESTS union in test_nfl2k5_xbe_space carries no honors page and stays at 1,140.
+            self.assertIn((space.AWARDS_OWNER, space.AWARDS_VA), {(a["owner"], a["va"]) for a in proof["allocations"]})
+            self.assertEqual(sum(target >= 0x150F000 for _va, _kind, target in proof["encoded_references"]), 356)
+            self.assertEqual(len(proof["encoded_references"]), 1496)  # 1,128 + 12 + 356
         self.assertEqual(relocated.status(self.patched), "applied")
         from mod_editor.core import nfl2k5_scorebug_runtime as runtime
         self.assertEqual(runtime.status(self.patched), "applied")
