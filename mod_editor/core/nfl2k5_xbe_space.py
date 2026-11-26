@@ -886,6 +886,28 @@ def _modern_numbers_at(owner, at, size, align):
     return at
 
 
+# b81-seamen: one fixed page at 0x1532000 for the classic Seamen's crowd helpers (nfl2k5_classic_crowd: 119 bytes of
+# code and the "SM" text; claimed in the coordinator's page register; the awards lane released it, right after its own page).
+# Placed like the other fixed pages: at its absolute address, never advancing the pool cursor, with its own step-over in
+# to_pool (FIXED_SPAN_END untouched), so every other pool owner skips 0x1532000..0x1532FFF whether or not it is
+# requested. Outside the shared owner unions' v3 runs, so no v3 address moves; installed at the classic teams step.
+CLASSIC_CROWD_OWNER = "nfl2k5_classic_crowd"
+CLASSIC_CROWD_VA = 0x1532000
+CLASSIC_CROWD_SIZE = PAGE
+CLASSIC_CROWD_REQUEST = (CLASSIC_CROWD_OWNER, "code", CLASSIC_CROWD_SIZE, PAGE)
+LATE_OWNERS += (CLASSIC_CROWD_OWNER,)
+FIXED_PAGE_OWNERS += (CLASSIC_CROWD_OWNER,)
+
+
+def _classic_crowd_at(owner, at, size, align):
+    """b81-seamen: the crowd page's pool offset for its owner; any other owner overlapping it steps past it."""
+    page = CLASSIC_CROWD_VA - POOL_VA
+    if owner == CLASSIC_CROWD_OWNER:
+        return page
+    if at < page + CLASSIC_CROWD_SIZE and at + size > page:
+        return (page + CLASSIC_CROWD_SIZE + align - 1) & -align
+    return at
+
 # XSPACE2 is retained as the header envelope for the shipped boot-logo reader.
 # SP03 and the sealed external directory distinguish the v3 interpretation.
 SCALE_TAG = EXT_MAGIC + b"SP03"
@@ -965,7 +987,8 @@ def dormant_union():
             + return_coverage.REQUESTS  # b779-fixD: matches build_manifest's all_requests so allocation_evidence() needs no allocated=
             + module_loader.REQUESTS + seven.REQUESTS + GADGET_REQUESTS + (BACKFIELD_REQUEST, QB_INJURY_REQUEST)
             + (QB_ROOM_REQUEST, QB_TRADES_REQUEST)  # b81 qb34: the fixed quarterback room pages, then trades (C20)
-            + (HELMET_SIDES_REQUEST,))  # b81 helmet sides: its fixed page after the trades page
+            + (HELMET_SIDES_REQUEST,)  # b81 helmet sides: its fixed page after the trades page
+            + (CLASSIC_CROWD_REQUEST,))  # b81-seamen: the classic crowd's fixed page
 
 
 def is_scaleout(payload):
@@ -1134,6 +1157,8 @@ def _scale_allocations(requests):
                  "foreign Backfield card allocation")
     _require(all(r == MODERN_NUMBERS_REQUEST for r in requests if r[0] == MODERN_NUMBERS_OWNER),
              "the modern jersey numbers have one fixed page")  # b81 modern numbers
+    _require(all(r == CLASSIC_CROWD_REQUEST for r in requests if r[0] == CLASSIC_CROWD_OWNER),
+             "the classic crowd owner has one fixed page")  # b81-seamen
     _directory_code_size(requests)  # Validate every named slot before placement.
     requests = [r for r in requests if r[0] not in DIRECTORY_CODE_OWNERS]
     # b76-k1: the K128 owner is placed after every other owner, the promoted MyCareer code and the grown
@@ -1189,6 +1214,7 @@ def _scale_allocations(requests):
         elif at < room + span and at + size > room:
             at = (room + span + align - 1) & -align
         at = _modern_numbers_at(owner, at, size, align)    # b81 modern numbers: its fixed page, after the span
+        at = _classic_crowd_at(owner, at, size, align)      # b81-seamen: its fixed page
         _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")
         out.append(dict(owner=owner, kind=kind, size=size, align=align,
                         va=POOL_VA + at, raw=POOL_RAW + at, owner_offset=0))

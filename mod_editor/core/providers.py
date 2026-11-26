@@ -548,14 +548,14 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_modern_metlife.py": "66ab7312df3d0e62881935a744cb9661c948b326302790063694dc44c5102fc2",
         "mod_editor/core/nfl2k5_modern_surfaces.py": "09885beed3b0341854fd9d9ab6be10d0ae1ef444bcf88cd43501a61700c89535",
         "mod_editor/core/nfl2k5_broadcast_greens.py": "1819a3085508cfc6493241ee87b6f53fed1a1b8ed6aaa64eaada77603eee7802",
-        "mod_editor/core/nfl2k5_modern_venues_2026.py": "59572c748df5ac7317a47e543639a82764c90c2755452fe49f976c07ebc8f918",
+        "mod_editor/core/nfl2k5_modern_venues_2026.py": "096e9d3082f69cfe3dac2c319bfb222bdd35a2fa274e898c0b1919db4d9dea08",
         "mod_editor/core/nfl2k5_scne_builder.py": "28357fe693ded37f4f48808ad264d3378a6e923c5d27604b1b9a952020d404d7",
         "mod_editor/core/nfl2k5_sofi_crowd.py": "a3d8c12bf3da19bc35ab115c7e04220b5fd5e36e8ba272c91c9ac2b156c106dc",
         "mod_editor/core/nfl2k5_sofi_model.py": "22e0287a77065f87c7b1f6e02cf8ab4721e6fc8194cf9751ea9c8beafab53b23",
         "mod_editor/core/nfl2k5_sofi_venue.py": "754b26053df033fd0f8265490eab5c8c780bac266142cc41f5695a4113eadb9b",
         "mod_editor/core/nfl2k5_stadium_environment.py": "a7d447b2e8146b260aa113d08e8a8f36c118b7d6741ab58dc99ffb153b780e38",
         "mod_editor/core/nfl2k5_stadium_shadow.py": "ad5cea85c20ac80caa4c00bcb237e6701096254a9c5c3717e3fab3c05a39b87b",
-        "mod_editor/core/nfl2k5_stadium_shared_art.py": "9d7e4ecad06d863a9cad8b3dd7c35422fd490f0690e351fe4217fd0149237e36",
+        "mod_editor/core/nfl2k5_stadium_shared_art.py": "9d589e5177557775797156e0849e739b5818586ed965e8dac0fb0b0f8461d6b0",
         "mod_editor/core/nfl2k5_state_farm_model.py": "4d8fa0bbd4399dea02fc86fa37a4b8198ac3c7251738e1850d0f8657c70cf0fc",
         "mod_editor/core/nfl2k5_state_farm_venue.py": "05a3163dae06970f52263dda7994f798879843f915c5cba42b541584d26548c7",
         "mod_editor/core/nfl2k5_usbank_model.py": "dd3ea4f79880242f9489723b44d45602304fc52f216e6e57029351e2d7269d7c",
@@ -598,8 +598,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/image_use.py": "22a50b66cece72046d84de5ed34f3d04c71c6ac921dba125cf9b08505e71efac",
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
-        "mod_editor/core/build_steps.py": "287a70d6a997eed8396792258c0bcd51f0f6f79b77a41660ad3bfc873ea0b099",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "b1501adbb8c56a9c8a2c219c7b51d80b2b8c8956409b54c0b21d2e6f27acd2ed",
+        "mod_editor/core/build_steps.py": "b437f7e9faa21811c5f66591a04de23d9cee1a46e005c201317fdb3c50da90ea",  # b791-h3: step context and optional steps
+        "mod_editor/core/mod_build.py": "5ececb86eb358a05f8695527b30ff26c8fe4dcc9726dc0bab3db7b4f44fb987b",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -634,7 +634,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_ausb_fixed_slots.py": "56a39ad842d3552dd26e2089d3c859cba8b59fd61701e63f2f9265db20422d4a",
         "mod_editor/core/nfl2k5_boot_logo.py": "9ee25b1fb49859951ba4780ec2b4a3d71773f7199d5a308338acf51f84bdb257",
         "mod_editor/core/nfl2k5_build_service.py": "cdff75f2ceb2da2ad18d38b7c8f1915193f91075ac2275cb204474765d27dcc7",
-        "mod_editor/core/nfl2k5_build_settings.py": "88d925ab5186ee0516ee382acfe9276303c005e08e478f613a5778d47861fa37",
+        "mod_editor/core/nfl2k5_build_settings.py": "aa702211cd52b146cf3cc5575440ebc7c23c482faa076a710044073dff0f99c3",
         "mod_editor/core/nfl2k5_build_service.py": "cdff75f2ceb2da2ad18d38b7c8f1915193f91075ac2275cb204474765d27dcc7",
         "mod_editor/core/nfl2k5_midfield_art.py": "da5ff3541f2d7a7674cd3fc715c831379ecbe17c307951ce547ecaf8d3b4ab89",
         "mod_editor/core/nfl2k5_split_endzone_art.py": "c135625db5663efa13f3f446f98e7cfe8d071148f7b892ea378d18a05d845957",
@@ -666,14 +666,14 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_modern_metlife.py": "66ab7312df3d0e62881935a744cb9661c948b326302790063694dc44c5102fc2",
         "mod_editor/core/nfl2k5_modern_surfaces.py": "09885beed3b0341854fd9d9ab6be10d0ae1ef444bcf88cd43501a61700c89535",
         "mod_editor/core/nfl2k5_broadcast_greens.py": "1819a3085508cfc6493241ee87b6f53fed1a1b8ed6aaa64eaada77603eee7802",
-        "mod_editor/core/nfl2k5_modern_venues_2026.py": "59572c748df5ac7317a47e543639a82764c90c2755452fe49f976c07ebc8f918",
+        "mod_editor/core/nfl2k5_modern_venues_2026.py": "096e9d3082f69cfe3dac2c319bfb222bdd35a2fa274e898c0b1919db4d9dea08",
         "mod_editor/core/nfl2k5_scne_builder.py": "28357fe693ded37f4f48808ad264d3378a6e923c5d27604b1b9a952020d404d7",
         "mod_editor/core/nfl2k5_sofi_crowd.py": "a3d8c12bf3da19bc35ab115c7e04220b5fd5e36e8ba272c91c9ac2b156c106dc",
         "mod_editor/core/nfl2k5_sofi_model.py": "22e0287a77065f87c7b1f6e02cf8ab4721e6fc8194cf9751ea9c8beafab53b23",
         "mod_editor/core/nfl2k5_sofi_venue.py": "754b26053df033fd0f8265490eab5c8c780bac266142cc41f5695a4113eadb9b",
         "mod_editor/core/nfl2k5_stadium_environment.py": "a7d447b2e8146b260aa113d08e8a8f36c118b7d6741ab58dc99ffb153b780e38",
         "mod_editor/core/nfl2k5_stadium_shadow.py": "ad5cea85c20ac80caa4c00bcb237e6701096254a9c5c3717e3fab3c05a39b87b",
-        "mod_editor/core/nfl2k5_stadium_shared_art.py": "9d7e4ecad06d863a9cad8b3dd7c35422fd490f0690e351fe4217fd0149237e36",
+        "mod_editor/core/nfl2k5_stadium_shared_art.py": "9d589e5177557775797156e0849e739b5818586ed965e8dac0fb0b0f8461d6b0",
         "mod_editor/core/nfl2k5_state_farm_model.py": "4d8fa0bbd4399dea02fc86fa37a4b8198ac3c7251738e1850d0f8657c70cf0fc",
         "mod_editor/core/nfl2k5_state_farm_venue.py": "05a3163dae06970f52263dda7994f798879843f915c5cba42b541584d26548c7",
         "mod_editor/core/nfl2k5_usbank_model.py": "dd3ea4f79880242f9489723b44d45602304fc52f216e6e57029351e2d7269d7c",
@@ -770,7 +770,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_historic_teams_quick_game.py": "ae5ec8f54426e7faebfec7506baad623ed5950b944146e8bcc7a5080a8614a38",
         "mod_editor/core/nfl2k5_historic_teams_quick_game_code.py": "de1f93902ea8d78c7484344a19118a7e2c23163ee6beac59e76a3d061b09b10c",
         "mod_editor/core/nfl2k5_historic_teams_quick_game_code_b778.py": "3476183ffa3faf91db310ea64fb095dc21437fd20cd77f28e4b0ae23985f5cb5",  # b780 modes2: frozen beta-78 .. v0.9 RC revision
-        "mod_editor/core/nfl2k5_classic_teams.py": "c2cf55498ba87fbaf613737776c60cbcb546b3227effc9db43f7e523d797ce2a",
+        "mod_editor/core/nfl2k5_classic_teams.py": "c068cbcc51394f6ccb1d392532c82afc6fe4248753035cfb02b2c7d899863f62",
         "mod_editor/core/nfl2k5_classic_art.py": "7f5682d76b185c090e85b436d87127565b95cc0c19fab3c1d416274ba67eb155",
         "mod_editor/core/nfl2k5_classic_kit_art.py": "8095764ce78cf7f08dbed5244cdccb4a2090a4edaca6508c7f67b7d1ce84ded7",
         "mod_editor/core/nfl2k5_classic_face.py": "3e220a1b888036bf9d53b90e9e318b1033a60b66a6b39e4eab3a8061d41548b9",
@@ -893,7 +893,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_position_pools.py": "78bd3ec83675d8f9e1f3aa307621ab2367157c3855b6bdb3924c640ce9fd7bd0",
         "mod_editor/core/nfl2k5_bump_texture_writer.py": "a6044fe22a734e44f9e4e997e7f8032806efdf0aea28bae12ca525768755efb9",
         "mod_editor/core/nfl2k5_era_kits.py": "a4110a2f05a6f02b6bbc6e443b67ccc7e5cdfcd11c6634ea8c5cad79dcce832a",
-        "mod_editor/core/nfl2k5_moment_kits.py": "b57a3ba64cebe7ec5bd6be8741dff8480bc2154318f036fb6e445750afcbcf96",
+        "mod_editor/core/nfl2k5_moment_kits.py": "29f74be35a7d5e72d1815c6095169a061245abc76c1441e383f1eb147f61643f",
         "mod_editor/core/nfl2k5_project_check.py": "c1ed769e2ef9cfd639fc0329d50bb7ea53483d82e49c3acaf4262cac997c69c1",
         "mod_editor/core/nfl2k5_stadium_dry_run.py": "2e5ceddd5a0b7236ba6185a3e4f0a91352ff3598677cc63430de02623f913087",
         "mod_editor/core/nfl2k5_edit_survival.py": "3fe60b03fa633bd967c529a6e25141cc1dfaadbf15203ddc2755055a43eed3ad",
@@ -905,7 +905,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_kit_rule_emblem.py": "5950b7fabb434f2aeaa59c7495db380593c600a1aa0d2c89af319a2903f268c8",
         "mod_editor/core/nfl2k5_kit_rule_fill.py": "cc53076d5a2f8015bf0503ba39b995226eac848a95afbc334a523827b40ffe5a",
         "mod_editor/core/nfl2k5_kit_rule_recolour.py": "c2209ac28148ca3eaee4104163d98b35bdc365d8917dd92e5c987f4a000a3913",
-        "mod_editor/core/nfl2k5_relief_2026.py": "234e28adf0b5b9def04fb309c82de9627c0c6b80876310297a85a4a29951619c",
+        "mod_editor/core/nfl2k5_relief_2026.py": "45168ff7ce57c63b74d77f1d443ca4db50d1e87c5fbed5532dd6aaa18cc142c5",
         "mod_editor/core/nfl2k5_position_row.py": "0df78f0d7e3af61be8738afe5373925f48ef8a309a35bfcb31ab62008b6be85b",
         "mod_editor/core/nfl2k5_practice_reserves.py": "787e84ba5d4e1316e3bef58a82305366bf8e3d5f084cb0fe242fb68f77ecbbb6",
         "mod_editor/core/nfl2k5_practice_squad.py": "2631acdf806d7859f2ac40c0efc71b6315c647cfc5949ab568653ccbf5265ebe",
@@ -1014,6 +1014,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_helmet_side_numbers.py": "c10876d8ef2c26740f3559706d8678de673730a7e260285ddc35eaafec9e6069",  # b81 helmet-sides: mod_build loads it by name (route 5 = set E)
         "mod_editor/core/nfl2k5_number_kerning.py": "48405334b32b7495399f204a898825531423ed6025e848b51ac0c86891df6902",  # b81 helmet-sides: the owner reads Number kerning's state (same cell addressing)
         "mod_editor/core/nfl2k5_sim_realism.py": "6d0be46b7eec8c8c72be956aafa4041977ba91067fe14d993d00d8e29162c674",  # b779-sim2 r6
+        "mod_editor/core/nfl2k5_classic_crowd.py": "a1f1d6ed85e1b276fd69216606f86bbb3086d44965400c9369edc9f9e65f458c",  # b81-seamen: the Seamen's crowd, its fixed page (mod_build loads it by name; throw_tuning imports it for the cave manifest recorder)
+        "mod_editor/core/nfl2k5_modern_fans.py": "2252c602b9ddb4a543836124ffeaacbcea3824a182587cf12357aae3ee307514",  # b81-seamen: the crowd composer refits its spans with the 2026 fans writer
         "mod_editor/core/nfl2k5_sim_scoring.py": "7c3681cef1f94638ab0137d966f08d80fcde3dfc335874ae24c5fd9491815f96",  # b81 scoring: in-place simulated kicking, installed by the QB option
         "mod_editor/core/nfl2k5_cpu_kick_aim.py": "cc41567cdd80d6149af319cb2502b62f8d8ff32ea9263b1cdeee388bb9463f99",  # b81 scoring: CPU place-kick aim (imported by throw_tuning)
         "mod_editor/core/nfl2k5_sim_realism_b779.py": "687a35375780ce07948ba555a8c189167586393c5de6f48d954c2902a71010ad",  # b780 n6: frozen beta-79 revision
@@ -1056,20 +1058,22 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_scorebug_ingame.py": "092394682baf2c803e64d350a0fb85834a0b19b12ef0b60c14260839403fba34",
         "mod_editor/core/nfl2k5_team_names_2026.py": "dbc2b15d73e7750fb4cf1f184690f976942695d4e5f555ce63f12ca8ac6a07be",
         "mod_editor/core/nfl2k5_scorebug_mnf_font.py": "4aab9c01ea57c255671d7c3dde9e473173cf1b28fdd0004a4e2c053330415709",
-        "mod_editor/core/nfl2k5_scorebug_resources.py": "3db02edd29ead0daa459229e1e5b2178a2fd2a8e61c95178184b524855b09658",
-        'mod_editor/core/nfl2k5_scorebug_sprite.py': '368602f697209075621ae0b8419bbfdbc89c922aea0aeb277bcd8a4375695920',
+        "mod_editor/core/nfl2k5_scorebug_resources.py": "5f8ce5d164a98d96bc8a996c98a03b676200752f97f2e7ab6a52a0c142eabe11",
+        'mod_editor/core/nfl2k5_scorebug_sprite.py': '910940968c835f8ebcc219ac67dc880132719f67efa707f60fbd80af67ddbda4',
         'mod_editor/core/nfl2k5_scorebug_teams.py': '95f27e3a4320488b98bc5dc6236b70b881299ee91813a588e7ff62ddedd1c09f',
         'tools/scorebug_sprite/xemu_model.py': '1b97da7ecdf4e0fe19d6a1d7ea41ff3110810f14777da88f3ca94e18e1f110b3',
-        'mod_editor/core/nfl2k5_scorebug_sprite_code.py': '75f1ec71a015dfc026c2335f6c3b79c7b1d86b29c671048e8cc264c466feee85',
+        'mod_editor/core/nfl2k5_scorebug_sprite_code.py': '873939f8b66d355ec04df29bc189f10725f1f36b738089a16ced94f3d79c3c3c',
         'tools/nfl2k5_scorebug_exact.py': '8be2b18d28575b451d39bb15dab192546ee82dd0fa2be42bc649aa966ddb38dc',
         'tools/nfl2k5_scorebug_projection.py': '1e06472e086a0c67abe19d2be10c03df456f67f2ed13efec3ed6ed31a2666734',
         'tools/nfl2k5_scorebug_template_proof.py': '6f21bd9fc54d472db03ad5e84d8344cfdb358c7e2e6c950134d80e5cf345bcc2',
         'tools/nfl_main_menu_font.py': '64ae881a6ccaede10d15dc3d68277d061c5ccb9f94ccdee5208095ca31316d60',
         'tools/nfl_normshort3_positions.py': '925147094fdf03d91ee0e0487b0dee3b632438c333fbb9f2b8ecb54a15cf19e3',
-        "mod_editor/core/nfl2k5_scorebug_runtime.py": "4b74a4e7e74a0eab7ab25bd7f9bdc9c74e06fb527401a83a3e7cc9e240311411",
+        "mod_editor/core/nfl2k5_scorebug_runtime.py": "21fb2475348da65efb018f50a85b51fdc04c869c3969be91cadf4adb8c77865f",
         "mod_editor/core/nfl2k5_scorebug_runtime_b779.py": "11e77fcd5105353eeb89132f1fcbe73528cb503b46c4be13f7e9b45d8a7b29a5",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_scorebug_sprite_code_b779.py": "9bbfcb2bd87febab32a6545413f679d422d423b484958ec969150bdbf4c3aa9f",  # b780 n6: frozen beta-79 revision
         "mod_editor/core/nfl2k5_scorebug_sprite_code_r16.py": "a5f78258fdf74a8558d7cf38f049492b9b06f6ba202a890bf3694b33f3577af2",  # b780 pres2: frozen owner revision 16 engine (b780 gc1), recognition only
+        "mod_editor/core/nfl2k5_scorebug_sprite_code_r18.py": "1a1f82dc6e7575989ef96013e16f2d85e789786333ce4c28423e625d35f18399",  # b81-seamen: frozen owner revision 18 (and 17) engine, recognition only
+        "mod_editor/core/nfl2k5_abilities_editor.py": "2d888091a09ae5d5093959d9992e02b41fbd27878de231e9060818bd2e89e648",  # b81-seamen: the tier capacities the classic teams' player tags are checked against
         "mod_editor/core/nfl2k5_scorebug_sprite_code_r15.py": "9dc1a847fa95ed628a9b0566c63bb218324828131ccd8b507413f58584c1ae36",  # b780 pres2: frozen owner revision 15 engine (b780 p2), recognition only
         "mod_editor/core/nfl2k5_playcall_layout.py": "10a12aebd99cd40ebcabb085e940734607c28e3c265902eac76580ce4cd9a077",
         "mod_editor/core/nfl2k5_playcall_layout_b779.py": "6f417b453783a751845d45e7d0c7987e2414cb86d03fd531e966533f4f8cd863",  # b780 n6: frozen beta-79 revision
@@ -1096,7 +1100,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_team_logo_swap.py": "d4e46ff301b3449fc78a145548be2bcbc6104caad80563e1d940ef564fd73c12",
         "mod_editor/core/nfl2k5_text_catalog.py": "514706a38b28a4c7189f49e7601813cd55e16f1b9e81c9c8aa3e92c072e962c9",
         "mod_editor/core/nfl2k5_throw_arc.py": "0fbf33d12fe27a0f940fb7e13f375390b88701c4ccb7e89a1de895d8f66b9c3c",
-        "mod_editor/core/nfl2k5_throw_tuning.py": "11c958c7c576e92d5511b95cf3ff758b000aadfccd02509df44239d917975d5b",
+        "mod_editor/core/nfl2k5_throw_tuning.py": "8f461728abd5be49a10234d6eba2c7b440f60fb38803042b5af12dc5601c0a7f",
         "mod_editor/core/nfl2k5_trade_deadline.py": "6d06124670e0c360c9c9600ee7010d8afd239df7cd6352e18dd3762fc72297f4",
         "mod_editor/core/nfl2k5_unif_color_writer.py": "5e950cc404e25c1fbeff7ee5aa2a3fad235115aeddd743e95be6862677a88324",
         "mod_editor/core/nfl2k5_uniform_catalog.py": "e297a2431241c8cc5b0fa38b42ae6ee77771094fafda28f44c98ad47dafe10b5",
@@ -1109,7 +1113,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "6af12023351269316e33676bf665836034bcc23a76931a2e01bd868044bcf03d",
+        "mod_editor/core/nfl2k5_xbe_space.py": "5c956fd4ff034ae8065bdcc54fba43fb40d79f3313e33a1e8960b69f8abbeb62",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "b63521c9b17119b87558aff36a5a914d0c3fdd42e96240cf7de20065ead644d7",
@@ -1220,7 +1224,7 @@ class Nfl2k5UnifiedVisualProvider:
         "data/nfl2k5_moment_era_kits.json": "6f7095e05cc31ece037aa40cf2d5b315c45566482f7b4a1a6a855067d087ac76",
         "data/nfl2k5_era_kits_pins.json": "de18bdf5f1b32067b286c72c275641a6e3498791f852b6bbe48ea2c80ad0db90",
         "data/nfl2k5_moment_kits.json": "e2fcbb93f376f266f6973626a48e2244521df1f529f3fbe67ec28cfdc7565c18",
-        "data/nfl2k5_moment_kits_pins.json": "514dd6891d97b7102d7c3f85bf355840faaeefe13e7a296edaa34a0ef176a342",
+        "data/nfl2k5_moment_kits_pins.json": "0931360ad914f68f7e0240a21d6e8247799589be36e2e6fb4f46331a960469b4",
         "data/nfl2k5_release_gates.json": "204ee436ef9137bddd6f58fcd464444db64b67fc82be732f43ba241a4e4939fa",
         "data/nfl2k5_unc_bowl_uniforms_pins.json": "84dc131eebe5188fbfc18eee5187abc8ac5aba572b3796a35d2cd905a2769fe0",
         "data/nfl2k5_nyg_numbers_pins.json": "e1d34f4a340820f6569f362a91e7a1a5f5f96fd74c3a46644d656500a392f2da",
@@ -1679,7 +1683,7 @@ class Nfl2k5UnifiedVisualProvider:
         "data/nfl2k5_classic_teams/teams.json": "bbe46a3c6d87a9c7a8d2e1c95a63cece0495a7c069a132fd5253cd9ecca668ca",
         "data/nfl2k5_classic_teams/manifest.json": "93e82081f2036b2196ae78ba9a71df138c205bae8e9269b596a60e2ea588de35",
         "data/nfl2k5_classic_teams/appearance.json": "8b2607c2ceb4e70682991b0980736b3be9726fbdb1fbe440d812a48ef30b711c",
-        "data/nfl2k5_classic_teams/classic.json": "defcc410cb3ca1bec867f0a05fe8ecd599d727e9107426cfa2fa709473cf4b69",
+        "data/nfl2k5_classic_teams/classic.json": "8ef75bc00e6cb927c0feb5c8e11bbe2d96393a074df826a7397056b1a7656398",
         "data/nfl2k5_classic_teams/honours.json": "9430c474ede71ea59077476a01c051fc2675a032e864e84cf77312d25d52d184",
         "data/nfl2k5_espn25_more_moments.json": "53b5667960d0720ab75d127804f152d9513d681648525b958228db16bf12bafd",
         "data/nfl2k5_espn25_fields/source/nfl_2008.png": "1d0e8fe7f52a9ba3549e415e14c82bc70221a3ff9bfe6d934b4304be100eaec6",

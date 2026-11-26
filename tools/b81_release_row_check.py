@@ -16,6 +16,8 @@ It reads the receipt's own skip records:
   - receipt["left_out"]: an optional art step that failed and was left out;
   - a step's kept_retail rows (the shared texture project: Team Select cards, minis, helmets and every texture edit
     of the league project that kept the retail picture);
+  - kept_art and unchanged_art (a kit composer's art step kept off a donor piece, or that changed nothing) on the art
+    steps and in the classic teams' own kits (b81-seamen);
   - on the art steps below: skipped_kits, a kit whose state is not applied, a kit's skipped_textures, skipped_slots,
     a skipped list, a menu slot that is neither applied nor not applicable, and a step state of left_out or failed.
 """
@@ -94,6 +96,20 @@ def problems(receipt: dict) -> list[str]:
         for slot in step.get("slots") or ():
             if isinstance(slot, dict) and slot.get("state") is not None and slot["state"] not in SLOT_OK:
                 out.append(f"{name}: slot {_label(slot)} {slot['state']}")
+    for step in receipt.get("steps") or ():
+        # b81-seamen: a kit composer's art step kept off a donor piece (kept_art) or with nothing to change
+        # (unchanged_art), on an art step or in the classic teams' own kits (the 11/20 build kept the Dolphins' far-player
+        # sheet on both Seamen kits and nothing reported it)
+        if not isinstance(step, dict) or not (is_art_step(step.get("step")) or step.get("step") == "classic_teams"):
+            continue
+        for holder in (step, step.get("authored_kits")):
+            if not isinstance(holder, dict):
+                continue
+            for key, words in (("kept_art", "kept the donor's art"), ("unchanged_art", "changed nothing")):
+                for row in holder.get(key) or ():
+                    if isinstance(row, dict):
+                        out.append(f"{step['step']}: {row.get('side', '?')} {row.get('texture', '?')} "
+                                   f"(chunk {row.get('chunk', '?')}) {words}")
     return out
 
 

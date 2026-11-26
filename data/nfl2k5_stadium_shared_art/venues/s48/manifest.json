@@ -197,6 +197,60 @@
         128
       ],
       "source_rgba_sha256": "19916d08e522f605752489c7cb080c8023b322031450dc455b22a0f2fc130632"
+    },
+    {
+      "file": "espnwall01.png",
+      "format": "P8",
+      "kind": "wall",
+      "layer": "full",
+      "master": "espnwall01_4x.png",
+      "master_sha256": "bf551953bd0edc6741b26260c5884f80b585d974df4dcb9770d3a754afcc2ee6",
+      "material": "espnwall01",
+      "rects": [
+        [
+          0,
+          7,
+          256,
+          128
+        ],
+        [
+          0,
+          135,
+          256,
+          256
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "996eb61bf632a25aa3f87f05662e06bbda5d4e39979f498b9b9ba1f30d82e784",
+      "size": [
+        256,
+        256
+      ],
+      "why": "the owner 2026-11-25: \"it uses the espn stadium, make the walls all white\" (b81-seamen)"
+    },
+    {
+      "file": "wall_fance01.png",
+      "format": "P8",
+      "kind": "wall",
+      "layer": "full",
+      "master": "wall_fance01_4x.png",
+      "master_sha256": "dcfe1c6bb397778174244cb3a52ebef2560031808d4530214faabe07cddf390d",
+      "material": "wall_fance01",
+      "rects": [
+        [
+          0,
+          100,
+          128,
+          128
+        ]
+      ],
+      "scene": "stadium",
+      "sha256": "3a18547613b176bacbb8f8687722b2349562df77bd3bf74bb875e5b14fe6dabb",
+      "size": [
+        128,
+        128
+      ],
+      "why": "the owner 2026-11-25: \"it uses the espn stadium, make the walls all white\" (b81-seamen)"
     }
   ],
   "schema": "metlife_team_art/v1",

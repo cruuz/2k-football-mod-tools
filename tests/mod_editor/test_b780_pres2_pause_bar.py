@@ -49,7 +49,7 @@ def rel_target(site, call):
 
 class SourceTests(unittest.TestCase):
     def test_revision_allocation_and_state(self):
-        self.assertEqual(owner.REVISION, 18)
+        self.assertEqual(owner.REVISION, 19)   # b81-seamen: the Seamen's own panel (identity 230 -> sbSEh0)
         self.assertEqual(owner.CODE_SIZE, 6336)
         code, labels = owner.code_for(CODE_VA, DATA_VA)
         self.assertEqual(len(code), owner.CODE_SIZE)
@@ -105,9 +105,9 @@ class SourceTests(unittest.TestCase):
         from mod_editor.core import nfl2k5_scorebug_sprite_code_r15 as r15
         for earlier in owner.EARLIER_REVISIONS:
             body, labels = owner.code_for(CODE_VA, DATA_VA, earlier)
-            self.assertEqual(len(body), owner.CODE_SIZE if earlier == 17 else owner.EARLIER_CODE_SIZE)
-            self.assertEqual(owner.PAUSE_HOOK_NAME in labels, earlier == 17)
-            self.assertEqual('sprite_pause_draw' in labels, earlier == 17)
+            self.assertEqual(len(body), owner.CODE_SIZE if earlier in (18, 17) else owner.EARLIER_CODE_SIZE)
+            self.assertEqual(owner.PAUSE_HOOK_NAME in labels, earlier in (18, 17))
+            self.assertEqual('sprite_pause_draw' in labels, earlier in (18, 17))
         self.assertNotIn('sprite_pause_draw', r16.LABELS)
         self.assertEqual(len(r16.CODE), len(r15.CODE))
         # Revision 15 -> 16 changed the play-call guard's address (0x8C465 -> 0x8CA18): two bytes of the engine.
@@ -147,7 +147,7 @@ class RetailPremiseTests(unittest.TestCase):
 def earlier_install(retail, earlier):
     """What apply() wrote for an earlier revision (its allocation, body, hooks and edits), for the recognizer tests."""
     prepared, _ = scene.apply_xbe(retail)
-    prepared, _ = space.apply(prepared, ((owner.OWNER, 'code', owner.CODE_SIZE if earlier == 17 else owner.EARLIER_CODE_SIZE, 16), (owner.OWNER, 'data', owner.DATA_SIZE, 16)))
+    prepared, _ = space.apply(prepared, ((owner.OWNER, 'code', owner.CODE_SIZE if earlier in (18, 17) else owner.EARLIER_CODE_SIZE, 16), (owner.OWNER, 'data', owner.DATA_SIZE, 16)))
     code, data = owner.sites(prepared, earlier)
     body, labels = owner.code_for(code['va'], data['va'], earlier)
     installed, _ = space.install_code(prepared, owner.OWNER, body)
@@ -197,7 +197,7 @@ class StatusAndPreviousTests(unittest.TestCase):
         self.assertEqual(self.at(self.patched, 0x8CA18, 6), GUARD)
         self.assertEqual(self.at(self.patched, 0x8C465, 6).hex(), '0f8417050000')
         self.assertEqual({e['label'] for e in self.receipt['edits']} & {owner.PAUSE_HOOK_NAME}, {owner.PAUSE_HOOK_NAME})
-        self.assertEqual(self.receipt['binding_revision'], 18)
+        self.assertEqual(self.receipt['binding_revision'], 19)   # b81-seamen: the Seamen's own panel
         self.assertEqual(owner.apply(self.patched)[1]['status'], 'already_applied')
 
     def test_earlier_exact_installs_read_previous_and_are_refused_in_place(self):

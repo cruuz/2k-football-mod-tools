@@ -40,6 +40,21 @@ class Rows(unittest.TestCase):
     def test_a_build_that_applied_every_art_row_passes(self):
         self.assertEqual(check.problems(clean_receipt()), [])
 
+    def test_a_classic_kit_step_kept_off_a_donor_piece_is_reported(self):
+        """b81-seamen: the 11/20 build's classic teams receipt kept the Dolphins' far-player sheet on both Seamen kits
+        (authored_kits.kept_art), and nothing reported it."""
+        receipt = clean_receipt()
+        receipt["steps"].append({"step": "classic_teams", "status": "applied", "authored_kits": {
+            "state": "applied", "kept_art": [{"side": "K14 (MIA, home)", "chunk": 51, "texture": "far-player atlas",
+                                              "art": "atlas", "donor": "14H0", "step": "far-player atlas edit"}],
+            "unchanged_art": [{"side": "K14 (MIA, away)", "chunk": 3, "texture": "sleeve00", "art": "tset",
+                               "step": "plain sleeve", "reason": "nothing to change"}]}})
+        self.assertEqual(check.problems(receipt), [
+            "classic_teams: K14 (MIA, home) far-player atlas (chunk 51) kept the donor's art",
+            "classic_teams: K14 (MIA, away) sleeve00 (chunk 3) changed nothing"])
+        receipt["steps"][-1]["authored_kits"].update(kept_art=[], unchanged_art=[])
+        self.assertEqual(check.problems(receipt), [])
+
     def test_each_kind_of_skipped_art_row_is_reported(self):
         cases = (
             ("kit_fixes_2026_b81u", lambda s: s["kits"][0]["skipped_textures"].append(3),

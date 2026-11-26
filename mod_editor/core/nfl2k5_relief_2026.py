@@ -57,6 +57,11 @@ from nfl_vc_lz_fill import compress_optimal, fill_stream
 SCHEMA = "nfl2k5_relief_2026/v2"
 ROOT = Path(__file__).resolve().parents[2]
 DATA_B81U = ROOT / "data/nfl2k5_relief_2026_b81u.json"
+# b81-seamen (the owner 2026-11-25: "seamen have a dolphins bump texture in their jersey, have them use a cleaner one"): the
+# classic Seamen kits (14H14, 14A14) carry the Dolphins' pre-relief maps; this document gives them the 2026 relief with
+# no marks (tools/b81_uniforms/relief_classic.py). Its rows pin no package layout (offset null): a composed classic kit's
+# chunk offsets follow its own art, so only the spans are pinned.
+DATA_CLASSIC = ROOT / "data/nfl2k5_relief_2026_classic.json"
 SLOTS = ("bump_jersey", "bump_sleeve", "bump_pants")
 BASES = ("retail", "before")
 S = 2                                                   # the art is drawn on twice the native grid
@@ -99,6 +104,11 @@ def spec(path=None):
 def relief_b81u():
     """The b81-uniforms relief document (level B on the 178 SOFTDRINK 2026 kit packages)."""
     return spec(DATA_B81U)
+
+
+def relief_classic():
+    """The classic Seamen kits' relief document (b81-seamen)."""
+    return spec(DATA_CLASSIC)
 
 
 def art_folder(document):
@@ -921,7 +931,10 @@ def state_of(row, raw):
     """("before" | "after" | "other", chunk, span) of one pinned slot in its package bytes."""
     chunk = _chunk_for(raw, row["chunk"])
     span = raw[chunk.offset:chunk.end_offset]
-    layout_ok = (len(raw), chunk.offset, len(span)) == (row["resource_size"], row["offset"], row["length"])
+    if row["offset"] is None:       # b81-seamen: a composed classic kit; its layout follows its own art
+        layout_ok = row["resource_size"] is None and len(span) == row["length"]
+    else:
+        layout_ok = (len(raw), chunk.offset, len(span)) == (row["resource_size"], row["offset"], row["length"])
     digest = sha(span) if layout_ok else None
     state = "before" if digest == row["before_sha256"] else "after" if digest == row["after_sha256"] else "other"
     return state, chunk, span
@@ -1028,6 +1041,12 @@ def apply_to_image(path, retail=None, *, strict=False, document=None, count=None
         if progress is not None:
             progress(note, 0, 0)
     return receipt
+
+
+def apply_relief_classic(path, retail=None, *, strict=False, progress=None):
+    """b81-seamen: the classic Seamen kits' relief, after the b81u relief: pinned spans only. A build without the
+    classic kits reads "other_uniform" and writes nothing."""
+    return apply_to_image(path, retail, strict=strict, document=relief_classic(), progress=progress)
 
 
 def apply_relief_b81u(path, retail=None, *, strict=False, progress=None):

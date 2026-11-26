@@ -159,6 +159,7 @@ data/nfl2k5_scorebug_mnf/logos/lac.png
 data/nfl2k5_scorebug_mnf/logos/lar.png
 data/nfl2k5_scorebug_mnf/logos/lv.png
 data/nfl2k5_scorebug_mnf/logos/mia.png
+data/nfl2k5_scorebug_mnf/logos/seamen.png
 data/nfl2k5_scorebug_mnf/logos/min.png
 data/nfl2k5_scorebug_mnf/logos/ne.png
 data/nfl2k5_scorebug_mnf/logos/no.png
@@ -682,6 +683,7 @@ mod_editor/core/nfl2k5_name_keyboard.py
 mod_editor/core/nfl2k5_historic_teams_quick_game.py
 mod_editor/core/nfl2k5_historic_teams_quick_game_code_b778.py
 mod_editor/core/nfl2k5_classic_teams.py
+mod_editor/core/nfl2k5_classic_crowd.py
 mod_editor/core/nfl2k5_classic_field.py
 mod_editor/core/nfl2k5_classic_face.py
 mod_editor/core/nfl2k5_classic_art.py
@@ -1006,6 +1008,7 @@ data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_7.png
 data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_8.png
 data/nfl2k5_glyph_fixes_2026_b81u/TEN_28A7_digit_jersey_9.png
 data/nfl2k5_relief_2026_b81u.json
+data/nfl2k5_relief_2026_classic.json
 data/nfl2k5_relief_2026_b81u/difference_jersey.png
 data/nfl2k5_relief_2026_b81u/difference_sleeve.png
 data/nfl2k5_relief_2026_b81u/jersey_08692d8525216e39.png
@@ -2654,6 +2657,7 @@ mod_editor/core/nfl2k5_scorebug_sprite_code.py
 mod_editor/core/nfl2k5_scorebug_sprite_code_b779.py
 mod_editor/core/nfl2k5_scorebug_sprite_code_r15.py
 mod_editor/core/nfl2k5_scorebug_sprite_code_r16.py
+mod_editor/core/nfl2k5_scorebug_sprite_code_r18.py
 mod_editor/gui/scorebug_sprite_preview_qt.py
 data/nfl2k5_scorebug_sprite/template.png
 data/nfl2k5_scorebug_sprite/layout.json
@@ -3419,6 +3423,10 @@ data/nfl2k5_stadium_shared_art/venues/s48/cover01.png
 data/nfl2k5_stadium_shared_art/venues/s48/cover01_4x.png
 data/nfl2k5_stadium_shared_art/venues/s48/manifest.json
 data/nfl2k5_stadium_shared_art/venues/s48/sign01.png
+data/nfl2k5_stadium_shared_art/venues/s48/espnwall01.png
+data/nfl2k5_stadium_shared_art/venues/s48/espnwall01_4x.png
+data/nfl2k5_stadium_shared_art/venues/s48/wall_fance01.png
+data/nfl2k5_stadium_shared_art/venues/s48/wall_fance01_4x.png
 data/nfl2k5_stadium_shared_art/venues/s48/sign01_4x.png
 data/nfl2k5_stadium_shared_art/venues/s48/sign02.png
 data/nfl2k5_stadium_shared_art/venues/s48/sign02_4x.png
@@ -4444,6 +4452,17 @@ data/nfl2k5_classic_teams/cards/mini_a.png
 data/nfl2k5_classic_teams/cards/mini_h.png
 data/nfl2k5_classic_teams/cards/unif_a.png
 data/nfl2k5_classic_teams/cards/unif_h.png
+data/nfl2k5_classic_teams/crowd/boxlogo.png
+data/nfl2k5_classic_teams/crowd/crowdsign.png
+data/nfl2k5_classic_teams/crowd/fanplate.png
+data/nfl2k5_classic_teams/crowd/foamfinger.png
+data/nfl2k5_classic_teams/crowd/hardhat.png
+data/nfl2k5_classic_teams/crowd/head03.png
+data/nfl2k5_classic_teams/crowd/jersey.png
+data/nfl2k5_classic_teams/crowd/puffyjacket.png
+data/nfl2k5_classic_teams/crowd/sweatshirt.png
+data/nfl2k5_classic_teams/crowd/tshirt.png
+data/nfl2k5_classic_teams/crowd/varsity.png
 tests/mod_editor/test_b778_sd3_digits.py
 # b778 ai4: CPU clock management (end-of-half timeouts, automatic coach profiles defer 4th downs and clock windows)
 tests/mod_editor/test_b778_ai4_cpu_clock.py

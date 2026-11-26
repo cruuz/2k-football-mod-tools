@@ -492,13 +492,15 @@ def appendix(pack,folder=None,widescreen=False,watermark="auto"):
         plate_tints={name:t['plate'] for name,t in palette.items()}
         wing_tints={name:t['wing'] for name,t in palette.items()}
     for team,rec in sorted(art.TEAM_LOGOS.items()):chunks.append(('TXTR','sb'+rec['asset_code']+'h0',art.mnf_panel_span(template,team,'home',plate_tints=plate_tints,logo_fit=c.spec.get('logo_fit'),wing_tints=wing_tints)))
+    # b81-seamen: the classic teams' own panels, which the engine names by identity (the Seamen: sbSEh0)
+    for key in sorted(art.CLASSIC_PANELS):chunks.append(('TXTR','sb'+key+'h0',art.classic_panel_span(template,key,plate_tints=plate_tints,logo_fit=c.spec.get('logo_fit'),wing_tints=wing_tints)))
     chunks.append(('TXTR','score_buga',texture_chunk('score_buga',c.atlas,template,alpha_aware=True,
         reserved_colours=reserved_colours(c))[0]))
     chunks.append(('SCNE','score_bug',scene_span(scene.pinned(sources['score_bug'],art.RESOURCES['score_bug']),c)))
     receipts=[dict(kind=k,name=n,size=len(b),sha256=hashlib.sha256(b).hexdigest()) for k,n,b in chunks]
     data=b''.join(b for _,_,b in chunks)
     require(len(data)<MAX_APPEND,'The scorebug exceeds the 0.4 MB resource limit; reduce the atlas or scene.')
-    return data,dict(version=VERSION,watermark=watermark,display=DISPLAY[bool(widescreen)]['name'],components=receipts,appended_bytes=len(data),font_count=0,texture_count=34,scene_count=1,quads=len(c.quads),native_heap_bytes=sum((len(b)+127)//128*128 for _,_,b in chunks))
+    return data,dict(version=VERSION,watermark=watermark,display=DISPLAY[bool(widescreen)]['name'],components=receipts,appended_bytes=len(data),font_count=0,texture_count=sum(k=='TXTR' for k,_,_ in chunks),scene_count=1,quads=len(c.quads),native_heap_bytes=sum((len(b)+127)//128*128 for _,_,b in chunks))
 
 
 def probe_sizes(folder=None):
@@ -514,10 +516,11 @@ def probe_sizes(folder=None):
         from . import nfl2k5_scorebug_teams as teams
         table_size += len(teams.load())*teams.ENTRY.size+teams.FOOTER.size
     scene_size=(TABLE_OFFSET+table_size+127)//128*128+32
-    appended=32*5280+2208+math.prod(spec['atlas'])+1184+scene_size
+    panels=len(art.TEAM_LOGOS)+len(art.CLASSIC_PANELS)   # b81-seamen: 32 club panels and the classic teams' own
+    appended=panels*5280+2208+math.prod(spec['atlas'])+1184+scene_size
     require(appended<MAX_APPEND,'The scorebug exceeds the 0.4 MB resource limit.')
     growth=((art.HUD_SIZE+appended+2047)//2048-(art.HUD_SIZE+2047)//2048)*2048
-    return 34,appended,growth
+    return panels+2,appended,growth
 
 
 def pack_status(pack,folder=None,widescreen=None,watermark=None):

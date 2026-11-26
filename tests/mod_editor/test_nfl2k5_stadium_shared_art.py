@@ -9,12 +9,14 @@ from mod_editor.core import nfl2k5_modern_venues_2026 as mv
 
 class Catalog(unittest.TestCase):
  def test_pinned_sponsor_items_only_and_excluded_venues_absent(self):
-  count=0;fields=0
+  count=0;fields=0;walls=0
   for p in shared.ART_ROOT.glob('*/manifest.json'):
    self.assertNotIn(p.parent.name,shared.EXCLUDED)
    for item in shared.items(p.parent.name):
     if item['kind']=='sponsor':
      count+=1;self.assertEqual(item['scene'],'stadium')
+    elif item['kind']=='wall':   # b81-seamen: s48's plain white walls
+     walls+=1;self.assertEqual((p.parent.name,item['scene']),('s48','stadium'))
     else:
      fields+=1;self.assertEqual(item['kind'],'field-logo');self.assertEqual(item['scene'],'field')
      self.assertEqual(item['size'],[256,256])
@@ -26,6 +28,7 @@ class Catalog(unittest.TestCase):
      self.assertEqual(im.size,tuple(4*x for x in item['size']))
   self.assertEqual(count,83)
   self.assertEqual(fields,7)
+  self.assertEqual(walls,2)
  def test_clear_panels_leave_the_wall_decals_see_through(self):
   design=json.loads((shared.DATA/'design.json').read_text())
   clear=[(r,o) for r in design['textures'] for o in r['ops'] if o.get('bg')=='clear']

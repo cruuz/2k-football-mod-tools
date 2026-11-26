@@ -63,7 +63,12 @@ ROOT_PAUSE_MENU = 0x4E9078
 # b780 pres2: earlier revisions that sat in a 5,920-byte allocation (15: b780 p2, 16: b780 gc1) read "previous": this
 # release's body is larger, so an install of either cannot be updated in place. Their engines are frozen in
 # nfl2k5_scorebug_sprite_code_r15 and _r16. Revision 15 also had the Gamecast panel jump (0x8C465) in place.
-EARLIER_CODE_SIZE, EARLIER_REVISIONS = 5920, (17, 16, 15)
+EARLIER_CODE_SIZE, EARLIER_REVISIONS = 5920, (18, 17, 16, 15)
+# b81-seamen: revision 19 names the classic Seamen's own panel (identity 230 -> "sbSEh0") in the engine's logo(); its body
+# grows 1 byte (logo() rewritten compactly) inside the same 6,336-byte allocation: 6,327 used, 9 spare (revision 18:
+# 6,326). Revisions 18 and 17 sit in that allocation with the
+# frozen revision 18 engine (nfl2k5_scorebug_sprite_code_r18) and read "previous", as 16 and 15 do.
+FULL_SIZE_REVISIONS = (None, 18, 17)
 GAMECAST_PANEL_OFF_R15 = (0x8C465, GAMECAST_PANEL_GATE[1], bytes.fromhex("e91805000090"), "sb play-call bar off (0x8C450)")
 
 
@@ -82,10 +87,10 @@ def hooks(earlier=None):
         rows[playcall_layout.HOOK_NAME] = playcall_layout.HOOK
         rows[playcall_layout.STRIP_HOOK_NAME] = playcall_layout.STRIP_HOOK  # b780 p2: the page strip fits long menus
         rows[playcall_layout.STRIP_ENTRY_HOOK_NAME] = playcall_layout.STRIP_ENTRY_HOOK
-        if earlier in (None, 17):
+        if earlier in FULL_SIZE_REVISIONS:
             rows[PAUSE_HOOK_NAME] = PAUSE_HOOK_R17 if earlier == 17 else PAUSE_HOOK
     return rows
-REVISION = 18  # The root Paused screen draws the bar. Every child screen has its own unobstructed title.
+REVISION = 19  # b81-seamen: the Seamen's own panel. 18: the root Paused screen draws the bar; every child screen has its own unobstructed title.
 # State (128 bytes): scene, populated, two wing materials, the plate material,
 # two wing textures, two scores, two flash timers, down, possession, ball/line,
 # phase, red cell, wing colours and plate colours. All state stays in the owned RW page.
@@ -446,8 +451,10 @@ def code_for(code_va, data_va, earlier=None):
         from . import nfl2k5_scorebug_sprite_code_r16 as engine
     elif earlier == 15:
         from . import nfl2k5_scorebug_sprite_code_r15 as engine
+    elif earlier in (18, 17):
+        from . import nfl2k5_scorebug_sprite_code_r18 as engine     # b81-seamen: before the Seamen's own panel
     else:
-        space._require(earlier in (None, 17), "unknown scorebug revision")
+        space._require(earlier is None, "unknown scorebug revision")
         from . import nfl2k5_scorebug_sprite_code as engine
     legacy, labels = _legacy_code_for(code_va, data_va)
     engine_va = code_va + len(legacy)
@@ -496,10 +503,10 @@ def code_for(code_va, data_va, earlier=None):
         result += playcall_layout.strip_entry_code_for(code_va + len(result), data_va)
         labels[playcall_layout.STRIP_HOOK_NAME] = code_va + len(result)
         result += playcall_layout.strip_code_for(code_va + len(result), data_va)
-        if earlier in (None, 17):
+        if earlier in FULL_SIZE_REVISIONS:
             labels[PAUSE_HOOK_NAME] = code_va + len(result)
             result += _pause_code_for(code_va + len(result), data_va, engine_va + engine.LABELS['sprite_pause_draw'], earlier)
-    size = CODE_SIZE if earlier in (None, 17) else EARLIER_CODE_SIZE
+    size = CODE_SIZE if earlier in FULL_SIZE_REVISIONS else EARLIER_CODE_SIZE
     if len(result)>size:
         raise ValueError('sprite owner exceeds its named RX allocation: '+str(len(result)))
     labels.update({name:start+offset for name,offset in a.labels.items()})
@@ -510,14 +517,14 @@ def code_for(code_va, data_va, earlier=None):
 def sites(payload, earlier=None):
     owned = {a["kind"]: a for a in space.layout(payload)["allocations"] if a["owner"] == OWNER}
     space._require(set(owned) == {"code", "data"}, "missing scorebug allocations; reserve the owner union first")
-    for kind, size, align in (("code", CODE_SIZE if earlier in (None, 17) else EARLIER_CODE_SIZE, 16), ("data", DATA_SIZE, 16)):
+    for kind, size, align in (("code", CODE_SIZE if earlier in FULL_SIZE_REVISIONS else EARLIER_CODE_SIZE, 16), ("data", DATA_SIZE, 16)):
         space._require((owned[kind]["size"], owned[kind]["align"]) == (size, align), "foreign scorebug allocation")
     return owned["code"], owned["data"]
 
 
 def hook_bytes(name, labels, earlier=None):
     va, original = hooks(earlier)[name]
-    opcode = b"\xe9" if name == PAUSE_HOOK_NAME and earlier is None else b"\xe8"
+    opcode = b"\xe9" if name == PAUSE_HOOK_NAME and earlier in (None, 18) else b"\xe8"
     return opcode + struct.pack("<i", labels[name] - va - 5)
 
 
@@ -558,7 +565,7 @@ class _Earlier:
 
 
 def earlier_revision(revision):
-    """The module-shaped recognizer of revision 16 or 15 (see EARLIER_REVISIONS)."""
+    """The module-shaped recognizer of revision 18, 17, 16 or 15 (see EARLIER_REVISIONS)."""
     space._require(revision in EARLIER_REVISIONS, "unknown scorebug revision")
     return _Earlier(revision)
 
@@ -587,7 +594,7 @@ def _abi_valid(payload):
 # engine), reads "previous"; this release's code does not fit that allocation, so apply() refuses to update it in place.
 PREVIOUS_REVISION = "beta-79"
 # b780 pres2: the same holds for the beta-80 test builds before the pause screen (revisions 15 and 16, 5,920 bytes).
-PREVIOUS_REFUSAL = ("The scorebug effects on this disc are from beta 79 or beta 80. "
+PREVIOUS_REFUSAL = ("The scorebug effects on this disc are from beta 79, beta 80 or an earlier beta 81 build. "
                     "The native menu hook cannot be updated in place. Rebuild from your retail game.")
 
 
@@ -612,7 +619,7 @@ def _status(payload, earlier=None):
         ss = space.status(payload)
         if ss == "foreign" or scene.xbe_status(payload) == "foreign" or not _abi_valid(payload):
             return "foreign"
-        size = CODE_SIZE if earlier in (None, 17) else EARLIER_CODE_SIZE
+        size = CODE_SIZE if earlier in FULL_SIZE_REVISIONS else EARLIER_CODE_SIZE
         expected = {name: original for name, (_, original) in hooks(earlier).items()}
         code_state = "retail"
         if ss == "applied" and any(a["owner"] == OWNER for a in space.layout(payload)["allocations"]):

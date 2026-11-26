@@ -115,13 +115,13 @@ RC29_AUDIO_ANNOTATION_RUNTIME_PINS = {
 B69_GAME_RUNTIME_PINS = {
     "mod_editor/core/nfl2k5_weather.py": "ec3d253e348ff0cf7fb1951b5dad2983d8aebc0802d5c6fca32c74dc80a6985b",
     "mod_editor/core/nfl2k5_weather_haze.py": "b8c58c592794312358eb1554b1d3be43a1ca41f7fdd8fd3cd498d4f345c641cc",
-    "mod_editor/gui/build_panel_qt.py": "df3de9f9bf2030d53f27131e94d47861afff7ac9ce265186cc6f0a496cdd2cfb",
+    "mod_editor/gui/build_panel_qt.py": "4768ce9e0233de0f25f52e1e56d67123fc95840e730843f2f357dac21eccf25a",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "2c658a513d0c8abc17f29038ad47a4513c60667ccc860865dc1379d03b74eeed",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "1e29191fb9537c14f5e846d49ed68397107851b6bb43dcb16e3975d4d88800d8",
     "mod_editor/gui/beta62_options.py": "009c389062334a451c15c8e9b312c02e5521b1516bc706c2a48b127ecbcfa858",
     "tools/nfl2k5_weather_editor.py": "39a2847b873bbdc567712ca87657d700fa95e226c3408983acce4d714b1031de",
-    "mod_editor/gui/build_panel_qt.py": "df3de9f9bf2030d53f27131e94d47861afff7ac9ce265186cc6f0a496cdd2cfb",
+    "mod_editor/gui/build_panel_qt.py": "4768ce9e0233de0f25f52e1e56d67123fc95840e730843f2f357dac21eccf25a",
     "mod_editor/gui/gameplay_patches_panel_qt.py": "2c658a513d0c8abc17f29038ad47a4513c60667ccc860865dc1379d03b74eeed",
     "mod_editor/gui/my_career_panel_qt.py": "cd39ce1685ed119288122e46b0f8c1c8ba586cea611f5d5feee096a71d7ea9ac",
     "mod_editor/gui/gameplay_project_ui.py": "1e29191fb9537c14f5e846d49ed68397107851b6bb43dcb16e3975d4d88800d8",
@@ -1746,6 +1746,7 @@ def main() -> int:
         "mod_editor.core.nfl2k5_team_number_scale",     # b776-ns1
         "mod_editor.core.nfl2k5_modern_numbers",        # b81 modern numbers
         "mod_editor.core.nfl2k5_helmet_side_numbers",   # b81 helmet-sides
+        "mod_editor.core.nfl2k5_classic_crowd",         # b81-seamen
         "mod_editor.core.exact_math",                   # b76.3: the stadium models' platform-independent math
         "mod_editor.core.nfl2k5_modern_color",
         "mod_editor.core.nfl2k5_presentation_standalone",

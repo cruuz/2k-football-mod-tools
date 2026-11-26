@@ -17,6 +17,10 @@ EXCLUDED = frozenset(("s02", "s04", "s06", "s08", "s09", "s13", "s17", "s21", "s
 # venue-art pass never writes it. Its retained fan cloth takes its residual item from this catalog through the model
 # fan step (nfl2k5_model_fan_art.neutral_plan) when the SoFi writer builds s40 (st3, main's call, 2026-09-29).
 MODEL_NEUTRAL = frozenset(("s40",))
+# b81-seamen (the owner 2026-11-25, of the classic Seamen's home venue: "it uses the espn stadium, make the walls all white"):
+# venues whose field-level walls this catalog repaints plain (kind "wall": tools/nfl2k5_s48_white_walls.py draws them; no
+# retail pixel). A wall item is composed like a full sponsor item and, being a wall, takes the retail snow drift.
+PLAIN_WALL_VENUES = frozenset(("s48",))
 
 
 @lru_cache(maxsize=1)
@@ -45,8 +49,9 @@ def items(prefix):
         sponsor = raw["scene"] == "stadium" and raw["kind"] == "sponsor"
         event = (raw["scene"] == "field" and raw["kind"] == "field-logo"
                  and key in special_venues().get(prefix, {}).get("field_logos", {}))
-        mv.require((sponsor or event) and raw["format"] == "P8" and raw["layer"] == "full",
-                   f"{path}: shared art must be reviewed full-layer P8 sponsors or event field logos")
+        wall = raw["scene"] == "stadium" and raw["kind"] == "wall" and prefix in PLAIN_WALL_VENUES
+        mv.require((sponsor or event or wall) and raw["format"] == "P8" and raw["layer"] == "full",
+                   f"{path}: shared art must be reviewed full-layer P8 sponsors, event field logos or plain walls")
         identity = (raw["scene"], key)
         mv.require(identity not in seen, f"{path}: duplicate {identity}")
         seen.add(identity)
@@ -67,5 +72,5 @@ def items(prefix):
                        f"{path}: event logos must replace their complete native texture")
         out.append(dict(scene=raw["scene"], key=key, layer="full", size=[w,h], rgba=rgba,
                         master=str(master), rects=raw["rects"], sha256=raw["sha256"],
-                        source="shared_art", kind=raw["kind"]))
+                        source="shared_art", kind=raw["kind"], **({"class": "wall"} if wall else {})))
     return tuple(out)

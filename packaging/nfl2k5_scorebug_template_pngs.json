@@ -2820,6 +2820,12 @@
       "size": 3112,
       "width": 64
     },
+    "data/nfl2k5_scorebug_mnf/logos/seamen.png": {
+      "height": 64,
+      "sha256": "424a949c64e64ac93d1be12153d4f159c606848f327c119d5762dedbec6f9cf1",
+      "size": 2263,
+      "width": 63
+    },
     "data/nfl2k5_scorebug_mnf/logos/sf.png": {
       "height": 64,
       "sha256": "5dd6fea203c6b6a864d4f1cc3b20f6d43fe67e3dc8dc0abb33197da2d80f939b",
@@ -3894,6 +3900,18 @@
       "size": 1163,
       "width": 512
     },
+    "data/nfl2k5_stadium_shared_art/venues/s48/espnwall01.png": {
+      "height": 256,
+      "sha256": "996eb61bf632a25aa3f87f05662e06bbda5d4e39979f498b9b9ba1f30d82e784",
+      "size": 3259,
+      "width": 256
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s48/espnwall01_4x.png": {
+      "height": 1024,
+      "sha256": "bf551953bd0edc6741b26260c5884f80b585d974df4dcb9770d3a754afcc2ee6",
+      "size": 21855,
+      "width": 1024
+    },
     "data/nfl2k5_stadium_shared_art/venues/s48/sign01.png": {
       "height": 256,
       "sha256": "3674ebb2d982c30cbdd75b645bf7ce3be6294c99c3648a0bd64c3fecb6cb4898",
@@ -3929,6 +3947,18 @@
       "sha256": "a9826b40be07f95ebd42bf2dc60afd24fc37c3133d77d457b231807a08f79a17",
       "size": 17625,
       "width": 1024
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s48/wall_fance01.png": {
+      "height": 128,
+      "sha256": "3a18547613b176bacbb8f8687722b2349562df77bd3bf74bb875e5b14fe6dabb",
+      "size": 359,
+      "width": 128
+    },
+    "data/nfl2k5_stadium_shared_art/venues/s48/wall_fance01_4x.png": {
+      "height": 512,
+      "sha256": "dcfe1c6bb397778174244cb3a52ebef2560031808d4530214faabe07cddf390d",
+      "size": 2387,
+      "width": 512
     },
     "data/nfl2k5_stadium_shared_art/venues/s50/adv01.png": {
       "height": 256,

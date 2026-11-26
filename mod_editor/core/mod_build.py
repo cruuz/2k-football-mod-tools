@@ -50,6 +50,8 @@ OPTIONAL_STEPS = frozenset({
     "menu_helmet_w2026", "menu_chiefs_2026", "pants_hem_2026", "kit_fixes_2026_ku1", "kit_fixes_2026_sw1",
     "kit_fixes_2026_names", "sideline_2026", "moment_kits", "nameplate_fixes_2026", "team_sleeves",
     "kit_fixes_2026_b81", "kit_fixes_2026_b81u", "glyph_fixes_2026_b81u", "sideline_2026_b81u", "relief_2026_b81u",
+    "relief_2026_classic",
+    "classic_crowd",       # b81-seamen: the Seamen's own crowd (people in the stands)
     # stadiums, fields and their colour
     "modern_color_bundles", "modern_arrowhead", "modern_metlife", "modern_venues_2026", "modern_metlife_model",
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant", "modern_mercedes_benz",
@@ -285,6 +287,10 @@ class BuildPlan:
     cpu_scrambles: str = "retail"
     historic_teams_quick_game: bool = False  # b76-h1: Quick Game Team Select steps on into the 75 historic teams; experimental
     classic_teams: bool = False  # b775-ct1: with historic teams in Quick Game, the list runs on into every Anniversary team-season and 25 classic teams; experimental
+    # b81-seamen (the owner 11/25: "fans also wearing dolphins gear"): the classic Seamen's own crowd. Fourteen files drawn
+    # from the user's own Dolphins crowd files (teal and black, no Dolphins marks) and a redirect in one fixed allocator
+    # page (nfl2k5_classic_crowd) that loads them for the Seamen. Needs the classic teams. EXPERIMENTAL / UNWITNESSED.
+    classic_crowd: bool = False
     kickoff_return_blocking: bool = False  # b76-vb3 E1: return blockers claim distinct men after the catch (Noah's feel test)
     espn25_era_rules: bool = False  # e2: season-specific live rules for each moment
     historic_stock_books: bool = False  # e2: isolated retail bank and per-side resolver
@@ -1581,6 +1587,11 @@ for _preset in PRESETS.values():
     _preset["classic_teams"] = False
 PRESETS["softdrink_experimental"]["classic_teams"] = True
 del _preset
+# b81-seamen: the Seamen's own crowd rides the preset that carries the classic teams.
+for _preset in PRESETS.values():
+    _preset["classic_crowd"] = False
+PRESETS["softdrink_experimental"]["classic_crowd"] = True
+del _preset
 # b76-vb3 E1: the return blocking rule is Noah's feel test; off in every preset.
 for _preset in PRESETS.values():
     _preset["kickoff_return_blocking"] = False
@@ -1956,6 +1967,8 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_team_ratings", "Modern team ratings", lambda p: p.team_ratings),
     ("nfl2k5_modern_numbers", "Modern jersey numbers", lambda p: _modern_numbers_level(p) == "modern"),  # b81
     ("nfl2k5_classic_teams", "Classic teams", lambda p: p.classic_teams and p.historic_teams_quick_game),
+    ("nfl2k5_classic_crowd", "Classic team crowds",   # b81-seamen: its fixed page
+     lambda p: p.classic_crowd and p.classic_teams and p.historic_teams_quick_game),
     ("nfl2k5_hair_styles", "Hair styles", lambda p: p.hair_styles),
     ("nfl2k5_helmet_side_numbers", "Helmet side numbers", lambda p: p.helmet_side_numbers),  # b81 helmet-sides
     ("nfl2k5_cpu_qb_reads", "CPU QB reads", lambda p: p.cpu_qb_zone_windows or p.cpu_qb_recheck or p.cpu_qb_tiers),
@@ -4722,6 +4735,8 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
         "espn25_rosters": _espn25_rosters_available(),
         "historic_rosters_2026": _core_module("nfl2k5_historic_rosters") is not None,
         "classic_teams": _core_module("nfl2k5_classic_teams") is not None,  # b775-ct1
+        "classic_crowd": (_core_module("nfl2k5_classic_crowd") is not None
+                          and _core_module("nfl2k5_classic_teams") is not None),  # b81-seamen
         "seven_on_seven": (SEVEN_ON_SEVEN_RELEASED
                            and _core_module("nfl2k5_seven_on_seven") is not None
                            and _core_module("nfl2k5_seven_on_seven_book") is not None),
@@ -5177,6 +5192,12 @@ def _inspect(source: Path | str, *, screen_timing: str | None = None) -> dict[st
                 out["classic_teams"] = classic.xbe_status(rosters.read_xbe(source)) if rosters is not None else "foreign"
             except Exception:  # noqa: BLE001
                 out["classic_teams"] = "foreign"
+        crowd = _core_module("nfl2k5_classic_crowd")  # b81-seamen: the executable half (the files need the retail source)
+        if crowd is not None:
+            try:
+                out["classic_crowd"] = crowd.xbe_status(rosters.read_xbe(source)) if rosters is not None else "foreign"
+            except Exception:  # noqa: BLE001
+                out["classic_crowd"] = "foreign"
     if "edge_rename" in report:
         out["edge_rename"] = report.get("edge_rename")
         out["edge_rename_disc"] = report.get("edge_rename_disc")
@@ -9567,6 +9588,25 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["result"]["classic_teams"] = classic.image_status(target, retail)
         if receipt["result"]["classic_teams"] != "applied":
             raise ValueError("the classic teams failed their read-back on the copy")
+        if plan.classic_crowd:
+            # b81-seamen (the owner 11/25: "fans also wearing dolphins gear"): the Seamen's own crowd, right after the
+            # classic teams: fourteen files from the user's own Dolphins crowd files and the redirect in its fixed page
+            with _optional(receipt, target, progress, "classic_crowd"):
+                crowd = _core_module("nfl2k5_classic_crowd")
+                if crowd is None:
+                    raise RuntimeError("the classic crowd module is not available in this build")
+                progress("Classic teams: the Seamen's own crowd", 0, 0)
+                crowd_receipt = crowd.apply_to_image(target, retail)
+                receipt["steps"].append({"step": "classic_crowd", **crowd_receipt})
+                receipt["result"]["classic_crowd"] = crowd.image_status(target, retail)
+                if receipt["result"]["classic_crowd"] != "applied":
+                    raise ValueError("the Seamen's crowd failed its read-back on the copy")
+    if plan.classic_crowd and not (plan.classic_teams and plan.historic_teams_quick_game and is_image):
+        # b81-seamen review N4: the option rides the classic teams; say why it did nothing
+        note = ("The Seamen's own crowd was skipped: it is built only with Classic teams in Quick Game "
+                "(and historic teams in Quick Game) on a disc image.")
+        progress(note, 0, 0)
+        receipt.setdefault("user_notes", []).append(note)
     if is_image and (plan.espn25_rosters or plan.espn25_more_moments or (plan.classic_teams and plan.historic_teams_quick_game)):
         _step("moment_scans")
         # b776-fs1 (Noah 10/18): after every roster writer, the retail face scans the 2026 league overwrote are copied
@@ -9643,6 +9683,16 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 if relief_receipt["state"] == "applied":
                     receipt["steps"].append({"step": "relief_2026_b81u",
                                              **{k: v for k, v in relief_receipt.items() if k != "kits"}})
+            # b81-seamen (the owner 11/25: "seamen have a dolphins bump texture in their jersey, have them use a cleaner one"):
+            # the classic Seamen kits (composed above from the Dolphins kits before any relief) take the 2026 relief with
+            # no marks: plain fabric with this season's seams. Pinned spans only; a user's own relief art stays.
+            if plan.classic_teams and plan.historic_teams_quick_game:
+                with _optional(receipt, target, progress, "relief_2026_classic"):
+                    classic_relief = relief.apply_relief_classic(target, lambda: require_step_source(
+                        source if _retail_source is None else _retail_source, "classic Seamen jersey relief"),
+                        progress=progress)
+                    if classic_relief["state"] == "applied":
+                        receipt["steps"].append({"step": "relief_2026_classic", **classic_relief})
     if loaded_weather_plan is not None:
         _step("weather_plan")
         weather = _core_module("nfl2k5_weather")

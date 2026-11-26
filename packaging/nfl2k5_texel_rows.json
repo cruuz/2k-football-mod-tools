@@ -27,11 +27,12 @@
   "data/nfl2k5_mercedes_benz_model/footprint.json": "010e000612043104852c782e2fe940185acfe526c3331492fd0b192f00dbb2fc",
   "data/nfl2k5_moment_era_kits.json": "6f7095e05cc31ece037aa40cf2d5b315c45566482f7b4a1a6a855067d087ac76",
   "data/nfl2k5_moment_kits.json": "e2fcbb93f376f266f6973626a48e2244521df1f529f3fbe67ec28cfdc7565c18",
-  "data/nfl2k5_moment_kits_pins.json": "514dd6891d97b7102d7c3f85bf355840faaeefe13e7a296edaa34a0ef176a342",
+  "data/nfl2k5_moment_kits_pins.json": "0931360ad914f68f7e0240a21d6e8247799589be36e2e6fb4f46331a960469b4",
   "data/nfl2k5_nameplate_fixes_2026.json": "535f690f05dfb40a53239ca007fef42bdc4eaaa9611fcf4b74b1496b62980200",
   "data/nfl2k5_nyg_numbers_pins.json": "e1d34f4a340820f6569f362a91e7a1a5f5f96fd74c3a46644d656500a392f2da",
   "data/nfl2k5_pants_hem_2026.json": "c85ecadefb53337ab7b97996b36b9c36d2119e4745f64e1bab34e321162aa9ca",
   "data/nfl2k5_relief_2026_b81u.json": "b4a07b3efbcba1d8e63fc2af19be3f659b7503dce027b4445ae33f6dda17b043",
+  "data/nfl2k5_relief_2026_classic.json": "8cce014325787397b7642539ae59499dfea8cbf2173ab6ff8d205e25e4ef9112",
   "data/nfl2k5_scorebug_mnf/painted_label_2x.json": "9bcf730b076c538f8ed6f879568e766810077549878a909d495034bff8a636da",
   "data/nfl2k5_sideline_2026_b81u.json": "5ab2db190a2658d0e6d8be6569b1ee3930fcd1a9ee6abdc80cb19c7b12352ef6",
   "data/nfl2k5_stadium_environment/s00.json": "715e0fd764e9517a04ad903fa2058b45a9a65ea237efbb4e307250e8f6f7004b",
@@ -71,7 +72,7 @@
    "-": {
     "cls": "iii",
     "reason": "the Sarasota Seamen jersey mesh (b778-ss1, drawn from the SOFTDRINKTV video references): a dot mesh on every second column in the kit's own colour, the same 3,489 points for both kits; no base texel; shipped in v0.9, not measured: the classic teams' kits (b778-ss1)",
-    "sha256": "a041ded2ee3c92724e84b26e3e41079cd9983a86158e96d9d8dd535fa5cbc6f9"
+    "sha256": "2993043f6dc65e9102fa475767cb459536ca13f393851a684b0d967c9be2a8b3"
    }
   },
   "data/nfl2k5_glyph_fixes_2026_b81u.json": {
