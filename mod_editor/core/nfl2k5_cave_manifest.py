@@ -603,6 +603,11 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     modules[helmet_sides.__name__] = helmet_sides  # b81 helmet-sides: installed last by the observed Experimental build
     modules[classic_crowd.__name__] = classic_crowd  # b81-seamen: installed after the classic teams by the same build
     modules[cpu_trades.__name__] = cpu_trades  # b81 trades-all: right after the room in the observed Experimental build
+    # b81 integration: CPU team building's windows and branches are written by the probe (team_building.apply over the
+    # draft AI and the economy); its writes must be recorded under its owner (the f46b51163 regeneration stopped at
+    # "unattributed final XBE changes" at its windows 0x11C150, 0x137D50, 0x1B8DA0, ...)
+    from . import nfl2k5_team_building as team_building
+    modules[team_building.__name__] = team_building
     # b81 sportscenter (review S1): the observed Experimental build (128 MB, scale-out) installs SportsCenter news after
     # every other executable owner; its apply is recorded under its owner, whose hook above reserves its four sites
     modules[sportscenter_news.__name__] = sportscenter_news
