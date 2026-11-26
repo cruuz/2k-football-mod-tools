@@ -251,7 +251,7 @@ class Recorder:
                     continue
                 self.reserve(va, size, owner, "declared edit: " + str(edit.get("label", "site")))
         if owner == "nfl2k5_season_length":
-            for group in receipt["groups"]:
+            for group in receipt.get("groups", ()):   # b81 integration: the repairs' receipts name no groups
                 subowner = {"playoffs_14": "nfl2k5_playoffs14", "preseason": "nfl2k5_preseason"}.get(group, owner)
                 for site in module.group_sites(group):
                     self.reserve(site.va, site.size, subowner, "season group site: " + site.label)
@@ -641,6 +641,11 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             stack.enter_context(patch.object(champions, "install", recorder.wrapper(champions, "install")))
             # b81 awards: installed inside honors.apply too (after champions); observed as its own step for the same reason
             stack.enter_context(patch.object(awards, "install", recorder.wrapper(awards, "install")))
+            # b81 integration: the 2026-season step's repairs outside apply() (SportsCenter review N3/N8's injury season
+            # end, 0x21DA99 and 0x21DA75; v0.6's awards timing) write bytes too; the c071f015f regeneration stopped at
+            # "unattributed final XBE changes at 0x20da75, 0x20da99" (their file offsets). Observe them as season steps.
+            for name in ("repair_injury_season_end", "repair_awards_timing"):
+                stack.enter_context(patch.object(season, name, recorder.wrapper(season, name)))
             receipt = build.build(plan, progress=lambda message, *_: progress(message))
             preset_xbe = build._xbe_bytes(target)
             # The dormant-owner probe needs an XBE WITHOUT an allocator directory: an installed request
