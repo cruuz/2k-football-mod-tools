@@ -917,6 +917,33 @@ def _classic_crowd_at(owner, at, size, align):
         return (page + CLASSIC_CROWD_SIZE + align - 1) & -align
     return at
 
+# b81 sportscenter: one fixed page at 0x1533000 for SportsCenter news (nfl2k5_sportscenter_news: modern injured reserve on
+# the injury report, the news windows across a save and load). Claimed in the lanes' page register (the first free page of
+# 0x1533000..0x1534FFF, which the economy released; 0x152E000..0x152FFFF is the CPU trades owner's, 0x1530000 modern
+# numbers', 0x1531000 awards', 0x1532000 the classic crowd's). Placed like those pages: at its absolute address, never
+# advancing the pool cursor, with its own step-over in to_pool (FIXED_SPAN_END untouched), so every other pool owner skips
+# 0x1533000..0x1533FFF whether or not it is requested and the owner can be added in place after every other owner.
+SPORTSCENTER_NEWS_OWNER = "nfl2k5_sportscenter_news"
+SPORTSCENTER_NEWS_VA = 0x1533000
+SPORTSCENTER_NEWS_SIZE = PAGE
+SPORTSCENTER_NEWS_REQUEST = (SPORTSCENTER_NEWS_OWNER, "code", SPORTSCENTER_NEWS_SIZE, PAGE)
+# A fixed page never advances the pool cursor, so its place in LATE_OWNERS moves nobody; it sits before the quarterback
+# room so the fixed quarterback, helmet (and, after their merge, CPU trades) owners stay the last late owners.
+LATE_OWNERS = (LATE_OWNERS[:LATE_OWNERS.index(QB_ROOM_OWNER)] + (SPORTSCENTER_NEWS_OWNER,)
+               + LATE_OWNERS[LATE_OWNERS.index(QB_ROOM_OWNER):])
+FIXED_PAGE_OWNERS += (SPORTSCENTER_NEWS_OWNER,)
+
+
+def _sportscenter_news_at(owner, at, size, align):
+    """b81 sportscenter: the fixed page's pool offset for its owner; any other owner overlapping it steps past it."""
+    page = SPORTSCENTER_NEWS_VA - POOL_VA
+    if owner == SPORTSCENTER_NEWS_OWNER:
+        return page
+    if at < page + SPORTSCENTER_NEWS_SIZE and at + size > page:
+        return (page + SPORTSCENTER_NEWS_SIZE + align - 1) & -align
+    return at
+
+
 # XSPACE2 is retained as the header envelope for the shipped boot-logo reader.
 # SP03 and the sealed external directory distinguish the v3 interpretation.
 SCALE_TAG = EXT_MAGIC + b"SP03"
@@ -998,7 +1025,8 @@ def dormant_union():
             + (QB_ROOM_REQUEST, QB_TRADES_REQUEST)  # b81 qb34: the fixed quarterback room pages, then trades (C20)
             + (HELMET_SIDES_REQUEST,)  # b81 helmet sides: its fixed page after the trades page
             + (CPU_TRADES_REQUEST,)  # b81 CPU trades: its two fixed pages after the helmet-sides page
-            + (CLASSIC_CROWD_REQUEST,))  # b81-seamen: the classic crowd's fixed page
+            + (CLASSIC_CROWD_REQUEST,)  # b81-seamen: the classic crowd's fixed page
+            + (SPORTSCENTER_NEWS_REQUEST,))  # b81 sportscenter: its fixed page at 0x1533000 (review S1)
 
 
 def is_scaleout(payload):
@@ -1162,6 +1190,8 @@ def _scale_allocations(requests):
              "the helmet side numbers have one fixed page")
     _require(all(r == CPU_TRADES_REQUEST for r in requests if r[0] == CPU_TRADES_OWNER),
              "the CPU trades have two fixed pages")
+    _require(all(r == SPORTSCENTER_NEWS_REQUEST for r in requests if r[0] == SPORTSCENTER_NEWS_OWNER),
+             "SportsCenter news has one fixed page")
     gadget = tuple(r for r in requests if r[0] == GADGET_OWNER)
     if gadget:
         _require(gadget == GADGET_REQUESTS, "incomplete or foreign gadget allocation")
@@ -1229,6 +1259,7 @@ def _scale_allocations(requests):
             at = (room + span + align - 1) & -align
         at = _modern_numbers_at(owner, at, size, align)    # b81 modern numbers: its fixed page, after the span
         at = _classic_crowd_at(owner, at, size, align)      # b81-seamen: its fixed page
+        at = _sportscenter_news_at(owner, at, size, align)  # b81 sportscenter: its fixed page, after the span
         _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")
         out.append(dict(owner=owner, kind=kind, size=size, align=align,
                         va=POOL_VA + at, raw=POOL_RAW + at, owner_offset=0))

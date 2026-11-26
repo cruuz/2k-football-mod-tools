@@ -140,6 +140,7 @@ OWNER_BYTES = {
     "guardian_overlay": (496, 0, 0, 0, 0),
     "classic_crowd": (space.CLASSIC_CROWD_SIZE, 0, 0, 0, 0),  # b81-seamen: the Seamen's crowd redirect, one fixed page
     "helmet_side_numbers": (space.HELMET_SIDES_SIZE, 0, 0, 0, 0),  # b81 helmet sides: route 5 -> set E, one fixed page
+    "sportscenter_news": (space.SPORTSCENTER_NEWS_SIZE, 0, 0, 0, 0),  # b81 sportscenter: one fixed page (128 MB)
     "franchise_ownership": (space.FRANCHISE_OWNERSHIP_SIZE, 0, 0, 0, 0),
     "injured_reserve": (6144, 0, 0, 0, 5312),  # Modern IR, franchise ownership checks and the 32-club IR store.
 }
@@ -444,10 +445,12 @@ def options(plan=None) -> dict:
         return rc_plan()
     if is_dataclass(plan) and not isinstance(plan, type):
         out = {f.name: getattr(plan, f.name) for f in _dc_fields(plan)}
+        out.setdefault("sportscenter_news", True)
     elif isinstance(plan, dict):
         if isinstance(plan.get("overrides"), dict):
             out = _preset(plan.get("preset"))
             out.update(plan["overrides"])
+            out.setdefault("sportscenter_news", True)
         else:
             out = dict(plan)
     else:
@@ -528,6 +531,14 @@ def owners(opts: dict, target_mb: int = 64) -> list:
     if (target_mb == 128 and (named == "realistic" or (named is None and wanted))
             and cpu_trades_needs_met(lambda name: name in floor or opts.get(name))):
         out.append("cpu_trades")
+    # b81 sportscenter: this release's builder installs SportsCenter news on every 128 MB scale-out build with the 2026
+    # season or modern injured reserve (mod_build._apply_sportscenter_news; no option of its own). options() marks a
+    # BuildPlan or a recipe with "sportscenter_news"; a flat {field: value} dict is a measured build's effective options
+    # (the RC and v0.8 anchors had no news page) and counts it only when it says so.
+    if (target_mb == 128 and on(opts, "sportscenter_news")
+            and (on(opts, "season_2026") or on(opts, "modern_injured_reserve"))
+            and any(on(opts, f) for f in SCALEOUT_FIELDS)):
+        out.append("sportscenter_news")
     return out + list(INFRASTRUCTURE) if out else out
 
 
@@ -573,6 +584,9 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     if "cpu_trades" in found:  # b81 trades-all: its two fixed pages after the helmet-sides page (the end of the span)
         last = space.CPU_TRADES_VA + space.CPU_TRADES_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "sportscenter_news" in found:  # b81 sportscenter: its fixed page at 0x1533000
+        last = space.SPORTSCENTER_NEWS_VA + space.SPORTSCENTER_NEWS_SIZE - space.POOL_VA
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     return RETAIL_RESIDENT + LEGACY_SPACE + SCALEOUT_V3 + pool + extra
 

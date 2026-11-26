@@ -628,6 +628,9 @@ mod_editor/core/nfl2k5_option_defaults.py
 mod_editor/core/nfl2k5_profile_defaults.py
 mod_editor/core/nfl2k5_sim_rb_injuries.py
 mod_editor/core/nfl2k5_sim_rb_injuries_b779.py
+mod_editor/core/nfl2k5_sim_rb_injuries_b780.py
+mod_editor/core/nfl2k5_sportscenter_news.py
+mod_editor/core/nfl2k5_sportscenter_lines.py
 mod_editor/core/nfl2k5_sim_qb_injuries.py
 mod_editor/core/nfl2k5_sim_qb_injuries_code.py
 mod_editor/core/nfl2k5_qb_room.py
@@ -4494,6 +4497,8 @@ tests/mod_editor/test_b81_gadget_play.py
 tests/mod_editor/test_b81_gadget_pair_path.py
 tests/mod_editor/test_b81_gadget_attract_fatigue.py
 tests/mod_editor/test_b81_qb_room_owner.py
+tests/mod_editor/test_b81_sportscenter_news.py
+tests/mod_editor/test_b81_sportscenter_lines.py
 tests/mod_editor/test_b81_qb_room_build.py
 tests/mod_editor/test_b81_qb_room_native.py
 tests/mod_editor/test_b81_team_building.py

@@ -271,7 +271,7 @@ class HostBudgetTests(unittest.TestCase):
                 # screen chained over the inline footer hooks (runtime code unchanged).
                 # b780-int: b8 + j23 + n1 (defensive camera read and its five byte-identical rewrites).
                 # D11: the native Settings footer explains Supersim and where to save.
-                '55c928946cfbc0936017522cf546ecccc8d5dc50234d7c435ce1d6dc29fb490e',
+                'a204f443618251d3b05b4e31eff19086951bd6a5e5ef99fbd08a1632e7e0e863',
             'mod_editor/core/nfl2k5_my_career_code.py':
                 '0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b',
             'mod_editor/core/nfl2k5_my_career_progression.py':

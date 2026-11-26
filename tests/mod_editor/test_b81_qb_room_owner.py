@@ -50,7 +50,9 @@ class AllocatorPlacementTests(unittest.TestCase):
                 self.assertEqual((row["va"], row["size"], row["align"]), (0x1529000, 0x3000, 0x1000))
                 # C20: the dormant union also carries the trades page right after the room (0x152C000..0x152CFFF) and
                 # (b81 helmet sides) the side-numbers page after it (0x152D000..0x152DFFF).
-                end = 0x1530000 if name == "dormant union" else 0x152C000   # b81 CPU trades: + 0x152E000..0x152FFFF
+                # b81 CPU trades: + 0x152E000..0x152FFFF; b81 integration (#32, #33, #37): + the numbers, classic crowd and
+                # SportsCenter news pages, so the dormant union ends at 0x1533FFF
+                end = 0x1534000 if name == "dormant union" else 0x152C000
                 self.assertEqual(report["file_size"] - space.SCALE3_FILE_SIZE, end - space.POOL_VA)
 
     def test_adding_the_room_moves_no_row_and_does_not_advance_the_cursor(self):
@@ -79,10 +81,10 @@ class AllocatorPlacementTests(unittest.TestCase):
             with self.subTest(room=ROOM in requests):
                 rows = space.plan(requests)["allocations"]
                 placed = next(r for r in rows if r["owner"] == straddle[0])
-                # b81 integration (#32, #33, #36): the span now ends at 0x1530000 (CPU trades' two pages); from there the
+                # b81 integration (#32, #33, #36, #37): the span ends at 0x1530000 (CPU trades' two pages); from there the
                 # 0x20000-byte owner would straddle the numbers page (0x1530000), then the classic crowd page (0x1532000),
-                # so it steps past both
-                self.assertEqual(placed["va"], space.CLASSIC_CROWD_VA + space.CLASSIC_CROWD_SIZE)
+                # then the SportsCenter news page (0x1533000), so it steps past all three
+                self.assertEqual(placed["va"], space.SPORTSCENTER_NEWS_VA + space.SPORTSCENTER_NEWS_SIZE)
                 self.assertEqual(space.FIXED_SPAN_END, 0x1530000)
                 for row in rows:
                     if row["owner"] != ROOM[0]:
@@ -93,9 +95,9 @@ class AllocatorPlacementTests(unittest.TestCase):
         filler = ("aa_synthetic_filler", "code", 0x1528000 - 0x80 - space.POOL_VA - space.PAGE, space.PAGE)
         bumped = ("ab_synthetic_bumped", "code", 0x20000, 16)
         rows = space.plan([filler, bumped, ownership])["allocations"]
-        # past trades, side numbers and CPU trades, then (b81 integration) past the numbers page and the classic crowd
-        # page it would otherwise straddle
-        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x1533000)
+        # past trades, side numbers and CPU trades, then (b81 integration) past the numbers, classic crowd and SportsCenter
+        # news pages it would otherwise straddle
+        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x1534000)
 
     def test_a_foreign_room_request_is_refused(self):
         for request in (("nfl2k5_qb_room", "code", 0x2000, 0x1000), ("nfl2k5_qb_room", "data", 0x3000, 0x1000)):

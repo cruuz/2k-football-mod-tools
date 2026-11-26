@@ -225,7 +225,8 @@ class ProviderIntegrityTests(unittest.TestCase):
             # AUDO family-label loader, package-local equipment, and every
             # local module in those exact import closures.
             # Number of imported writer and verifier modules for each real provider.
-            [625, 10, 8, 9, 8, 9]
+            [628, 10, 8, 9, 8, 9]
+            # b81 integration (#37 merge): 628 = 625 + 3 (that lane counted 612 = 609 + 3).
             # b81 integration (#36 merge): 625 = 621 + 4 (that lane counted 613 = 609 + 4).
             # b81 integration (#33 merge): 621 = 617 + 4 (that lane counted 613 = 609 + 4).
             # b81 integration (#32 merge): 617 = 614 + 3 (that lane counted 612 = 609 + 3).
@@ -249,6 +250,8 @@ class ProviderIntegrityTests(unittest.TestCase):
             # b81 trades-all (R6) + 4b revision (M1/N6): 612 = 609 + the frozen 383 trades page template
             # nfl2k5_qb_trades_code_b81_383 + the computer trades owner and its generated page template (mod_build
             # loads the owner by name, right after the quarterback room step).
+            # b81 sportscenter: 612 = 609 + SportsCenter news (MyCareer's guard and the cave manifest import it), the
+            # SportsCenter lines owner (loaded by name) and the frozen pre-news-row halfback roll (imported by the roll).
             # b81 helmet-sides: 609 = 607 + the helmet side numbers owner (loaded by name, imported by throw_tuning for
             # the cave manifest recorder) + Number kerning, whose state the owner reads.
             # b81 integration (qb34 trades merge): 607 = 605 (next lines) + the quarterback trades owner and its generated
@@ -366,6 +369,8 @@ class ProviderIntegrityTests(unittest.TestCase):
                     "mod_editor/core/nfl2k5_screen_timing.py",
                     # sc2: mod_build selects this reviewed late writer by module name.
                     "mod_editor/core/nfl2k5_sportscenter_lineup.py",
+                    # b81 sportscenter: mod_build selects the SportsCenter lines owner by name (director data only).
+                    "mod_editor/core/nfl2k5_sportscenter_lines.py",
                     # b81 qb34: mod_build selects the quarterback room owner by name; it imports its page template.
                     "mod_editor/core/nfl2k5_qb_room.py",
                     "mod_editor/core/nfl2k5_qb_room_code.py",

@@ -215,6 +215,8 @@ class AllocatorTests(unittest.TestCase):
         # quarterback trades' fixed page (one 4 KiB row at 0x152C000, a late owner after the room); b81 helmet sides: + its
         # fixed page (one 4 KiB row at 0x152D000); b81 CPU trades: + its two fixed pages (one 8 KiB row at 0x152E000, the
         # last late owner).
+        # fixed page (one 4 KiB row at 0x152D000, the last late owner); b81 sportscenter: + its fixed page (one 4 KiB
+        # row at 0x1533000, a late owner placed before the quarterback room).
         self.assertEqual(len(union) - len(without), 35)
         plan_with, plan_without = space.plan(union), space.plan(without)
         # b778 xs1/bd3: a union that no longer fits the v3 runs is a v4 image, which adds a second
@@ -242,6 +244,7 @@ class AllocatorTests(unittest.TestCase):
                                         ("nfl2k5_qb_trades", "code"),  # b81 qb34 4b (C20): the trades page
                                         ("nfl2k5_helmet_side_numbers", "code"),  # b81 helmet sides: its fixed page
                                         ("nfl2k5_cpu_trades", "code"),  # b81 CPU trades: its two fixed pages
+                                        ("nfl2k5_sportscenter_news", "code"),  # b81 sportscenter: its fixed page
                                         ("nfl2k5_period_goalposts", "code"), ("nfl2k5_period_goalposts", "read_only"),
                                         ("nfl2k5_honors", "code"), ("nfl2k5_honors", "data"),
                                         ("nfl2k5_champions", "code"),  # b779-hn1

@@ -212,7 +212,13 @@ class _BuildPath(unittest.TestCase):
         """Every order: fresh revision 4, the empty reservation only, and slice 1, 2 and 3 installs upgraded in place."""
         units = _units(plan)
         self.steps = self.studio_steps(plan)
-        self.assertEqual(running_backs.status(start), "applied")
+        # b81 sportscenter: a fresh build carries this release's halfback roll ("applied"); a v0.9 or pre-sportscenter
+        # beta 81 executable carries the beta-80 cave without the news row ("previous", revision b780). The late steps
+        # and the option keep whichever it is (the SportsCenter chain upgrades it later, see the v0.9 route below).
+        start_roll = running_backs.status(start)
+        self.assertIn(start_roll, ("applied", "previous"))
+        if start_roll == "previous":
+            self.assertEqual(running_backs.previous_revision(start), "b780")
         finals = {}
         for label, order in orders:
             with self.subTest(order=label):
@@ -232,7 +238,7 @@ class _BuildPath(unittest.TestCase):
                 self.assertEqual(receipt["status"], "retail")
                 for reader in (running_backs.status, simulator.status, lineup.read_settings):
                     self.assertEqual(reader(fresh), reader(blank), reader.__module__)
-                self.assertEqual(running_backs.status(fresh), "applied")
+                self.assertEqual(running_backs.status(fresh), start_roll)
                 self.assertEqual(simulator.status(fresh), "applied")
                 # Slice 1, 2 and 3 installs of the same choice are upgraded in place to the fresh bytes. Revision 4
                 # writes other bank bytes than slice 3 at every rate (the stability piece), the same rows and sites.
@@ -241,7 +247,7 @@ class _BuildPath(unittest.TestCase):
                 self.assertEqual(_weekly(older[2]), _weekly(fresh))
                 self.assertEqual(_weekly(older[3]), _weekly(fresh))
                 for revision, old in older.items():
-                    self.assertEqual(running_backs.status(old), "applied")
+                    self.assertEqual(running_backs.status(old), start_roll)
                     upgraded, receipt = qb.apply(old, plan.sim_qb_injuries, custom_rate=plan.sim_qb_injury_rate)
                     self.assertEqual(receipt.get("upgraded_from"), f"slice{revision}")
                     self.assertEqual(upgraded, fresh)
@@ -327,14 +333,24 @@ class FreshStandardBuilds(_BuildPath):
 
 
 class InPlaceUpgrades(_BuildPath):
-    def v09_route(self, path, mode, rate):
-        """Build's update-v09 route (title guard, modern IR with ownership, cards, simulator, option) in preflight."""
+    def v09_route(self, path, mode, rate, *, final=None):
+        """Build's update-v09 route (title guard, modern IR with ownership, cards, simulator, option) in preflight.
+
+        Returns the payload the option's verification saw. b81 sportscenter: ``final`` (a list) also receives the
+        route's last expected executable, the SportsCenter chain's output, and the route's receipt."""
         written = []
         verify = mod_build._verify_sim_qb_injuries
+        news_upgrade = mod_build._sportscenter_news_upgrade
 
         def keep(plan, module, payload):
             written.append(payload)
             return verify(plan, module, payload)
+
+        def last(payload):
+            out = news_upgrade(payload)
+            if final is not None:
+                final.append(out[0])
+            return out
 
         plan = mod_build.v09_disc_update(str(path), str(self.folder / "copy.iso"), save_list_type_guard=True,
                                          modern_injured_reserve=True, backfield_cards=True, sim_qb_injuries=mode,
@@ -342,9 +358,12 @@ class InPlaceUpgrades(_BuildPath):
         release = mod_build._v09_reference(path, mod_build._xbe_bytes(path))
         # The released image hash is pinned by the update tests; here only the executable bytes are under test.
         with patch.object(mod_build, "_verify_sim_qb_injuries", new=keep), \
+                patch.object(mod_build, "_sportscenter_news_upgrade", new=last), \
                 patch("mod_editor.core.modpack.hash_file", return_value=release["image_sha256"]):
             receipt = mod_build._update_v09_disc(plan, lambda *_: None, preflight=True, project=False)
         self.assertIn("sim_qb_injuries", receipt["v09_update"])
+        if final is not None:
+            final.append(receipt)
         self.assertFalse((self.folder / "copy.iso").exists())
         return written[-1]
 
@@ -352,9 +371,14 @@ class InPlaceUpgrades(_BuildPath):
         path = self.private_path("NFL2K5_V09_XISO")
         source = mod_build._xbe_bytes(path)
         self.assertEqual(_sha(source), V09_XBE)
-        self.assertEqual(running_backs.status(source), "applied")
+        # b81 sportscenter: the released v0.9 roll is the beta-80 cave without the news row
+        self.assertEqual((running_backs.status(source), running_backs.previous_revision(source)), ("previous", "b780"))
         self.assertIsNone(_bank(source))
-        without = self.v09_route(path, "retail", .310)
+        from mod_editor.core import nfl2k5_sportscenter_news as news
+        self.assertEqual(news.status(source), "retail")
+        ends = []
+        without = self.v09_route(path, "retail", .310, final=ends)
+        self.check_sportscenter_chain(*ends, parked=False)
         self.assertIsNone(_bank(without))
         legacy_blank = space.extend_scaleout(simulator.apply(without)[0], qb.REQUESTS)[0]
         # b81 combined calibration: Realistic and Custom also update v0.9's pass protection (its centre read the retail
@@ -364,8 +388,10 @@ class InPlaceUpgrades(_BuildPath):
         rows = _rows(source)
         for mode, rate in (("realistic", .310), ("custom", 0.0), ("custom", 100.0)):
             with self.subTest(mode=mode, custom_rate=rate):
-                fresh = self.v09_route(path, mode, rate)
+                ends = []
+                fresh = self.v09_route(path, mode, rate, final=ends)
                 units = qb._setting(mode, rate).rate
+                self.check_sportscenter_chain(*ends, parked=units > 0, mode=mode)
                 self.keep_rows(rows, fresh, "update-v09")
                 self.assertEqual(_bank(fresh), BANK)
                 self.assertEqual(_rows(fresh), _rows(blank))
@@ -391,6 +417,30 @@ class InPlaceUpgrades(_BuildPath):
                                  (mode, 4, units > 0))
                 self.record(f"update-v09 {mode} {units}", option=fresh, retail=blank, slice1=older[1], slice2=older[2],
                             slice3=older[3])
+
+    def check_sportscenter_chain(self, final, receipt, *, parked, mode=None):
+        """b81 sportscenter: the route ends with the SportsCenter chain, as a full build: the halfback roll upgraded in
+        place to the news-row cave (its weekly jump still parked under Realistic/Custom), SportsCenter news installed
+        (modern injured reserve: mode 1), the QB option untouched."""
+        from mod_editor.core import nfl2k5_sportscenter_news as news
+        self.assertIn("sim_rb_injuries", receipt["v09_update"])
+        self.assertIn("sportscenter_news", receipt["v09_update"])
+        self.assertEqual((running_backs.status(final), running_backs.previous_revision(final)), ("applied", None))
+        cave = running_backs.allocation(final)["va"]
+        self.assertEqual(XbeImage(final).read(cave, running_backs.CODE_SIZE), running_backs.code_for(cave))
+        self.assertEqual(_weekly(final), GAME_TAIL if parked else _running_back_jump(final))
+        self.assertEqual(news.status(final), "applied")
+        self.assertEqual(news._state(final)[1], news.MODE_IR)
+        self.assertEqual(news.allocation(final)["va"], space.SPORTSCENTER_NEWS_VA)
+        settings = qb.read_settings(final)
+        if mode is None:
+            self.assertEqual(settings["status"], "retail")
+        else:
+            self.assertEqual((settings["status"], settings["mode"], settings.get("revision")), ("applied", mode, 4))
+        # review N3: the chain also moves the 18-week injury return boundary (nfl2k5_season_length)
+        self.assertIn("injury_season_end", receipt["v09_update"])
+        self.assertEqual(XbeImage(final).read(0x21DA97, 5), bytes.fromhex("83ff177d32"))
+        self.assertEqual(XbeImage(final).read(0x21DA72, 6), bytes.fromhex("8d7c30fceb09"))   # review N8
 
     def test_released_v09_late_steps_in_every_order(self):
         path = self.private_path("NFL2K5_V09_XISO")
@@ -435,11 +485,19 @@ class InPlaceUpgrades(_BuildPath):
         self.record("Studio slice 1 9f435b38 upgraded", option=upgraded, retail=retail, slice1=source, slice2=later[2],
                     slice3=later[3])
         for payload in (source, upgraded, retail):
-            self.assertEqual(running_backs.status(payload), "applied")
+            # b81 sportscenter: the Studio-made executable predates the halfback news row ("previous", b780); the roll
+            # upgrades in place to "applied", leaving the QB option (and a parked weekly jump) as it was
+            self.assertEqual((running_backs.status(payload), running_backs.previous_revision(payload)),
+                             ("previous", "b780"))
             # b81 fb-targets: season realism from before the fullback target rule reads "legacy"; the QB option's own
             # apply leaves it alone (the Studio's in-place route updates it first, as test_b81_sim_qb_injury_build shows)
             self.assertEqual(simulator.status(payload), "legacy")
             self.assertEqual(lineup.read_settings(payload), lineup.read_settings(retail))
+            rolled, receipt = running_backs.apply(payload)
+            self.assertEqual((running_backs.status(rolled), receipt["previous_revision"]), ("applied", "b780"))
+            self.assertEqual(_weekly(rolled), _weekly(payload))
+            self.assertEqual(qb.read_settings(rolled), qb.read_settings(payload))
+            self.assertEqual(_rows(rolled), _rows(payload))
 
 
 if __name__ == "__main__":
