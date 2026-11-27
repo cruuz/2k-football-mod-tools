@@ -21,13 +21,17 @@ This owner gives the Seamen their own, in their colours (teal, black, white) wit
   retail bytes;
 * after them one filler (``sm1_classic_crowd_end.bin``, 2,048 zero bytes): the archive's last file must end on a
   sector (``nfl2k5_historic_styles.rewrite_plan``), a copy is exactly as long as its retail file, and none of the
-  Dolphins' fourteen ends on one (the last, ``ih14.iff``, is 41,456 bytes). Without it the step was left out of every
-  build (#44, the 11/27 release build: "the last outer must end on a sector");
-* the executable is written by the Studio's growing writer when the redirect lengthens it (#44): the helper page lies
-  past the pool the build's executable stage sizes (a late owner no earlier step reserves; in the release build that
-  stage ends at 0x1532000, exactly where the page starts), so installing it adds pages to the file, which the
-  fixed-span writer the step first used refuses ("fixed-span writer cannot grow a resource") after the archive is
-  already rewritten. Whether the copy can take the longer file is checked before anything is written;
+  Dolphins' fourteen ends on one (the last copy, ``ihSM.iff``, is the 41,456 bytes of ``ih14.iff``). Without it the
+  step was left out of every build (#44, the 11/27 release build: "the last outer must end on a sector");
+* the executable is written by the Studio's descriptor writer for built executables
+  (``nfl2k5_depth_chart_storage.write_image_xbe``, the one ``mod_build._write_xbe_bytes`` uses), whatever its length
+  (#44). The helper page lies past the pool the build's executable stage sizes (a late owner no earlier step reserves;
+  in the release build that stage ends at 0x1532000, exactly where the page starts), so installing it adds pages to
+  the file, which the fixed-span writer the step first used refuses ("fixed-span writer cannot grow a resource") after
+  the archive is already rewritten. That writer also opens the copy buffered, which the build's optional-step journal
+  cannot undo: a failure after it stops the build instead of leaving the step out (#44 review F1), so it is not used
+  for an executable of the same length either. Whether the copy can take the new executable is checked before
+  anything is written;
 * the 's' stand packages (picked by venue code 48 alone, 0x62D68: ESPN Stadium, the Seamen's home) carry the classic
   field's own authored end zones (home ``endzone_south_*``, away ``endzone_north_*``, from
   ``data/nfl2k5_classic_teams/field``), because the field swap at 0x9C5DE binds the field's end zones to the first
@@ -595,9 +599,7 @@ def appended(files):
     bytes), so the last file always ends on a sector whatever the fourteen sizes are."""
     files = list(files)
     require([name for name, _data in files] == [name for name, _src in FILES], "classic crowd: not the fourteen files")
-    out = files + [(FILLER, bytes(SECTOR))]
-    require(len(out[-1][1]) > 0 and len(out[-1][1]) % SECTOR == 0, "classic crowd: the filler is not whole sectors")
-    return out
+    return files + [(FILLER, bytes(SECTOR))]
 
 
 def _present(path, files):
@@ -634,40 +636,36 @@ def image_status(path, source):
 
 
 def _growing_writer_takes(before, after):
-    """Refuse, before any disc write, an executable the growing writer (nfl2k5_depth_chart_storage.write_image_xbe)
-    would refuse afterwards: it takes a recognised grown executable in place of a retail or recognised grown one."""
+    """Refuse, before any disc write, an executable the Studio's writer (nfl2k5_depth_chart_storage.write_image_xbe)
+    would refuse afterwards: it takes a recognised grown executable, of the same length or longer, in place of a
+    retail or recognised grown one."""
     from . import nfl2k5_depth_chart_storage as storage
     from . import nfl2k5_xbe_space as space
     require(storage.recognized_grown_xbe(after), "classic crowd: the executable with the redirect is not a recognised one")
     require(len(before) in (storage.RETAIL_FILE_SIZE, storage.FILE_SIZE, *space.accepted_file_sizes())
             and (storage.recognized_grown_xbe(before)
                  or (len(before) == storage.RETAIL_FILE_SIZE and storage.state(before) == "retail")),
-            "classic crowd: the copy's executable cannot be replaced by a longer one")
+            "classic crowd: the copy's executable cannot be replaced")
 
 
 def _write_xbe(path, before, after):
-    """The executable with the redirect onto the copy. Same length: the fixed-span writer (changed bytes only). Longer
-    (the helper page lies past the image's last page): the Studio's growing writer, which appends the whole file at the
-    image end, switches its directory node and rolls both back on any failure, as the build's other late pages'
-    steps write theirs."""
+    """The executable with the redirect onto the copy, by the Studio's writer for built executables: the same length is
+    written in place, a longer one (the helper page lies past the image's last page) is appended whole at the image end
+    and its directory node switched; either is read back, synced and rolled back on any failure. The copy is opened by
+    descriptor only, so the build's optional-step journal sees every write and can leave the step out."""
     from . import nfl2k5_depth_chart_storage as storage
-    from . import nfl2k5_historic_rosters as seasons_bank
-    if len(after) == len(before):
-        seasons_bank.write_xbe(path, after)
-        return dict(writer="fixed_span", size=len(after), relocated=False)
     descriptor = os.open(path, os.O_RDWR | getattr(os, "O_BINARY", 0))
     try:
         written = storage.write_image_xbe(descriptor, after)
-        os.fsync(descriptor)
     finally:
         os.close(descriptor)
-    return dict(writer="growing", grown_bytes=len(after) - len(before), **written)
+    return dict(writer="write_image_xbe", grown_bytes=len(after) - len(before), **written)
 
 
 def apply_to_image(path, source):
     """The Seamen's own crowd on a disc whose classic teams are applied: the fourteen files and their filler appended to
-    the archive, then the redirect in the executable (its fixed page, the six sites; a longer executable goes through
-    the growing writer). Replay is a no-op."""
+    the archive, then the redirect in the executable (its fixed page, the six sites), written by descriptor. Replay is
+    a no-op."""
     from . import nfl2k5_classic_teams as classic
     from . import nfl2k5_espn25_rosters as e
     from . import nfl2k5_historic_styles as hs
@@ -679,8 +677,7 @@ def apply_to_image(path, source):
     require(classic.own_name_identity(classic.Data.load()) == IDENTITY,
             "classic crowd: the Seamen's identity is not the one the redirect names")
     patched, xbe_receipt = apply_xbe(payload)                   # computed before any disc write
-    if len(patched) != len(payload):
-        _growing_writer_takes(payload, patched)                 # refused here, not after the archive is rewritten
+    _growing_writer_takes(payload, patched)                     # refused here, not after the archive is rewritten
     files, receipts = _files(source)
     archive_receipt = hs.rewrite_archive(path, {}, appended(files))
     xbe_receipt["write"] = _write_xbe(path, payload, patched)

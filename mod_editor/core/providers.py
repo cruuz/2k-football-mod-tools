@@ -1024,7 +1024,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_sim_rb_injuries_b780.py": "0f14137670a5ca28b83092437dfc86c52fc4a5211a4b545271e16bb8aeef4f5c",  # b81 sportscenter: frozen pre-news-row roll for the previous state
         "mod_editor/core/nfl2k5_number_kerning.py": "48405334b32b7495399f204a898825531423ed6025e848b51ac0c86891df6902",  # b81 helmet-sides: the owner reads Number kerning's state (same cell addressing)
         "mod_editor/core/nfl2k5_sim_realism.py": "6d0be46b7eec8c8c72be956aafa4041977ba91067fe14d993d00d8e29162c674",  # b779-sim2 r6
-        "mod_editor/core/nfl2k5_classic_crowd.py": "b5ae8643a5d77feb6bfc6fa2fc6c0091d2b5b0c95eb301f278114a8fcb5a6c3f",  # b81-seamen: the Seamen's crowd, its fixed page (mod_build loads it by name; throw_tuning imports it for the cave manifest recorder)
+        "mod_editor/core/nfl2k5_classic_crowd.py": "ebd81ba7a3b1b084d446216c6da7abbc956fee53192819109a102bbde49307ba",  # b81-seamen: the Seamen's crowd, its fixed page (mod_build loads it by name; throw_tuning imports it for the cave manifest recorder)
         "mod_editor/core/nfl2k5_modern_fans.py": "2252c602b9ddb4a543836124ffeaacbcea3824a182587cf12357aae3ee307514",  # b81-seamen: the crowd composer refits its spans with the 2026 fans writer
         "mod_editor/core/nfl2k5_sim_outcomes.py": "9a4b36b7e5853453511e61be24045b8ce4485a5288f9d7c96ad944c5dd86fddd",  # b81 game outcomes: rides with Simulated season realism
         "mod_editor/core/nfl2k5_sim_scoring.py": "7c3681cef1f94638ab0137d966f08d80fcde3dfc335874ae24c5fd9491815f96",  # b81 scoring: in-place simulated kicking, installed by the QB option
