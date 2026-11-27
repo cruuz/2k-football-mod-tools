@@ -1619,14 +1619,25 @@ SECTION(".r10_prove") u8 *economy_prove_club(u8 *p, unsigned ask) {
  * - a club with a healthy man keeps its best-rated healthy one and releases every other healthy one (a hurt one stays
  *   until he is healthy, then the better of the two stays);
  * - a club with none, when the pool holds a healthy one: at exactly 53 the smart cut to 52 (a preseason camp above 53
- *   signs into its camp room, the gate allows a K or P up to 64), the gated signing (as before); refused, it makes room the way the economy clears the cap (economy_clear_cap's order): one restructure
- *   (economy_restructure_best, at most three a club), else one release by value lost (economy_vet_pick: the least price
- *   lost among men whose charge clears the club's shortfall to two minimum salaries, depth-chart starters last, never a
- *   club's last healthy K or P), then the gated signing again; nothing when the club already has room for two minimum
- *   salaries (the asks are above it) or nobody can go. The signing stays inside the cap: the QB floor's over-the-cap rung
- *   was retired for the churn it caused (rev-qb34 REVIEW_FLOOR F1).
- * In stage 9 the weekly advance's jump-table entry (0x2480A8) comes to economy_stage9, which covers every computer club
- * and goes on to the stage's own code at 0x247E6E (EBP = the menu there, as at 0x248010). */
+ *   signs into its camp room, the gate allows a K or P up to 64), the gated signing (as before); refused while the club is
+ *   short of room for two minimum salaries (economy_vet_short), one more man goes by the smart cut's rule (#46c:
+ *   economy_smart_cut to one fewer: the lowest healthy rating, 0x246D80(p, 0), at a position above its keep target, then
+ *   above its minimum; never a hurt depth-row-0 starter; a club's only K or P stays), then the gated signing again, at
+ *   most six such releases; nothing when the club already has that room (the asks are above it) or nobody can go. The
+ *   signing stays inside the cap: the QB floor's over-the-cap rung was retired for the churn it caused (rev-qb34
+ *   REVIEW_FLOOR F1). The first version made this room with economy_vet_pick (the least price lost among men whose charge
+ *   clears the shortfall), which has no health rule: a hurt starter whose charge cleared it could be the one released
+ *   (coordinator 11/27: "the cover's value-lost release pick must use the same rule as your #46c cut").
+ * In stage 9 the weekly advance's jump-table entry (0x2480A8) comes to economy_stage9, which covers every computer club of
+ * the 32 and goes on to the stage's own code at 0x247E6E (EBP = the menu there, as at 0x248010). Only the 32: in stage 9
+ * n_teams() (0xE576AC) reads 34, and records 32 and 33 (team slots 49 and 50) are the two Pro Bowl rosters, 40 of the
+ * league's players each, the same player records as their clubs' lists. A release from one takes the man off that
+ * roster only, adds him to the free-agent list and ends his contract while his club still lists him. The first stage-9
+ * cover walked n_teams() (76001 2026, kp-cover panel: a Pro Bowl roster with no healthy K or P, the signing refused,
+ * six releases by value lost; Daniels, Stafford, Egbuka and four more stayed on their clubs' lists and in free agency
+ * with no contract (validator I2 and I6 from the week-20 check), and in the 2027 re-signing stage a club's signing
+ * listed one of them a second time, so the payroll walk 0xC3F00/0xC3E80 never ended). Stage 8 reads 32 to its last
+ * week, and the weekly passes and the after-stage pass do not run in stage 9, so no other economy walk meets them. */
 #define KP __attribute__((noinline, optimize("omit-frame-pointer")))
 SECTION(".kp_spare") KP void FAST kp_spare(u8 *team, u8 *mine) {
     for (unsigned i = team[0x11c]; i-- > 0;) {
@@ -1635,13 +1646,12 @@ SECTION(".kp_spare") KP void FAST kp_spare(u8 *team, u8 *mine) {
     }
 }
 
-/* No healthy man at `pos`: at 53 the smart cut to 52, then the gated signing; refused, one release by value lost and the
- * signing again (at most six releases). */
+/* No healthy man at `pos`: at 53 the smart cut to 52, then the gated signing; refused while short of room, the smart cut
+ * releases one more man (#46c's rule) and the signing goes again (at most six releases). */
 SECTION(".kp_sign") KP void FAST kp_sign(u8 *team, unsigned pos, void *menu) {
-    u8 *q;
     if (team[0x11c] == 53) n_cut_to(team, 52);       /* a preseason camp above 53 signs into its camp room */
-    for (unsigned k = 0; k < 6 && !n_cpu_sign(team, pos, 0xFFFF, menu) && (q = economy_vet_pick(team, team)); ++k)
-        economy_release(team, q);
+    for (unsigned k = 0; k < 6 && !n_cpu_sign(team, pos, 0xFFFF, menu) && economy_vet_short(team) > 0; ++k)
+        n_cut_to(team, team[0x11c] - 1u);
 }
 
 /* The best-rated healthy free agent at `pos`, or 0. */
@@ -1660,7 +1670,7 @@ SECTION(".kp_cover") KP void FAST economy_cover(u8 *team, void *menu) {
 }
 
 SECTION(".roster_h_tail") KP void FAST economy_cover_all(void *menu) {
-    for (unsigned t = 0; t < n_teams(); ++t) {
+    for (unsigned t = 0; t < 32; ++t) {              /* the league's clubs, never the Pro Bowl rosters (n_team(32), n_team(33)) */
         u8 *team = n_team(t);
         if (CPU(team)) economy_cover(team, menu);
     }

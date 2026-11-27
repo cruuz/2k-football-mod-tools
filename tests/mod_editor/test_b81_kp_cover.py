@@ -36,6 +36,7 @@ STAGE = 0xE576A4
 TABLE = 0x248088                      # the weekly advance's jump table (stages 1..9)
 STAGE9_PATH = 0x247E6E                # retail stage 9 entry of that table
 KP_WINDOWS = (0x28C2F0, 0x2DCC10, 0x2F7D00)
+CUT_MIN = (2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 3, 2, 2, 3, 3, 3, 4)   # the smart cut's minimums (cut_rows row 2)
 
 
 class Sites(unittest.TestCase):
@@ -191,13 +192,38 @@ class CoverMachine:
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
 class Cover(CoverMachine, unittest.TestCase):
-    def test_short_of_room_the_club_releases_by_value_lost_and_signs_a_kicker(self):
+    def test_short_of_room_the_smart_cut_makes_the_room_and_a_kicker_signs(self):
+        """The room comes from the smart cut's rule (#46c): the man it would release from the same club."""
         m, team = self.league(room=100)
         got = self.cover(m, team)
         self.assertEqual((len(got["healthy_k"]), got["signed_pos"]), (1, [K]))
         self.assertTrue(got["released"], "a release made the room")
-        self.assertTrue(all(pos not in (0, K, P) for pos in got["released_pos"]), got["released_pos"])
+        self.assertTrue(all(pos not in (K, P) for pos in got["released_pos"]), got["released_pos"])
         self.assertGreaterEqual(got["room"], 0, "the signing stays inside the cap")
+        twin, twin_team = self.league(room=100)
+        before = self.members(twin, twin_team)
+        twin.call(0x2BF9A0, ecx=twin_team, edx=self.count(twin, twin_team) - 1, budget=400_000_000)
+        self.assertEqual(got["released"][:1], [p for p in before if p not in self.members(twin, twin_team)])
+
+    def test_a_hurt_starter_is_never_the_release_that_makes_room(self):
+        """Coordinator 11/27: the room-making release follows the #46c cut (healthy rating, never a hurt depth-row-0 man,
+        the lowest at a position with surplus). The first version took the least price lost among men whose charge clears
+        the shortfall, whatever their health: here only the hurt starter's charge clears it, and it released him."""
+        m, team = self.league(room=100)
+        pos = next(q for q in (3, 4, 13, 15, 16) if len(self.at(m, team, q)) > CUT_MIN[q])   # a position with surplus
+        star = max(self.at(m, team, pos), key=lambda p: self.rating(m, p))
+        m.put(star + 0x20, (m.get(star + 0x20) & 0x003FFFFF) | 0x80000000 | (2 << 22))
+        m.uc.mem_write(star + 0x28, struct.pack("<H", struct.unpack("<H", bytes(m.uc.mem_read(star + 0x28, 2)))[0] & ~0x1C00))
+        m.uc.mem_write(star + 10, struct.pack("<H", 6000))       # his salary alone clears the club's shortfall
+        m.call(0xC3F00, ecx=team)
+        m.put(0xE3C278, m.get(team + 0x124) - 4000)            # 4,000 over the cap
+        got = self.cover(m, team)
+        self.assertIn(star, self.members(m, team))
+        self.assertTrue(got["released"])
+        self.assertLessEqual(len(got["released"]), 6)
+        for p in got["released"]:
+            row = (struct.unpack("<H", bytes(m.uc.mem_read(p + 0x28, 2)))[0] >> 10) & 7
+            self.assertFalse(self.hurt(m, p) and row == 0, hex(p))
 
     def test_with_room_it_signs_and_releases_nobody(self):
         m, team = self.league(room=40000)
@@ -267,6 +293,27 @@ class Cover(CoverMachine, unittest.TestCase):
             t = m.team_base + 500 * c
             for pos in (K, P):
                 self.assertEqual(len([p for p in self.at(m, t, pos) if not self.hurt(m, p)]), 1, (c, pos))
+
+    def test_stage_nine_leaves_the_pro_bowl_rosters_alone(self):
+        """In stage 9 n_teams() reads 34: records 32 and 33 (team slots 49 and 50) are the Pro Bowl rosters, the league's
+        own player records. The practice squad's slot remove refuses them, so a release from one left the man on his club
+        and put him in free agency with no contract (76001 2026: six players, then the 2027 re-signing stage listed one of
+        them twice and the payroll walk never ended). The cover walks the 32 clubs."""
+        m, team = self.league(stage=9, room=40000)
+        m.put(0xE576AC, 34)
+        for t, slot in ((32, 49), (33, 50)):                    # the club table's Pro Bowl entries, as the game sets them
+            m.put(0xE5786C + 4 * t, m.team_base + 500 * slot)
+        pro = m.call(0xC4C50, ecx=32)
+        self.assertEqual(pro, m.team_base + 500 * 49)
+        stars = [m.get(m.team_base + 500 * c + 4 * i) for c in range(1, 32) for i in (0, 1)]
+        stars = [p for p in stars if m.uc.mem_read(p + 0x35, 1)[0] not in (K, P)][:40]
+        for i, p in enumerate(stars):
+            m.put(pro + 4 * i, p)
+        m.uc.mem_write(pro + 0x11C, bytes([len(stars)]))
+        m.call(economy.SYMBOLS["economy_cover_all"], ecx=m.ARENA + 0x1A0000, budget=2_000_000_000)
+        self.assertEqual(self.members(m, pro), stars)
+        rostered = {p for c in range(32) for p in self.members(m, m.team_base + 500 * c)}
+        self.assertEqual(rostered & set(self.free(m)), set())
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
@@ -417,6 +464,136 @@ class KeptImages(unittest.TestCase):
                     if c == club:
                         self.assertGreaterEqual(room, 0)
 
+
+ROOT_76001_XBE_SHA256 = "7ae6f10af3dab8b73d98845d8776101eead135e376c9e9a9e16cb04cf0177c9f"   # kp-cover build a3dbd0774
+ALIASES_76001 = [103, 1254, 1476, 1567, 1586, 2453]     # validator I2 + I6 at the 2026 week-20 check (kp-cover panel)
+WAS, DANIELS = 25, 1567
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
+class Root76001(unittest.TestCase):
+    """NFL2K5_B81_KP_76001 = the folder of root 76001's kept state (b81-fixtures/kp-cover-76001: the kp-cover build
+    a3dbd0774's executable, the memory before the 2026 stage-9 week-19 advance, the 2026 week-20 validator image and the
+    memory before the 2027 re-signing stage, where the run hung). The memory is the league as that build left it; this
+    economy's windows and stage-9 entry are written over it for `new`."""
+
+    @classmethod
+    def setUpClass(cls):
+        root = os.environ.get("NFL2K5_B81_KP_76001")
+        if not root:
+            raise unittest.SkipTest("NFL2K5_B81_KP_76001 is not set (kp-cover lane env)")
+        cls.root = Path(root)
+        names = ("default.xbe", "before-2026-st9-w19.b81mem.gz", "FAIL-2026-st9-w20.b81mem.gz", "before-2027-st2.b81mem.gz")
+        if not all((cls.root / n).is_file() for n in names):
+            raise unittest.SkipTest("a 76001 fixture file is absent")
+        cls.xbe = (cls.root / "default.xbe").read_bytes()
+        if hashlib.sha256(cls.xbe).hexdigest() != ROOT_76001_XBE_SHA256:
+            raise unittest.SkipTest("the 76001 fixture's executable differs")
+
+    def machine(self, *, new):
+        from tests.nfl2k5_supersim_draft_fixture import Machine
+        from tools import franchise_invariants as fi
+        m = Machine(self.xbe, trace_writes=False)
+        self.regions = [(lo, len(data)) for lo, data in fi.load_memory(self.root / "before-2026-st9-w19.b81mem.gz").regions]
+        for lo, data in fi.load_memory(self.root / "before-2026-st9-w19.b81mem.gz").regions:
+            if lo < 0x3000000:
+                m.uc.mem_write(lo, data)
+        if new:
+            for site in economy.sites():
+                if site.va in economy.WINDOWS or site.va == economy.STAGE9_CASE:
+                    m.uc.mem_write(site.va, site.patched)
+        m.uc.ctl_flush_tb()
+        m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
+        m.leaf(0x14E520, lambda: m.ret(), reason="informational dialog only")
+        return m
+
+    def report(self, m):
+        """The validator (tools/franchise_invariants) over the machine's memory."""
+        from tools import franchise_invariants as fi
+        mem = fi.Regions((lo, bytes(m.uc.mem_read(lo, n))) for lo, n in self.regions if lo < 0x3000000)
+        return fi.check(fi.view_from_memory(mem.read, search=lambda n: mem.find(n, 0x10000, 0x2000000)))
+
+    @staticmethod
+    def index(m, p):
+        return (p - m.get(m.get(0xB72918) + 4)) // 0x54
+
+    def roster(self, m, t):
+        team = m.call(0xC4C50, ecx=t)
+        return [m.get(team + 4 * i) for i in range(m.uc.mem_read(team + 0x11C, 1)[0])]
+
+    @staticmethod
+    def free(m):
+        lst = m.get(0xB72918) + 0x38
+        return [m.call(0x242500, ecx=lst, edx=i) for i in range(m.call(0x2424F0, ecx=lst))]
+
+    def test_the_validator_names_a_man_both_on_a_roster_and_in_free_agency(self):
+        """I2 counts the free-agent list as a holder: the run's own week-20 check and the 2027 re-signing stage's memory
+        (Jefferson by then too, Bawden no longer listed) name each such man with his club and the free list."""
+        from tools import franchise_invariants as fi
+        for name, want in (("FAIL-2026-st9-w20.b81mem.gz", ALIASES_76001), ("before-2027-st2.b81mem.gz", [103, 841, 1254, 1476, 1567, 1586])):
+            with self.subTest(image=name):
+                mem = fi.load_memory(self.root / name)
+                view = fi.view_from_memory(mem.read, search=lambda n: mem.find(n, 0x10000, 0x2000000))
+                rows = {v["player_index"]: v["values"]["holders"] for v in fi.check(view).violations if v["invariant"] == "I2"}
+                self.assertEqual(sorted(rows), want)
+                for i, holders in rows.items():
+                    self.assertEqual([h["list"] for h in holders], ["active", "free"], i)
+                self.assertEqual(rows[DANIELS], [{"list": "active", "club": WAS}, {"list": "free", "club": None}])
+
+    def test_the_playoff_cover_leaves_the_pro_bowl_rosters_alone(self):
+        """Before the week-19 advance n_teams() reads 34. The build's own stage-9 cover (a3dbd0774) released six Pro Bowl
+        players from a Pro Bowl roster with no healthy K or P: each stayed on his club's list and on the Pro Bowl list and
+        went to free agency with no contract (I2, I6). This one leaves both Pro Bowl rosters as they are."""
+        for new in (False, True):
+            with self.subTest(new=new):
+                m = self.machine(new=new)
+                self.assertEqual(m.get(0xE576AC), 34)
+                pro = [self.roster(m, t) for t in (32, 33)]
+                self.assertEqual([len(r) for r in pro], [40, 40])
+                m.call(economy.SYMBOLS["economy_cover_all"], ecx=m.ARENA + 0x1A0000, budget=3_000_000_000)
+                rostered = {self.index(m, p) for t in range(32) for p in self.roster(m, t)}
+                aliased = sorted(rostered & {self.index(m, p) for p in self.free(m)})
+                failing = {v["invariant"] for v in self.report(m).violations if v["severity"] == "failure"}
+                if not new:
+                    self.assertEqual((aliased, sorted(failing & {"I2", "I6"})), (ALIASES_76001, ["I2", "I6"]))
+                    continue
+                self.assertEqual([self.roster(m, t) for t in (32, 33)], pro)
+                self.assertEqual((aliased, failing & {"I2", "I6"}), ([], set()))
+
+    def test_short_of_room_the_cover_releases_by_the_smart_cut_and_keeps_a_hurt_starter(self):
+        """Washington at this state, its kicker off the active list (as modern IR takes him), Daniels hurt at depth row 0
+        (the wild card hurt him that week), 1,500 over the cap: the cover's releases are the smart cut's own picks in
+        order (the lowest healthy rating at a position with surplus), none of them a hurt starter, and a kicker signs."""
+        m, twin = self.machine(new=True), self.machine(new=True)
+        for x in (m, twin):
+            team = x.call(0xC4C50, ecx=WAS)
+            daniels = x.get(x.get(0xB72918) + 4) + 0x54 * DANIELS
+            x.put(daniels + 0x20, (x.get(daniels + 0x20) & 0x003FFFFF) | 0x80000000 | (2 << 22))
+            x.uc.mem_write(daniels + 0x28, struct.pack("<H", struct.unpack("<H", bytes(x.uc.mem_read(daniels + 0x28, 2)))[0] & ~0x1C00))
+            for k in [p for p in self.roster(x, WAS) if x.uc.mem_read(p + 0x35, 1)[0] == K]:
+                x.call(0xC3EB0, ecx=team, edx=k)
+            x.call(0xC3F00, ecx=team)
+            x.put(0xE3C278, x.get(team + 0x124) - 1500)
+        team = m.call(0xC4C50, ecx=WAS)
+        before = self.roster(m, WAS)
+        m.call(economy.SYMBOLS["economy_cover"], ecx=team, edx=m.ARENA + 0x1A0000, budget=2_000_000_000)
+        after = self.roster(m, WAS)
+        released = [p for p in before if p not in after]
+        signed = [p for p in after if p not in before]
+        self.assertEqual([m.uc.mem_read(p + 0x35, 1)[0] for p in signed], [K])
+        self.assertTrue(1 <= len(released) <= 6, len(released))
+        self.assertNotIn(DANIELS, [self.index(m, p) for p in released])
+        twin_team, picks = twin.call(0xC4C50, ecx=WAS), []
+        for _ in released:
+            was = self.roster(twin, WAS)
+            twin.call(0x2BF9A0, ecx=twin_team, edx=len(was) - 1, budget=400_000_000)
+            picks += [p for p in was if p not in self.roster(twin, WAS)]
+        self.assertEqual(sorted(released), sorted(picks))
+        for p in released:
+            row = (struct.unpack("<H", bytes(m.uc.mem_read(p + 0x28, 2)))[0] >> 10) & 7
+            self.assertFalse(m.uc.mem_read(p + 0x23, 1)[0] & 0x80 and row == 0)
+        m.call(0xC3F00, ecx=team)
+        self.assertGreaterEqual(m.get(0xE3C278) - m.get(team + 0x124), 0, "the signing stays inside the cap")
 
 if __name__ == "__main__":
     unittest.main()
