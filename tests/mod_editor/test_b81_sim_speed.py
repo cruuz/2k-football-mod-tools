@@ -213,6 +213,39 @@ class Install(unittest.TestCase):
         self.assertEqual(tb.status(bytes(buf)), "foreign")
 
 
+    def test_the_previous_template_reads_previous_and_upgrades(self):
+        """An image the template before #45 (6e37263e1) wrote: its windows and both branches, no page, the retail day
+        call. It reads "previous", the draft AI still reads applied under it, and apply upgrades it in place."""
+        import subprocess as sp
+        from mod_editor.core import nfl2k5_team_building as tb, nfl2k5_draft_ai as draft
+        from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
+        try:
+            old = {}
+            exec(sp.check_output(["git", "show", "6e37263e1:mod_editor/core/nfl2k5_team_building_code.py"], cwd=ROOT,
+                                 text=True, stderr=sp.DEVNULL), old)
+        except (sp.CalledProcessError, OSError):
+            self.skipTest("git history unavailable")
+        x = self._ready()
+        if tb.status(x) != "retail" or not tb.needs_met(x):
+            self.skipTest("the fixture is not a retail team-building image with its needs")
+        buf = bytearray(x)
+        for va, blob in old["WINDOWS"].items():
+            at = tb._offset(x, va)
+            buf[at:at + len(blob)] = blob
+        for va, op, name in ((tb.HEAD_CALL_VA, 0xE8, "tb_order"), (tb.WISH_JUMP_VA, 0xE9, "tb_wish_entry")):
+            at = tb._offset(x, va)
+            buf[at:at + 5] = tb._branch(va, op, old["SYMBOLS"][name])
+        for section in _sections(bytes(buf)):
+            buf[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(buf), section)
+        previous = bytes(buf)
+        self.assertEqual(tb.status(previous), "previous")
+        self.assertEqual(draft.status(tb.as_draft_ai(previous)), "applied")
+        self.assertTrue(tb.needs_met(previous))
+        upgraded, receipt = tb.apply(previous)
+        self.assertEqual((tb.status(upgraded), receipt.get("upgraded_from")), ("applied", "previous"))
+        self.assertEqual(upgraded, tb.apply(x)[0])
+
+
 # ---- the code in Unicorn on a kept league ---------------------------------------------------------------------------
 
 def _load(cls):

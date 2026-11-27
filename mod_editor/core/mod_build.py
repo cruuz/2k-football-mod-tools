@@ -3545,9 +3545,10 @@ def _team_building_edit_payload(original):
     if state == "foreign":
         raise ValueError("The draft AI's need call or wish routine on this disc is not one CPU team building knows.")
     payload, economy_receipt = original, None
-    if state == "retail" and economy.status(payload) == "legacy":
+    # b81 #45: a disc with the previous team-building template ("previous") upgrades in place like a retail one
+    if state in ("retail", "previous") and economy.status(payload) == "legacy":
         payload, economy_receipt = economy.apply(payload)
-    if state == "retail" and not module.needs_met(payload):
+    if state in ("retail", "previous") and not module.needs_met(payload):
         draft = _core_module("nfl2k5_draft_ai")
         if draft is not None and draft.status(module.as_draft_ai(payload)) == "legacy":
             raise ValueError("This disc's draft AI is older than CPU team building needs. Build a new disc with CPU team "
