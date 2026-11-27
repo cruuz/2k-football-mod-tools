@@ -1333,8 +1333,9 @@ class RareFaces(unittest.TestCase):
         self.assertLessEqual(len(rf.CODE_B), rf.REGION_B_END - rf.REGION_B)
         self.assertEqual(len(rf.CODE_A), rf.REGION_A_END - rf.REGION_A)
         self.assertEqual(sum(x != y for x, y in zip(rf.CODE_C_FACES, rf.CODE_C_GEN1)), 1)
-        # b81 league-aging: + the grade roll in the qsetup / qrand slots (0xA2..0xCB) and the loop's call to qrand (0x2B)
-        slots = {0x2B, *range(0xA2, 0xCC)}
+        # b81 league-aging: + the grade roll in the qsetup / qrand slots (0xA2..0xCB) and the loop's call to qrand (0x2B);
+        # b81 #47: + the capped loop's count (push 3, 0x59) and its table base (cofs - 1, 0x5E): Durability's own draw
+        slots = {0x2B, 0x59, 0x5E, *range(0xA2, 0xCC)}
         self.assertEqual(sum(x != y for i, (x, y) in enumerate(zip(rf.CODE_C, rf.CODE_C_GEN1)) if i not in slots), 1)
         self.assertEqual(rf.CODE_C[len(rf.CODE_C_GEN1):], rf.CODE_C_FACES[len(rf.CODE_C_GEN1):], "pick is unchanged")
         self.assertEqual(sum(x != y for x, y in zip(rf.CODE_A, rf.CODE_A_GEN1)), 3)       # NICK0 twice, NICKMASK

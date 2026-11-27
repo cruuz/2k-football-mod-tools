@@ -203,9 +203,9 @@ regionC:                            # b779-rf3: the rating loop (29 getter/sette
     add edi, 0x14
     cmp edi, GETEND
     jl 40b
-    push 2                          # consistency +0x50, aggressiveness +0x51, composure +0x4E:
-    pop edi                         # b + (a - b) * r16 >> 16, a and b capped at 100 (retail: the same in x87)
-41: movzx edx, byte ptr [cofs+edi]
+    push 3                          # consistency +0x50, aggressiveness +0x51, composure +0x4E and (b81 #47) Durability
+    pop edi                         # +0x3B at cofs - 1: b + (a - b) * r16 >> 16, a and b capped at 100 (retail: the same
+41: movzx edx, byte ptr [cofs-1+edi] # in x87). Durability on its own draw: the grade roll made a class's stars its iron men
     push edx
     movsx eax, byte ptr [ebx+edx]
     cmp eax, 100
@@ -243,10 +243,12 @@ qrand:                              # b81 league-aging: st0 = g + GRADEW (u - g)
     call FRAND                      # near his one grade, so a class has real stars and busts (b779-rf3 drew each rating on
     fsub dword ptr [esp+4+0x14]     # its own: the overall averaged out, a class's spread was half the real one and its best
     fmul dword ptr [GRADEW]         # rookie 4-8 under the starters' median). A convex mix of g and u stays inside [0, 1):
-    fadd dword ptr [esp+4+0x14]     # no clamp. qsetup + qrand keep b779-rf3's 42 bytes (20 + 20 and a 2-byte fill), so cofs
-                                    # and every later label keep their addresses.
+    fadd dword ptr [esp+4+0x14]     # no clamp. qsetup + qrand keep b779-rf3's 42 bytes (20 + 20, a fill byte and cofs - 1),
+                                    # so cofs and every later label keep their addresses.
     ret
-    .fill 42 - (. - qsetup), 1, 0xCC
+    .fill 41 - (. - qsetup), 1, 0xCC
+    .byte 0x3B                      # b81 #47: cofs - 1 = Durability (corr(Durability, overall) of generated rookies was
+                                    # +0.75..+0.92 under the grade roll, real roster +0.05..+0.20)
 cofs:
     .byte 0x4E, 0x51, 0x50
 taken:                              # b780 GEN1: eax = a first-name string -> CF = 1 when another player on the roster

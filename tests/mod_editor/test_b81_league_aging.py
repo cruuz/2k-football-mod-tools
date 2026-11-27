@@ -321,7 +321,7 @@ class GradeRollTests(unittest.TestCase):
             pos = []
             for i in range(29):
                 off = 0x36 + i
-                if off in (0x4E, 0x50, 0x51):
+                if off in (0x4E, 0x50, 0x51, 0x3B):    # the capped loop's bytes (b81 #47: Durability 0x3B too)
                     continue
                 lo, hi = (40, 80) if off % 2 else (20, 60)
                 x = (r[off] - lo) / (hi - lo)
@@ -342,13 +342,19 @@ class GradeRollTests(unittest.TestCase):
 
     def test_region_c_upgrade(self):
         pad = lambda code: code + b"\xcc" * (rf.REGION_C_END - rf.REGION_C - len(code))  # noqa: E731
-        self.assertNotEqual(pad(rf.CODE_C), pad(rf.CODE_C_FACES))
+        self.assertNotEqual(pad(rf.CODE_C_GRADE), pad(rf.CODE_C_FACES))
         self.assertEqual(len(rf.CODE_C), len(rf.CODE_C_FACES))
+        self.assertEqual(len(rf.CODE_C_GRADE), len(rf.CODE_C_FACES))
         # only the two slots (0xA2..0xCB) and the loop's call to qrand (one displacement byte at 0x2B) changed against
         # b81 rookie-faces; everything after the slots keeps its address
-        diff = [i for i in range(len(rf.CODE_C_FACES)) if rf.CODE_C[i] != rf.CODE_C_FACES[i]]
+        diff = [i for i in range(len(rf.CODE_C_FACES)) if rf.CODE_C_GRADE[i] != rf.CODE_C_FACES[i]]
         self.assertEqual(diff[0], 0x2B)
         self.assertTrue(0xA2 <= min(diff[1:]) and max(diff) <= 0xCB, (hex(min(diff[1:])), hex(max(diff))))
+        # b81 #47: three bytes against the grade roll: push 3 (0x59), the cofs - 1 displacement (0x5E) and the
+        # Durability offset 0x3B in the slots' fill byte (0xCB, cofs - 1)
+        diff = [i for i in range(len(rf.CODE_C)) if rf.CODE_C[i] != rf.CODE_C_GRADE[i]]
+        self.assertEqual(diff, [0x59, 0x5E, 0xCB])
+        self.assertEqual((rf.CODE_C[0x59], rf.CODE_C[0xCB]), (3, 0x3B))
 
 
 class MergedRevisionTests(unittest.TestCase):
@@ -388,8 +394,19 @@ class MergedRevisionTests(unittest.TestCase):
         up, receipt = rf.upgrade_xbe(faces, self.bank)
         self.assertEqual(up[rf._offset(up, rf.REGION_C, 4):], self.out[rf._offset(up, rf.REGION_C, 4):])
         self.assertEqual((rf.xbe_revision(up), receipt["upgraded_from"], receipt["changed_bytes"]),
-                         ("applied", "faces", 42))
+                         ("applied", "faces", 44))                # 42 in the slots + push 3 and cofs - 1 (b81 #47)
         self.assertEqual(rf.xbe_apply(faces, self.table)[0], self.out, "a full write over it gives the same bytes")
+
+    def test_the_grade_roll_before_47_is_upgraded_in_place(self):
+        """b81 #47: the league-aging merge's region C (Durability on the grade; the integration from 240a670b4) reads
+        applied (revision "grade") and upgrade_xbe moves its three bytes."""
+        grade = self.put(self.out, rf.REGION_C, self.pad(rf.CODE_C_GRADE))
+        self.assertEqual((rf.xbe_status(grade), rf.xbe_revision(grade), rf.region_c_state(grade)),
+                         ("applied", "grade", "grade"))
+        up, receipt = rf.upgrade_xbe(grade, self.bank)
+        self.assertEqual(up, self.out)
+        self.assertEqual((rf.xbe_revision(up), receipt["upgraded_from"], receipt["changed_bytes"]), ("applied", "grade", 3))
+        self.assertEqual(rf.xbe_apply(grade, self.table)[0], self.out, "a full write over it gives the same bytes")
 
     def test_league_aging_first_roll_on_gen1_reads_previous(self):
         tail = rf.TABLE_END - rf.TABLE_VA - rf.TABLE_DATA
@@ -631,6 +648,182 @@ class TemplateFitTests(unittest.TestCase):
                 self.assertTrue(by[4 * rf.POSITIONS.index(pos) + k])
         for row in doc["templates"]:
             self.assertTrue(all(0 <= v <= 99 for v in row["ratings"].values()))
+
+
+# ---------------------------------------------------------------------------------- b81 #47 (combined judge, 11/27)
+def _template_record(ratings, pos):
+    from mod_editor.core import nfl2k5_roster_records as rr
+    order = list(rr.RATING_BYTE_ORDER)
+    rec = bytearray(0x54)
+    rec[0x35] = pos
+    for name, value in ratings.items():
+        rec[0x36 + order.index(name)] = value
+    return bytes(rec)
+
+
+def _native_prospects(a, b, n, seed, code_c=None):
+    """Region C under Unicorn with NativeRf3Ratings' stand-ins (one getter/setter per rating byte, the game's float
+    rand, a float-to-int stand-in), template records a (high) and b (low): n prospect records. code_c: another region C
+    (the pre-#47 grade roll) at the same address."""
+    from unicorn.x86_const import UC_X86_REG_EBP, UC_X86_REG_EBX, UC_X86_REG_ESI, UC_X86_REG_ESP
+    from tests.mod_editor.test_b778_rh1_rookie_faces import NativeRf3Ratings, STACK, _emulator
+    mu = _emulator(bytes(rf.TABLE_DATA), seed)
+    if code_c is not None:
+        mu.mem_write(rf.REGION_C, code_c)
+    mu.mem_write(0x48B90, NativeRf3Ratings.FRAND)
+    mu.mem_write(0x4E419C, struct.pack("<f", 1.0))
+    mu.mem_write(0x4E4184, struct.pack("<f", 0.5))
+    mu.mem_write(0x4E696C, struct.pack("<f", 0.25))
+    mu.mem_write(0xE3F10, bytes.fromhex("d9442404db5c24048b442404c20400"))
+    stubs = 0x600000
+    for i in range(29):
+        g, st = stubs + 16 * i, stubs + 0x400 + 16 * i
+        mu.mem_write(g, bytes.fromhex("0fb641") + bytes((0x36 + i,)) + b"\xc3")
+        mu.mem_write(st, bytes.fromhex("8851") + bytes((0x36 + i,)) + b"\xc3")
+        mu.mem_write(0x4F4CB4 + 0x14 * i, struct.pack("<I", g))
+        mu.mem_write(0x4F4CB0 + 0x14 * i, struct.pack("<I", st))
+    hi, lo, rec = 0x2000000, 0x2000100, 0x2000200
+    mu.mem_write(hi, a)
+    mu.mem_write(lo, b)
+    out = []
+    for _ in range(n):
+        mu.mem_write(rec, bytes(0x35) + a[0x35:0x36] + bytes(0x54 - 0x36))
+        mu.reg_write(UC_X86_REG_ESP, STACK + 0x1000)
+        mu.reg_write(UC_X86_REG_EBX, hi)
+        mu.reg_write(UC_X86_REG_EBP, lo)
+        mu.reg_write(UC_X86_REG_ESI, rec)
+        mu.emu_start(rf.REGION_C, rf.HELPER_VA["collegepick"], count=200_000)
+        out.append(bytes(mu.mem_read(rec, 0x54)))
+    return out
+
+
+def _corr(xs, ys):
+    mx, my = statistics.mean(xs), statistics.mean(ys)
+    sxy = sum((x - mx) * (y - my) for x, y in zip(xs, ys))
+    sxx, syy = sum((x - mx) ** 2 for x in xs), sum((y - my) ** 2 for y in ys)
+    return sxy / (sxx * syy) ** 0.5
+
+
+@unittest.skipUnless(HAVE_UC, "unicorn is not installed")
+class DurabilityDrawTests(unittest.TestCase):
+    """RR2 (combined judge, Panel A): every rating followed the prospect's one grade, Durability included, so generated
+    rookies' corr(Durability, overall) was +0.75..+0.92 (real 2026 roster +0.05..+0.20), generated star defenders sat
+    at Durability 88-92 by 2035 and the stability factor ran into its 1.25 ceiling. Region C's capped loop now also
+    redraws Durability (0x3B) on its own: uniform between the templates' pair, independent of the grade."""
+
+    def prospects(self, name, code_c=None, n=500):
+        from mod_editor.core import nfl2k5_my_career_prospects as pr
+        from mod_editor.core import nfl2k5_roster_records as rr
+        pos = rf.POSITIONS.index(name)
+        by = {r["index"]: r["ratings"] for r in rf.load_templates()["templates"]}
+        a, b = _template_record(by[4 * pos], pos), _template_record(by[4 * pos + 2], pos)
+        recs = _native_prospects(a, b, n, seed=47 + pos, code_c=code_c)
+        lineman = pos in (12, 13, 14)
+        return ([pr.native_overall(rr.PlayerRecord.decode(r), lineman=lineman) for r in recs], [r[0x3B] for r in recs],
+                (b[0x3B], a[0x3B]))
+
+    def test_durability_does_not_follow_the_grade(self):
+        for name in ("QB", "DE", "CB", "HB"):
+            with self.subTest(position=name):
+                overall, durability, (lo, hi) = self.prospects(name)
+                self.assertTrue(all(lo <= d < hi for d in durability), (lo, hi, min(durability), max(durability)))
+                self.assertLess(abs(_corr(overall, durability)), 0.1)
+                # the class's top fifth by overall is no more durable than the rest (pre-#47: about 1.5 SD more); a
+                # quarter SD covers the stand-in xorshift rand's own small serial dependence
+                ranked = [d for _o, d in sorted(zip(overall, durability), reverse=True)]
+                k = len(ranked) // 5
+                gap = statistics.mean(ranked[:k]) - statistics.mean(ranked[k:])
+                self.assertLess(abs(gap), 0.3 * statistics.pstdev(durability), gap)
+                # the overall still follows the grade: a class keeps its stars and busts
+                self.assertGreater(statistics.pstdev(overall), 8.0)
+
+    def test_the_grade_roll_before_47_tied_them(self):
+        """The same templates under the pre-#47 region C: the coupling the fix removes."""
+        pad = rf.CODE_C_GRADE + b"\xcc" * (rf.REGION_C_END - rf.REGION_C - len(rf.CODE_C_GRADE))
+        overall, durability, _pair = self.prospects("DE", code_c=pad)
+        self.assertGreater(_corr(overall, durability), 0.8)
+        ranked = [d for _o, d in sorted(zip(overall, durability), reverse=True)]
+        k = len(ranked) // 5
+        self.assertGreater(statistics.mean(ranked[:k]) - statistics.mean(ranked[k:]), statistics.pstdev(durability))
+
+
+class ClassTemplates47Tests(unittest.TestCase):
+    """b81 #47 data (templates.json): Durability pairs at the real roster's spread, kickers and punters at the starters'
+    Durability, lower class tops at QB/TE/DE/DT/C (RR3) and a deeper halfback middle (RR4)."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_my_career_prospects as pr
+        from mod_editor.core import nfl2k5_roster_records as rr
+        doc = rf.load_templates()
+        cls.note = doc["note"]
+        cls.by = {r["index"]: r["ratings"] for r in doc["templates"]}
+
+        def overall(index):
+            pos = index // 4
+            rec = rr.PlayerRecord.decode(_template_record(cls.by[index], pos))
+            return pr.native_overall(rec, lineman=pos in (12, 13, 14))
+        cls.overall = staticmethod(overall)
+
+    def test_durability_pairs(self):
+        self.assertIn("b81 #47", self.note)
+        for pos, name in enumerate(rf.POSITIONS):
+            for k in range(2):
+                hi, lo = self.by[4 * pos + k]["durability"], self.by[4 * pos + 2 + k]["durability"]
+                with self.subTest(position=name, tier=k):
+                    self.assertLess(lo, hi)
+                    self.assertLessEqual(hi - lo, 44)      # sqrt(12) x 12.5, the widest real spread (FS)
+        for name, centre in (("K", 88), ("P", 90)):           # two above the 2026 CPU starters (86.1 / 88.1)
+            pos = rf.POSITIONS.index(name)
+            for k in range(2):
+                mid = (self.by[4 * pos + k]["durability"] + self.by[4 * pos + 2 + k]["durability"]) / 2
+                self.assertAlmostEqual(mid, centre, delta=0.5)
+
+    def test_tops_and_halfback_depth(self):
+        # high templates' overall: QB, TE, DE, DT, C lowered (RR3: generated QBs reached 96 in the top-32 pool); HB's
+        # low templates raised from 28 (RR4: generated second backs came in near 60, the real roster's are 68)
+        tops = {name: max(self.overall(4 * rf.POSITIONS.index(name) + k) for k in range(2))
+                for name in ("QB", "TE", "DE", "DT", "C")}
+        self.assertLessEqual(tops["QB"], 94)
+        self.assertLessEqual(tops["TE"], 87)
+        self.assertLessEqual(tops["C"], 85)
+        hb = rf.POSITIONS.index("HB")
+        self.assertGreaterEqual(min(self.overall(4 * hb + 2 + k) for k in range(2)), 26)
+        self.assertLessEqual(max(self.overall(4 * hb + k) for k in range(2)), 82)
+
+
+class KickerAgingTests(unittest.TestCase):
+    """RR7 (combined judge, Panel A): kicker injury onsets rose from about 1.4 to 1.8 per 100 starter-games after
+    season 5 (band 0.95-1.55) as the CPU starting kickers' Durability fell 86 -> 81: K and P sit outside the stability
+    factor, and their physical group (speed, agility, stamina, Durability) followed the shared curves' decline from 26.
+    Now the K/P physical mean holds from 25 to 34; the earlier table ('b81_r2') reads legacy and upgrades in place."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.retail = _retail()
+        cls.profiles = pg._profiles(cls.retail)
+
+    def kp_physical(self, version):
+        v = pg._version(version)
+        curves, weights = pg.patched_tables(self.profiles, shape=v["shape"])
+        native = pg._native_means(curves, weights, self.profiles)
+        dd = pg.decline_tables(curves, weights, self.profiles, v["target"], v["age_at_year"])
+        ci = pg.CLASSES.index("KP")
+        return [native[(ci, 0)][y] + dd[("KP", "physical")][y] for y in range(pg.CURVE_LEN)]
+
+    def test_kickers_hold_their_physical_ratings_to_34(self):
+        new, old = self.kp_physical("b81"), self.kp_physical("b81_r2")
+        self.assertAlmostEqual(sum(new[4:14]), 0.0, delta=1.0)        # ages 25-34
+        self.assertLess(sum(old[4:14]), -6.0)
+        self.assertLess(sum(new[14:20]), -2.0)                        # still slides from 35
+        self.assertEqual(pg.D_TARGET["KP"][1], pg.PREVIOUS_B81_D_TARGET["KP"][1])   # their skills unchanged
+
+    def test_the_earlier_b81_tables_read_legacy_and_upgrade(self):
+        image = _write_version(self.retail, "b81_r2")
+        self.assertEqual(pg.status(image), "legacy")
+        upgraded, receipt = pg.apply(image)
+        self.assertTrue(receipt["upgraded_from_legacy"])
+        self.assertEqual(upgraded, pg.apply(self.retail)[0])
 
 
 if __name__ == "__main__":
