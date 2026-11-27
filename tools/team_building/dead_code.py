@@ -173,6 +173,9 @@ def reservations_clear(windows=None) -> list[str]:
     hits = []
     for start, (size, _) in windows.items():
         for s in spans:
+            if s["owner"] == "nfl2k5_team_building":
+                # the inventory reserves the windows for this owner once it is registered (c071f015f, 02d59c824)
+                continue
             lo, hi = int(s["start"], 16), int(s["end"], 16)
             if lo < start + size and start < hi:
                 hits.append(f"{start:#x} {s['owner']}")

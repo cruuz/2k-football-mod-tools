@@ -525,7 +525,10 @@ class UpdateRoutes(unittest.TestCase):
                 with self.subTest(team_building=team_building):
                     plan = build.v09_disc_update(str(disc), str(target), team_building=team_building,
                                                  backfield_cards=not team_building, overwrite=True)
+                    # b81 integration (#40 merge): the class templates step writes roster data in the disc's archive,
+                    # which this executable-only copy has not; it has its own tests (test_b81_league_aging)
                     with mock.patch.object(build, "_copy_private_build_source", side_effect=copy), \
+                            mock.patch.object(build, "_apply_class_templates_in_place"), \
                             mock.patch.object(build, "_compact_build_disc"), \
                             mock.patch.object(build, "_verify_finished_game_disc"), \
                             mock.patch.object(build, "inspect", return_value={}):
