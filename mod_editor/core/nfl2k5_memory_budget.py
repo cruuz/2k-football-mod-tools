@@ -381,6 +381,14 @@ REQUIRES_128 = {
     "modern_numbers": "Modern jersey numbers keep their rules on a page of the extra executable sections (the "
                       "scale-out), and the 64 MB profile is the legacy layout, which has no room left for it. A 64 MB "
                       "build keeps the game's own jersey numbers.",
+    # b81 #43 (coordinator ruling 2, 11/27): two fixed pages at the top of the scale-out pool. Mapping the pool up to
+    # them costs a 64 MB build about 356 KB at NRG Stadium (s37), more than it has; v0.9's 64 MB build had neither.
+    "helmet_side_numbers": "Helmet side numbers keep their code on a fixed page at the top of the extra executable "
+                           "sections, and a 64 MB build has no room to map the sections up to it. A 64 MB build keeps "
+                           "the original helmets.",
+    "classic_crowd": "The classic Seamen's crowd keeps its code on a fixed page at the top of the extra executable "
+                     "sections, and a 64 MB build has no room to map the sections up to it. A 64 MB build keeps the "
+                     "stadium's own crowd.",
 }
 
 # A field and the sub-options that only matter with it; a suggestion turns the whole group off.
@@ -791,6 +799,30 @@ def option_costs(plan=None, target_mb: int = 64) -> dict:
     return dict(sorted(out.items(), key=lambda kv: -kv[1]))
 
 
+def _fits_room(opts: dict, target_mb: int, export: int, need: int, capped: bool) -> bool:
+    """Whether ``opts`` fits at its hardest matchup by predict's own rule."""
+    value = room(opts, target_mb, "hardest")[0]
+    if capped:
+        return heaps(value, export, capped=True)["heap_b"] - DIR_INTRO_BYTES >= SAFETY_MARGIN
+    return value >= need
+
+
+def _fitting_set(opts: dict, chosen: list, target_mb: int, export: int, need: int, capped: bool):
+    """b81 #43 (coordinator ruling 2): the changes to name when a plan does not fit, computed, not guessed. The greedy
+    suggestions measure each option after the ones before it are off (two fixed pages at the top of the pool free
+    nothing apart and 356 KB together), so the set is checked as a whole, then each option is dropped again while the
+    rest still fits. Returns the option groups (each a tuple: the option and the sub-options that go with it) that,
+    turned off together, make the plan fit, or None when even all of them do not."""
+    if not chosen or not _fits_room(_turn_off(opts, [f for g in chosen for f in g]), target_mb, export, need, capped):
+        return None
+    kept = list(chosen)
+    for group in sorted(chosen, key=lambda g: room(_turn_off(opts, g), target_mb)[0]):
+        rest = [g for g in kept if g is not group]
+        if rest and _fits_room(_turn_off(opts, [f for g in rest for f in g]), target_mb, export, need, capped):
+            kept = rest
+    return [tuple(f for f in group if f == group[0] or on(opts, f)) for group in kept]
+
+
 def predict(plan=None, target_mb: int = 64) -> dict:
     """Fits verdict for the plan at the target at its hardest matchup. Keys: fits, spare_bytes, over_bytes, hardest,
     suggestions [(field, bytes)], plus target_mb, room, block, heap_a, heap_b, dir_intro_bytes, margin, needed_room,
@@ -811,7 +843,7 @@ def predict(plan=None, target_mb: int = 64) -> dict:
         over = max(0, DIR_INTRO_BYTES + SAFETY_MARGIN - got["heap_b"])
     else:
         ok, spare, over = value >= need, max(0, value - need), max(0, need - value)
-    suggestions, trial, left = [], dict(opts), over
+    suggestions, trial, left, chosen = [], dict(opts), over, []
     while left > 0:
         base = room(trial, target_mb)[0]
         best = None
@@ -825,8 +857,10 @@ def predict(plan=None, target_mb: int = 64) -> dict:
         group, saved = best
         suggestions.append((group[0], saved))
         suggestions.extend((g, 0) for g in group[1:] if on(trial, g))
+        chosen.append(group)
         trial = _turn_off(trial, group)
         left -= saved
+    fitting_set = _fitting_set(opts, chosen, target_mb, export, need, capped) if over else []
     primary_value, primary_game = room(opts, target_mb, "primary")
     primary = heaps(primary_value, export, capped=capped)
     notes = [f"MODELLED, anchored on EMU1's measured v0.9 RC heaps (Texans at Ravens, 128 MiB); no {target_mb} MB run "
@@ -837,7 +871,7 @@ def predict(plan=None, target_mb: int = 64) -> dict:
     if target_mb == 64:
         notes.append("Unproven on a console and on hakuX; xemu at 128 MB is the recommended full experience.")
     return {"fits": bool(ok and not forced), "spare_bytes": spare, "over_bytes": over,
-            "hardest": f"{game['name']} ({game['venue']})", "suggestions": suggestions,
+            "hardest": f"{game['name']} ({game['venue']})", "suggestions": suggestions, "fitting_set": fitting_set,
             "target_mb": target_mb, "room": value, "block": got["block"], "heap_a": got["heap_a"],
             "heap_a_short": got["heap_a_short"], "heap_b": got["heap_b"], "dir_intro_bytes": DIR_INTRO_BYTES,
             "margin": got["heap_b"] - DIR_INTRO_BYTES, "needed_room": need, "safety_bytes": SAFETY_MARGIN,

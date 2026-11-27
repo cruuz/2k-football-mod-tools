@@ -76,6 +76,9 @@ PACK_DOWNLOAD_LINKS = (
 SHARE_NOTE = ("Choose v0.10 for xemu at 128 MiB with Complex 4627. For a 64 MiB setup, use the "
               f"published v0.9 64 MB pack ({STATUS_64}). Install either directly. Customize SOFTDRINK 2K28 lets you change "
               "the build target and features. The 64 MB roster fits the original game's roster size.")
+#: b81 #43 (coordinator ruling 2; R56's wording): where a 64 MB player gets a ready-made disc.
+POINTER_64 = ("v0.10 is the 128 MiB release; for a ready-made 64 MiB disc use the published v0.9 64 MB pack, "
+              "SOFTDRINK-2K28-v0.9-64MB.2k5patch.")
 SHARE_CHOICE_CAPTION = "Build for"
 SHARE_CHOICE_HELP = ("Customize SOFTDRINK 2K28 loads the pack's sources into the Build tab. 64 MB sets the Build tab's "
                      "Console memory to the experimental 64 MB target and turns off what needs 128 MB.")
@@ -376,6 +379,15 @@ def _predict(found, plan) -> dict[str, Any] | None:
             suggestions.append((str(key), int(size)))
         except (KeyError, TypeError, ValueError):
             continue
+    found_set = get("fitting_set", "absent")   # b81 #43 ruling 2: the model's checked set (None: nothing fits)
+    fitting = {}
+    if found_set is None:
+        fitting = {"fitting_set": None}
+    elif isinstance(found_set, (list, tuple)):
+        try:
+            fitting = {"fitting_set": [tuple(str(k) for k in group) for group in found_set]}
+        except TypeError:
+            fitting = {}
     primary = get("primary_uniforms", None)
     safety = get("safety_bytes", None)
     primary_fits, primary_spare, primary_where = None, 0, ""
@@ -386,7 +398,8 @@ def _predict(found, plan) -> dict[str, Any] | None:
     return {"fits": fits, "spare_bytes": max(spare, 0), "over_bytes": max(over, 0),
             "hardest": str(get("hardest", "") or ""), "suggestions": suggestions,
             "evidence": str(get("evidence", "MODELLED") or "MODELLED"),
-            "primary_fits": primary_fits, "primary_spare_bytes": primary_spare, "primary_hardest": primary_where}
+            "primary_fits": primary_fits, "primary_spare_bytes": primary_spare, "primary_hardest": primary_where,
+            **fitting}
 
 
 def alternate_kit_shortfall(prediction: Mapping[str, Any] | None) -> bool:
@@ -478,8 +491,19 @@ def budget_line(prediction: Mapping[str, Any] | None, labels=None) -> str:
         if not ALLOW_ALTERNATE_KIT_SHORTFALL:
             line = "Will not fit with every uniform. " + line
         return line + tail
-    examples = _examples(prediction, labels)
     line = f"Will not fit: remove {kb_up(int(prediction.get('over_bytes', 0))):,} KB (hardest stadium{where})"
+    if "fitting_set" in prediction:
+        # b81 #43 (coordinator ruling 2): the model's checked set, turned off together, not single guesses
+        found = prediction.get("fitting_set")
+        if found:
+            names = [label(group[0], labels) + (" (with " + ", ".join(label(k, labels) for k in group[1:]) + ")"
+                                                if len(group) > 1 else "") for group in found]
+            joined = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+            line += f"; turning off {joined} together makes it fit (the memory model checked this set)."
+        else:
+            line += "; no set of the options left on makes it fit."
+        return line + tail
+    examples = _examples(prediction, labels)
     line += ("; for example turn off " + ", ".join(examples) + ".") if examples else "."
     if not _covered(prediction):
         line += (" No single option frees the rest: several have to go together, which Use the recommended 64 MB set "
@@ -635,7 +659,8 @@ def problems(plan: object, labels=None, *, records: int | None = None, fit: bool
 def refusal(prediction: Mapping[str, Any], labels=None) -> str:
     """The refusal of a selection the model says will not fit, naming what to turn off."""
 
-    return "The 64 MB build will not fit: " + budget_line(prediction, labels).removeprefix("Will not fit: ")
+    return ("The 64 MB build will not fit: " + budget_line(prediction, labels).removeprefix("Will not fit: ")
+            + " " + POINTER_64)
 
 
 # ------------------------------------------------------------------------------------------------ the recommended set

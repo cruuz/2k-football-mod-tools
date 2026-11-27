@@ -1785,6 +1785,8 @@ def apply_preset(plan: BuildPlan, name: str) -> BuildPlan:
         values["sim_qb_injuries"] = None
         values["qb_room"] = None  # b81 qb34: 128 MB standard only
         values["modern_numbers"] = False  # b81 modern numbers (review M1): its page is in the 128 MB scale-out pool
+        values["helmet_side_numbers"] = False  # b81 #43 ruling 2: its fixed page tops the 128 MB scale-out pool
+        values["classic_crowd"] = False        # b81 #43 ruling 2: likewise (the two cost 356 KB at 64 MB, NRG s37)
         values["cpu_trades"] = None  # b81 trades-all: 128 MB standard only
         values["k128_memory"] = False
         values["k128_early"] = False         # b81 relrev M4: both need 128 MB memory
@@ -7395,12 +7397,25 @@ def _apply_team_ratings(plan, target, receipt, progress):
     receipt["steps"].append({"step": "team_ratings", **result})
 
 
+# b81 #43 (coordinator ruling 2, 11/27): two fixed pages at the top of the 128 MB scale-out pool, 128 MB only like
+# modern numbers (review M1) and the gadget plays: a 64 MB plan clears them (apply_preset), the memory model refuses
+# them (REQUIRES_128) and their steps refuse them in place.
+HELMET_SIDES_NEED_128 = ("Helmet side numbers need the 128 MB standard build: their code is on a fixed page at the top of "
+                         "the extra executable sections, which a 64 MB build has no room to map. Clear the option for a "
+                         "64 MB build.")
+CLASSIC_CROWD_NEEDS_128 = ("The classic Seamen's crowd needs the 128 MB standard build: its code is on a fixed page at the "
+                           "top of the extra executable sections, which a 64 MB build has no room to map. Clear the option "
+                           "for a 64 MB build.")
+
+
 @_core_step("helmet_side_numbers")
 def _apply_helmet_side_numbers(plan, target, receipt, progress):
     """b81 helmet-sides: after every other executable writer (its late owner is the last in LATE_OWNERS) and after
     every kit writer: the route-5 owner, then the Chargers' two kits. Needs the hair styles growth (set E)."""
     if not plan.helmet_side_numbers:
         return
+    if getattr(plan, "console_memory", None) == 64:   # b81 #43 ruling 2, as modern numbers (review M1)
+        raise ValueError(HELMET_SIDES_NEED_128)
     sides = _core_module("nfl2k5_helmet_side_numbers")
     if sides is None:
         raise ValueError("Helmet side numbers are unavailable in this Studio installation.")
@@ -10079,6 +10094,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["result"]["classic_teams"] = classic.image_status(target, retail)
         if receipt["result"]["classic_teams"] != "applied":
             raise ValueError("the classic teams failed their read-back on the copy")
+        if plan.classic_crowd and getattr(plan, "console_memory", None) == 64:   # b81 #43 ruling 2: refused, not left out
+            raise ValueError(CLASSIC_CROWD_NEEDS_128)
         if plan.classic_crowd:
             # b81-seamen (the owner 11/25: "fans also wearing dolphins gear"): the Seamen's own crowd, right after the
             # classic teams: fourteen files from the user's own Dolphins crowd files and the redirect in its fixed page
