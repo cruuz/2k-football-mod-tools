@@ -78,11 +78,12 @@ class StockAgesTests(unittest.TestCase):
 STANDARD_SOURCES = Path(os.environ.get("NFL2K5_B81_STANDARD_SOURCES", "") or "missing")
 # b81 roster-1125 (Noah: "kirk cousins not on vikings, trade deadline roster not updated?"; the 2026 deadline was 11/10):
 # the release sources load the 11/25 refresh, 128 MB and the 64 MB retail-capacity fit of it; b81 #48 (11/27): both
-# with the contracts re-fitted from OverTheCap (tools/franchise_economy/release_contracts.py, test_b81_release_contracts).
+# with the contracts re-fitted from OverTheCap (tools/franchise_economy/release_contracts.py,
+# test_b81_release_contracts); #48 review (11/27): in-season movers charged the deal's full-season 2026 figure.
 RELEASE_ROSTERS = {128: ("roster-edits-b81-refresh-20261125.json",
-                         "8f07fea535283bfad0b4936f6c65af70dfa042299c91b63bef2b029fc70b637e"),
+                         "67f456c3d16dcf553d897d347dfdffc5748c58b66c83abcf1a8df51a279df981"),
                    64: ("roster-edits-b81-refresh-20261125-retail-capacity-64mb.json",
-                        "128e660098e43c21d3702880a8b41fec0c69aea00c5fd90744029fb68e906560")}
+                        "857fd929fd82b6b0c0646a4e0df7d310ddff10548db952893cbe74f14559eeeb")}
 
 
 @unittest.skipUnless((STANDARD_SOURCES / "recipe.json").is_file(), "private release sources absent: NFL2K5_B81_STANDARD_SOURCES")
