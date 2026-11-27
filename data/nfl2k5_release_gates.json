@@ -425,10 +425,12 @@
     "screen_timing": null,
     "seven_on_seven": false,
     "sim_cb_tackles": true,
+    "sim_qb_injuries": "realistic",
     "sim_stats": true,
     "sportscenter_lineup": true,
     "star_career": true,
     "star_retention": true,
+    "team_building": true,
     "team_names_2026": true,
     "team_number_scale": {
      "13A0": 1.1,
