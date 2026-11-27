@@ -226,6 +226,27 @@ class Cover(unittest.TestCase):
         got = self.cover(m, team)
         self.assertEqual((len(got["kickers"]), len(got["healthy_k"]), got["released"], got["signed"]), (2, 1, [], []))
 
+    def test_a_preseason_camp_above_53_signs_into_its_camp_room(self):
+        """Stage 7 (Panel B: 76005 2034 CLE opened week 1 with no punter): the preseason upkeep covers too; a camp roster
+        above 53 signs without a cut (the gate allows a K or P up to 64)."""
+        m, team = self.league(size=61, stage=7, room=40000)
+        self.assertEqual(self.count(m, team), 60)
+        got = self.cover(m, team)
+        self.assertEqual((len(got["healthy_k"]), got["count"], got["released"]), (1, 61, []))
+
+    def test_after_the_gate_cut_a_club_of_53_opens_with_a_kicker(self):
+        m, team = self.league(size=54, stage=7, room=40000)
+        got = self.cover(m, team)
+        self.assertEqual((len(got["healthy_k"]), got["count"], len(got["released"])), (1, 53, 1))
+
+    def test_the_preseason_upkeep_runs_the_cover(self):
+        """economy_week in stage 7 (the preseason's weekly pass; the same upkeep runs after the stage's gate cut), fills
+        off: the club with no kicker has one after it."""
+        m, team = self.league(size=54, stage=7, room=40000)
+        zero = struct.unpack("<I", struct.pack("<f", 0.0))[0]
+        m.call(economy.SYMBOLS["economy_week"], ecx=m.ARENA + 0x1A0000, edx=0, args=(zero, zero), budget=2_000_000_000)
+        self.assertEqual(len([p for p in self.at(m, team, K) if not self.hurt(m, p)]), 1)
+
     def test_stage_nine_runs_the_cover_for_every_computer_club_then_the_playoff_path(self):
         m, team = self.league(stage=9, room=40000)
         menu = m.ARENA + 0x1A0000
@@ -244,12 +265,15 @@ class Cover(unittest.TestCase):
                 self.assertEqual(len([p for p in self.at(m, t, pos) if not self.hurt(m, p)]), 1, (c, pos))
 
 
-IMAGES = {   # the combined panel's kept failure images (validator I5), candidate 8f4bd09c (economy sources = 6e37263e1's)
-    "buf": ("76002/validator/FAIL-2029-st8-w14.b81mem.gz", 3),
-    "atl": ("76002/validator/FAIL-2028-st8-w14.b81mem.gz", 14),
-    "jax": ("76001/validator/FAIL-2031-st9-w20.b81mem.gz", 16),
+IMAGES = {   # the combined panels' kept failure images (validator I5); economy sources = 6e37263e1's in both executables
+    "buf": ("A", "76002/validator/FAIL-2029-st8-w14.b81mem.gz", 3),   # Panel A candidate 8f4bd09c
+    "atl": ("A", "76002/validator/FAIL-2028-st8-w14.b81mem.gz", 14),
+    "jax": ("A", "76001/validator/FAIL-2031-st9-w20.b81mem.gz", 16),
+    "cle": ("B", "76005/validator/FAIL-2034-opening.b81mem.gz", 5),   # Panel B fullBtb 89c80a77: no punter at the opening
 }
-IMAGE_XBE_SHA256 = "8f4bd09cf852d2b50f6305328d93566261d57a75a16239063971094daabe251b"
+IMAGE_XBE_SHA256 = {"A": "8f4bd09cf852d2b50f6305328d93566261d57a75a16239063971094daabe251b",
+                    "B": "89c80a77026b9c7332afc0c18052645a07631c60b675c643ec651c23ca1ad252"}
+ENV = {"A": ("NFL2K5_B81_KP_IMAGES", "NFL2K5_B81_KP_IMAGE_XBE"), "B": ("NFL2K5_B81_KP_IMAGES_B", "NFL2K5_B81_KP_IMAGE_XBE_B")}
 
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
@@ -258,24 +282,29 @@ class KeptImages(unittest.TestCase):
     executable (8f4bd09c). The images' economy is the integration head's; this build's economy windows and stage-9 entry
     are written over it (economy.sites(), the windows and the entry only) and the cover runs once for every computer club,
     as the upkeep calls it (stage 9's entry into it is Sites and Cover's test). On 6e37263e1 BUF and ATL get no kicker
-    (room) and JAX keeps its second punter."""
+    (room), JAX keeps its second punter, and CLE (Panel B, at the 2034 opening, stage 8 week 0) has no punter: there the
+    pass shows the cover signs one on that roster; that it runs before week 1 is the stage-7 tests' and the panel's."""
 
     @classmethod
     def setUpClass(cls):
-        root, xbe = os.environ.get("NFL2K5_B81_KP_IMAGES"), os.environ.get("NFL2K5_B81_KP_IMAGE_XBE")
-        if not root or not xbe or not Path(xbe).is_file():
-            raise unittest.SkipTest("NFL2K5_B81_KP_IMAGES / NFL2K5_B81_KP_IMAGE_XBE are not set (kp-cover lane env)")
-        cls.xbe = Path(xbe).read_bytes()
-        if hashlib.sha256(cls.xbe).hexdigest() != IMAGE_XBE_SHA256:
-            raise unittest.SkipTest("the kept images' executable differs")
-        cls.paths = {k: Path(root) / rel for k, (rel, _c) in IMAGES.items()}
+        cls.xbe, cls.paths = {}, {}
+        for panel, (root_var, xbe_var) in ENV.items():
+            root, xbe = os.environ.get(root_var), os.environ.get(xbe_var)
+            if not root or not xbe or not Path(xbe).is_file():
+                raise unittest.SkipTest(f"{root_var} / {xbe_var} are not set (kp-cover lane env)")
+            cls.xbe[panel] = Path(xbe).read_bytes()
+            if hashlib.sha256(cls.xbe[panel]).hexdigest() != IMAGE_XBE_SHA256[panel]:
+                raise unittest.SkipTest(f"the kept images' executable differs ({xbe_var})")
+            for k, (p, rel, _c) in IMAGES.items():
+                if p == panel:
+                    cls.paths[k] = Path(root) / rel
         if not all(p.is_file() for p in cls.paths.values()):
             raise unittest.SkipTest("a kept image is absent")
 
     def machine(self, key, *, new):
         from tests.nfl2k5_supersim_draft_fixture import Machine
         from tools import franchise_invariants as fi
-        m = Machine(self.xbe, trace_writes=False)
+        m = Machine(self.xbe[IMAGES[key][0]], trace_writes=False)
         for lo, data in fi.load_memory(self.paths[key]).regions:
             if lo < 0x3000000:
                 m.uc.mem_write(lo, data)
@@ -300,10 +329,10 @@ class KeptImages(unittest.TestCase):
         return out[K], out[P], m.get(0xE3C278) - m.get(team + 0x124)
 
     def test_one_pass_gives_every_club_one_kicker_and_one_punter(self):
-        for key, (_rel, club) in IMAGES.items():
+        for key, (_panel, _rel, club) in IMAGES.items():
             with self.subTest(image=key):
                 old = self.machine(key, new=False)
-                self.assertEqual(self.specialists(old, club)[0], 0)          # as the validator found it (I5: no K)
+                self.assertEqual(min(self.specialists(old, club)[:2]), 0)    # as the validator found it (I5: no K or P)
                 m = self.machine(key, new=True)
                 teams = m.get(m.get(0xB72918) + 0x1C)
                 for c in range(32):                     # the upkeep's call, once for every computer club

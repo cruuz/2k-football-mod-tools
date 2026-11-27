@@ -402,7 +402,7 @@ SECTION(".roster_a") static void fill(u8 *team, void *menu, float chance, unsign
  * club still short without room for a minimum salary restructures, else releases
  * one well-paid player, then refills with minimum salaries. */
 SECTION(".roster_a") static void upkeep(u8 *team, void *menu) {
-    if (*(u32 *)0xe576a4 >= 8) economy_cover(team, menu);   /* b780 hunt1: in season a hurt K or P is covered */
+    if (*(u32 *)0xe576a4 >= 7) economy_cover(team, menu);   /* b780 hunt1: in season a hurt K or P is covered; b81 #46: from the preseason (stage 7) on */
     economy_clear_cap(team);    /* b81 r10: over the cap, restructure once, then release by value lost */
     economy_camp(team, menu);   /* b81 r10: kickers and punters compete in camp */
     for (unsigned attempt = 0; attempt < 12; ++attempt) {
@@ -1600,12 +1600,15 @@ SECTION(".r10_prove") u8 *economy_prove_club(u8 *p, unsigned ask) {
  *   0x248015, so economy_week, the upkeep and the cover never ran in stage 9 (76001 2031 JAX: no kicker in a conference
  *   final with 5,005 of room);
  * - hoarding: the cover never released the man it signed once the starter was healthy again (557 of 1,240 club-seasons
- *   at week 18 carried two or three kickers; control 43).
- * Now, for K then P, each in-season upkeep (stages 8 and 9):
+ *   at week 18 carried two or three kickers; control 43);
+ * - before week 1 (Panel B): the cover ran from stage 8 only, so a club that lost its punter in the preseason opened the
+ *   season without one (76005 2034 CLE at the opening check).
+ * Now, for K then P, each upkeep from the preseason on (stage 7: its weekly passes and the action after its gate cut, so a
+ * club opens week 1 with both; stage 8) and each playoff advance (stage 9):
  * - a club with a healthy man keeps its best-rated healthy one and releases every other healthy one (a hurt one stays
  *   until he is healthy, then the better of the two stays);
- * - a club with none, when the pool holds a healthy one: at 53 the smart cut to 52 (as before), the gated signing (as
- *   before); refused, it makes room the way the economy clears the cap (economy_clear_cap's order): one restructure
+ * - a club with none, when the pool holds a healthy one: at exactly 53 the smart cut to 52 (a preseason camp above 53
+ *   signs into its camp room, the gate allows a K or P up to 64), the gated signing (as before); refused, it makes room the way the economy clears the cap (economy_clear_cap's order): one restructure
  *   (economy_restructure_best, at most three a club), else one release by value lost (economy_vet_pick: the least price
  *   lost among men whose charge clears the club's shortfall to two minimum salaries, depth-chart starters last, never a
  *   club's last healthy K or P), then the gated signing again; nothing when the club already has room for two minimum
@@ -1625,7 +1628,7 @@ SECTION(".kp_spare") KP void FAST kp_spare(u8 *team, u8 *mine) {
  * signing again (at most six releases). */
 SECTION(".kp_sign") KP void FAST kp_sign(u8 *team, unsigned pos, void *menu) {
     u8 *q;
-    if (team[0x11c] >= 53) n_cut_to(team, 52);
+    if (team[0x11c] == 53) n_cut_to(team, 52);       /* a preseason camp above 53 signs into its camp room */
     for (unsigned k = 0; k < 6 && !n_cpu_sign(team, pos, 0xFFFF, menu) && (q = economy_vet_pick(team, team)); ++k)
         economy_release(team, q);
 }
