@@ -110,20 +110,22 @@ class Layout(unittest.TestCase):
         self.assertEqual(space._post_span_pages_at("other", PAGE_VA - space.POOL_VA, 16, 16),
                          PAGE_VA + 0x1000 - space.POOL_VA)
 
-    def test_day_frame_fits_the_harness_stack(self):
+    def test_day_frame_is_probed_and_fits_the_harness_stack(self):
         import capstone
         from mod_editor.core import nfl2k5_team_building_code as code
         entry = code.SYMBOLS["pace_day_entry"]
         md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
-        frame = None
-        for ins in md.disasm(code.PAGE[entry - PAGE_VA:entry - PAGE_VA + 24], entry):
-            if ins.mnemonic == "sub" and ins.op_str.startswith("esp, "):
-                frame = int(ins.op_str.split(", ")[1], 0)
-                break
-        self.assertIsNotNone(frame)
-        # 4 + 2*15 + 2*2112 + 4*128 + 4*4096 = 21,154 bytes (+ alignment); the deepest measured rollover stage used
-        # 2,672 bytes of the harness's 32 KB (0x3000000..0x3008000) and the team-building scoring under it ~2 KB
-        self.assertLess(frame, 21_400)
+        ins = [(i.mnemonic, i.op_str) for i in md.disasm(code.PAGE[entry - PAGE_VA:entry - PAGE_VA + 48], entry)][:12]
+        # gcc -fstack-clash-protection: the frame is taken a page at a time, each page touched (as the game's own large
+        # frames are, through its _chkstk 0x373630), then the rest
+        probed = next(int(o.split("- ")[1].rstrip("]"), 0) for m, o in ins if m == "lea" and o.startswith("eax, [esp - "))
+        self.assertIn(("sub", "esp, 0x1000"), ins)
+        self.assertIn(("or", "dword ptr [esp], 0"), ins)
+        rest = next(int(o.split(", ")[1], 0) for m, o in ins if m == "sub" and o.startswith("esp, ") and o != "esp, 0x1000")
+        frame = probed + rest
+        # 4 + 2*15 + 2*2112 + 4*128 + 4*4096 = 21,154 bytes (+ alignment and locals); the deepest measured rollover stage
+        # used 2,672 bytes of the harness's 32 KB (0x3000000..0x3008000) and the team-building scoring under it ~2 KB
+        self.assertTrue(21_154 <= frame < 21_400, frame)
         self.assertLess(frame + 2_672 + 4_096, 0x8000)
 
 

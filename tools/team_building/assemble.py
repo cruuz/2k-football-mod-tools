@@ -88,7 +88,10 @@ def build(source: str | None = None) -> tuple[dict, dict, dict, dict]:
                         f"-DTB_VALUE={{{','.join(map(str, info['value']))}}}", "-c",
                         str(src), "-o", str(obj)], check=True)
         # b81 #45: the pace page, its own translation unit (only .pace_head and .pace sections)
-        subprocess.run(["gcc", *CFLAGS, "-c", str(ROOT / "tools/team_building/pace.c"), "-o", str(pace)], check=True)
+        # its day entry's frame is ~21 KB: probed a page at a time, top down, as the game's own large frames are (its
+        # MSVC code calls _chkstk 0x373630), so a stack with a guard page is grown in order
+        subprocess.run(["gcc", *CFLAGS, "-fstack-clash-protection", "-c", str(ROOT / "tools/team_building/pace.c"), "-o",
+                        str(pace)], check=True)
         for line in subprocess.check_output(["objdump", "-h", str(pace)], text=True).splitlines():
             parts = line.split()
             if len(parts) > 2 and parts[0].isdigit() and int(parts[2], 16) and parts[1] not in (".pace_head", ".pace") \
