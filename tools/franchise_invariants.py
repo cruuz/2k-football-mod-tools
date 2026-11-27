@@ -77,8 +77,8 @@ T2  (b81 CPU trades, nfl2k5_cpu_trades) on every trade group of exactly one play
     pick (the native CPU trades are player swaps): T2.human and T2.position (no K or P) always; the rest only when the
     two views are one weekly advance apart (else the harness judges the trade at the call): T2.deadline (stage 8 at or past
     the deadline byte, whatever the option), T2.window (only stages 7 and 8), T2.counts (seller 50..65, buyer at most 53
-    in season, 65 in the preseason), T2.player (no rookie, no years left, in the preseason from year index 1 no first
-    contract year, not star-tagged; health is the observer's TT.player at the call), T2.cap (the buyer within the cap after it, M1), T2.round (no
+    in season, 65 in the preseason), T2.player (no rookie, no years left, in the preseason from year index 1 not in the first
+    year of a 2+ year contract (b81 #46b), not star-tagged; health is the observer's TT.player at the call), T2.cap (the buyer within the cap after it, M1), T2.round (no
     1st, N3), T2.picks_paid (fewer than three own picks of the coming draft already paid, S3),
     T2.seller_depth (the seller keeps its seats present and its cut minimum at the pool: nfl2k5_team_need), T2.load (neither club in
     three trade groups of the ledger rows the call surely saw: ledger_seen_at_call), T2.repeat (the man was not signed
@@ -967,8 +967,9 @@ def _check_player_for_pick(q, view, previous, clubs, human, one_advance, changes
             reasons.append("rookie")
         if not before[0x24] & 15:
             reasons.append("no contract years left")
-        if previous.stage == 7 and previous.year_index >= 1 and before[0x24] & 15 == before[0x27] & 15:
-            reasons.append("first contract year (preseason, from the second franchise season)")
+        if previous.stage == 7 and previous.year_index >= 1 and before[0x24] & 15 == before[0x27] & 15 > 1:
+            # b81 #46b: the first year of a deal of 2+ years (a one-year deal is not "just signed" for its whole term)
+            reasons.append("first year of a multi-year contract (preseason, from the second franchise season)")
         if before[0x53] & 1:
             reasons.append("star-tagged")
         # Health is not judged here: one advance holds the healing before the trade call and the games after it, so

@@ -297,7 +297,9 @@ def without_cover(payload: bytes, roster_a: bytes) -> bytes:
     from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
     image, out = XbeImage(payload), bytearray(payload)
     head = economy.WINDOWS[economy.ROSTER_H_WINDOW]
-    cover = economy.SYMBOLS["economy_cover"] - economy.ROSTER_H_WINDOW
+    # b81 #46: economy_cover moved to its own window; roster_h's tail (the same bytes the cover had) now starts with
+    # economy_cover_all, so the class top-up alone is still everything before it.
+    cover = economy.SYMBOLS.get("economy_cover_all", economy.SYMBOLS["economy_cover"]) - economy.ROSTER_H_WINDOW
     for va, code in ((economy.ROSTER_A_WINDOW, roster_a), (economy.ROSTER_H_WINDOW, head[:cover] + b"\xcc" * (len(head) - cover))):
         at = image.offset(va, len(code))
         out[at:at + len(code)] = code
@@ -409,10 +411,11 @@ class InSeasonCoverTests(unittest.TestCase):
         got = self.season(self.after, hurt=False, direct=True)
         self.assertEqual((got["count"], got["released"], got["signed"]), (53, [], []))
 
-    def test_camp_is_left_to_the_fill_gate(self):
-        # stage 7: the upkeep does not run the cover (camp limits differ; revision 6's gate rule covers a club with no K)
+    def test_the_preseason_is_covered_too(self):
+        # b81 #46 (Panel B: 76005 2034 CLE opened week 1 with no punter): from stage 7 the upkeep runs the cover as well;
+        # before #46 the stage-7 upkeep did not, and a club that lost its specialist in the preseason opened without one
         got = self.season(self.after, stage=7)
-        self.assertEqual((got["healthy"], got["signed"].count(K)), (0, 0))
+        self.assertEqual((got["count"], got["healthy"], got["signed"].count(K)), (53, 1, 1))
 
     def test_before_the_cover_the_club_kept_only_its_hurt_kicker(self):
         got = self.season(self.before)

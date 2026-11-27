@@ -917,8 +917,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_preseason.py": "5e18c2bba83005798237cc3c85b0e10ee9f7dd8f4e179f52a430f46ed02c951b",
         "mod_editor/core/nfl2k5_probowl_order.py": "6e61b983f57f7e01695c7626b51854aea2242e1c7879049f8bb3a85a44b3cf9f",
         "mod_editor/core/nfl2k5_roster_fill_composition.py": "96547bdc1c66889f68f44deb147bd5f6095ee169d343d53aaa4f532d12ee53e8",
-        "mod_editor/core/nfl2k5_franchise_economy.py": "90e1197db6cc62d4501076fb1891cc0b372a0368c54ea2556e7d920c2c0a3936",
-        "mod_editor/core/nfl2k5_franchise_economy_code.py": "f8f62b716f4f19a589693dcd09b4054972fe560a9977dfe3d5e241e5061a5363",
+        "mod_editor/core/nfl2k5_franchise_economy.py": "a574d0796a5c5e6fd0ee397e881866eea2ddc32f3dd351700cec5adc9ac968f2",
+        "mod_editor/core/nfl2k5_franchise_economy_code.py": "84da8b160b04b474cb301f7dfecae55b3670e6296bee9049a6334b48f6ad130e",
         "mod_editor/core/nfl2k5_progression.py": "8b0bac30d498c7ecd3f34615c07f3046342fd5ca1bd354100224b090d46ffdef",
         "mod_editor/core/nfl2k5_prospect_names.py": "6f48b67a3b00b72b8bc51ca35527037ceca27c4137b9bb0e1d4542f27c39e7ac",
         "mod_editor/core/nfl2k5_qb_spy_runtime.py": "094e1ed86847a0b78e9ead41b44aea476f6f2f313ff6c986b1db722940553a2c",
@@ -1017,7 +1017,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_qb_trades_code.py": "6060bc35957410b91ec5e2242e87836b15591e1430996cd2dcb598ea18b5996a",  # b81 qb34 4b: its generated page template
         "mod_editor/core/nfl2k5_qb_trades_code_b81_383.py": "36d9ac7d5e7e7368f3d9b650f0bde1065960cb0f61e21aa2c94d57c68ac2b492",  # b81 4b revision (M1/N6): frozen 383 trades template ("previous")
         "mod_editor/core/nfl2k5_cpu_trades.py": "3a7e29d2c495ad3d9bcbdd863afe6b9bcc3cedbe73e72029bd35773e6f0dd5a2",  # b81 trades-all (R6): mod_build loads it by name, right after the room
-        "mod_editor/core/nfl2k5_cpu_trades_code.py": "6a8bc8afe16a0ccad96782338f38ad290bb650f5c744949f03a7b601b9f81a85",  # b81 trades-all: its generated page template
+        "mod_editor/core/nfl2k5_cpu_trades_code.py": "c4e1fc41244e493d437fe0556f0447f259997981f89225d6d41efda2f1835525",  # b81 trades-all: its generated page template
         "mod_editor/core/nfl2k5_helmet_side_numbers.py": "c10876d8ef2c26740f3559706d8678de673730a7e260285ddc35eaafec9e6069",  # b81 helmet-sides: mod_build loads it by name (route 5 = set E)
         "mod_editor/core/nfl2k5_sportscenter_news.py": "4255429d47b2dadae1cdd56b7254d988d7837ae9a8476fedaf8fb4bba28197eb",  # b81 sportscenter: mod_build loads it by name (MyCareer's guard reads it)
         "mod_editor/core/nfl2k5_sportscenter_lines.py": "008059901a2e3e4153882678fe073da80731bd5c7dab07aefd7d0cb443a1a9df",  # b81 sportscenter: mod_build loads it by name (director lines)

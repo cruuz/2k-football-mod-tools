@@ -2,7 +2,8 @@
 revision 9's one window (economy_room_for_signing, team building 3647cabab) as revision 9 installed it.
 
 Generated from the revision-8 code template (job/b81-economy-r10 6dd73d743) and from 3647cabab's template; the sha256
-of each entry equals nfl2k5_franchise_economy.PREVIOUS_REVISION_9. as_revision() builds a revision-8 or revision-9
+of each entry equals nfl2k5_franchise_economy.PREVIOUS_REVISION_9. b81 #46 added roster_h (0x3A5F20) from 6e37263e1's
+template (its bytes are the same in revisions 6 to 10 before #46), roster_k (0x3E9740, revisions 4-10 before #46c) and roster_s (0x3E9A90, revisions 8-10 before #46's club count). as_revision() builds a revision-8 or revision-9
 image from a revision-10 one (older-revision tests start from it)."""
 
 
@@ -98,6 +99,23 @@ SITES = {
         "6a00d9e850d91c24ff750c53e8c3feffff6a016a01d9e850d91c24ff750c53e8b0feffff83c43080bb1c0100003177416a00"
         "e8a965f2ffba0100000089d989c631c089042401f683c609e80c66f2ff2b832401000039c67c1853e8a82f02005985c0750a"
         "6a0153e8078bf2ff585a4f75858d65f45b5e5f5dc3cccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    ),
+    0x3a5f20: bytes.fromhex(   # roster_h (revisions 6-9: the class top-up and the naked K/P cover; b81 #46 rewrote its tail)
+        "5589e55653a11829b7008b583c8b70386a006a00ff75085653e8d25c03006a006a00505653e8d64b01008a158f5f3a0083c4"
+        "2884d274206a016a00505653e8bd4b010068c20000006ad8505653e89e5c030083c428eb0f6a006ad8505653e88d5c030083"
+        "c4148d65f85b5e5dc208000253565589ce89d531db430fb68e1c0100004978108b048e38583575f5f640238075efeb2080be"
+        "1c01000035720a6a345a89f1e8d999f1ff5568ffff00005356e8dccbf7ff4383fb0372c05d5e5bc30f0b"
+    ),
+    0x3e9a90: bytes.fromhex(   # roster_s (revisions 8-9: squad expiry; b81 #46 points its club walk at the economy's n_teams)
+        "5589e5575631f65353e842b1cdff39c6736e89f1e8a7b1cdff89c189c3e8fe85f3ff85c074578a83f201000084c0744d0fb6"
+        "931c0100004831c98883f20100000fb6c001d08d3c838b17890fa11829b7008955f08d4838e8748ae5ff8b55f085c0750a89"
+        "17fe83f2010000eb10806224f0806227f066c7420a0000eba946eb89585b5e5f5de976d4e5ffcccccccc"
+    ),
+    0x3e9740: bytes.fromhex(   # roster_k (revisions 4-9: the smart cut's pick by 0x246D80(p, 1); b81 #46c rewrote it)
+        "5589e5575631f65331db83ec0c8b4508c745f0000000000fb6801c0100008945ec8b45ec39c6735c8b45088b3cb00fb65735"
+        "83fa10772789c18955e8e82fa5cdff837d1000b901000000750a8b4d0c8b55e80fb60c1139c1720beb02ddd8d945f089dfeb"
+        "17ba0100000089f9e8cfd5e5ffd945f0dff1770485db75e046d95df089fbeb9d83c40c89d85b5e5f5dc3cccccccccccccccc"
+        "cccccccccccccccccccc"
     ),
     0x3b9f60: bytes.fromhex(
         "5589e557565389cb83ec208a41248955dc89c183e00f8945f08a432783e10f884de389c7668b430a83e70f837df001668945"

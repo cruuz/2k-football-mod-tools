@@ -95,7 +95,8 @@ class CpuTradeValidatorTests(unittest.TestCase):
     def test_the_first_contract_year_counts_only_in_the_preseason_from_the_second_season(self):
         """The starting roster carries length = years left for every man (this image: all of them), so in year index 0
         the rule would forbid every trade; from year index 1 it applies in the preseason only (N2: in season the
-        ledger's signing rows say "just signed", and one-year veterans are the deadline's rentals)."""
+        ledger's signing rows say "just signed", and one-year veterans are the deadline's rentals), and only to the first
+        year of a deal of 2+ years (b81 #46b)."""
         p = Ram(self.image).player(self.man)
         self.assertEqual(Ram(self.image).get(p + 0x24, 1) & 15, Ram(self.image).get(p + 0x27, 1) & 15)
         self.assertEqual(Ram(self.image).view().year_index, 0)
@@ -103,11 +104,20 @@ class CpuTradeValidatorTests(unittest.TestCase):
         report, _v, _a = self.run_trade(before_edit=year1, after_edit=year1)
         self.assertEqual(t2(report), set())                                  # in season: allowed (N2)
 
-        def preseason(ram):
-            ram.put(fi.YEAR, 1)
-            ram.put(fi.STAGE, 7)
-        report, _v, _a = self.run_trade(before_edit=preseason, after_edit=preseason)
+        def preseason(length):
+            def edit(ram):
+                ram.put(fi.YEAR, 1)
+                ram.put(fi.STAGE, 7)
+                at = ram.player(self.man)
+                for off in (0x24, 0x27):
+                    ram.put(at + off, (ram.get(at + off, 1) & 0xF0) | length, 1)
+            return edit
+        # b81 #46b: in the preseason only the first year of a deal of 2+ years is "just signed"; a one-year deal reads
+        # "first contract year" for its whole term and is not.
+        report, _v, _a = self.run_trade(before_edit=preseason(2), after_edit=preseason(2))
         self.assertIn("T2.player", t2(report))
+        report, _v, _a = self.run_trade(before_edit=preseason(1), after_edit=preseason(1))
+        self.assertNotIn("T2.player", t2(report))
 
     def test_a_buyer_over_the_cap_after_the_trade_fails_T2_cap(self):
         report, view, _a = self.run_trade(after_edit=lambda ram: ram.put(ram.team(self.BUYER) + 0x124,

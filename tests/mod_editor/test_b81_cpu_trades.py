@@ -318,7 +318,7 @@ def offer_of(x, s, stage, pool, floor, above, room, q, club, rebuild_ok, board_p
         pro, left, length = rec[0x25] & 31, rec[0x24] & 15, rec[0x27] & 15
         if not tn.healthy(rec) or pro < 2 or not left:
             continue
-        if stage == 7 and x.m.get(YEAR) and left == length:
+        if stage == 7 and x.m.get(YEAR) and left == length > 1:     # b81 #46b: the first year of a 2+ year deal
             continue
         r = x.rating(p)
         if rec[0x53] & 1 or r >= club["best"] or (tn.PREMIUM[pool] and r >= top) or r >= q[3] \
@@ -685,6 +685,42 @@ class CpuTradesImage(unittest.TestCase):
         packages, _q = model(twin, 7, first)
         self.assertEqual([(r["buyer"], r["seller"], r["player"]) for r in first],
                          [(b, s, (p - y.table) // 0x54) for b, s, p, _pool, _h in packages])
+
+    def test_a_one_year_veteran_sells_in_the_preseason_and_a_new_multi_year_deal_does_not(self):
+        """b81 #46b (the combined judge's RR5: preseason trades 9.11 an offseason against 14-28). Economy revision 10 signs
+        61% of veterans to one-year deals, and a one-year deal reads "first contract year" for its whole term, so the old
+        test froze most of the preseason supply. Now only the first year of a deal of 2+ years is "just signed". Every
+        veteran of the image on a one-year deal (1 of 1): preseason packages post, as the design's model finds them; every
+        veteran in the first year of a two-year deal (2 of 2): nothing posts and the contract test refuses them. On
+        6e37263e1 the one-year league posts nothing either."""
+        def league(length):
+            y = self.fresh()
+            y.m.put(STAGE, 7)
+            for i in range(32):
+                for p in y.roster(i):
+                    raw = bytearray(y.rec(p))
+                    if raw[0x25] & 31 >= 2:
+                        raw[0x24] = (raw[0x24] & 0xF0) | length
+                        raw[0x27] = (raw[0x27] & 0xF0) | length
+                        y.m.uc.mem_write(p, bytes(raw))
+            return y
+        one, twin = league(1), league(1)
+        one.install(2)
+        one.run()
+        rows = [r for r in _code().events(one.page()) if not r["flags"] & 0x40]
+        first = [r for r in rows if not r["flags"] & 8]
+        self.assertTrue(first)
+        packages, _q = model(twin, 7, first)
+        self.assertEqual([(r["buyer"], r["seller"], r["player"]) for r in first],
+                         [(b, s, (p - one.table) // 0x54) for b, s, p, _pool, _h in packages])
+        self.assertTrue(all(one.b(one.table + 0x54 * r["player"] + 0x27) & 15 == 1 for r in first))
+        self.assertGreater(self.counters(one.page())["posted"], 0)
+        two = league(2)
+        two.install(2)
+        two.run()
+        counted = self.counters(two.page())
+        self.assertEqual(counted["posted"], 0)
+        self.assertGreater(counted["rej_contract"], 0)
 
     def test_a_sale_from_a_full_chart_fills_row_6_from_the_overflow(self):
         """S9 with men sharing the overflow row 7 (a deep pool, or a camp roster): closing the seller's gap empties row
