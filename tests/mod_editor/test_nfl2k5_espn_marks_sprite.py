@@ -438,8 +438,10 @@ class BuildWiringTests(unittest.TestCase):
                 receipt = mod_build.build(mod_build.BuildPlan(str(source), str(root / "out.iso"), espn_marks_2026=True,
                                                               scorebug_runtime=True, scorebug=True,
                                                               scorebug_folder=layout))
-            # preflight, the sprite, the composed-disc inspection (it reads with the shipped layout), the marks
-            self.assertEqual(calls, [("status", layout), ("sprite", layout), ("status", None), ("marks", layout)])
+            # preflight, the sprite, the composed-disc inspection (it reads with the shipped layout), the marks, and
+            # (b81 #43 ruling 3) the finished build's readback after the last step
+            self.assertEqual(calls, [("status", layout), ("sprite", layout), ("status", None), ("marks", layout),
+                                     ("status", None)])
             steps = [s["step"] for s in receipt["steps"]]
             self.assertLess(steps.index("scorebug_runtime"), steps.index("espn_marks_2026"))
             self.assertEqual(receipt["result"]["espn_marks_2026"], "applied")

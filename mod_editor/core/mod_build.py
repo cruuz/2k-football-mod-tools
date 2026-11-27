@@ -14,6 +14,7 @@ studio while they land.
 
 from __future__ import annotations
 
+import copy
 import importlib
 import json
 import os
@@ -6183,6 +6184,23 @@ def _compact_build_disc(target, original, receipt, progress):
     return compacted
 
 
+def _refresh_readback(receipt, target, taken, screen_timing=None):
+    """b81 #43 (coordinator ruling 3): a full build takes its readback (inspect) at verify_composed, before the late
+    owner steps (team building, injured reserve, the quarterback room, CPU trades, SportsCenter news, ...). Those steps
+    write only their own result key, so a readback key derived from their owner kept its earlier state: the combined
+    B build's receipt read modern injured reserve "retail" on a disc that carries it. Read the finished build again
+    after the last step: every key still holding the earlier readback's value takes the fresh one, a key the fresh
+    readback adds is added, and a key a step set itself since (a level, a mode, "left_out") keeps the step's value.
+    ``taken`` is a copy of the earlier readback; None (the hires-pack path, verified by identity) leaves the result."""
+    if taken is None:
+        return
+    fresh = inspect(target, screen_timing=screen_timing)
+    result, missing = receipt["result"], object()
+    for key, value in fresh.items():
+        if key not in result or result[key] == taken.get(key, missing):
+            result[key] = value
+
+
 def _verify_finished_game_disc(target, receipt, progress):
     from .nfl2k5_disc_extents import validate_image
     receipt["disc_extents"] = validate_image(target)
@@ -9641,6 +9659,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _step("verify_composed")
     progress("Verifying the composed disc", 0, 0)
     inspection = inspect(target, screen_timing=plan.screen_timing)
+    readback_taken = None  # b81 #43 ruling 3: the readback the receipt carries, until the last step refreshes it
     if plan.hires_pack:
         _step("hires_pack")
         # Retain fixed-offset inspector results only with their pre-remap scope.
@@ -9659,6 +9678,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                              "inspection_scope": "Final archive and XBE verified by identity; earlier patch states are in pre_remap_inspection"}
     else:
         receipt["result"] = inspection
+        readback_taken = copy.deepcopy(inspection)  # b81 #43 ruling 3: refreshed after the last step
     if plan.modern_naming:
         _step("modern_naming")
         rec = tt._finish_naming_image(target, naming_digest, progress)
@@ -9722,6 +9742,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             receipt["result"]["image_sha256"] = _core_module("nfl2k5_music_archive").file_hash(target)
         else:
             receipt["result"] = inspect(target, screen_timing=plan.screen_timing)
+            readback_taken = copy.deepcopy(receipt["result"])  # b81 #43 ruling 3
     if plan.espn25_rosters:
         _step("espn25_rosters")
         # Historic resource pass plus the guarded native reload repair, on the copy after relocations.
@@ -11177,6 +11198,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 raise ValueError("the era ball did not survive the final resource passes")
         if not _ball.enabled() and _ball.image_status(target) != "retail":
             raise ValueError("the era ball is off but the ball scene is not the user's own")
+    _refresh_readback(receipt, target, readback_taken, plan.screen_timing)  # b81 #43 ruling 3: after the last step
     if is_image:
         _verify_finished_game_disc(target, receipt, progress)
     return receipt
