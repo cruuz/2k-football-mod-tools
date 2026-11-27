@@ -19,6 +19,19 @@ This owner gives the Seamen their own, in their colours (teal, black, white) wit
   are left clear; the inflatable helmet's two dolphin logos and its "Dolphins" plate word are refilled from the helmet
   around them at build time (``paint_out``, on the user's own texels); heads, digits, cement and chairs keep the
   retail bytes;
+* after them one filler (``sm1_classic_crowd_end.bin``, 2,048 zero bytes): the archive's last file must end on a
+  sector (``nfl2k5_historic_styles.rewrite_plan``), a copy is exactly as long as its retail file, and none of the
+  Dolphins' fourteen ends on one (the last copy, ``ihSM.iff``, is the 41,456 bytes of ``ih14.iff``). Without it the
+  step was left out of every build (#44, the 11/27 release build: "the last outer must end on a sector");
+* the executable is written by the Studio's descriptor writer for built executables
+  (``nfl2k5_depth_chart_storage.write_image_xbe``, the one ``mod_build._write_xbe_bytes`` uses), whatever its length
+  (#44). The helper page lies past the pool the build's executable stage sizes (a late owner no earlier step reserves;
+  in the release build that stage ends at 0x1532000, exactly where the page starts), so installing it adds pages to
+  the file, which the fixed-span writer the step first used refuses ("fixed-span writer cannot grow a resource") after
+  the archive is already rewritten. That writer also opens the copy buffered, which the build's optional-step journal
+  cannot undo: a failure after it stops the build instead of leaving the step out (#44 review F1), so it is not used
+  for an executable of the same length either. Whether the copy can take the new executable is checked before
+  anything is written;
 * the 's' stand packages (picked by venue code 48 alone, 0x62D68: ESPN Stadium, the Seamen's home) carry the classic
   field's own authored end zones (home ``endzone_south_*``, away ``endzone_north_*``, from
   ``data/nfl2k5_classic_teams/field``), because the field swap at 0x9C5DE binds the field's end zones to the first
@@ -45,6 +58,7 @@ teams, which it needs.
 from __future__ import annotations
 
 import hashlib
+import os
 import struct
 from pathlib import Path
 
@@ -68,6 +82,11 @@ STANDS = tuple(f"{side}{weather}{event}" for side in "ha" for weather in "dr" fo
 CUTAWAYS = ("cgfair{}", "cgfoul{}", "ns{}", "tg{}", "ch{}", "ih{}")   # review S1: + the cheerleaders, the tunnel helmet
 FILES = tuple([(f"{CODE}{s}.iff", f"{SOURCE_CODE}{s}.iff") for s in STANDS]
               + [(c.format(CODE) + ".iff", c.format(SOURCE_CODE) + ".iff") for c in CUTAWAYS])
+# #44 (11/27): packaging only, never loaded. The archive's last file must end on a sector and no copy of a Dolphins
+# file does, so the step always closes its fourteen files with this one (as the classic teams, the historic styles and
+# the rookie faces close theirs).
+FILLER = "sm1_classic_crowd_end.bin"
+SECTOR = 2048
 PICTURES = ("tshirt", "jersey", "sweatshirt", "varsity", "puffyjacket", "hardhat", "crowdsign", "foamfinger", "boxlogo",
             "fanplate", "head03")
 CLEAR = tuple(f"noshirtns{n:02d}" for n in range(1, 9))     # the painted chest letters
@@ -575,6 +594,14 @@ def _files(source):
         return compose_files(src.get)
 
 
+def appended(files):
+    """What the step appends to the archive: the fourteen files in ``FILES`` order, then ``FILLER`` (one sector of zero
+    bytes), so the last file always ends on a sector whatever the fourteen sizes are."""
+    files = list(files)
+    require([name for name, _data in files] == [name for name, _src in FILES], "classic crowd: not the fourteen files")
+    return files + [(FILLER, bytes(SECTOR))]
+
+
 def _present(path, files):
     """{name: True when the disc holds exactly these bytes, False when it holds other bytes}; absent names left out."""
     from . import nfl2k5_historic_styles as hs
@@ -589,29 +616,58 @@ def _present(path, files):
 
 
 def image_status(path, source):
-    """'retail' (no redirect, none of the fourteen files), 'applied' (the redirect and the fourteen files, each the compile
-    of the user's own retail Dolphins crowd files), else 'foreign'. Needs the classic teams applied first."""
+    """'retail' (no redirect, none of the fourteen files nor their filler), 'applied' (the redirect, the fourteen files,
+    each the compile of the user's own retail Dolphins crowd files, and the filler after them), else 'foreign'. Needs
+    the classic teams applied first."""
     from . import nfl2k5_classic_teams as classic
     from . import nfl2k5_espn25_rosters as e
     try:
         payload = e.read_xbe(path)
         state = xbe_status(payload)
-        present = _present(path, _files(source)[0])
+        wanted = appended(_files(source)[0])
+        present = _present(path, wanted)
     except (ValueError, OSError, KeyError, IndexError, struct.error):
         return "foreign"
     if state == "retail" and not present:
         return "retail" if classic.xbe_status(payload) == "applied" else "foreign"
-    if state == "applied" and len(present) == len(FILES) and all(present.values()):
+    if state == "applied" and len(present) == len(wanted) and all(present.values()):
         return "applied"
     return "foreign"
 
 
+def _growing_writer_takes(before, after):
+    """Refuse, before any disc write, an executable the Studio's writer (nfl2k5_depth_chart_storage.write_image_xbe)
+    would refuse afterwards: it takes a recognised grown executable, of the same length or longer, in place of a
+    retail or recognised grown one."""
+    from . import nfl2k5_depth_chart_storage as storage
+    from . import nfl2k5_xbe_space as space
+    require(storage.recognized_grown_xbe(after), "classic crowd: the executable with the redirect is not a recognised one")
+    require(len(before) in (storage.RETAIL_FILE_SIZE, storage.FILE_SIZE, *space.accepted_file_sizes())
+            and (storage.recognized_grown_xbe(before)
+                 or (len(before) == storage.RETAIL_FILE_SIZE and storage.state(before) == "retail")),
+            "classic crowd: the copy's executable cannot be replaced")
+
+
+def _write_xbe(path, before, after):
+    """The executable with the redirect onto the copy, by the Studio's writer for built executables: the same length is
+    written in place, a longer one (the helper page lies past the image's last page) is appended whole at the image end
+    and its directory node switched; either is read back, synced and rolled back on any failure. The copy is opened by
+    descriptor only, so the build's optional-step journal sees every write and can leave the step out."""
+    from . import nfl2k5_depth_chart_storage as storage
+    descriptor = os.open(path, os.O_RDWR | getattr(os, "O_BINARY", 0))
+    try:
+        written = storage.write_image_xbe(descriptor, after)
+    finally:
+        os.close(descriptor)
+    return dict(writer="write_image_xbe", grown_bytes=len(after) - len(before), **written)
+
+
 def apply_to_image(path, source):
-    """The Seamen's own crowd on a disc whose classic teams are applied: the fourteen files appended to the archive, then
-    the redirect in the executable (its fixed page, the six sites). Replay is a no-op."""
+    """The Seamen's own crowd on a disc whose classic teams are applied: the fourteen files and their filler appended to
+    the archive, then the redirect in the executable (its fixed page, the six sites), written by descriptor. Replay is
+    a no-op."""
     from . import nfl2k5_classic_teams as classic
     from . import nfl2k5_espn25_rosters as e
-    from . import nfl2k5_historic_rosters as seasons_bank
     from . import nfl2k5_historic_styles as hs
     state = image_status(path, source)
     if state == "applied":
@@ -621,9 +677,10 @@ def apply_to_image(path, source):
     require(classic.own_name_identity(classic.Data.load()) == IDENTITY,
             "classic crowd: the Seamen's identity is not the one the redirect names")
     patched, xbe_receipt = apply_xbe(payload)                   # computed before any disc write
+    _growing_writer_takes(payload, patched)                     # refused here, not after the archive is rewritten
     files, receipts = _files(source)
-    archive_receipt = hs.rewrite_archive(path, {}, files)
-    seasons_bank.write_xbe(path, patched)
+    archive_receipt = hs.rewrite_archive(path, {}, appended(files))
+    xbe_receipt["write"] = _write_xbe(path, payload, patched)
     require(image_status(path, source) == "applied", "classic crowd: the disc does not read back as applied")
     return dict(status="applied", experimental=True, runtime_witnessed=False, xbe=xbe_receipt, files=receipts,
-                **archive_receipt)
+                filler=FILLER, **archive_receipt)

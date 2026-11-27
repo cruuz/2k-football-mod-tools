@@ -12,11 +12,18 @@ sites. Unicorn runs the helpers; the files are composed from the retail disc. No
 """
 from __future__ import annotations
 
+from contextlib import ExitStack
 import importlib.util
+import inspect
+import json
+import os
 from pathlib import Path
 import struct
 import sys
+import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
@@ -29,6 +36,9 @@ from tests.nfl2k5_supersim_draft_fixture import XBE  # noqa: E402
 HAVE_UC = importlib.util.find_spec("unicorn") is not None
 HAVE_CV2 = importlib.util.find_spec("cv2") is not None
 RETAIL = XBE.parent
+# #44: the release build's own inputs (b81 env.sh): the retail image its recipe is built from, and the release sources
+RETAIL_IMAGE = Path(os.environ.get("NFL2K5_RETAIL_XISO") or "absent")
+RELEASE_RECIPE = Path(os.environ.get("NFL2K5_B81_STANDARD_SOURCES") or "absent") / "SOFTDRINK-build-recipe.json"
 
 
 def _sat(rgba):
@@ -347,6 +357,257 @@ class RetailTests(unittest.TestCase):
         self.assertTrue(np.array_equal(heads[0][:top], heads[1][:top]))           # ear, teeth and lips: retail
         self.assertGreater(int((np.abs(heads[0][top:] - heads[1][top:]).sum(axis=2) > 0).sum()), 500)   # the paint moved
         self.assertEqual(receipts["nsSM.iff"]["source"], "ns14.iff")
+
+
+class _MemoryDisc:
+    """The build's classic_crowd block on a disc held in memory (#44).
+
+    ``run`` is the block as mod_build writes it: ``with _optional(receipt, target, progress, "classic_crowd")`` around
+    ``crowd.apply_to_image(target, retail)`` and the read-back. The step's own code runs unchanged; only its disc
+    reads and writes are redirected: the executable and the appended files live in this object, and each write is
+    judged by the real writer's own rule, so what the Studio refuses is refused here with the same words:
+
+    * the archive is laid out by the real ``nfl2k5_historic_styles.rewrite_plan`` on ``archive`` (a real image's
+      archive, or a stub with one pack): the last file must end on a sector;
+    * the Studio's descriptor writer for built executables (``nfl2k5_depth_chart_storage.write_image_xbe``) takes
+      only a recognised grown executable;
+    * the fixed-span writer the step first used (``nfl2k5_historic_rosters.write_xbe``) cannot lengthen the file (the
+      real ``changed_spans``); the step no longer calls it, and ``writes`` shows which writer was used.
+
+    ``run(journal=True)`` (review F1/F2) hands ``build_steps.optional`` the copy's path, as a build does, so its write
+    journal runs: the copy is a small real file, the archive rewrite is stood in by a descriptor write to it (what
+    the real one makes), and the step's executable writer is NOT redirected. The file is no disc image, so that
+    writer refuses it after the archive is written, and the block has to undo."""
+
+    COPY = bytes(range(256)) * 32                                       # the small real file of a journaled run
+
+    def __init__(self, archive, xbe):
+        self.archive, self.xbe, self.files, self.plan, self.writes = archive, xbe, {}, None, []
+        self.stopped, self.copy_after = None, None
+
+    def _rewrite(self, path, edits, appended, *, verify=None):
+        from mod_editor.core import nfl2k5_historic_styles as hs
+        self.plan = hs.rewrite_plan(self.archive, edits, appended)
+        self.files.update(appended)
+        if Path(path).stat().st_size:                                    # a journaled run: the packs' new extents
+            from mod_editor.core import platform_compat
+            descriptor = os.open(path, os.O_RDWR | getattr(os, "O_BINARY", 0))
+            try:
+                platform_compat.pwrite(descriptor, b"\x5a" * 700, 100)                    # a directory node switched
+                platform_compat.pwrite(descriptor, b"\xa5" * 5000, len(self.COPY))        # a pack at the image end
+            finally:
+                os.close(descriptor)
+        return dict(packs={}, directory_count=[self.plan["count_before"], self.plan["count_after"]],
+                    directory_growth=self.plan["directory_growth"],
+                    appended=[dict(file=n, virtual_offset=o, size=size) for n, o, size in self.plan["placed"]],
+                    edited_outers=self.plan["edits"], image_growth=0)
+
+    def _write_fixed(self, path, payload):
+        from mod_editor.core import nfl2k5_espn25_rosters as rosters
+        rosters.changed_spans(self.xbe, payload)
+        self.writes.append(("fixed_span", len(payload) - len(self.xbe)))
+        self.xbe = payload
+
+    def _write_image(self, descriptor, payload):
+        from mod_editor.core import nfl2k5_depth_chart_storage as storage
+        os.fstat(descriptor)                                             # the step hands over an open copy
+        if not storage.recognized_grown_xbe(payload):
+            raise ValueError("expected a complete recognised grown XBE")
+        grown = len(payload) - len(self.xbe)
+        self.writes.append(("write_image_xbe", grown))
+        self.xbe = payload
+        return dict(offset=0, size=len(payload), directory_offset=0, image_growth=len(payload) if grown else 0,
+                    relocated=bool(grown))
+
+    def run(self, retail, extra=(), *, journal=False):
+        from mod_editor.core import build_steps
+        from mod_editor.core import nfl2k5_depth_chart_storage as storage
+        from mod_editor.core import nfl2k5_espn25_rosters as rosters
+        from mod_editor.core import nfl2k5_historic_rosters as seasons_bank
+        from mod_editor.core import nfl2k5_historic_styles as hs
+        receipt = {"steps": [], "result": {}}
+        with ExitStack() as stack:
+            copy = Path(stack.enter_context(tempfile.TemporaryDirectory())) / "disc.iso"
+            copy.write_bytes(self.COPY if journal else b"")              # not journaled: every read and write is redirected
+            stack.enter_context(patch.dict(os.environ, {build_steps.STRICT_ENV: "", build_steps.JOURNAL_ENV: ""}))
+            stack.enter_context(patch.object(rosters, "read_xbe", lambda path: self.xbe))
+            if not journal:
+                stack.enter_context(patch.object(seasons_bank, "write_xbe", self._write_fixed))
+                stack.enter_context(patch.object(storage, "write_image_xbe", self._write_image))
+            stack.enter_context(patch.object(hs, "rewrite_archive", self._rewrite))
+            stack.enter_context(patch.object(
+                crowd, "_present", lambda path, files: {n: self.files[n] == raw for n, raw in files if n in self.files}))
+            for item in extra:
+                stack.enter_context(item)
+            try:
+                with build_steps.optional(receipt, copy if journal else None, None, "classic_crowd"):
+                    crowd_receipt = crowd.apply_to_image(copy, retail)
+                    receipt["steps"].append({"step": "classic_crowd", **crowd_receipt})
+                    receipt["result"]["classic_crowd"] = crowd.image_status(copy, retail)
+                    if receipt["result"]["classic_crowd"] != "applied":
+                        raise ValueError("the Seamen's crowd failed its read-back on the copy")
+            except Exception as exc:  # noqa: BLE001 - a block that could not be left out: the build would stop here
+                if not journal:
+                    raise
+                self.stopped = f"{type(exc).__name__}: {exc} / {getattr(exc, '_studio_undo', None)}"
+            self.copy_after = copy.read_bytes()
+        return receipt
+
+
+class StepTests(unittest.TestCase):
+    """#44 (11/27): a full Studio build of the release sources left the step out: "the last outer must end on a sector
+    (pad it or add a filler)". No copy of a Dolphins crowd file ends on a sector and the step appended no filler, so
+    it could never be built. Behind that fault sat a second one: installing the redirect lengthens the executable
+    (its page lies past the image's last page) and the step wrote it with the fixed-span writer, which cannot
+    ("fixed-span writer cannot grow a resource"), after the archive was already rewritten. These tests build the step
+    and fail when it is left out. Review F1: that writer also opens the copy buffered, which the build's write
+    journal cannot undo, so the step writes every executable by descriptor; the journaled test fails when a refused
+    executable write stops the build instead of leaving the step out."""
+
+    def assert_built(self, receipt, disc):
+        self.assertEqual([(row["step"], row["reason"]) for row in receipt.get("left_out", ())], [])    # not left out
+        self.assertEqual(receipt["result"]["classic_crowd"], "applied")
+        (row,) = [r for r in receipt["steps"] if r["step"] == "classic_crowd"]
+        self.assertEqual(row["status"], "applied")
+        placed = disc.plan["placed"]
+        self.assertEqual([n for n, _o, _s in placed], [n for n, _src in crowd.FILES] + [crowd.FILLER])   # nothing dropped
+        name, offset, size = placed[-1]
+        self.assertEqual(((offset + size) % 2048, offset % 2048), (0, 0))        # the archive's last file ends on a sector
+        self.assertEqual(disc.files[crowd.FILLER], bytes(2048))
+        self.assertEqual(disc.plan["count_after"] - disc.plan["count_before"], len(crowd.FILES) + 1)
+        self.assertEqual(sum(disc.plan["sizes"]) % 2048, 0)
+        self.assertEqual(row["filler"], crowd.FILLER)
+
+    def test_the_build_wraps_exactly_this_block(self):
+        from mod_editor.core import mod_build
+        source = inspect.getsource(mod_build)
+        at = source.index('with _optional(receipt, target, progress, "classic_crowd"):')
+        block = source[at:source.index("if plan.classic_crowd and not (plan.classic_teams", at)]
+        for line in ("crowd_receipt = crowd.apply_to_image(target, retail)",
+                     'receipt["result"]["classic_crowd"] = crowd.image_status(target, retail)',
+                     'if receipt["result"]["classic_crowd"] != "applied":'):
+            self.assertIn(line, block)
+        mine = inspect.getsource(_MemoryDisc.run)
+        self.assertEqual(mine.count('with build_steps.optional(receipt, copy if journal else None, None, "classic_crowd"):'), 1)
+        for line in ("crowd_receipt = crowd.apply_to_image(copy, retail)",
+                     'receipt["result"]["classic_crowd"] = crowd.image_status(copy, retail)',
+                     'if receipt["result"]["classic_crowd"] != "applied":'):
+            self.assertEqual(mine.count(line), 1, line)
+
+    def test_the_step_is_built_whatever_the_fourteen_sizes_are(self):
+        # no private file: fourteen stand-in files, none ending on a sector (as the Dolphins' fourteen), on a one-pack
+        # archive; the executable half is stood in by three tokens
+        from mod_editor.core import nfl2k5_historic_styles as hs
+        sizes = (1000608, 644768, 993904, 653360, 99472, 594256, 106688, 586176, 344880, 307840, 346528, 264064, 305648, 41456)
+        files = [(name, bytes([i + 1]) * size) for i, ((name, _src), size) in enumerate(zip(crowd.FILES, sizes))]
+        self.assertTrue(all(len(data) % 2048 for _n, data in files))
+        first, pack_size = 2048 * 8, 2048 * 64
+        archive = SimpleNamespace(
+            archive_entries=[SimpleNamespace(name_id=hs.name_id("0.bin"), size=pack_size - first, virtual_offset=first)],
+            packs=[SimpleNamespace(name="0", ordinal=0, virtual_start=0, size=pack_size)])
+        from mod_editor.core import nfl2k5_depth_chart_storage as storage
+        from mod_editor.core import nfl2k5_xbe_space as space
+        size = sorted(space.accepted_file_sizes())[0]
+        # the redirect either fits the executable as it is (the page is already inside the image) or lengthens it by
+        # pages (the page lies past the image's last page, as in the release build): one writer, by descriptor
+        for grown, writer in ((0, "write_image_xbe"), (4096, "write_image_xbe"), (40960, "write_image_xbe")):
+            with self.subTest(grown=grown):
+                before, after = b"t" * size, b"c" * (size + grown)
+                disc = _MemoryDisc(archive, before)
+                stand_ins = (
+                    patch.object(crowd, "_files", lambda source: (list(files), {n: dict(source=s) for n, s in crowd.FILES})),
+                    patch.object(crowd, "xbe_status", lambda payload: "applied" if payload[:1] == b"c" else "retail"),
+                    patch.object(crowd, "apply_xbe", lambda payload: (after, dict(status="applied"))),
+                    patch.object(ct, "xbe_status", lambda payload: "applied"),
+                    patch.object(storage, "recognized_grown_xbe", lambda payload: True))
+                receipt = disc.run("retail", stand_ins)
+                self.assert_built(receipt, disc)
+                self.assertEqual(disc.xbe, after)
+                self.assertEqual(disc.writes, [(writer, grown)])
+                self.assertEqual({n: disc.files[n] for n, _d in files}, dict(files))
+                self.assertEqual(disc.plan["changed"], ["0"])
+        # an executable the growing writer would refuse is refused before the archive is touched
+        disc = _MemoryDisc(archive, b"t" * size)
+        stand_ins = stand_ins[:1] + (
+            patch.object(crowd, "xbe_status", lambda payload: "applied" if payload[:1] == b"c" else "retail"),
+            patch.object(crowd, "apply_xbe", lambda payload: (b"c" * (size + 4096), dict(status="applied"))),
+            patch.object(ct, "xbe_status", lambda payload: "applied"),
+            patch.object(storage, "recognized_grown_xbe", lambda payload: False))
+        receipt = disc.run("retail", stand_ins)
+        self.assertEqual([row["step"] for row in receipt["left_out"]], ["classic_crowd"])
+        self.assertIn("not a recognised one", receipt["left_out"][0]["reason"])
+        self.assertEqual((disc.files, disc.writes, disc.plan), ({}, [], None))
+        # the layout rule itself still refuses a last file that stops inside a sector: the filler is what satisfies it
+        with self.assertRaisesRegex(hs.HistoricStylesError, "must end on a sector"):
+            hs.rewrite_plan(archive, {}, files)
+
+    def test_a_refused_executable_write_leaves_the_step_out_and_restores_the_copy(self):
+        # review F1/F2: with the copy's path the block's write journal runs, and it can undo only what is written
+        # by descriptor. The copy is a small real file, so the step's own executable writer refuses it (no disc
+        # image) after the archive is rewritten. The step must then be left out and the copy be byte for byte what it
+        # was, for an executable of the same length as for a longer one. A writer that opens the copy buffered makes
+        # the build stop instead ("it could not be left out safely"): the fixed-span writer the same-length case used.
+        from mod_editor.core import nfl2k5_depth_chart_storage as storage
+        from mod_editor.core import nfl2k5_historic_styles as hs
+        from mod_editor.core import nfl2k5_xbe_space as space
+        files = [(name, bytes([i + 1]) * (3000 + 7 * i)) for i, (name, _src) in enumerate(crowd.FILES)]
+        first, pack_size = 2048 * 8, 2048 * 64
+        archive = SimpleNamespace(
+            archive_entries=[SimpleNamespace(name_id=hs.name_id("0.bin"), size=pack_size - first, virtual_offset=first)],
+            packs=[SimpleNamespace(name="0", ordinal=0, virtual_start=0, size=pack_size)])
+        size = sorted(space.accepted_file_sizes())[0]
+        for grown in (0, 4096):
+            with self.subTest(grown=grown):
+                before, after = b"t" * size, b"c" * (size + grown)
+                disc = _MemoryDisc(archive, before)
+                stand_ins = (
+                    patch.object(crowd, "_files", lambda source: (list(files), {n: dict(source=s) for n, s in crowd.FILES})),
+                    patch.object(crowd, "xbe_status", lambda payload: "applied" if payload[:1] == b"c" else "retail"),
+                    patch.object(crowd, "apply_xbe", lambda payload: (after, dict(status="applied"))),
+                    patch.object(ct, "xbe_status", lambda payload: "applied"),
+                    patch.object(storage, "recognized_grown_xbe", lambda payload: True))
+                receipt = disc.run("retail", stand_ins, journal=True)
+                self.assertIsNotNone(disc.plan)                                    # the archive rewrite was reached
+                self.assertIsNone(disc.stopped)                                    # the build goes on
+                self.assertEqual([row["step"] for row in receipt.get("left_out", ())], ["classic_crowd"])
+                self.assertTrue(receipt["left_out"][0]["restored"]["changed"])       # the archive write was undone
+                self.assertEqual(disc.writes, [])                                  # refused by the real writer
+                self.assertEqual(disc.copy_after, _MemoryDisc.COPY)                # restored exactly
+                self.assertEqual(disc.xbe, before)
+
+    @unittest.skipUnless(RELEASE_RECIPE.is_file(), "the release sources are absent (NFL2K5_B81_STANDARD_SOURCES)")
+    def test_the_release_recipe_asks_for_the_step(self):
+        from mod_editor.core import modpack_sources
+        recipe = json.loads(RELEASE_RECIPE.read_text(encoding="utf-8"))
+        plan = modpack_sources.build_plan(recipe, "retail.iso", "out.iso")
+        self.assertTrue(plan.classic_crowd and plan.classic_teams and plan.historic_teams_quick_game)
+
+    @unittest.skipUnless(XBE.is_file() and (RETAIL / "vc_53450030/0").is_file(), "the private retail extraction is absent")
+    @unittest.skipUnless(RETAIL_IMAGE.is_file(), "the retail image is absent (NFL2K5_RETAIL_XISO)")
+    def test_the_step_is_built_from_the_release_inputs(self):
+        # the release build's inputs: its retail image (the fourteen files are composed from it and laid out on its
+        # archive) and an executable with the classic teams installed; the redirect is the real install
+        from mod_editor.core import nfl2k5_music_archive as archive
+        from tests.nfl2k5_classic_teams_native import build
+        payload = build(RETAIL)[0].payload
+        self.assertEqual((ct.xbe_status(payload), crowd.xbe_status(payload)), ("applied", "retail"))
+        with archive.Disc(RETAIL_IMAGE, descriptors=()) as image:
+            disc = _MemoryDisc(image, payload)
+            receipt = disc.run(RETAIL_IMAGE)
+            self.assert_built(receipt, disc)
+            self.assertIn(image.packs[-1].name, disc.plan["changed"])
+        # the page lies past this executable's last page, as in the release build (whose executable stage ends at
+        # 0x1532000, the page's own address): the file grows by whole pages and takes the growing writer
+        grown = len(disc.xbe) - len(payload)
+        self.assertTrue(grown > 0 and grown % 4096 == 0, grown)
+        self.assertEqual(disc.writes, [("write_image_xbe", grown)])
+        (row,) = [r for r in receipt["steps"] if r["step"] == "classic_crowd"]
+        self.assertEqual((row["xbe"]["write"]["writer"], row["xbe"]["write"]["grown_bytes"]), ("write_image_xbe", grown))
+        self.assertEqual(crowd.xbe_status(disc.xbe), "applied")
+        self.assertEqual(ct.xbe_status(disc.xbe), "applied")
+        for name, data in disc.files.items():
+            if name != crowd.FILLER:
+                self.assertTrue(len(data) % 2048, name)           # why the filler is needed: no copy ends on a sector
 
 
 if __name__ == "__main__":
