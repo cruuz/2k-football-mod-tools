@@ -2606,7 +2606,8 @@ TEAM_BUILDING_LEFT_OUT = ("CPU team building was left out: it needs the draft AI
 
 @_core_step("team_building")
 def _apply_team_building(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
-    """b81 team building: after the draft AI and the economy (the xbe step) and the late owners; no allocation."""
+    """b81 team building: after the draft AI and the economy (the xbe step) and the late owners. b81 #45: it reserves its
+    pace page (one fixed late page, nfl2k5_team_building_pace) when the executable has none."""
     if not plan.team_building:
         return
     module = _core_module("nfl2k5_team_building")
@@ -3543,9 +3544,10 @@ def _team_building_edit_payload(original):
     if state == "foreign":
         raise ValueError("The draft AI's need call or wish routine on this disc is not one CPU team building knows.")
     payload, economy_receipt = original, None
-    if state == "retail" and economy.status(payload) == "legacy":
+    # b81 #45: a disc with the previous team-building template ("previous") upgrades in place like a retail one
+    if state in ("retail", "previous") and economy.status(payload) == "legacy":
         payload, economy_receipt = economy.apply(payload)
-    if state == "retail" and not module.needs_met(payload):
+    if state in ("retail", "previous") and not module.needs_met(payload):
         draft = _core_module("nfl2k5_draft_ai")
         if draft is not None and draft.status(module.as_draft_ai(payload)) == "legacy":
             raise ValueError("This disc's draft AI is older than CPU team building needs. Build a new disc with CPU team "
@@ -5071,7 +5073,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("crib_trophy_room", "nfl2k5_crib_trophy_room"),  # b778-xs1
                                ("inbox_standings", "nfl2k5_inbox_standings"),  # b778-pc3; no allocation
                                ("star_retention", "nfl2k5_star_retention"),  # b778-fa1
-                               ("team_building", "nfl2k5_team_building"),  # b81 team building; no allocation
+                               ("team_building", "nfl2k5_team_building"),  # b81 team building (#45: its pace pages, nfl2k5_team_building_pace)
                                ("practice_injuries", "nfl2k5_practice_injuries"),  # b778-pi1
                                ("cpu_ball_carriers", "nfl2k5_ball_carrier_ai"),  # b778-ai5
                                ("cpu_runner_vision", "nfl2k5_runner_vision"),  # b780 cv2-runner

@@ -12,6 +12,7 @@ import argparse
 import json
 from pathlib import Path
 import re
+import struct
 import subprocess
 import sys
 import tempfile
@@ -21,10 +22,20 @@ sys.path.insert(0, str(ROOT))
 from tools.team_building.dead_code import WINDOWS  # noqa: E402
 
 TARGET = ROOT / "mod_editor/core/nfl2k5_team_building_code.py"
-NATIVE = {"n_rating": 0x246D80, "n_human": 0x13EC30, "n_team": 0xC4C50, "n_teams": 0xC4BE0,
+# n_teams: 0xC6430, the club count the economy walks after #46 (32 in franchise mode, where 0xC4BE0 reads 34 in stage 9
+# with the Pro Bowl records; the two agree in modes 1 and 3 and in franchise outside stage 9, so every team-building pass
+# and free-agency day, franchise stages 3 and 5, reads 32 either way)
+NATIVE = {"n_rating": 0x246D80, "n_human": 0x13EC30, "n_team": 0xC4C50, "n_teams": 0xC6430,
           "n_at_position": 0xC3CB0, "n_minimum_at": 0x2BD410, "n_maximum_at": 0x2BD400, "n_game_rand": 0x48BC0,
-          "n_need": 0x31DEA0}
+          "n_need": 0x31DEA0, "n_fa_day": 0x324600}
 ENTRIES = ("tb_order", "tb_wish_entry")
+# b81 #45 (sim speed): the pace page (tools/team_building/pace.c), a fixed page of the scale-out pool
+# (nfl2k5_xbe_space.TEAM_BUILDING_PACE_VA); its first words and jump table sit at fixed offsets that the 0x24849A site and
+# the economy's rank_any name (pace.c's header comment).
+PAGE_VA, PAGE_SIZE = 0x1535000, 0x1000
+STATE_SIZE = 0x6000                    # b81 #45 review L1: the day state, static, in the six pages after the code page
+PAGE_LAYOUT = {"pace_day": 0x00, "pace_head": 0x00}
+PAGE_JUMPS = {0x10: "pace_day_entry", 0x18: "pace_rank_twice", 0x20: "pace_rate", 0x28: "pace_lists"}
 CFLAGS = ["-m32", "-Os", "-ffreestanding", "-fno-builtin", "-fno-pic", "-fno-pie", "-fno-stack-protector",
           "-fno-asynchronous-unwind-tables", "-fno-unwind-tables", "-fno-jump-tables", "-mpreferred-stack-boundary=2",
           "-mno-sse", "-mno-mmx", "-Wall", "-Wextra", "-Werror"]
@@ -38,8 +49,13 @@ def inputs() -> dict:
     decline = data["model"]["decline_after_years_pro"]
     value = [round(draft.VALUE[p] * 100) for p in draft.POSITIONS]
     assert len(decline) == 17 and all(0 < v < 256 for v in decline + value)
-    native = dict(NATIVE, economy_value=0x2BD440, economy_room_for_signing=economy.SYMBOLS["economy_room_for_signing"])
+    native = dict(NATIVE, economy_value=0x2BD440, economy_room_for_signing=economy.SYMBOLS["economy_room_for_signing"],
+                  price_group=economy.SYMBOLS["price_group"],   # b81 #45: the pace page counts by the economy's groups
+                  rank_twice=economy.SYMBOLS["rank_twice"])     # and, outside a day, by the economy's own rank_twice
     assert native["economy_room_for_signing"] == 0x2D82F0          # the economy's pinned entry (revision 9)
+    groups = data["revision_10"]["price"]["position_group"]
+    assert len(groups) == 17 and max(groups) < 15 == len(data["revision_10"]["price"]["groups"]), \
+        "pace.c lists 15 price groups (4 bits each)"
     return {"decline": decline, "value": value, "native": native}
 
 
@@ -67,7 +83,7 @@ def build(source: str | None = None) -> tuple[dict, dict, dict, dict]:
     info = inputs()
     with tempfile.TemporaryDirectory(prefix="tb-assemble-") as tmp:
         d = Path(tmp)
-        obj, elf = d / "runtime.o", d / "runtime.elf"
+        obj, elf, pace = d / "runtime.o", d / "runtime.elf", d / "pace.o"
         src = ROOT / "tools/team_building/runtime.c"
         if source is not None:
             src = d / "runtime.c"
@@ -76,6 +92,16 @@ def build(source: str | None = None) -> tuple[dict, dict, dict, dict]:
                         f"-DTB_DECLINE_AFTER={{{','.join(map(str, info['decline']))}}}",
                         f"-DTB_VALUE={{{','.join(map(str, info['value']))}}}", "-c",
                         str(src), "-o", str(obj)], check=True)
+        # b81 #45: the pace page, its own translation unit (only .pace_head and .pace sections)
+        # (large frames would be probed a page at a time, as the game's own are through its _chkstk 0x373630; the day
+        # state is static since the review, so no pace.c frame is large)
+        subprocess.run(["gcc", *CFLAGS, "-fstack-clash-protection", "-c", str(ROOT / "tools/team_building/pace.c"), "-o",
+                        str(pace)], check=True)
+        for line in subprocess.check_output(["objdump", "-h", str(pace)], text=True).splitlines():
+            parts = line.split()
+            if len(parts) > 2 and parts[0].isdigit() and int(parts[2], 16) and parts[1] not in (".pace_head", ".pace") \
+                    and parts[1] != ".comment" and not parts[1].startswith(".note"):
+                raise ValueError(f"pace.c: unexpected section {parts[1]}")
         headers = subprocess.check_output(["objdump", "-h", str(obj)], text=True)
         sizes, aligns = {}, {}
         for m in re.finditer(r"^\s*\d+\s+(\S+)\s+([0-9a-f]+)\s+[0-9a-f]+\s+[0-9a-f]+\s+[0-9a-f]+\s+2\*\*(\d+)", headers,
@@ -88,16 +114,32 @@ def build(source: str | None = None) -> tuple[dict, dict, dict, dict]:
         place = pack(sizes, aligns)
         script = "SECTIONS {\n" + "".join(
             f".w{va:x} {va:#x} : {{ {' '.join('*(' + n + ')' for n in place[va])} }}\n" for va in sorted(place))
+        script += f".pace {PAGE_VA:#x} : {{ *pace.o(.pace_head) *pace.o(.pace) }}\n"
         script += "/DISCARD/ : { *(.comment) *(.note*) *(.eh_frame*) } }\n"
         script += "".join(f"{name} = {address:#x};\n" for name, address in info["native"].items())
         (d / "link.ld").write_text(script)
-        subprocess.run(["ld", "-m", "elf_i386", "-T", str(d / "link.ld"), "-o", str(elf), str(obj)], check=True)
-        symbols = {line.split()[2]: int(line.split()[0], 16)
-                   for line in subprocess.check_output(["nm", "-n", str(elf)], text=True).splitlines()
-                   if len(line.split()) == 3 and line.split()[2].startswith("tb_")}
+        subprocess.run(["ld", "-m", "elf_i386", "-T", str(d / "link.ld"), "-o", str(elf), str(obj), str(pace)],
+                       check=True)
+        names = {}
+        for line in subprocess.check_output(["nm", "-n", str(elf)], text=True).splitlines():
+            if len(line.split()) == 3:
+                names[line.split()[2].split("@")[1] if line.split()[2].startswith("@") else line.split()[2]] = \
+                    int(line.split()[0], 16)
+        symbols = {k: v for k, v in names.items() if k.startswith("tb_") or k.startswith("pace_")}
         for name in ENTRIES:
             if name not in symbols:
                 raise ValueError(f"{name} is missing")
+        for name, offset in PAGE_LAYOUT.items():
+            if symbols.get(name) != PAGE_VA + offset:
+                raise ValueError(f"{name} must sit at {PAGE_VA + offset:#x}")
+        out = d / "pace.bin"
+        subprocess.run(["objcopy", "-O", "binary", "--only-section=.pace", str(elf), str(out)], check=True)
+        page = out.read_bytes()
+        if len(page) > PAGE_SIZE:
+            raise ValueError(f"pace page: {len(page)} bytes, capacity {PAGE_SIZE}")
+        for offset, name in PAGE_JUMPS.items():
+            if page[offset] != 0xE9 or PAGE_VA + offset + 5 + struct.unpack_from("<i", page, offset + 1)[0] != symbols[name]:
+                raise ValueError(f"the page's jump at +{offset:#x} does not reach {name}")
         blobs = {}
         for va in sorted(WINDOWS):
             if va not in place:
@@ -109,6 +151,7 @@ def build(source: str | None = None) -> tuple[dict, dict, dict, dict]:
             if len(code) > WINDOWS[va][0]:
                 raise ValueError(f"window {va:#x}: {len(code)} bytes, capacity {WINDOWS[va][0]}")
             blobs[va] = code
+    blobs[PAGE_VA] = page
     return blobs, place, symbols, info
 
 
@@ -116,6 +159,7 @@ def generate() -> str:
     blobs, place, symbols, info = build()
     lines = ['"""DESIGN: generated original code; reproduce with tools/team_building/assemble.py."""', "",
              "WINDOWS = {"]
+    page = blobs.pop(PAGE_VA)
     for va, code in blobs.items():
         size = WINDOWS[va][0]
         names = " ".join(place.get(va, [])) or "unused"
@@ -124,6 +168,9 @@ def generate() -> str:
         lines += [f'        ).ljust({size}, b"\\xcc")', "    ),"]
     lines += ["}", "RETAIL_SHA256 = {" + ", ".join(f"{va:#x}: {WINDOWS[va][1]!r}" for va in sorted(WINDOWS)) + "}",
               "SYMBOLS = " + repr(dict(sorted(symbols.items()))),
+              f"PAGE_VA = {PAGE_VA:#x}", f"STATE_SIZE = {STATE_SIZE:#x}", "PAGE = bytes.fromhex("]
+    lines += ['    "' + page[i:i + 40].hex() + '"' for i in range(0, len(page), 40)]
+    lines += [f').ljust({PAGE_SIZE:#x}, b"\\xcc")',
               "INPUTS = " + repr({"decline_after": info["decline"], "value_x100": info["value"]}), ""]
     return "\n".join(lines)
 
