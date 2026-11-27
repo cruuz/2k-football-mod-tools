@@ -2070,6 +2070,7 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_ball_carrier_ai", "CPU ball carriers", lambda p: p.cpu_ball_carriers),  # b778-ai5
     ("nfl2k5_star_retention", "CPU clubs keep their stars", lambda p: p.star_retention),  # b778-fa1
     ("nfl2k5_team_building", "CPU team building", lambda p: p.team_building),  # b81 team building
+    ("nfl2k5_team_building_pace", "CPU team building", lambda p: p.team_building),  # b81 #45: its pace page
     ("nfl2k5_star_career", "Rookie and career stars", lambda p: p.star_career),  # b778-st2
     ("nfl2k5_draft_clock", "Franchise draft clock", lambda p: p.franchise_draft_clock),  # b778-dr1
     ("nfl2k5_weekly_progression", "Weekly player progression", lambda p: p.weekly_progression),  # b778-pg1
@@ -2606,7 +2607,8 @@ TEAM_BUILDING_LEFT_OUT = ("CPU team building was left out: it needs the draft AI
 
 @_core_step("team_building")
 def _apply_team_building(plan: "BuildPlan", target: Path, receipt: dict, progress) -> None:
-    """b81 team building: after the draft AI and the economy (the xbe step) and the late owners; no allocation."""
+    """b81 team building: after the draft AI and the economy (the xbe step) and the late owners. b81 #45: it reserves its
+    pace page (one fixed late page, nfl2k5_team_building_pace) when the executable has none."""
     if not plan.team_building:
         return
     module = _core_module("nfl2k5_team_building")

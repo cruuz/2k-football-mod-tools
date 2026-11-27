@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "4870c5541453fb9c4eb8c3ecd5cc4db9b06e3c01d26129d9e8f5e2ee67fc801a",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "49e91abce0355d19004b675c02b031beb87c6010f376ec42c45ef8109238e905",
+        "mod_editor/core/mod_build.py": "c57e245337bb6f61faee66c8c3805fc9c12124820abc1cfb1abbd23a4bd31e19",
         "mod_editor/core/nfl2k5_console_memory.py": "6dcc5ccd961937f22f8e41e8950fb9f57801f0921e042e66307dbac27e066ec0",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -727,8 +727,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_disc_identity.py": "ccfbd9a2209f4d2ce3f28ea85ac3e21577ac0816364a09c858648dc45772ef83",
         "mod_editor/core/nfl2k5_display_list_stability.py": "34649b364e65566cc798df8e0ad60410609f7178973358e95ee3691b2f6e6031",
         "mod_editor/core/nfl2k5_draft_ai.py": "1877897b5c5493845fbbe982d3a04f669eee7985d6bf8d6ac29e7f6f5ae32fbe",
-        "mod_editor/core/nfl2k5_team_building.py": "2cf24764e81ecef91b6263cf2c91c03471adf8529288d47f9a02550796348fec",  # b81 team building: the draft AI loads it
-        "mod_editor/core/nfl2k5_team_building_code.py": "b44b91de4d67d232542ff6b45e720282159ef069be5ec57851889a8611829af6",  # b81 team building: its generated template
+        "mod_editor/core/nfl2k5_team_building.py": "517f96587e9a716c23116f04800817cc9dd52a14bf8871ec17ece50c920f293e",  # b81 team building: the draft AI loads it
+        "mod_editor/core/nfl2k5_team_building_code.py": "14f94a35c2dd765a21e6ee712deafa39d73d4748209cd87710ecb616f3c12508",  # b81 team building: its generated template
         "mod_editor/core/nfl2k5_team_need.py": "76377be937b0c09991f15452dbc5c3fbee6774663fb9578494a0ab67f8d5f21b",  # b81: the shared team-need rule (Python mirror)
         "mod_editor/core/nfl2k5_draft_class.py": "9961548abfb4946225b724b6b4ec18b477d9f4db9a5049909c1a3ec7015a9671",  # b780 b1-draft: imported by throw_tuning (the draft fixes)
         "mod_editor/core/nfl2k5_dynamic_kickoff.py": "5ed5a2914bd857d734f285f68af3b2b4b41712939e9d8aa42cf88103b11f6b16",
@@ -917,8 +917,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_preseason.py": "5e18c2bba83005798237cc3c85b0e10ee9f7dd8f4e179f52a430f46ed02c951b",
         "mod_editor/core/nfl2k5_probowl_order.py": "6e61b983f57f7e01695c7626b51854aea2242e1c7879049f8bb3a85a44b3cf9f",
         "mod_editor/core/nfl2k5_roster_fill_composition.py": "96547bdc1c66889f68f44deb147bd5f6095ee169d343d53aaa4f532d12ee53e8",
-        "mod_editor/core/nfl2k5_franchise_economy.py": "83b14c1f29604091fd69c25af9b7921a514901c2c45e722ab8b175a602d43c39",
-        "mod_editor/core/nfl2k5_franchise_economy_code.py": "41df9f0d3d6c626957441632dad2c42870f7171c4457ddab9d64128415bbbf15",
+        "mod_editor/core/nfl2k5_franchise_economy.py": "b2038da913615a463e9baafc7b2733e7b486a4c735596f256babc86172e23260",
+        "mod_editor/core/nfl2k5_franchise_economy_code.py": "dd0880f70c16524780f92e70114d3ff37e055f60921dce3b58df75f32923a976",
         "mod_editor/core/nfl2k5_progression.py": "27c28380c79df69c82031376b7ee6c990e4bda2781c90053ac29b2b18c14e99a",
         "mod_editor/core/nfl2k5_prospect_names.py": "6f48b67a3b00b72b8bc51ca35527037ceca27c4137b9bb0e1d4542f27c39e7ac",
         "mod_editor/core/nfl2k5_qb_spy_runtime.py": "094e1ed86847a0b78e9ead41b44aea476f6f2f313ff6c986b1db722940553a2c",
@@ -1119,13 +1119,13 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_uniform_choice.py": "d618e2d8ebeae1443b0e9846e4f26d53cbc8d74314253798b860ddf8e9c312d9",
         "mod_editor/core/nfl2k5_uniform_equipment_writer.py": "0a81203ec407acd35c9685d158d75ba2fb56872f4f52cc58dd7d841b5d6dfb11",
         "mod_editor/core/nfl2k5_universal_asset_index.py": "9df3c0a754abcb60fa4db3afd0f9b8af364f60551014d259e2713f5387491421",
-        "mod_editor/core/nfl2k5_weekly_prep.py": "892d03e9a1e8e6380680f42923f4565ca91d7ed3d8af0404f28080bb4b202560",
+        "mod_editor/core/nfl2k5_weekly_prep.py": "a799ce691b9f87e653b4a769eedc46f203c6c37931b9f9d8f085a84e4b72c0aa",
         "mod_editor/core/nfl2k5_weekly_prep_code.py": "b44155d9f5ceb529d6e9534e9d23f211c569cd4e602e28683479ad187bfb40cd",
         "mod_editor/core/nfl2k5_weekly_prep_code_b779.py": "aa5ca8cc6a4427c8c5a487d03a9b5cbdf858a8d44b178c0ca1c31eb21813aba4",  # b780 modes2: frozen beta-63 .. v0.9 RC revision
         "mod_editor/core/nfl2k5_weekly_prep_save.py": "aedb0576c3a19a3a6574362729f83d3dfac5bc4aae7eb203388403c721a83720",
         "mod_editor/core/nfl2k5_widescreen.py": "98e3fd35f5c45a35143e678055872fe405447a735b211cd2897119d3ed801b4c",
         "mod_editor/core/nfl2k5_widescreen_menus.py": "a72a4d2387e023c0552c9bfb6c5b3330a689bbe00ed5619853260a7c13012701",
-        "mod_editor/core/nfl2k5_xbe_space.py": "0427acf9fd36d5fc6a7753e2e41109711f2134fe6b5846c722127f323d0c5587",
+        "mod_editor/core/nfl2k5_xbe_space.py": "58c9f9bf07bf83de30c2989d62703092a1b0a23dfc98bf2df36b56832a6bc77d",
         "mod_editor/core/nfl2k5_zone_drop.py": "96b915ac40cfbcb61b9bfa88a584a18841635e061947a7e1644ea193f83a94f0",
         "mod_editor/core/nfl_audio.py": "31193529647bd5fc35a2c25d38bccb83d20b16d46358169c26ced120c6c8e05c",
         "mod_editor/core/platform_compat.py": "b63521c9b17119b87558aff36a5a914d0c3fdd42e96240cf7de20065ead644d7",

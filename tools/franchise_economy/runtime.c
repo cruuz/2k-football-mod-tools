@@ -1126,6 +1126,21 @@ SECTION(".r10_rank") unsigned rank_twice(u8 *p) {
     return n2;
 }
 
+/* b81 #45 (sim speed): economy_rank_any is rank_twice, or the same count on the team-building owner's pace page when
+ * that owner has put its free-agency day on the stage action (the day call at 0x24849A reads `call 0x1535010`, the page's
+ * day entry; only that owner writes it, after reserving the page). The page counts by rank_club's rule, from a memo of
+ * each rating for the day and, inside a club's scoring, from lists of the rosters (tools/team_building/pace.c). */
+#define PACE_SITE 0x24849Au
+#define PACE_DAY 0x1535010u                    /* the page's day entry (the call's target) */
+#define PACE_RANK 0x1535018u                   /* the page's rank entry: unsigned (u8 *p), as rank_twice */
+#define PACE_CALL ((u32)(PACE_DAY - PACE_SITE - 5))
+SECTION(".r10_rank_any") unsigned economy_rank_any(u8 *p) {
+    unsigned (*count)(u8 *) = rank_twice;
+    if (*(u32 *)PACE_SITE == (0xE8u | PACE_CALL << 8) && *(u8 *)(PACE_SITE + 4) == (u8)(PACE_CALL >> 24))
+        count = (unsigned (*)(u8 *))PACE_RANK;
+    return count(p);
+}
+
 /* Age in the season being played, as past_age reads it. */
 SECTION(".r10_age") int age_of(u8 *p) {
     unsigned season = *(unsigned *)0x247AC7 + SEASON + 1;
@@ -1152,7 +1167,7 @@ SECTION(".r10_value") unsigned share_e4(unsigned g, unsigned rank2) {
 /* His price in game $1000 before the minimum: the curve x the cap, then 8% a year past his position's decline age
  * (never below a quarter) when `aging`. */
 SECTION(".r10_value") unsigned price_of(u8 *p, unsigned aging) {
-    unsigned pos = p[0x35], v = share_e4(price_group[pos], rank_twice(p)) * (CAP / 100) / 100 * PRICE_SCALE_PCT / 100;
+    unsigned pos = p[0x35], v = share_e4(price_group[pos], economy_rank_any(p)) * (CAP / 100) / 100 * PRICE_SCALE_PCT / 100;
     int over = age_of(p) - decline_age[pos];
     if (aging && over > 0) v = v * (over >= 10 ? 64u : 256u - 20u * (unsigned)over) >> 8;
     return v;

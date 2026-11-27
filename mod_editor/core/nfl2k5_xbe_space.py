@@ -882,6 +882,20 @@ LATE_OWNERS += (SIM_OUTCOMES_OWNER,)
 FIXED_PAGE_OWNERS += (SIM_OUTCOMES_OWNER,)
 
 
+# b81 #45 (sim speed): one fixed page at 0x1535000 for the team-building owner's pace page (tools/team_building/pace.c:
+# the free-agency day's rating memo and rank lists; its code and one writable word, the day pointer: the pool is RWX; the
+# day itself lives on the stack). Placed like the pages above: at its absolute address, never advancing the pool cursor,
+# so every other pool owner steps over 0x1535000..0x1535FFF whether or not it is requested, and the owner can be added in
+# place after every other owner (team building's Studio step runs after the late owners). 0x152E000..0x1534FFF are other
+# beta 81 lanes' pages (coord/PAGES_AND_SEEDS.md). The economy's rank_any and the day call at 0x24849A name this address.
+TEAM_BUILDING_PACE_OWNER = "nfl2k5_team_building_pace"
+TEAM_BUILDING_PACE_VA = 0x1535000
+TEAM_BUILDING_PACE_SIZE = PAGE
+TEAM_BUILDING_PACE_REQUEST = (TEAM_BUILDING_PACE_OWNER, "code", TEAM_BUILDING_PACE_SIZE, PAGE)
+LATE_OWNERS += (TEAM_BUILDING_PACE_OWNER,)
+FIXED_PAGE_OWNERS += (TEAM_BUILDING_PACE_OWNER,)
+
+
 def _sim_outcomes_at(owner, at, size, align):
     """b81 game outcomes: the fixed page's pool offset for its owner; any other owner overlapping it steps past it."""
     page = SIM_OUTCOMES_VA - POOL_VA
@@ -1010,7 +1024,9 @@ POST_SPAN_PAGES = tuple(sorted(((MODERN_NUMBERS_OWNER, MODERN_NUMBERS_VA, MODERN
                                 (AWARDS_OWNER, AWARDS_VA, AWARDS_SIZE),
                                 (CLASSIC_CROWD_OWNER, CLASSIC_CROWD_VA, CLASSIC_CROWD_SIZE),
                                 (SPORTSCENTER_NEWS_OWNER, SPORTSCENTER_NEWS_VA, SPORTSCENTER_NEWS_SIZE),
-                                (SIM_OUTCOMES_OWNER, SIM_OUTCOMES_VA, SIM_OUTCOMES_SIZE)), key=lambda page: page[1]))
+                                (SIM_OUTCOMES_OWNER, SIM_OUTCOMES_VA, SIM_OUTCOMES_SIZE),
+                                (TEAM_BUILDING_PACE_OWNER, TEAM_BUILDING_PACE_VA, TEAM_BUILDING_PACE_SIZE)),  # b81 #45
+                               key=lambda page: page[1]))
 _require(all(a[1] + a[2] <= b[1] for a, b in zip(POST_SPAN_PAGES, POST_SPAN_PAGES[1:]))
          and POST_SPAN_PAGES[0][1] >= FIXED_SPAN_END
          and all(page[0] in FIXED_PAGE_OWNERS for page in POST_SPAN_PAGES),
@@ -1121,7 +1137,8 @@ def dormant_union():
             # union, so without them its directory named no owner for modern numbers' page 0x1530000, the simulated
             # outcomes' page 0x1534000 or the franchise ownership page 0x1528000 (all three were reserved only as the
             # allocator's grown pool pages). Appended last, so no earlier directory slot moves.
-            + (MODERN_NUMBERS_REQUEST, SIM_OUTCOMES_REQUEST) + ownership.REQUESTS)
+            + (MODERN_NUMBERS_REQUEST, SIM_OUTCOMES_REQUEST) + ownership.REQUESTS
+            + (TEAM_BUILDING_PACE_REQUEST,))   # b81 #45: team building's pace page, appended last (no earlier slot moves)
 
 
 def is_scaleout(payload):
@@ -1289,6 +1306,8 @@ def _scale_allocations(requests):
              "SportsCenter news has one fixed page")
     _require(all(r == SIM_OUTCOMES_REQUEST for r in requests if r[0] == SIM_OUTCOMES_OWNER),
              "the simulated game outcomes have one fixed page")  # b81 game outcomes
+    _require(all(r == TEAM_BUILDING_PACE_REQUEST for r in requests if r[0] == TEAM_BUILDING_PACE_OWNER),
+             "team building's pace page is one fixed page")  # b81 #45
     gadget = tuple(r for r in requests if r[0] == GADGET_OWNER)
     if gadget:
         _require(gadget == GADGET_REQUESTS, "incomplete or foreign gadget allocation")

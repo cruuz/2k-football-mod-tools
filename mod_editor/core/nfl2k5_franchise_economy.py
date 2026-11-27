@@ -427,7 +427,16 @@ PREVIOUS_REVISION_9 = {             # the sites revision 10 rewrites, as revisio
     ROOM_FOR_SIGNING_WINDOW: "64db62a40e3106e8cff3ce66159dd8a3dfdb039c4dacfd0ea272378a63da34aa",   # roster_v (revision 9)
     0x3DBC10: "fc3a5ea47bb4cc2fef2fa431b9085d0ae71d3b7e1970b3e9998a1c9b6f6947c7",   # roster_m (the veteran cut's release stub now prunes the trade board)
 }
-REVISION = 10
+REVISION = 11
+# b81 #45 (sim speed), revision 11: the price's rank (price_of, value window) is counted through economy_rank_any (in window
+# r10_15e9d0's spare bytes), which is rank_twice unless the team-building owner's pace page runs the free-agency day (the
+# day call at 0x24849A reads `call 0x1535010`); then the page counts the same rank from its memo of the day's ratings
+# (tools/team_building/pace.c). Only those two windows change. An image with them as revision 10 wrote them reads as the
+# same image with the current windows, but "legacy" where that reads "applied", so apply() rewrites them in place.
+PREVIOUS_REVISION_10 = {
+    0x2BD440: "b430e4776aa9076929d3d150cb284c550b63138a810d61850e8b41a838d7d6bd",   # value (price_of called rank_twice)
+    0x15E9D0: "9af603bf4b0e2ac2d45742bdac997cb97c3d0589ca37e8525dbd44ce612c15be",   # r10_15e9d0 (no economy_rank_any yet)
+}
 # b81 economy revision 10, part 1 (coordinator ruling 6, 11/25): the draft class position mix (window roster_f's
 # class_counts) moves from K 9 / P 9 to K 4 / P 4 per 450, the ten slots two each to WR, CB, T, DT and DE (runtime.c).
 # Every image built since b779 ag1 (beta 79 / v0.8, beta 80 / v0.9, every beta 81 disc so far) carries the 9/9 window,
@@ -435,6 +444,26 @@ REVISION = 10
 # image with the new window, but "legacy" where that reads "applied" or "legacy", so apply() rewrites the window in
 # place. sha256 of the whole 192-byte window as revisions 4 to 9 installed it:
 PREVIOUS_CLASS_WINDOW = "9f5f9e856f8e57d304273a4ecdc8211bf41df14715d3d65cde8a8b49198e65cb"
+
+
+def with_current_rank_windows(payload: bytes) -> bytes | None:
+    """b81 #45: the image with its two revision-10 rank windows replaced by revision 11's, or None when it does not carry
+    both of them as revision 10 wrote them."""
+    image = XbeImage(payload)
+    out = bytearray(payload)
+    touched = []
+    for va, digest in PREVIOUS_REVISION_10.items():
+        window = WINDOWS[va]
+        at = image.offset(va, len(window))
+        if hashlib.sha256(payload[at:at + len(window)]).hexdigest() != digest:
+            return None
+        out[at:at + len(window)] = window
+        touched.append(at)
+    sections = _sections(payload)
+    for index in {_section_for_offset(sections, at).index for at in touched}:
+        section = next(x for x in sections if x.index == index)
+        out[section.header_offset + 36:section.header_offset + 56] = section_digest(bytes(out), section)
+    return bytes(out)
 
 
 def with_current_class_window(payload: bytes) -> bytes | None:
@@ -463,7 +492,7 @@ class Site:
 
 
 def sites(revision: int = REVISION) -> tuple[Site, ...]:
-    if revision not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+    if revision not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11):
         raise EconomyError("unknown economy revision")
     windows = {va: code for va, code in WINDOWS.items()
                if (revision >= 3 or va not in REVISION_3_SITES) and (revision >= 4 or va not in REVISION_4_SITES)
@@ -533,6 +562,13 @@ def _standalone_status(payload: bytes) -> str:
     as it would with the current window, "legacy" where that reads "applied" (a draft-class-only image reads "retail")."""
     try:
         swapped = with_current_class_window(payload)
+    except (ValueError, struct.error, IndexError):
+        return "foreign"
+    if swapped is not None:
+        state = _standalone_status(swapped)
+        return "legacy" if state == "applied" else state
+    try:                                                    # b81 #45: revision 10's rank windows
+        swapped = with_current_rank_windows(payload)
     except (ValueError, struct.error, IndexError):
         return "foreign"
     if swapped is not None:

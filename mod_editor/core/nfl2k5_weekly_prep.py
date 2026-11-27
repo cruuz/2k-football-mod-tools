@@ -103,7 +103,11 @@ def sites(code_va=0):
 # template's .tb_e) inside the pinned preparation kernel span above. This span's digest with exactly that window written
 # is accepted only while the complete team-building owner validates as applied; every other byte stays pinned, and
 # team building's Retail puts the window back (the retail digest).
-TEAM_BUILDING_GUARDS = {0x2A82F0: "c87926c1d77d335005a9fb28d415caaaf7f0874b5b11bb28223b29c579516c43"}
+# b81 #45 (sim speed): team building's template changed (its pace page), so the window's bytes did too: the span's digest
+# with the current window is accepted while team building reads applied, and with the previous template's window while
+# it reads "previous" (an image built before #45, which team building's apply upgrades in place).
+TEAM_BUILDING_GUARDS = {0x2A82F0: {"applied": "0c791a3f704245c0b34409bae73a35c5ac66814600d1978d715db3a99ae6a6fb",
+                                   "previous": "c87926c1d77d335005a9fb28d415caaaf7f0874b5b11bb28223b29c579516c43"}}
 
 
 def _recognize(payload):
@@ -134,9 +138,10 @@ def _recognize(payload):
             if va <= at and at + len(before) <= va + size:
                 raw[at-va:at-va+len(before)] = before
         actual = hashlib.sha256(raw).hexdigest()
-        if actual != digest and actual == TEAM_BUILDING_GUARDS.get(va):
+        states = {state for state, pinned in TEAM_BUILDING_GUARDS.get(va, {}).items() if pinned == actual}
+        if actual != digest and states:
             from . import nfl2k5_team_building as team_building
-            require(team_building.status(payload) == "applied", f"foreign weekly prep prerequisite at {va:#x}")
+            require(team_building.status(payload) in states, f"foreign weekly prep prerequisite at {va:#x}")
             continue
         require(actual == digest, f"foreign weekly prep prerequisite at {va:#x}")
     # the hooks are the same in both revisions; a revision-1 body reads "previous"

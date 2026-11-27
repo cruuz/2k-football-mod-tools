@@ -24,8 +24,9 @@
  *              scores first (100000 + its depth, premium 3:2), a count deficit next (50000 + 1200 a man), an upgrade
  *              last (points gained x VALUE + 0..6 points of jitter); no wish otherwise. Then the draft AI's
  *              selection, the best four above 0 through 0x324180, with one wish a position pool.
- * No writable data. Compiled by tools/team_building/assemble.py into proven-unreferenced retail functions
- * (tools/team_building/dead_code.py), one input section per window. */
+ * No writable data here. Compiled by tools/team_building/assemble.py into proven-unreferenced retail functions
+ * (tools/team_building/dead_code.py), one input section per window; b81 #45 (sim speed): with pace.c's page (its free-agency
+ * day's rating memo and rank lists), where tb_points rates and whose lists bracket a club's scoring in tb_wishes. */
 #include "../common/team_need.h"
 
 typedef unsigned char u8;
@@ -45,6 +46,10 @@ extern unsigned n_game_rand(void);                                          /* 0
 extern void FAST n_need(u8 *team, unsigned round, unsigned pick, int *need); /* 0x31DEA0 */
 extern unsigned FAST economy_value(u8 *p, unsigned floor_apy, unsigned surplus, unsigned aging, unsigned years);
 extern int FAST economy_room_for_signing(u8 *team);                         /* 0x2D82F0, economy revision 9 */
+/* b81 #45 (sim speed), this owner's pace page (pace.c): 0x246D80(p, flag) with the free-agency day's memo, and the rank
+   lists the economy's price counts on while a club's scoring runs (it changes no roster) */
+extern float FAST pace_rate(u8 *p, unsigned flag);
+extern void FAST pace_lists(unsigned on);
 
 #define FA_LIST ((u32 *)(*(u8 **)0xB72918 + 0x38))
 #define DRAFT_VALUE ((const float *)0x10AF0)   /* draft_ai VALUE[17], then DEFICIT_BONUS, JITTER/256, THRESHOLD */
@@ -68,7 +73,7 @@ extern const u8 tb_value[TN_POSITIONS];
 
 SECTION(".tb_a") u32 tb_points(u8 *p) {
     union { float f; u32 u; } v;
-    v.f = n_rating(p, 0);
+    v.f = pace_rate(p, 0);
     return tn_points(v.u);
 }
 
@@ -265,8 +270,11 @@ SECTION(".tb_x") u32 tb_fits(u8 *o, u32 pos, u32 floor, i32 room) {
 SECTION(".tb_j") u8 *tb_candidate(u32 pos, i32 room, u32 *points, u32 floor) {
     u32 *list = FA_LIST, r;
     u8 *best = 0;
-    for (u32 i = 0; i < list[0]; i++)
-        if ((r = tb_fits(((u8 **)list[1])[i], pos, floor, room)) != 0) best = ((u8 **)list[1])[i], floor = r;
+    for (u32 i = 0; i < list[0]; i++) {
+        u8 *o = ((u8 **)list[1])[i];
+        /* b81 #45: a man at another position skips the call (tb_fits refuses him first) */
+        if (o[0x35] == pos && (r = tb_fits(o, pos, floor, room)) != 0) best = o, floor = r;
+    }
     *points = best ? floor : 0;
     return best;
 }
@@ -366,8 +374,10 @@ SECTION(".tb_o") u32 FAST tb_wishes(u8 *team, u8 **best, u32 wishes) {
     u8 *target[TN_POSITIONS];
     i32 score[TN_POSITIONS];
     i32 room = economy_room_for_signing(team);
+    pace_lists(1);
     tb_view(&x, team);
     for (u32 p = 0; p < TN_POSITIONS; p++) score[p] = tb_score(&x, team, p, best[p], room, &target[p]);
+    pace_lists(0);                                             /* before any offer (0x324180 may change a roster) */
     return tb_select(team, target, score, wishes);
 }
 

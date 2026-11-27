@@ -145,6 +145,7 @@ OWNER_BYTES = {
     "franchise_ownership": (space.FRANCHISE_OWNERSHIP_SIZE, 0, 0, 0, 0),
     "injured_reserve": (6144, 0, 0, 0, 5312),  # Modern IR, franchise ownership checks and the 32-club IR store.
     "sim_outcomes": (space.SIM_OUTCOMES_SIZE, 0, 0, 0, 0),  # b81 game outcomes: one fixed page, with Simulated realism
+    "team_building_pace": (space.TEAM_BUILDING_PACE_SIZE, 0, 0, 0, 0),  # b81 #45: team building's pace page (fixed)
 }
 
 # Keep the calibrated release layout for comparisons against the actual RC executable.
@@ -167,6 +168,8 @@ def _modern(value):
 
 # b81 game outcomes: one fixed page at space.SIM_OUTCOMES_VA (after the modern jersey numbers page)
 LEGACY_REQUESTS["sim_outcomes"] = (("code", 4096, 4096),)
+# b81 #45 (sim speed): one fixed page at space.TEAM_BUILDING_PACE_VA (after the simulated-outcomes page), with team building
+LEGACY_REQUESTS["team_building_pace"] = (("code", 4096, 4096),)
 
 # owner -> the plan fields that install it (any of them); INFRASTRUCTURE rides with any space owner
 # b81 modern numbers: one fixed page at space.MODERN_NUMBERS_VA (after the CPU trades lane's two pages)
@@ -575,6 +578,9 @@ def owners(opts: dict, target_mb: int = 64) -> list:
     # whose anchors predate it: their plans carry sim_outcomes_page False)
     if on(opts, "sim_realism") and opts.get("sim_outcomes_page", True) is not False:
         out.append("sim_outcomes")
+    # b81 #45 (sim speed): team building's pace page rides with CPU team building (the v0.9 RC and v0.8 had neither)
+    if on(opts, "team_building"):
+        out.append("team_building_pace")
     return out + list(INFRASTRUCTURE) if out else out
 
 
@@ -629,6 +635,9 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     if "sim_outcomes" in found:  # b81 game outcomes: its fixed page after the modern jersey numbers page
         last = space.SIM_OUTCOMES_VA + space.SIM_OUTCOMES_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "team_building_pace" in found:  # b81 #45: team building's pace page at 0x1535000, after the outcomes page
+        last = space.TEAM_BUILDING_PACE_VA + space.TEAM_BUILDING_PACE_SIZE - space.POOL_VA
         pool = max(pool, math.ceil(last / PAGE) * PAGE)
     return RETAIL_RESIDENT + LEGACY_SPACE + SCALEOUT_V3 + pool + extra
 

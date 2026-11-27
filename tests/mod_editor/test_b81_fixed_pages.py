@@ -20,8 +20,10 @@ class FixedPageTable(unittest.TestCase):
     def test_the_table_holds_every_lane_page_in_address_order_above_the_span(self):
         self.assertEqual([owner for owner, _va, _size in PAGES],
                          [space.MODERN_NUMBERS_OWNER, space.AWARDS_OWNER, space.CLASSIC_CROWD_OWNER,
-                          space.SPORTSCENTER_NEWS_OWNER, space.SIM_OUTCOMES_OWNER])
-        self.assertEqual([va for _owner, va, _size in PAGES], [0x1530000, 0x1531000, 0x1532000, 0x1533000, 0x1534000])
+                          space.SPORTSCENTER_NEWS_OWNER, space.SIM_OUTCOMES_OWNER,
+                          space.TEAM_BUILDING_PACE_OWNER])                     # b81 #45: team building's pace page
+        self.assertEqual([va for _owner, va, _size in PAGES],
+                         [0x1530000, 0x1531000, 0x1532000, 0x1533000, 0x1534000, 0x1535000])
         self.assertGreaterEqual(FIRST, space.FIXED_SPAN_END)
         for (_a, va, size), (_b, next_va, _s) in zip(PAGES, PAGES[1:]):
             self.assertLessEqual(va + size, next_va)
@@ -36,7 +38,7 @@ class FixedPageTable(unittest.TestCase):
 
 class Straddle(unittest.TestCase):
     def test_an_owner_that_straddles_every_page_lands_after_the_last(self):
-        # from the span's end, an owner large enough to cover all five pages at once
+        # from the span's end, an owner large enough to cover every page at once (b81 #45: six pages)
         at = space._post_span_pages_at("synthetic_straddler", offset(space.FIXED_SPAN_END), LAST_END - FIRST, 16)
         self.assertEqual(at, offset(LAST_END))
 

@@ -289,7 +289,7 @@ class Owner(unittest.TestCase):
         """A revision-8 economy reads legacy and upgrades in place by its one new window; team building needs it."""
         from mod_editor.core import nfl2k5_franchise_economy as economy
         old = _fixture(STANDARD_XBE)
-        self.assertIn(economy.REVISION, (9, 10))     # b81 economy lane: revision 10 keeps economy_room_for_signing
+        self.assertIn(economy.REVISION, (9, 10, 11))   # revisions 10 and 11 (#45) keep economy_room_for_signing
         if economy.status(old) == "legacy":
             self.assertFalse(self.tb.needs_met(old))
             with self.assertRaises(self.tb.TeamBuildingError):
@@ -321,7 +321,9 @@ class Owner(unittest.TestCase):
                          self.payload[tb._offset(self.payload, tb.HEAD_CALL_VA):][:5])
         if RETAIL_XBE.is_file():
             restored, _ = tb.restore(patched, RETAIL_XBE.read_bytes())
-            self.assertEqual(restored, self.payload)
+            # b81 #45: Retail empties the pace page; its reservation stays (as every fixed page owner's)
+            self.assertEqual(restored, tb.reserved(self.payload))
+            self.assertEqual(tb.status(restored), "retail")
         self.assertLessEqual(receipt["code_bytes"], 3727)
 
     def test_the_neighbours_that_pin_its_windows_still_validate(self):
@@ -613,6 +615,7 @@ def _load_image(cls):
                 i = j
             else:
                 i += 1
+    _write_pace_page(cls)                         # b81 #45: the pace page (in the pool, above the code range)
     cls.PROBE = 0x3200000
     m.uc.mem_map(cls.PROBE, 0x1000)
     m.uc.ctl_flush_tb()
@@ -626,6 +629,14 @@ def _load_image(cls):
 CODE_START, CODE_END = 0x10000, 0x420200      # the executable's code (and the draft AI's header cave) in the image
 
 
+def _write_pace_page(cls):
+    """b81 #45: team building's pace page at its fixed address with no day running (the image predates it)."""
+    m, code = cls.m, cls.code
+    if not any(lo <= code.PAGE_VA <= hi for lo, hi, _p in m.uc.mem_regions()):
+        m.uc.mem_map(code.PAGE_VA, 0x1000)
+    m.uc.mem_write(code.PAGE_VA, code.PAGE)
+
+
 def _restore_ram(cls):
     """The image's RAM back, outside the code range (a wish pass creates bids; a signing changes a roster)."""
     for lo, data in cls.ram:
@@ -637,6 +648,7 @@ def _restore_ram(cls):
                 cls.m.uc.mem_write(lo, data[:CODE_START - lo])
             if hi > CODE_END:
                 cls.m.uc.mem_write(CODE_END, data[CODE_END - lo:])
+    _write_pace_page(cls)
 
 
 class _ImageBase(unittest.TestCase):
@@ -701,10 +713,11 @@ class _ImageBase(unittest.TestCase):
         return out
 
     def _install(self, blobs, symbols):
-        """A runtime build (blobs, symbols from assemble.build) over the installed one, both branches retargeted."""
+        """A runtime build (blobs, symbols from assemble.build) over the installed one, both branches retargeted (b81 #45:
+        and its pace page)."""
         m, tb = self.m, self.tb
         for va, blob in blobs.items():
-            m.uc.mem_write(va, blob.ljust(len(self.code.WINDOWS[va]), b"\xcc"))
+            m.uc.mem_write(va, blob.ljust(len(self.code.WINDOWS[va]) if va in self.code.WINDOWS else 0x1000, b"\xcc"))
         m.uc.mem_write(tb.HEAD_CALL_VA, tb._branch(tb.HEAD_CALL_VA, 0xE8, symbols["tb_order"]))
         m.uc.mem_write(tb.WISH_JUMP_VA, tb._branch(tb.WISH_JUMP_VA, 0xE9, symbols["tb_wish_entry"]))
         m.uc.ctl_flush_tb()

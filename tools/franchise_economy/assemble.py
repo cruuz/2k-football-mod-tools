@@ -105,7 +105,7 @@ R10_SECTIONS = {'r10_5de10': ['r10_casualty'],
                 'r10_65380': ['r10_low', 'r10_club_seats'],
                 'r10_65940': ['r10_prove'],
                 'r10_6f420': ['r10_rbest', 'r10_release'],
-                'r10_15e9d0': ['r10_rcount'],
+                'r10_15e9d0': ['r10_rcount', 'r10_rank_any'],   # b81 #45: rank_any after rcount (its spare bytes)
                 'r10_faa20': ['r10_camp_ahead'],
                 'r10_25cc20': ['r10_camp_keep'],
                 'r10_28d4a0': ['r10_camp_one'],
@@ -306,7 +306,8 @@ def generate():
         lines += [f'        ).ljust({limit}, b"\\xcc")', "    ),"]
     lines += ["}", f"ROOKIE_TABLE_VA = {ROOKIE_TABLE_VA:#x}", "ROOKIE_TABLE = bytes.fromhex("]
     lines += ['    "' + table[i:i + 40].hex() + '"' for i in range(0, len(table), 40)]
-    lines += [")", "SYMBOLS = " + repr({k: v for k, v in symbols.items() if k.startswith("economy_")}), ""]
+    # b81 #45: price_group (the position -> price group table) for the team-building owner's pace page
+    lines += [")", "SYMBOLS = " + repr({k: v for k, v in symbols.items() if k.startswith("economy_") or k == "price_group"}), ""]
     return "\n".join(lines)
 
 

@@ -20,8 +20,16 @@ unreferenced retail functions listed in tools/team_building/dead_code.py):
   deficits when short of the roster minimum, a missing K or P above the holes); every other position wishes for the
   best free agent the club can pay, weakness first, one wish a position pool.
 It needs the draft AI (current head) and the franchise economy at revision 9 or later (economy_value and
-economy_room_for_signing, the economy's one affordability routine, are called). No save field; no writable data.
-Retail puts the retail window bytes and the draft AI's own targets back.
+economy_room_for_signing, the economy's one affordability routine, are called). No save field.
+b81 #45 (sim speed): the pace page, one fixed page of the scale-out pool at 0x1535000 (owner nfl2k5_team_building_pace,
+tools/team_building/pace.c), and the free-agency day call in the stage action (0x24849A: `call 0x324600` -> the page's
+day entry 0x1535010). For each free-agency day of the offseason's stage 3 it keeps a memo of the native rating
+0x246D80(p, 0) and, while a club's scoring runs, lists of every rostered man by price group, so this owner's ratings and
+the economy's rank price (through the economy's rank_any, revision 11) stop re-rating the league for every price: stage
+3 -> 4 took 9.6 times the v0.9 control's instructions. The same ratings, ranks and prices come out (pace.c says why).
+Retail puts the retail window bytes, the draft AI's own targets and the retail day call back, and empties the page (the
+reservation stays). An image this owner's previous template (the integration head before #45, 6e37263e1) wrote reads
+"previous" and is upgraded in place.
 """
 from __future__ import annotations
 
@@ -49,6 +57,12 @@ HEAD_CALL_VA = 0x31E121          # draft_ai _prefix_bytes: e8 rel32 -> 0x31DEA0 
 WISH_JUMP_VA = 0x324414          # draft_ai body_patch: e9 rel32 -> 0x10B40 (the wish cave)
 DRAFT_NEED_VA = 0x31DEA0
 DRAFT_CAVE_VA = 0x10B40
+DAY_CALL_VA = 0x24849A          # the stage action's call of one free-agency day (0x324600), retail e8 61 c1 0d 00
+FA_DAY_VA = 0x324600
+PACE_DAY_ENTRY = 0x1535010       # the pace page's day entry (pace.c's jump table)
+# The previous template (6e37263e1, before #45): sha256 of its 29 windows in address order, and its two entries.
+PREVIOUS_TEMPLATE = {"windows_sha256": "a1611916b7997f400cd25974112c209dd47d01b7957481b5eae035c8fdbe5505",
+                     "order": 0x3E1A20, "wish": 0x256660}
 HOLE = tn.SCALE // 4
 MARGIN = 3
 PREMIUM_KEY = 171                # x/256: premium positions 3:2
@@ -115,7 +129,49 @@ def _sites(payload: bytes):
                   _branch(HEAD_CALL_VA, 0xE8, DRAFT_NEED_VA)))
     sites.append(("wish_jump", _offset(payload, WISH_JUMP_VA), body, _branch(WISH_JUMP_VA, 0xE9, e["wish"]),
                   _branch(WISH_JUMP_VA, 0xE9, DRAFT_CAVE_VA)))
+    # b81 #45: the free-agency day call (retail bytes; no draft-AI form)
+    sites.append(("day_call", _offset(payload, DAY_CALL_VA), _branch(DAY_CALL_VA, 0xE8, FA_DAY_VA),
+                  _branch(DAY_CALL_VA, 0xE8, PACE_DAY_ENTRY), None))
     return sites
+
+
+def _space():
+    from . import nfl2k5_xbe_space as space
+    return space
+
+
+def _page_state(payload: bytes) -> tuple[str, dict | None]:
+    """b81 #45: ("absent" | "empty" | "applied" | "foreign", allocation row) of the pace page."""
+    space = _space()
+    try:
+        rows = [r for r in space.layout(payload)["allocations"] if r["owner"] == space.TEAM_BUILDING_PACE_OWNER] \
+            if space.status(payload) == "applied" else []
+    except ValueError:
+        return "foreign", None
+    if not rows:
+        return "absent", None
+    row = rows[0]
+    if len(rows) != 1 or (row["kind"], row["va"], row["size"]) != ("code", space.TEAM_BUILDING_PACE_VA,
+                                                                    space.TEAM_BUILDING_PACE_SIZE):
+        return "foreign", row
+    page = payload[row["raw"]:row["raw"] + row["size"]]
+    if page == _code().PAGE:
+        return "applied", row
+    return ("empty" if page == b"\xcc" * row["size"] else "foreign"), row
+
+
+def _previous(payload: bytes) -> bool:
+    """The previous template's windows and branches (the draft-AI or retail day call, no page code)."""
+    code = _code()
+    try:
+        windows = b"".join(payload[_offset(payload, va): _offset(payload, va) + len(code.WINDOWS[va])]
+                           for va in sorted(code.WINDOWS))
+        return (hashlib.sha256(windows).hexdigest() == PREVIOUS_TEMPLATE["windows_sha256"]
+                and _rel(payload, HEAD_CALL_VA, 0xE8) == PREVIOUS_TEMPLATE["order"]
+                and _rel(payload, WISH_JUMP_VA, 0xE9) == PREVIOUS_TEMPLATE["wish"]
+                and _rel(payload, DAY_CALL_VA, 0xE8) == FA_DAY_VA and _page_state(payload)[0] in ("absent", "empty"))
+    except (TeamBuildingError, ValueError, struct.error, KeyError, IndexError):
+        return False
 
 
 def _is_retail(got: bytes, pin) -> bool:
@@ -125,7 +181,8 @@ def _is_retail(got: bytes, pin) -> bool:
 def as_draft_ai(payload: bytes) -> bytes:
     """The executable with the draft AI's two retargeted branches put back (for the draft AI's own status), when this
     owner is applied; otherwise unchanged."""
-    if status(payload) != "applied":
+    state = status(payload)
+    if state not in ("applied", "previous"):
         return payload
     buf = bytearray(payload)
     for label, off, _digest, ours, theirs in _sites(payload):
@@ -138,7 +195,9 @@ def _needs(payload: bytes) -> list[str]:
     from . import nfl2k5_draft_ai as draft
     from . import nfl2k5_franchise_economy as economy
     missing = []
-    if draft.status(payload) != "applied":
+    # the draft AI reads its own branches (this owner's put back); the economy reads the image as it is (b81 #45: an
+    # image of the previous template keeps its branches)
+    if draft.status(as_draft_ai(payload)) != "applied":
         missing.append("the draft AI")
     if economy.status(payload) != "applied":
         missing.append("the franchise economy")
@@ -146,13 +205,17 @@ def _needs(payload: bytes) -> list[str]:
 
 
 def status(payload: bytes) -> str:
-    """retail (windows retail; branches as retail or the draft AI wrote them) | applied | foreign. 'retail' says
-    nothing about the needs; needs_met() does."""
+    """retail (windows retail; branches as retail or the draft AI wrote them; the day call retail and no pace code) |
+    applied (every site and the pace page as this template writes them) | previous (the template before #45: it
+    upgrades in place) | foreign. 'retail' says nothing about the needs; needs_met() does."""
     try:
         sites = _sites(payload)
     except (TeamBuildingError, ValueError, struct.error, KeyError):
         return "foreign"
-    states = set()
+    if _previous(payload):
+        return "previous"
+    page = _page_state(payload)[0]
+    states = {"applied" if page == "applied" else "retail" if page in ("absent", "empty") else "foreign"}
     for label, off, digest, ours, theirs in sites:
         got = payload[off: off + len(ours)]
         if got == ours:
@@ -165,7 +228,7 @@ def status(payload: bytes) -> str:
 
 
 def needs_met(payload: bytes) -> bool:
-    return status(payload) == "applied" or not _needs(as_draft_ai(payload))
+    return status(payload) == "applied" or not _needs(payload)
 
 
 def _write(payload: bytes, pieces) -> bytes:
@@ -186,11 +249,13 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     state = status(payload)
     if state == "applied":
         return payload, {"status": "applied", "edits": [], "changed_bytes": 0}
-    if state != "retail":
+    if state not in ("retail", "previous"):
         raise TeamBuildingError(f"team-building sites are {state}, not retail")
     missing = _needs(payload)
     if missing:
         raise TeamBuildingError("CPU team building needs " + " and ".join(missing))
+    original = payload
+    payload = _with_page(payload)
     sites = _sites(payload)
     patched = _write(payload, [(off, ours) for _l, off, _d, ours, _t in sites])
     if status(patched) != "applied":
@@ -199,10 +264,36 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     if draft.status(patched) != "applied":
         raise TeamBuildingError("the draft AI no longer reads applied")
     used = sum(len(b.rstrip(b"\xcc")) for b in _code().WINDOWS.values())
+    space = _space()
     return patched, {"status": "applied", "edits": [{"label": l, "file_offset": f"0x{off:x}", "bytes": len(o)}
-                                                   for l, off, _d, o, _t in sites],
-                     "changed_bytes": sum(1 for a, b in zip(payload, patched) if a != b), "code_bytes": used,
-                     "windows": len(_code().WINDOWS), "hole_percentile": HOLE / tn.SCALE, "margin": MARGIN}
+                                                   for l, off, _d, o, _t in sites]
+                     + [{"label": space.TEAM_BUILDING_PACE_OWNER, "va": hex(space.TEAM_BUILDING_PACE_VA),
+                         "bytes": space.TEAM_BUILDING_PACE_SIZE}],
+                     "changed_bytes": space.count_differing_bytes(original, patched), "code_bytes": used,
+                     "pace_page_bytes": len(_code().PAGE.rstrip(b"\xcc")),
+                     "windows": len(_code().WINDOWS), "hole_percentile": HOLE / tn.SCALE, "margin": MARGIN,
+                     **({"upgraded_from": "previous"} if state == "previous" else {})}
+
+
+def reserved(payload: bytes) -> bytes:
+    """b81 #45: the executable with the pace page reserved (a fixed late page, empty; a retail-layout image gets a
+    scale-out with it); unchanged when the page is already there."""
+    space = _space()
+    page, _row = _page_state(payload)
+    if page == "foreign":
+        raise TeamBuildingError("the pace page at 0x1535000 is foreign")
+    if page == "absent":
+        if space.status(payload) == "retail":
+            payload, _ = space.apply(payload, (space.TEAM_BUILDING_PACE_REQUEST,), scaleout=True)
+        else:
+            payload, _ = space.extend_scaleout(payload, (space.TEAM_BUILDING_PACE_REQUEST,))
+    return payload
+
+
+def _with_page(payload: bytes) -> bytes:
+    """b81 #45: the pace page reserved and filled."""
+    payload, _ = _space().install_code(reserved(payload), _space().TEAM_BUILDING_PACE_OWNER, _code().PAGE)
+    return payload
 
 
 def restore(payload: bytes, retail: bytes) -> tuple[bytes, Mapping[str, object]]:
@@ -216,6 +307,8 @@ def restore(payload: bytes, retail: bytes) -> tuple[bytes, Mapping[str, object]]
     for label, off, digest, ours, theirs in _sites(payload):
         if theirs is not None:
             pieces.append((off, theirs))
+        elif label == "day_call":
+            pieces.append((off, digest))           # the retail call of the day (b81 #45)
         else:
             va = int(label.split("_")[1], 16)
             ro = _offset(retail, va)
@@ -224,6 +317,8 @@ def restore(payload: bytes, retail: bytes) -> tuple[bytes, Mapping[str, object]]
                 raise TeamBuildingError(f"retail bytes at 0x{va:x} differ from the proof's pin")
             pieces.append((off, data))
     restored = _write(payload, pieces)
+    restored, _ = _space().install_code(restored, _space().TEAM_BUILDING_PACE_OWNER,
+                                        b"\xcc" * _space().TEAM_BUILDING_PACE_SIZE, previous=_code().PAGE)
     if status(restored) != "retail":
         raise TeamBuildingError("post-restore verification failed")
     return restored, {"status": "retail", "edits": [label for label, *_ in _sites(payload)]}

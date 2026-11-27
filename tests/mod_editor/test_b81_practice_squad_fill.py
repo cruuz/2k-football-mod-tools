@@ -65,7 +65,7 @@ class SiteTests(unittest.TestCase):
     def test_revision_eight_calls_the_squad_fill_from_the_gate(self):
         from mod_editor.core.nfl2k5_franchise_economy_code import SYMBOLS
         # b81: revisions 9 (team building) and 10 (economy lane) keep every revision-8 site
-        self.assertIn(economy.REVISION, (8, 9, 10))
+        self.assertIn(economy.REVISION, (8, 9, 10, 11))   # b81 #45: revision 11 keeps every revision-8 site
         self.assertEqual((self.receipt["revision"], economy.status(self.after)), (economy.REVISION, "applied"))
         self.assertEqual(XbeImage(self.retail).read(economy.SQUAD_GATE, 5), bytes.fromhex("e8cb720700"))   # call 0x2BF8B0
         gate = next(s.patched for s in economy.sites() if s.va == economy.SQUAD_GATE)

@@ -13,7 +13,7 @@ WINDOWS = {
             "5b010fb69071e1080001d239ca730a83fb0c75e9b80c0000000fb69870e1080001db39cb72090fb6"
             "04076bc00aeb340fb69071e108000fb674070101d239d172056bc60aeb1d0fb6040789d729cf29d9"
             "0fafce0fafc701c889d131d26bc00a29d9f7f15b5e5f5dc35589e55756be64000000538b4d080fb6"
-            "793551e8e8a7dcff500fb6877ee1080050e842ffffff5a31d25989c3a178c2e3008b4d08f7f65131"
+            "793551e82714eaff500fb6877ee1080050e842ffffff5a31d25989c3a178c2e3008b4d08f7f65131"
             "d20fafc3f7f631d26bc069f7f689c389c6e8a296efff0fb6975fe108005f29d0837d0c005a741d85"
             "c07e19be4000000083f8097f096bc0ec8db0000100000faff3c1ee088d65f489f05b5e5f5dc36690"
             "669066906690669066906690669066906690669055a1b876e500b90400000039c889e50f47c1b907"
@@ -563,10 +563,11 @@ WINDOWS = {
             "0089d9e810ab340031c085db0f95c08b5dfcc9c35589e56a016a01e898e42400c9e932c52400"
         ).ljust(95, b"\xcc")
     ),
-    0x15e9d0: (  # r10_15e9d0: 47/91 bytes
+    0x15e9d0: (  # r10_15e9d0: 91/91 bytes
         bytes.fromhex(
             "5589e5538b45080fb6901c0100008d0c9031d239c874138b18807b26260f94c383c0040fb6db01da"
-            "ebe989d05b5dc3"
+            "ebe989d05b5dc355b8c07d0800813d9a842400e871cb2e89e58b5508750f803d9e84240001b91850"
+            "53010f44c18955085dffe0"
         ).ljust(91, b"\xcc")
     ),
     0xfaa20: (  # r10_faa20: 59/94 bytes
@@ -635,4 +636,4 @@ ROOKIE_TABLE = bytes.fromhex(
     "fc567100fd5671000000000000000000000000000000000000000000000000000000000000000000"
     "000000000000000000000000000000000000000000000000"
 )
-SYMBOLS = {'economy_prove_club': 416064, 'economy_restructure_best': 455712, 'economy_release': 455772, 'economy_usable_room': 805168, 'economy_reserve': 1149504, 'economy_restructured': 1436112, 'economy_hole_p': 1549440, 'economy_league_pct': 2449968, 'economy_draft_min': 2509504, 'economy_full': 2509529, 'economy_offer_both': 2509747, 'economy_camp': 2834240, 'economy_fill_budget': 2834398, 'economy_pick': 2861856, 'economy_txn_years': 2861978, 'economy_value': 2872384, 'economy_floor': 2872924, 'economy_penalty': 2872975, 'economy_cap': 2873047, 'economy_offer_room': 2873174, 'economy_reconcile': 2882528, 'economy_room_for_signing': 2982640, 'economy_hole_first': 2982645, 'economy_weakest': 3065136, 'economy_money': 3270016, 'economy_fill_gate': 3270149, 'economy_clear_cap': 3272608, 'economy_years_entry': 3286672, 'economy_years': 3286681, 'economy_contract': 3287200, 'economy_offer_gate': 3287383, 'economy_rookie': 3287424, 'economy_week': 3291248, 'economy_after': 3291679, 'economy_stage6': 3291695, 'economy_resign_stage': 3440448, 'economy_class_free': 3678720, 'economy_class_position': 3678801, 'economy_class_slot': 3678877, 'economy_renew_gate': 3765744, 'economy_expire': 3765821, 'economy_fa_retire': 3765897, 'economy_class_topup': 3825440, 'economy_floor_protected': 3825551, 'economy_cover': 3825552, 'economy_restructure': 3907424, 'economy_ask': 3907725, 'economy_fill_room': 3908784, 'economy_renew_room': 3908855, 'economy_clubs': 3908986, 'economy_rollover_reconcile': 3909108, 'economy_vet_short': 3934496, 'economy_vet_pick': 3934554, 'economy_best_room': 4008080, 'economy_need': 4008325, 'economy_camp_limit': 4045923, 'economy_vet_release': 4045943, 'economy_points': 4067376, 'economy_smart_cut': 4071888, 'economy_squad_expire': 4102800, 'economy_squad_gate': 4103376, 'economy_preseason_gate': 4317856}
+SYMBOLS = {'economy_prove_club': 416064, 'economy_restructure_best': 455712, 'economy_release': 455772, 'price_group': 582014, 'economy_usable_room': 805168, 'economy_reserve': 1149504, 'economy_restructured': 1436112, 'economy_rank_any': 1436159, 'economy_hole_p': 1549440, 'economy_league_pct': 2449968, 'economy_draft_min': 2509504, 'economy_full': 2509529, 'economy_offer_both': 2509747, 'economy_camp': 2834240, 'economy_fill_budget': 2834398, 'economy_pick': 2861856, 'economy_txn_years': 2861978, 'economy_value': 2872384, 'economy_floor': 2872924, 'economy_penalty': 2872975, 'economy_cap': 2873047, 'economy_offer_room': 2873174, 'economy_reconcile': 2882528, 'economy_room_for_signing': 2982640, 'economy_hole_first': 2982645, 'economy_weakest': 3065136, 'economy_money': 3270016, 'economy_fill_gate': 3270149, 'economy_clear_cap': 3272608, 'economy_years_entry': 3286672, 'economy_years': 3286681, 'economy_contract': 3287200, 'economy_offer_gate': 3287383, 'economy_rookie': 3287424, 'economy_week': 3291248, 'economy_after': 3291679, 'economy_stage6': 3291695, 'economy_resign_stage': 3440448, 'economy_class_free': 3678720, 'economy_class_position': 3678801, 'economy_class_slot': 3678877, 'economy_renew_gate': 3765744, 'economy_expire': 3765821, 'economy_fa_retire': 3765897, 'economy_class_topup': 3825440, 'economy_floor_protected': 3825551, 'economy_cover': 3825552, 'economy_restructure': 3907424, 'economy_ask': 3907725, 'economy_fill_room': 3908784, 'economy_renew_room': 3908855, 'economy_clubs': 3908986, 'economy_rollover_reconcile': 3909108, 'economy_vet_short': 3934496, 'economy_vet_pick': 3934554, 'economy_best_room': 4008080, 'economy_need': 4008325, 'economy_camp_limit': 4045923, 'economy_vet_release': 4045943, 'economy_points': 4067376, 'economy_smart_cut': 4071888, 'economy_squad_expire': 4102800, 'economy_squad_gate': 4103376, 'economy_preseason_gate': 4317856}

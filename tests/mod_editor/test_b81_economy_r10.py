@@ -48,7 +48,8 @@ class OwnerTests(unittest.TestCase):
         cls.current, cls.receipt = economy.apply(cls.retail)
 
     def test_revision_ten_sites_and_cap_growth(self):
-        self.assertEqual((economy.REVISION, self.receipt["revision"], economy.status(self.current)), (10, 10, "applied"))
+        # b81 #45: revision 11 keeps every revision-10 site (only its rank windows change)
+        self.assertEqual((economy.REVISION, self.receipt["revision"], economy.status(self.current)), (11, 11, "applied"))
         image = XbeImage(self.current)
         self.assertEqual(image.read(economy.OFFER_JITTER, 6), bytes.fromhex("31f690909090"))   # the offer's jitter is 0
         self.assertEqual(struct.unpack("<f", image.read(0x4FE7A0, 4))[0], struct.unpack("<f", struct.pack("<f", 1.065))[0])
