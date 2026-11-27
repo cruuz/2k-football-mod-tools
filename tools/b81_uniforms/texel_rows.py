@@ -131,6 +131,12 @@ CLASS_III = {
                                           "same start, a straight back bar, a cubic join over the shoulder; 2.8 cm "
                                           "stripes, ends at the approved posed heights), 4 coverage levels; the old set "
                                           "cleared by rule"),
+    # b81-chiefs-patch (11/26, the owner: "Did you fix the AFC or AFL looking circle patch on the Chiefs jersey to make it
+    # match?"): replaces the released patch drawing on 13H0/13A0
+    "b81cp-KC-chest-patch-afl": ("AFL chest patch drawn by work/tools/paint_patch.py and patch_design.py as shapes in the "
+                                 "patch's own plane on the posed model (red edge, cream field, red eagle, navy stars, "
+                                 "slab-serif A, red ball with LH; size and place from the 2026 photographs against the "
+                                 "collar shield), 8x supersampled, 4 coverage levels; the old patch cleared by rule"),
     **{f"b81p2-LAR-horn-{k}": ("shoulder horn drawn as one shape on the posed body by work/BC/tools/paint_lar.py (widths, "
                                "tip and curl from the 2026 photographs), 5 coverage levels; the old horn and the blue "
                                "back-yoke bars cleared by rule") for k in ("home", "road")},

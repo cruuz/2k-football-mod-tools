@@ -101,7 +101,7 @@
     "data/nfl2k5_kit_fixes_2026.json": "d33818434feb3f30e5d2515eaae1b186f97bfc6344bd477298550885bce96156",
     "data/nfl2k5_kit_fixes_2026_alts.json": "8a15681861c8abbe4c66c25e27fae776e3d37495f8e0ecf68fa4ffc6660ed7f5",
     "data/nfl2k5_kit_fixes_2026_b81.json": "d2a9e3239050947bc69a4ade58491b3578e3859d841831749dfd163ef24d2da7",
-    "data/nfl2k5_kit_fixes_2026_b81u.json": "69e94eba840180d6db585725c2eb0d1d3ff8bcc907c0cfb6d114a800c40539ac",
+    "data/nfl2k5_kit_fixes_2026_b81u.json": "f849672186a91d3aa91d4220cce802ad9015e3d08d7f3eefe7514778df2f03c8",
     "data/nfl2k5_kit_fixes_2026_ku1.json": "9227fb1ef129725bcf72cc8c208a0433eb45b69af14fe5b8a1f99d3c381f62cb",
     "data/nfl2k5_kit_fixes_2026_names.json": "cb354c62aa6b6e8de0ff01e9f25937f0a2e54169bfc37932bd689599529693fb",
     "data/nfl2k5_kit_fixes_2026_ov1.json": "506d9592290de13e4aeb17a23a0febf147e4392b985646ef9c0df5e15765c9c4",
@@ -9886,6 +9886,7 @@
         "authored on a region cleared by rule: band drawn by S/work/DAL/tools/dal_sleeve.py white / grey / white at the photographed proportions; read on the texture: its path and depth are the part 0.119..0.833 of the old band's footprint (distance fields at 4x); five-point star drawn by S/work/DAL/tools/dal_sleeve.py (pentagram, tip radius 3.98 cm, white border and navy keyline widths from the photographs) at 4x, 4 blend steps",
         "authored on a region cleared by rule: BRONCOS drawn from nothing by code (7 letters 6 x 6, 2-texel stems, one colour)",
         "authored on a region cleared by rule: Defend the Den base recolour retargeted to neutral grey by rule (ramp); only the authored art ships; base recolour by rule (ramp); only authored art ships; DETROIT drawn italic by code (Noah's decision 6)",
+        "authored on a region cleared by rule: AFL chest patch drawn by work/tools/paint_patch.py and patch_design.py as shapes in the patch's own plane on the posed model (red edge, cream field, red eagle, navy stars, slab-serif A, red ball with LH; size and place from the 2026 photographs against the collar shield), 8x supersampled, 4 coverage levels; the old patch cleared by rule; league collar shield drawn from the repo's data/nfl2k5_espn25_fields/source/nfl_2008.png (catalogued) at 12 x 16, silver border by rule",
         "authored on a region cleared by rule: swoosh recoloured by rule (ramp); Dolphins sleeve logo drawn from the repo's data/nfl2k5_scorebug_assets/logos/mia.png (the mod's own logo) at its 2026 size",
         "authored on a region cleared by rule: Dolphins sleeve logo drawn from the repo's data/nfl2k5_scorebug_assets/logos/mia.png (the mod's own logo) at its 2026 size",
         "authored on a region cleared by rule: side stripe drawn by S/work/MIN/tools/min_pants.py (paintlib pants_stripe: band edges at fixed cm round the model's leg, widths from the photographs), 4 blend steps; the old stripe cleared by rule; side stripe drawn by S/work/MIN/tools/min_pants.py (paintlib pants_stripe: band edges at fixed cm round the model's leg, widths from the photographs), 4 blend steps; the old stripe cleared by rule; pants stripe drawn by rule at its real widths",
@@ -10713,20 +10714,20 @@
         "13A0:1:tset": {
           "base_equal": 0,
           "cls": "iii",
-          "edge_overlap": 0.8193,
+          "edge_overlap": 0.9134,
           "passes": true,
-          "sha256": "16e7258dca519e588a75bb782af37c362e873d7fab5db951a5ba2ff762a61d11",
-          "texels": 156,
-          "why": 0
+          "sha256": "73a5320cdd4b05c8c5f5d988e36c7eaaa44f21a0c77a95cfb1aef86702542197",
+          "texels": 729,
+          "why": 15
         },
         "13H0:1:tset": {
           "base_equal": 0,
           "cls": "iii",
-          "edge_overlap": 0.7455,
+          "edge_overlap": 0.7291,
           "passes": true,
-          "sha256": "2440d535edde1f002d82b93c4aabca9e514b04559ad1585333557bfe48ae3131",
-          "texels": 156,
-          "why": 0
+          "sha256": "318ded4ba50fea2b345bb981054c240976637d5eba0fe4b9bda730450bfbb07c",
+          "texels": 569,
+          "why": 15
         },
         "14A0:1:tset": {
           "base_equal": 0,
@@ -10747,7 +10748,7 @@
           "small_box_edge_retail": 0.1504,
           "small_box_texels": 346,
           "texels": 946,
-          "why": 15
+          "why": 16
         },
         "14A10:1:tset": {
           "base_equal": 3,
@@ -10777,7 +10778,7 @@
           "small_box_edge_retail": 0.1611,
           "small_box_texels": 462,
           "texels": 1256,
-          "why": 16
+          "why": 17
         },
         "14H10:1:tset": {
           "base_equal": 3,
@@ -10804,7 +10805,7 @@
           "passes": true,
           "sha256": "6f1b6d019bc44e2bc724622c2d0d95d3c2270b0c6141803ae2ba9fce830f63d2",
           "texels": 11102,
-          "why": 17
+          "why": 18
         },
         "15A5:1:tset": {
           "base_equal": 0,
@@ -10840,7 +10841,7 @@
           "passes": true,
           "sha256": "213ba05d2e963516118eefebd4b2a65bda390b2eb6a68ed5eb64102c48025e1f",
           "texels": 11977,
-          "why": 18
+          "why": 19
         },
         "15H5:1:tset": {
           "base_equal": 0,
@@ -10867,7 +10868,7 @@
           "passes": true,
           "sha256": "7614c825a01f20adb5361844941a5477723070298217a0db04419f06fc2df48b",
           "texels": 3420,
-          "why": 19
+          "why": 20
         },
         "16A4:1:tset": {
           "base_equal": 0,
@@ -10894,7 +10895,7 @@
           "passes": true,
           "sha256": "b9218ad0db624272e0664e2e2c6cc3f884eeca0a7c70c87ef9c1cd651a98efe0",
           "texels": 3414,
-          "why": 19
+          "why": 20
         },
         "16H4:1:tset": {
           "base_equal": 0,
@@ -10921,7 +10922,7 @@
           "passes": true,
           "sha256": "a0d42c5b3e73157ff4dc13659cb1f5a1afad5a426e56c6e614f15472d55e46f3",
           "texels": 1444,
-          "why": 20
+          "why": 21
         },
         "17A0:3:tset": {
           "base_equal": 0,
@@ -10930,7 +10931,7 @@
           "passes": true,
           "sha256": "467fa5726f4f1bfebe3ef098d3821afdbee95b2be4e6b6e8e429a5cd40efc12a",
           "texels": 310,
-          "why": 21
+          "why": 22
         },
         "17A1:1:tset": {
           "base_equal": 0,
@@ -10948,7 +10949,7 @@
           "passes": true,
           "sha256": "f4dfbd050a0023151a43b88a200c22f21ecdc1eed4ad06b15fcde778a65956dc",
           "texels": 1472,
-          "why": 20
+          "why": 21
         },
         "17A8:1:tset": {
           "base_equal": 0,
@@ -10957,7 +10958,7 @@
           "passes": true,
           "sha256": "508d4b0e6e35be55d45507f339e66700380448c5c51be153c25b876e6f83d8b1",
           "texels": 738,
-          "why": 22
+          "why": 23
         },
         "17H0:1:tset": {
           "base_equal": 0,
@@ -10966,7 +10967,7 @@
           "passes": true,
           "sha256": "a35791ff4bea41cd0d052534acd9be29ab610b798fe579eea31fef895bc903f2",
           "texels": 1472,
-          "why": 20
+          "why": 21
         },
         "17H1:1:tset": {
           "base_equal": 0,
@@ -10984,7 +10985,7 @@
           "passes": true,
           "sha256": "f4dfbd050a0023151a43b88a200c22f21ecdc1eed4ad06b15fcde778a65956dc",
           "texels": 1472,
-          "why": 20
+          "why": 21
         },
         "17H8:1:tset": {
           "base_equal": 0,
@@ -10993,7 +10994,7 @@
           "passes": true,
           "sha256": "508d4b0e6e35be55d45507f339e66700380448c5c51be153c25b876e6f83d8b1",
           "texels": 738,
-          "why": 22
+          "why": 23
         },
         "18A0:1:tset": {
           "base_equal": 3,
@@ -11005,7 +11006,7 @@
           "small_box_edge_retail": 0.194,
           "small_box_texels": 26,
           "texels": 271,
-          "why": 23
+          "why": 24
         },
         "18A0:2:tset": {
           "base_equal": 0,
@@ -11023,7 +11024,7 @@
           "passes": true,
           "sha256": "b098d9c00dc0fb710269dc0af3d729e9e523fd52ec2db1425b544b5803e13c9a",
           "texels": 252,
-          "why": 23
+          "why": 24
         },
         "18H0:1:tset": {
           "base_equal": 3,
@@ -11035,7 +11036,7 @@
           "small_box_edge_retail": 0.194,
           "small_box_texels": 26,
           "texels": 271,
-          "why": 23
+          "why": 24
         },
         "18H0:2:tset": {
           "base_equal": 0,
@@ -11053,7 +11054,7 @@
           "passes": true,
           "sha256": "b098d9c00dc0fb710269dc0af3d729e9e523fd52ec2db1425b544b5803e13c9a",
           "texels": 252,
-          "why": 23
+          "why": 24
         },
         "19A0:1:tset": {
           "base_equal": 0,
@@ -11188,7 +11189,7 @@
           "passes": true,
           "sha256": "7ae0532c881a7356758d3642250b78178621db32a0993fa7dd473ae78898a350",
           "texels": 1793,
-          "why": 24
+          "why": 25
         },
         "21A10:1:tset": {
           "base_equal": 0,
@@ -11197,7 +11198,7 @@
           "passes": true,
           "sha256": "7ae0532c881a7356758d3642250b78178621db32a0993fa7dd473ae78898a350",
           "texels": 1793,
-          "why": 24
+          "why": 25
         },
         "21A12:1:tset": {
           "base_equal": 0,
@@ -11206,7 +11207,7 @@
           "passes": true,
           "sha256": "7ae0532c881a7356758d3642250b78178621db32a0993fa7dd473ae78898a350",
           "texels": 1793,
-          "why": 24
+          "why": 25
         },
         "21A13:1:tset": {
           "base_equal": 0,
@@ -11236,7 +11237,7 @@
           "passes": true,
           "sha256": "eeb8249c13ad02164286c6ab7d8bbb4e1b32853ea8a7c640e60d5489273c1253",
           "texels": 1810,
-          "why": 24
+          "why": 25
         },
         "21H10:1:tset": {
           "base_equal": 0,
@@ -11245,7 +11246,7 @@
           "passes": true,
           "sha256": "7ae0532c881a7356758d3642250b78178621db32a0993fa7dd473ae78898a350",
           "texels": 1793,
-          "why": 24
+          "why": 25
         },
         "21H12:1:tset": {
           "base_equal": 0,
@@ -11254,7 +11255,7 @@
           "passes": true,
           "sha256": "7ae0532c881a7356758d3642250b78178621db32a0993fa7dd473ae78898a350",
           "texels": 1793,
-          "why": 24
+          "why": 25
         },
         "21H13:1:tset": {
           "base_equal": 0,
@@ -11320,7 +11321,7 @@
           "passes": true,
           "sha256": "cb388efdbc55050563a17f3407a772903afc6651cdf74e4f55036b414c20b365",
           "texels": 1070,
-          "why": 25
+          "why": 26
         },
         "23A0:2:tset": {
           "base_equal": 0,
@@ -11332,7 +11333,7 @@
           "small_box_edge_retail": 0.0,
           "small_box_texels": 43,
           "texels": 7323,
-          "why": 26
+          "why": 27
         },
         "23A0:3:tset": {
           "base_equal": 0,
@@ -11341,7 +11342,7 @@
           "passes": true,
           "sha256": "a75a175f5672992a6b8b38e3bf4958f1cf0ff58e8c2dfdfd62895d956a366b15",
           "texels": 1420,
-          "why": 27
+          "why": 28
         },
         "23A10:1:tset": {
           "base_equal": 0,
@@ -11377,7 +11378,7 @@
           "passes": true,
           "sha256": "9a944e195cc565b960840dc7359606935349d0c2d20b6d42779855d97ee20327",
           "texels": 1214,
-          "why": 25
+          "why": 26
         },
         "23H0:3:tset": {
           "base_equal": 0,
@@ -11386,7 +11387,7 @@
           "passes": true,
           "sha256": "2eca0ffa2eea13ba17a48ddd8c58fa63f1dcfeaf3bae9bda7eed7db6a7100349",
           "texels": 1419,
-          "why": 27
+          "why": 28
         },
         "23H10:1:tset": {
           "base_equal": 0,
@@ -11422,7 +11423,7 @@
           "passes": true,
           "sha256": "9fa165a148c9f0987e6e360530333f76a739bc5f6b17310519e1b34b101174a0",
           "texels": 7811,
-          "why": 28
+          "why": 29
         },
         "24A0:2:tset": {
           "base_equal": 0,
@@ -11431,7 +11432,7 @@
           "passes": true,
           "sha256": "70949168a4d657ddb2c167c46f323a1e25fb91270a3684da072538c6f1da606b",
           "texels": 4130,
-          "why": 29
+          "why": 30
         },
         "24A0:3:tset": {
           "base_equal": 0,
@@ -11449,7 +11450,7 @@
           "passes": true,
           "sha256": "c498083e50ee8c9b6f39d07b538da47d3f2ec906bc168ec2e6e3299181525794",
           "texels": 7662,
-          "why": 28
+          "why": 29
         },
         "24A10:3:tset": {
           "base_equal": 0,
@@ -11485,7 +11486,7 @@
           "passes": true,
           "sha256": "f3aa187ab402934e61288ced496ac96be15951446cc127e5871c2d4d6c027104",
           "texels": 7683,
-          "why": 28
+          "why": 29
         },
         "24H0:2:tset": {
           "base_equal": 0,
@@ -11494,7 +11495,7 @@
           "passes": true,
           "sha256": "75bf8888ae619f43742c4815382e95f051e9fc8599ea15156052ba739e8d72a8",
           "texels": 4130,
-          "why": 29
+          "why": 30
         },
         "24H0:3:tset": {
           "base_equal": 0,
@@ -11512,7 +11513,7 @@
           "passes": true,
           "sha256": "56b1cc89ee3bb1d182879f3c8338dd82a1c3ced300de4bd3370d19fa95650b30",
           "texels": 7662,
-          "why": 28
+          "why": 29
         },
         "24H10:3:tset": {
           "base_equal": 0,
@@ -11566,7 +11567,7 @@
           "passes": true,
           "sha256": "9f45f52c04361fc91900822beccdb9adf3a8029ed9925c40806b0eaf87e6be17",
           "texels": 9264,
-          "why": 30
+          "why": 31
         },
         "26A0:1:tset": {
           "base_equal": 0,
@@ -11575,7 +11576,7 @@
           "passes": true,
           "sha256": "73a4eb6ab10e98d2e825f6b5f890d0cbea4086ef17a64ba67753694ae8bf5415",
           "texels": 7513,
-          "why": 31
+          "why": 32
         },
         "26A0:2:tset": {
           "base_equal": 0,
@@ -11587,7 +11588,7 @@
           "small_box_edge_retail": 0.2,
           "small_box_texels": 15,
           "texels": 6531,
-          "why": 32
+          "why": 33
         },
         "26A0:3:tset": {
           "base_equal": 1,
@@ -11599,7 +11600,7 @@
           "small_box_edge_retail": 0.0303,
           "small_box_texels": 15,
           "texels": 3198,
-          "why": 33
+          "why": 34
         },
         "26A3:1:tset": {
           "base_equal": 0,
@@ -11623,7 +11624,7 @@
           "small_box_edge_retail": 0.2222,
           "small_box_texels": 4,
           "texels": 7397,
-          "why": 31
+          "why": 32
         },
         "26A4:3:tset": {
           "base_equal": 0,
@@ -11632,7 +11633,7 @@
           "passes": true,
           "sha256": "d262a0e1a1d1827d7338a277333a1cb4d67c691596d1a2b1de8a1affd57e9c82",
           "texels": 4948,
-          "why": 33
+          "why": 34
         },
         "26H0:1:tset": {
           "base_equal": 0,
@@ -11644,7 +11645,7 @@
           "small_box_edge_retail": 0.1333,
           "small_box_texels": 10,
           "texels": 4553,
-          "why": 31
+          "why": 32
         },
         "26H0:2:tset": {
           "base_equal": 0,
@@ -11656,7 +11657,7 @@
           "small_box_edge_retail": 0.2,
           "small_box_texels": 15,
           "texels": 5336,
-          "why": 32
+          "why": 33
         },
         "26H0:3:tset": {
           "base_equal": 0,
@@ -11668,7 +11669,7 @@
           "small_box_edge_retail": 0.0,
           "small_box_texels": 2,
           "texels": 3851,
-          "why": 33
+          "why": 34
         },
         "26H3:1:tset": {
           "base_equal": 0,
@@ -11689,7 +11690,7 @@
           "passes": true,
           "sha256": "68a9cc1defe53e8ec8d9d800c51ec6a18d227890c0e5b3c2cf8df11a8144d278",
           "texels": 4953,
-          "why": 31
+          "why": 32
         },
         "26H4:3:tset": {
           "base_equal": 0,
@@ -11698,7 +11699,7 @@
           "passes": true,
           "sha256": "ca7b30019ebba64f75b785235ccc74da31b26d8af685f7e1c87cb29710a988cf",
           "texels": 4875,
-          "why": 33
+          "why": 34
         },
         "27A0:1:tset": {
           "base_equal": 0,
@@ -11716,7 +11717,7 @@
           "passes": true,
           "sha256": "89480263790ca7362ce4cc3aac084c55ba05c0b9afaee207d51aca98c6d93c82",
           "texels": 4317,
-          "why": 34
+          "why": 35
         },
         "27A2:1:tset": {
           "base_equal": 0,
@@ -11752,7 +11753,7 @@
           "passes": true,
           "sha256": "34607fcb29aef5f3f5e774d07d63eef12b2f8181856a0216fcc281b4513f9113",
           "texels": 6312,
-          "why": 34
+          "why": 35
         },
         "27H2:1:tset": {
           "base_equal": 0,
@@ -11788,7 +11789,7 @@
           "passes": true,
           "sha256": "225101e1e0316bd01b1100c7ff10494ed6a7e9ba04f13ff921fed181f0f93f82",
           "texels": 6808,
-          "why": 35
+          "why": 36
         },
         "28H0:1:tset": {
           "base_equal": 0,
@@ -11797,14 +11798,14 @@
           "passes": true,
           "sha256": "ba1d28f22903c224c668c9e5648114ec18a449d6d5eee6b05732dfdc9e4e2c63",
           "texels": 155,
-          "why": 36
+          "why": 37
         },
         "29A0:1:tset": {
           "cls": "iii",
           "passes": true,
           "sha256": "61e8c485751b5d2a696ddc9e158bb389f4014a2e0e2b1406f234ca721b64c806",
           "texels": 754,
-          "why": 37
+          "why": 38
         },
         "29A0:2:tset": {
           "base_equal": 0,
@@ -11813,7 +11814,7 @@
           "passes": true,
           "sha256": "ca5dd8c9dc0ebb748e5636ae0834989ec2f909581da3e9de537abce482fe2ce9",
           "texels": 10152,
-          "why": 38
+          "why": 39
         },
         "29A9:1:tset": {
           "base_equal": 0,
@@ -11840,7 +11841,7 @@
           "passes": true,
           "sha256": "0ca6249e817b91a7d93d0f7e386955cbe5cfdec3abe18764cd495d78713b5db0",
           "texels": 10160,
-          "why": 38
+          "why": 39
         },
         "29H9:1:tset": {
           "base_equal": 0,
@@ -11867,7 +11868,7 @@
           "passes": true,
           "sha256": "e028520ded18d2df2a45ed94cce3c84c6a3508c3b42c9306ce01c9d77b5ba442",
           "texels": 6092,
-          "why": 39
+          "why": 40
         },
         "30A0:3:tset": {
           "base_equal": 0,
@@ -11912,7 +11913,7 @@
           "passes": true,
           "sha256": "56107984c32a14a2262d28114d49867abf5f9e38bdaaa7f942af7012a7de3f4c",
           "texels": 11178,
-          "why": 40
+          "why": 41
         },
         "30H0:3:tset": {
           "base_equal": 0,
@@ -11948,7 +11949,7 @@
           "passes": true,
           "sha256": "6e5c347c0dbda37580e790d4efa500d42bcc75af90d947abdd999a68e07fe377",
           "texels": 1365,
-          "why": 41
+          "why": 42
         },
         "37A0:2:tset": {
           "base_equal": 0,
@@ -11957,7 +11958,7 @@
           "passes": true,
           "sha256": "df1194158c3bd5de6efae403cf925193cbf5d9511a49af1e3b353ea348b749e9",
           "texels": 5594,
-          "why": 42
+          "why": 43
         },
         "37A0:3:tset": {
           "base_equal": 0,
@@ -11966,7 +11967,7 @@
           "passes": true,
           "sha256": "55b14a09f628edaaceebe97fde8f4bb51799dde32ddecfaf86bef013f2b08dec",
           "texels": 1698,
-          "why": 43
+          "why": 44
         },
         "37A2:1:tset": {
           "base_equal": 0,
@@ -11984,7 +11985,7 @@
           "passes": true,
           "sha256": "ced83466099e0751e7c5c4a9a0c7fc0940e2779184ca4ee1dee75294b448e44c",
           "texels": 433,
-          "why": 44
+          "why": 45
         },
         "37H0:2:tset": {
           "base_equal": 0,
@@ -11993,7 +11994,7 @@
           "passes": true,
           "sha256": "165e30a971915f64bd0620012aee65c44db044a8cfa93b2d2fd7306c46468b1e",
           "texels": 5590,
-          "why": 42
+          "why": 43
         },
         "37H2:1:tset": {
           "base_equal": 0,
