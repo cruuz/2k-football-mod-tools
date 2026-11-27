@@ -389,6 +389,11 @@ REQUIRES_128 = {
     "classic_crowd": "The classic Seamen's crowd keeps its code on a fixed page at the top of the extra executable "
                      "sections, and a 64 MB build has no room to map the sections up to it. A 64 MB build keeps the "
                      "stadium's own crowd.",
+    # b81 #45 re-review (REVIEW_45 F1): with the sim-speed pace, team building keeps seven resident pages
+    # (0x1535000..0x153BFFF) at the top of the scale-out pool; a 64 MB build has neither the room nor an open image.
+    "team_building": "CPU team building keeps its code and its resident tables on seven pages at the top of the extra "
+                     "executable sections, which a 64 MB build has no room to map. A 64 MB build keeps the game's own "
+                     "CPU drafts and signings.",
 }
 
 # A field and the sub-options that only matter with it; a suggestion turns the whole group off.
