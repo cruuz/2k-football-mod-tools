@@ -1147,6 +1147,15 @@ class PagesAndLayout(unittest.TestCase):
         root = Path(__file__).resolve().parents[2]
         if not (shutil.which("gcc") and shutil.which("as") and shutil.which("ld")):
             raise unittest.SkipTest("GNU gcc/as/ld are needed to rebuild the template")
+        from tests.i386_toolchain import gnu_as_elf32, gnu_ld_elf_i386
+        # tools/cpu_trades/build.py: gcc -m32 -Os freestanding, as --32, ld -r -m elf_i386 (Windows MinGW and macOS clang
+        # cannot; hosted CI 32e82838d)
+        reason = gnu_ld_elf_i386("-Os") or gnu_as_elf32()
+        if reason:
+            raise unittest.SkipTest(reason)
+        import importlib.util
+        if importlib.util.find_spec("elftools") is None:   # the build reads its ELF with pyelftools (not on hosted runners)
+            raise unittest.SkipTest("pyelftools is needed to rebuild the template")
         subprocess.run([sys.executable, "-B", str(root / "tools/cpu_trades/build.py"), "--check"], check=True)
 
     def test_fixed_pages_and_every_pool_owner_steps_over_them(self):

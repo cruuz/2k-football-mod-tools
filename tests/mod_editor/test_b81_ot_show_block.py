@@ -174,6 +174,12 @@ class ByteTests(unittest.TestCase):
                          "GNU as and ld and the tools/nfl2k5_show_block_guard sources are required (a packaged tree has "
                          "no sources)")
     def test_the_assembly_sources_give_the_installed_bytes(self):
+        from tests.i386_toolchain import gnu_as_elf32, gnu_ld_elf_i386
+        # as --32 and ld -m elf_i386 (Windows MinGW's ld has no elf_i386 emulation and its as writes PE/COFF; macOS has
+        # no GNU binutils; hosted CI 32e82838d)
+        reason = gnu_as_elf32() or gnu_ld_elf_i386()
+        if reason:
+            self.skipTest(reason)
         folder = ROOT / "tools" / "nfl2k5_show_block_guard"
         for (label, va, before, after), name in zip(guard.SITES, ("loader", "release", "task", "period", "replay")):
             with self.subTest(site=label), tempfile.TemporaryDirectory() as temp:

@@ -112,11 +112,23 @@ def main(argv=None):
     manifest["items"] = kept + rows
     text = json.dumps(manifest, indent=2) + "\n"
     if args.check:
-        same = manifest_path.read_text(encoding="utf-8") == text
+        # The pixels are the claim. The PNG bytes are the zlib build's: Pillow's Windows wheels encode the same pixels to
+        # other bytes (hosted CI 32e82838d), so the manifest's hashes are checked against the committed files, whose
+        # pixels must equal what this tool draws.
+        same = True
         for name, data in files.items():
             path = VENUE / name
-            same = same and path.is_file() and np.array_equal(np.asarray(Image.open(path).convert("RGBA")),
-                                                              np.asarray(Image.open(io.BytesIO(data)).convert("RGBA")))
+            if not (path.is_file() and np.array_equal(np.asarray(Image.open(path).convert("RGBA")),
+                                                      np.asarray(Image.open(io.BytesIO(data)).convert("RGBA")))):
+                print("differs from what the tool draws:", path)
+                same = False
+        for row in rows:
+            for key, name in (("sha256", row["file"]), ("master_sha256", row["master"])):
+                if (VENUE / name).is_file():
+                    row[key] = hashlib.sha256((VENUE / name).read_bytes()).hexdigest()
+        if manifest_path.read_text(encoding="utf-8") != json.dumps(manifest, indent=2) + "\n":
+            print("differs from the tool's rows:", manifest_path)
+            same = False
         return 0 if same else 1
     for name, data in files.items():
         (VENUE / name).write_bytes(data)

@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import collections
 import re
-import shutil
 import struct
 import subprocess
 import sys
@@ -119,8 +118,13 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(table("ap_size", 15), tuple(n for _c, n in awards.ALL_PRO))
         self.assertEqual(awards.ALL_PRO_SIZE, 24)
 
-    @unittest.skipUnless(shutil.which("gcc") and shutil.which("ld"), "GNU gcc/binutils needed to rebuild the template")
     def test_the_template_rebuilds_from_the_source(self):
+        from tests.i386_toolchain import gnu_as_elf32, gnu_ld_elf_i386
+        # tools/nfl2k5_awards_build.py: gcc -m32 -Oz freestanding, as --32, ld -r -m elf_i386 (absent on macOS clang and
+        # Windows MinGW, whose ld has no elf_i386 emulation; hosted CI 32e82838d)
+        reason = gnu_ld_elf_i386("-Oz") or gnu_as_elf32()
+        if reason:
+            self.skipTest(reason)
         result = subprocess.run([sys.executable, str(ROOT / "tools/nfl2k5_awards_build.py"), "--check"],
                                 capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
