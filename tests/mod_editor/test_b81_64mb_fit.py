@@ -60,6 +60,38 @@ class OneHundredTwentyEightOnly(unittest.TestCase):
         self.assertLess(refusal, source.index('_optional(receipt, target, progress, "classic_crowd")'))
 
 
+class TeamBuildingAt64(unittest.TestCase):
+    """b81 #45 re-review (REVIEW_45 F1): team building keeps seven resident pages (0x1535000..0x153BFFF), so a 64 MB
+    build cannot have it. Before, the model refused a 64 MB plan with it with the wrong advice (turn off the scorebug),
+    and a plan trimmed past the model stopped in the step ("a late owner can only be appended to a sealed scale-out
+    image")."""
+
+    def test_team_building_needs_128_mb_and_every_preset_clears_it_at_64(self):
+        self.assertIn("team_building", cm.requires_128())
+        self.assertIn("seven", mb.REQUIRES_128["team_building"])
+        for name in mod_build.PRESETS:
+            plan = mod_build.apply_preset(mod_build.BuildPlan("s", "t", console_memory=64), name)
+            with self.subTest(preset=name):
+                self.assertFalse(plan.team_building)
+
+    def test_a_64_mb_plan_with_team_building_is_refused_naming_it_and_nothing_else(self):
+        base = mod_build.apply_preset(mod_build.BuildPlan("s", "t", console_memory=64), "softdrink_basic")
+        self.assertEqual(cm.problems(base), [])                               # the plan fits without it
+        problems = cm.problems(replace(base, team_building=True))
+        self.assertEqual(len(problems), 1, problems)                          # the 128 MB rule, not a fit refusal
+        self.assertIn("cannot include", problems[0])
+        self.assertIn(cm.label("team_building"), problems[0])
+        self.assertNotIn("will not fit", problems[0])
+        self.assertNotIn(cm.label("scorebug"), problems[0])
+        self.assertEqual(mod_build.validate_plan(replace(base, team_building=True)), problems)
+
+    def test_the_team_building_step_refuses_in_place_at_64_mb(self):
+        plan = mod_build.BuildPlan("s", "t", console_memory=64, team_building=True)
+        with self.assertRaises(ValueError) as caught:
+            mod_build._apply_team_building(plan, Path("t.iso"), {"steps": [], "result": {}}, lambda *_: None)
+        self.assertEqual(str(caught.exception), mod_build.TEAM_BUILDING_NEEDS_128)
+
+
 class RefusalAdvice(unittest.TestCase):
     """The memory model itself (no game files): an over-budget 64 MB plan names a checked, minimal set."""
 

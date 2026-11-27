@@ -1787,6 +1787,7 @@ def apply_preset(plan: BuildPlan, name: str) -> BuildPlan:
         values["modern_numbers"] = False  # b81 modern numbers (review M1): its page is in the 128 MB scale-out pool
         values["helmet_side_numbers"] = False  # b81 #43 ruling 2: its fixed page tops the 128 MB scale-out pool
         values["classic_crowd"] = False        # b81 #43 ruling 2: likewise (the two cost 356 KB at 64 MB, NRG s37)
+        values["team_building"] = False        # b81 #45 F1: its seven resident pages top the 128 MB scale-out pool
         values["cpu_trades"] = None  # b81 trades-all: 128 MB standard only
         values["k128_memory"] = False
         values["k128_early"] = False         # b81 relrev M4: both need 128 MB memory
@@ -2610,6 +2611,8 @@ def _apply_team_building(plan: "BuildPlan", target: Path, receipt: dict, progres
     pace page (one fixed late page, nfl2k5_team_building_pace) when the executable has none."""
     if not plan.team_building:
         return
+    if getattr(plan, "console_memory", None) == 64:   # b81 #45 F1, as helmet side numbers and the crowd (#43 ruling 2)
+        raise ValueError(TEAM_BUILDING_NEEDS_128)
     module = _core_module("nfl2k5_team_building")
     if module is None:
         raise RuntimeError("CPU team building needs nfl2k5_team_building.")
@@ -7405,6 +7408,9 @@ def _apply_team_ratings(plan, target, receipt, progress):
 HELMET_SIDES_NEED_128 = ("Helmet side numbers need the 128 MB standard build: their code is on a fixed page at the top of "
                          "the extra executable sections, which a 64 MB build has no room to map. Clear the option for a "
                          "64 MB build.")
+TEAM_BUILDING_NEEDS_128 = ("CPU team building needs the 128 MB standard build: its code and resident tables are on seven "
+                           "pages at the top of the extra executable sections, which a 64 MB build has no room to map. "
+                           "Clear the option for a 64 MB build.")
 CLASSIC_CROWD_NEEDS_128 = ("The classic Seamen's crowd needs the 128 MB standard build: its code is on a fixed page at the "
                            "top of the extra executable sections, which a 64 MB build has no room to map. Clear the option "
                            "for a 64 MB build.")
