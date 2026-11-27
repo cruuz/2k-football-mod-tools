@@ -502,17 +502,20 @@ class PreviousRevisionTests(unittest.TestCase):
     # 3647cabab only inside the economy's own sites (revisions 9 and 10) plus two section digests (40 bytes). The
     # earlier values were D1D2 5d471c14, REVIEW_67 08087d17, REVIEW_64 c22d95b6, FLOOR 55e52233 / 8652889e,
     # STAGE_3A 5b3c065a / 0af4c40f, HANDOVER 61724296 / 58e85935 (3647cabab's revision 9 had already moved them).
-    D1D2_SHA = "a7667035f56037b5f88979f8792889fb2c6fbacde1a8918b5e7eca30468fd5c7"
-    REVIEW_67_SHA = "2860ea735f7ccf4f83aede49ebcb741b588d40ee85c703de6d6c0c768419faba"
-    REVIEW_64_SHA = "e53ef640641e590326249cc0a474040b33f2603493c85919f29703873f6f4bb6"
-    FLOOR_SHA = "a4d3322e693c2d2079b1a46996d511afdd174481d67b33b05bbed35ada4d624e"
-    FLOOR_EMPTY_SHA = "a9f8c440b9ff57d35c0572c155fb0b9faff2d0a06b51a1e91e6e7374a9077b63"
-    STAGE_3A_SHA = "5faed0e6032f871ba099a34bd46bdeca7c6ca8f2f507173b4b58a92bc96133e8"
-    STAGE_3A_EMPTY_SHA = "f70579bd36c121fcff6be3f174e8d609444bb3f11a5c734dc9f81cf9cd05378c"
+    # b81 #46 (economy K/P cover: three more windows, roster_a/roster_h rewritten, the stage-9 table entry): re-pinned;
+    # every rebuild differs from its 6e37263e1 rebuild only inside the economy's own sites plus one section digest
+    # (20 bytes; floor and 3a checked byte for byte). The 6e37263e1 values were D1D2 a7667035, REVIEW_67 2860ea73, REVIEW_64 e53ef640, FLOOR a4d3322e, FLOOR_EMPTY a9f8c440, STAGE_3A 5faed0e6, STAGE_3A_EMPTY f70579bd, HANDOVER_67 a3560aa2, HANDOVER_64 926cbb2d.
+    D1D2_SHA = "e0358eb4c2f4c02d610d113a9545bef78f1b9b516dfa0e7d228402f68c084119"
+    REVIEW_67_SHA = "c6ce34e39f418bae35bec509e698363a03211a5d9ef2e6d9b08acdd56eca1ae2"
+    REVIEW_64_SHA = "dc5bc22017407f13c3b24f6f205cad3f0f30b3de5c0f154ac0b978bc949b4387"
+    FLOOR_SHA = "b23957bfce4ac0a31af79b8d848187570784c1e2319f4c8850d1b1f3d2de30fa"
+    FLOOR_EMPTY_SHA = "bb763e3832c25ff4ae393a318e77d4a12ecdeee02ecfa60589705eab5d5c5ac0"
+    STAGE_3A_SHA = "e93a194f1c2b6b8a87fd936895d24035c5992fb4ab7d13db811a6817488b380e"
+    STAGE_3A_EMPTY_SHA = "31de8f149fe0354aaa9b6d221a92652d9b36ae6a4bb247a9e869a45d58fc3f5e"
     # b2672e398's page (C21/C23 freeze it as "previous"): the P5 and P6-5ff panels ran f5270f4d (67) and 35ce7727 (64)
     # on slice 1 alone; rebuilt here at the merged head.
-    HANDOVER_67_SHA = "a3560aa2b6e185b3eca79452a3500a74527c2b5f07cfc50989423922f7dc5788"
-    HANDOVER_64_SHA = "926cbb2d2b48e5c40c677ba7073cf1786721830c4d5d1328803348bb8c22f2e0"
+    HANDOVER_67_SHA = "bf70fc750548743db65f870ef291b43e1cf6f3bcd6d05fcf6d28cf6c65a627b7"
+    HANDOVER_64_SHA = "c1c0d846386a48c25e1e2552850d8f51104c8984ab245e7889dddd8131c33ef9"
 
     @classmethod
     # b81 modern numbers (modern IR's number-rights revision, 866fe3a8d / 911e590e3): the fixture's base is built with

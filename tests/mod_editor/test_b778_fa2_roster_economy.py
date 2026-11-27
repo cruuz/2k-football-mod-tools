@@ -378,6 +378,15 @@ class WeeklyFillPortTests(unittest.TestCase):
                 if m.uc.mem_read(p + 0x35, 1)[0] in (1, 2) and t % 3 == 0:   # open a kicker or punter slot
                     m.call(0x2BD900, ecx=team, edx=p, args=(1, 1))
                     break
+            # b81 #46a: in season the economy's K/P cover now releases a club's second healthy kicker or punter (a club
+            # carries one); the retail roster has clubs with two, so both arms start with one of each at most and the
+            # comparison stays about the fill port.
+            seen = set()
+            for p in list(roster(m, team)):
+                pos = m.uc.mem_read(p + 0x35, 1)[0]
+                if pos in (1, 2) and pos in seen:
+                    m.call(0x2BD900, ecx=team, edx=p, args=(1, 1))
+                seen.add(pos)
         clear_free_agent_weeks(m)
         m.put(0xE3C278, 100000)          # every club under the cap: the rebuilt pass has nothing else to do
         m.put(0xE576A4, 8)

@@ -297,7 +297,9 @@ def without_cover(payload: bytes, roster_a: bytes) -> bytes:
     from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest
     image, out = XbeImage(payload), bytearray(payload)
     head = economy.WINDOWS[economy.ROSTER_H_WINDOW]
-    cover = economy.SYMBOLS["economy_cover"] - economy.ROSTER_H_WINDOW
+    # b81 #46: economy_cover moved to its own window; roster_h's tail (the same bytes the cover had) now starts with
+    # economy_cover_all, so the class top-up alone is still everything before it.
+    cover = economy.SYMBOLS.get("economy_cover_all", economy.SYMBOLS["economy_cover"]) - economy.ROSTER_H_WINDOW
     for va, code in ((economy.ROSTER_A_WINDOW, roster_a), (economy.ROSTER_H_WINDOW, head[:cover] + b"\xcc" * (len(head) - cover))):
         at = image.offset(va, len(code))
         out[at:at + len(code)] = code
