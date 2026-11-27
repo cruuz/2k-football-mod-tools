@@ -237,7 +237,24 @@ CODE_A = bytes.fromhex(
 # of stars and busts; qsetup + qrand keep b779-rf3's 42 bytes (qrand starts a byte later) and nothing after them moves. CODE_C_FACES is b81
 # rookie-faces' region C (one draw per rating): an executable with it reads applied (revision "faces") and upgrade_xbe
 # moves it in place.
+# b81 #47 (combined judge RR2): the capped loop also redraws Durability (+0x3B, the byte at cofs - 1 in the 42-byte
+# qsetup/qrand slot), so a prospect's Durability no longer follows his grade (generated rookies' corr(Durability,
+# overall) was +0.75..+0.92, the real roster's +0.05..+0.20); three bytes differ from CODE_C_GRADE, nothing moves.
+# CODE_C_GRADE is the league-aging merge's region C (240a670b4 .. the #43/#44 integration): it reads applied (revision
+# "grade") and upgrade_xbe moves region C in place, like "faces".
 CODE_C = bytes.fromhex(
+    "e87101000089d9ff178944241cdb44241cd95c241089e9ff178944241cdb44241cd95c241cb9a0fce500e887000000d9"
+    "442410d864241c51dec9d8442420d91c24e879d1ffff88c289f1ff57fc83c71481fff84e4f007cad6a035f0fb6971c6e"
+    "0e00520fbe041383f8647c036a64580fbe4c150083f9647c036a645929c85150e825faffff0fb7c05a0fafc2c1f81059"
+    "01c85a8804164f79c2c6460806e9e8010000b9a0fce500e8931df6ffd95c2418bfb44c4f00c3e8841df6ffd8642418d8"
+    "0d6c694e00d8442418c3cc3b4e515051528b4d008b5504394210750f39f2740b508b42143b461458f9740683c254e2e7"
+    "f85a59c352538b4e2a30e983e1038d1c85000000006a045f8d040b6603059d4f4f008b55548b04c24f740de8afffffff"
+    "73064183e103ebe08946105b5ac3e8aaf9ffff6a048b4610e892ffffff731bff0c2478160fb70d9f4f4f00e84ef9ffff"
+    "89d78b04fb894610ebdb59c383fe64730a83fe5b720583f83c73068bb0901b5200e936641d00e82ff9ffffc1e81e0fb6"
+    "4e358d04888b0d1829b7003b4108732e6bc05403410c8b402033462025007c00003146208b462025007c00003d003c00"
+    "000f93c0c0e00680660c3f08460ce9dffeffff510fb74704662b0784ff780980fb09730501c8d1e891e8c0f8ffff3b14"
+    "24731db00838d873170fb64703d1e86bc80bc1e90529d04839c819c030f8d0e059c3")
+CODE_C_GRADE = bytes.fromhex(
     "e87101000089d9ff178944241cdb44241cd95c241089e9ff178944241cdb44241cd95c241cb9a0fce500e887000000d9"
     "442410d864241c51dec9d8442420d91c24e879d1ffff88c289f1ff57fc83c71481fff84e4f007cad6a025f0fb6971d6e"
     "0e00520fbe041383f8647c036a64580fbe4c150083f9647c036a645929c85150e825faffff0fb7c05a0fafc2c1f81059"
@@ -865,10 +882,12 @@ def _gen1_spans(region_c: bytes | None = None) -> dict[int, bytes]:
     return spans
 
 
-def _faces_spans() -> dict[int, bytes]:
-    """b81 rookie-faces' revision (c6b043363): every span of this release with its region C (one draw per rating)."""
+def _faces_spans(region_c: bytes | None = None) -> dict[int, bytes]:
+    """b81 rookie-faces' revision (c6b043363): every span of this release with its region C (one draw per rating).
+    region_c: another region C on this layout (CODE_C_GRADE, the league-aging merge's grade roll)."""
+    code = region_c or CODE_C_FACES
     spans = dict(_spans(bytes(TABLE_DATA)))
-    spans[REGION_C] = CODE_C_FACES + b"\xcc" * (REGION_C_END - REGION_C - len(CODE_C_FACES))
+    spans[REGION_C] = code + b"\xcc" * (REGION_C_END - REGION_C - len(code))
     return spans
 
 
@@ -883,11 +902,14 @@ def xbe_status(payload: bytes) -> str:
 
 PREVIOUS_REVISIONS = ("gen1", "gen1_aging", "b779")   # b780 GEN1 (v0.9, beta-81 candidates), GEN1 with b81 league-aging's
                                                     # first grade roll; beta-79 / v0.8 and the v0.9 RC
-APPLIED_REVISIONS = ("faces",)          # b81 rookie-faces without the league-aging grade roll: same faces, same tables
+APPLIED_REVISIONS = ("faces", "grade")  # b81 rookie-faces without the league-aging grade roll, and the merge's grade roll
+                                        # before #47 (Durability on the grade): same faces, same tables
 
 
 def xbe_revision(payload: bytes) -> str:
-    """b81 rookie-faces: retail | applied | faces | gen1 | gen1_aging | b779 | foreign.  faces = this release with b81
+    """b81 rookie-faces: retail | applied | grade | faces | gen1 | gen1_aging | b779 | foreign.  grade = this release with
+    the league-aging merge's region C before b81 #47 (Durability on the grade; xbe_status reads it applied, upgrade_xbe
+    moves region C).  faces = this release with b81
     rookie-faces' region C (one draw per rating, before the league-aging merge; xbe_status reads it applied, upgrade_xbe
     moves region C).  gen1_aging = gen1 with league-aging's first grade roll in region C (candidate discs only; taken as
     gen1).  gen1 = the b780 GEN1 revision (released v0.9 and the
@@ -903,8 +925,8 @@ def xbe_revision(payload: bytes) -> str:
         return "retail"
     d = current[TABLE_VA]
     hair_ok = lambda: _hair_ok(payload, struct.unpack_from("<I", d, len(d) - 4)[0])  # noqa: E731
-    for state, spans in (("applied", dict(_spans(bytes(TABLE_DATA)))), ("faces", _faces_spans()), ("gen1", _gen1_spans()),
-                         ("gen1_aging", _gen1_spans(CODE_C_GEN1_AGING))):
+    for state, spans in (("applied", dict(_spans(bytes(TABLE_DATA)))), ("grade", _faces_spans(CODE_C_GRADE)),
+                         ("faces", _faces_spans()), ("gen1", _gen1_spans()), ("gen1_aging", _gen1_spans(CODE_C_GEN1_AGING))):
         if all(current[va] == data for va, data in spans.items() if va != TABLE_VA) and \
                 d[TABLE_DATA:-4] == spans[TABLE_VA][TABLE_DATA:-4]:
             return state if hair_ok() else "foreign"
@@ -964,7 +986,8 @@ def apply_hair(payload: bytes) -> tuple[bytes, dict[str, Any]]:
     GEN1 read "previous"; the beta-79 / RC states have padding at HAIRPTR and are not."""
     from . import nfl2k5_xbe_space as space  # noqa: PLC0415
     host = xbe_revision(payload)
-    require(host in ("applied", "faces", "gen1", "gen1_aging"), "rookie faces must be applied before the rookie hair helper")
+    require(host in ("applied", "grade", "faces", "gen1", "gen1_aging"),
+            "rookie faces must be applied before the rookie hair helper")
     if hair_status(payload) == "applied":
         return payload, {"state": "applied", "already_applied": True, "changed_bytes": 0}
     require(hair_status(payload) == "off", "HAIRPTR holds a foreign value")
@@ -998,7 +1021,7 @@ def upgrade_xbe(payload: bytes, bank: Mapping[str, Any] | None = None) -> tuple[
     the rows are rebuilt from the bank (they must be the bank's rows, so the disc's portrait record holds every face),
     and xbe_apply writes this release's code, keeping the rookie hair pointer.  Any other state is returned unchanged
     (receipt None): a single-setting route never adds rookie faces, and beta-79 / RC executables are not taken."""
-    if xbe_revision(payload) == "faces":            # b81 league-aging: only region C differs (the grade roll)
+    if xbe_revision(payload) in ("faces", "grade"):   # b81 league-aging / #47: only region C differs
         return upgrade_region_c(payload)
     if xbe_revision(payload) not in ("gen1", "gen1_aging"):
         return payload, None
@@ -1013,21 +1036,25 @@ def upgrade_xbe(payload: bytes, bank: Mapping[str, Any] | None = None) -> tuple[
 
 
 def region_c_state(payload: bytes) -> str:
-    """'current' (the merged grade roll), 'faces' (b81 rookie-faces' one draw per rating), 'gen1' (b780), 'gen1_aging'
-    (league-aging's first grade roll) or 'other'."""
+    """'current' (the merged grade roll, Durability on its own draw: b81 #47), 'grade' (the merged grade roll before #47),
+    'faces' (b81 rookie-faces' one draw per rating), 'gen1' (b780), 'gen1_aging' (league-aging's first grade roll) or
+    'other'."""
     pad = lambda code: code + b"\xcc" * (REGION_C_END - REGION_C - len(code))  # noqa: E731
     try:
         off = _offset(payload, REGION_C, REGION_C_END - REGION_C)
     except (RookieFacesError, struct.error):
         return "other"
     got = payload[off:off + REGION_C_END - REGION_C]
-    return ("current" if got == pad(CODE_C) else "faces" if got == pad(CODE_C_FACES) else
+    return ("current" if got == pad(CODE_C) else "grade" if got == pad(CODE_C_GRADE) else
+            "faces" if got == pad(CODE_C_FACES) else
             "gen1" if got == pad(CODE_C_GEN1) else "gen1_aging" if got == pad(CODE_C_GEN1_AGING) else "other")
 
 
 def upgrade_region_c(payload: bytes) -> tuple[bytes, dict[str, Any] | None]:
-    """b81 league-aging: a "faces" executable (b81 rookie-faces) gets the grade roll in place, region C only."""
-    if xbe_revision(payload) != "faces":
+    """b81 league-aging: a "faces" executable (b81 rookie-faces) gets the grade roll in place, region C only; b81 #47: so
+    does a "grade" executable (the merge's roll with Durability on the grade): three bytes."""
+    state = xbe_revision(payload)
+    if state not in ("faces", "grade"):
         return payload, None
     data = CODE_C + b"\xcc" * (REGION_C_END - REGION_C - len(CODE_C))
     off = _offset(payload, REGION_C, len(data))
@@ -1039,7 +1066,7 @@ def upgrade_region_c(payload: bytes) -> tuple[bytes, dict[str, Any] | None]:
             buf[h + 36:h + 56] = hashlib.sha1(struct.pack("<I", rsize) + bytes(buf[raw:raw + rsize])).digest()  # nosec B324
     out = bytes(buf)
     require(xbe_revision(out) == "applied" and region_c_state(out) == "current", "rookie faces region C upgrade read-back")
-    return out, {"state": "applied", "upgraded_from": "faces", "changed_bytes": changed}
+    return out, {"state": "applied", "upgraded_from": state, "changed_bytes": changed}
 
 
 def table_from_gen1(old: bytes, bank: Mapping[str, Any]) -> bytes:

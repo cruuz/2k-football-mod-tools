@@ -853,7 +853,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
         "mod_editor/core/nfl2k5_my_career_events.py": "228a0b59d43b9b9c52e10ac93cc72072e772e694cc864c8e2e037c5d7c772460",
         "mod_editor/core/nfl2k5_my_career_mode.py": "a204f443618251d3b05b4e31eff19086951bd6a5e5ef99fbd08a1632e7e0e863",
-        "mod_editor/core/nfl2k5_rookie_faces.py": "5318fa08d04dd86c7994ee5f473e22d34fb142542046b86932c45ad7b98a8ee7",  # b780-int (gen1mc): MyCareer's draft-signing context reads its draft-number byte
+        "mod_editor/core/nfl2k5_rookie_faces.py": "387fb06142167c7670b80e9486a19833f9d9ed7294e3ca83de616c179aca4d2b",  # b780-int (gen1mc): MyCareer's draft-signing context reads its draft-number byte
         "mod_editor/core/nfl2k5_my_career_mode_code.py": "dbf9330b042795f057e5dfd92df680f6c004a97eae9f5218a3cd66cd13b5d489",
         "mod_editor/core/nfl2k5_my_career_home.py": "852747c8b6ae3b94bc61a3f0d8b7a3060bde155901667e71021a8346c291a0ab",
         "mod_editor/core/nfl2k5_my_career_mode_code_b779.py": "9774a72e254da1609e82a53d2d5b74701e1d2acec484b6588256fc9b256c0355",  # b780 n6: frozen beta-79 revision
@@ -919,7 +919,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_roster_fill_composition.py": "96547bdc1c66889f68f44deb147bd5f6095ee169d343d53aaa4f532d12ee53e8",
         "mod_editor/core/nfl2k5_franchise_economy.py": "83b14c1f29604091fd69c25af9b7921a514901c2c45e722ab8b175a602d43c39",
         "mod_editor/core/nfl2k5_franchise_economy_code.py": "41df9f0d3d6c626957441632dad2c42870f7171c4457ddab9d64128415bbbf15",
-        "mod_editor/core/nfl2k5_progression.py": "27c28380c79df69c82031376b7ee6c990e4bda2781c90053ac29b2b18c14e99a",
+        "mod_editor/core/nfl2k5_progression.py": "8b0bac30d498c7ecd3f34615c07f3046342fd5ca1bd354100224b090d46ffdef",
         "mod_editor/core/nfl2k5_prospect_names.py": "6f48b67a3b00b72b8bc51ca35527037ceca27c4137b9bb0e1d4542f27c39e7ac",
         "mod_editor/core/nfl2k5_qb_spy_runtime.py": "094e1ed86847a0b78e9ead41b44aea476f6f2f313ff6c986b1db722940553a2c",
         "mod_editor/core/nfl2k5_qb_spy_runtime_code.py": "759ee92ee3bac1d79d80ac6d6ae539ea6f0e3cef658dc945548a8c7db35c468f",

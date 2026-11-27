@@ -469,9 +469,18 @@ PREVIOUS_AGE_AT_YEAR = 20
 # out/paired-r0): starters' means by 2035 against 2026 moved HB -7.6, DB -4.7, TE -3.8 (declining a year too early twice:
 # the clock and the table), OL +4.6 (a five-year plateau). Backs keep b780's years-pro placement (labels a year later on
 # the new clock), corners, safeties and tight ends slide a year later on the physical side; linemen slide from 29.
-D_TARGET = {
+# b81 #47 (combined judge RR7): kickers' and punters' physical group (speed, agility, stamina, Durability) holds from 25
+# to 34 and slides with their skills from 35 (was: the shared curves' -1.1 a year from 26, then -1 a year from 29). In
+# ten seasons the CPU starting kickers' Durability fell 86 -> 81 (real ids 86 -> 77), and with it kicker injury onsets
+# rose 1.4 -> 1.8 per 100 starter-games (band 0.95-1.55, real NFL 1.52): K and P sit outside the stability factor, and
+# a kicker's injury weight follows his Durability. PREVIOUS_B81_D_TARGET is the table before #47 (read as legacy).
+PREVIOUS_B81_D_TARGET = {
     "QB": ({27: -1, 30: -2}, {25: 1.5, 29: 0, 34: -0.5, 36: -1, 37: -2, 38: -3}),
     "KP": ({29: -1}, {27: 0, 35: -0.5, 37: -1.5}),
+}
+D_TARGET = {
+    "QB": ({27: -1, 30: -2}, {25: 1.5, 29: 0, 34: -0.5, 36: -1, 37: -2, 38: -3}),
+    "KP": ({25: 0, 35: -0.5, 37: -1.5}, {27: 0, 35: -0.5, 37: -1.5}),
     "RB": ({25: -1, 27: -1.5, 28: -2, 29: -2.5, 30: -3, 32: -4}, {27: -0.5, 28: -1, 29: -1.5, 30: -2}),
     "FB": ({27: -1, 29: -2, 31: -3}, {29: -1}),
     "WR": ({26: -0.5, 27: -1.5, 29: -2, 31: -3}, {25: 0, 28: -0.5, 30: -1.5, 32: -2}),
@@ -483,6 +492,7 @@ D_TARGET = {
     "DL": ({27: -1, 29: -1.5, 31: -2.5}, {25: 0.5, 26: 0, 29: -0.5, 31: -1.5, 33: -2}),
 }
 AGE_AT_YEAR = 21                  # the change applied at years pro y is the NFL change at age 21 + y
+PREVIOUS_B81_D_TARGET = {**D_TARGET, **PREVIOUS_B81_D_TARGET}
 # Rating table 0x4F4CB4 (29 x 20 bytes): (rating byte, curve table VA or 0, family byte). Read only.
 RATING_ENTRIES = (
     (0x36, 0x4F31D0, 0), (0x37, 0x4F31D0, 0), (0x3C, 0x4F3548, 1), (0x3D, 0x4F3548, 1), (0x39, 0x4F38A8, 2),
@@ -873,9 +883,12 @@ RETIRE_P_VA, RETIRE_Y_VA = 0xACEDB0, 0xACEE24
 
 
 def _version(name: str) -> dict:
-    """Every constant one release of this owner writes: 'b81' (current) or 'b780' (b780 .. b81 integration, v0.9)."""
-    if name == "b81":
-        return {"shape": SHAPE, "target": D_TARGET, "age_at_year": AGE_AT_YEAR, "rb_shift": RB_PRODUCTION_SHIFT,
+    """Every constant one release of this owner writes: 'b81' (current), 'b81_r2' (b81 league-aging before #47: the
+    kickers' and punters' physical decline from 26; the b81 integration from 240a670b4) or 'b780' (b780 .. the b81
+    integration before league aging, v0.9)."""
+    if name in ("b81", "b81_r2"):
+        return {"shape": SHAPE, "target": D_TARGET if name == "b81" else PREVIOUS_B81_D_TARGET, "age_at_year": AGE_AT_YEAR,
+                "rb_shift": RB_PRODUCTION_SHIFT,
                 "base": NFL_RETIRE_BASE, "steps": RETIRE_OVERALL_STEP, "producing": RETIRE_PRODUCING_STEP,
                 "floor": RETIRE_FLOOR, "damping": False, "specialists": True, "chances": RETIRE_P}
     if name == "b780":
@@ -1112,8 +1125,8 @@ def _rookie_birth_state(payload: bytes) -> str:
 
 def status(payload: bytes) -> str:
     """retail | legacy (an earlier release of this owner: the beta-77 curves and weights only, b778's layer with the
-    retail retirement decision, the b780 constants (v0.9 and the b81 integration), or every b81 site with the class
-    generator's earlier rookie birth base) | applied | foreign."""
+    retail retirement decision, the b780 constants (v0.9 and the b81 integration), every b81 site with the class
+    generator's earlier rookie birth base, or b81 league-aging before #47 ('b81_r2')) | applied | foreign."""
 
     try:
         if not _guards_hold(payload):
@@ -1121,6 +1134,8 @@ def status(payload: bytes) -> str:
         current = _states(payload, "b81")
         if current == ({"applied"}, {"applied"}, {"applied"}):
             return "legacy" if _rookie_birth_state(payload) == "legacy" else "applied"
+        if _states(payload, "b81_r2") == ({"applied"}, {"applied"}, {"applied"}):
+            return "legacy"                   # b81 #47: the league-aging tables before the kickers' physical hold
         data, career, retire = _states(payload, "b780")
     except (ProgressionError, ValueError, struct.error, IndexError, KeyError):
         return "foreign"
