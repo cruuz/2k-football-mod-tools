@@ -3555,11 +3555,17 @@ def _team_building_edit_payload(original):
         if draft is not None and draft.status(module.as_draft_ai(payload)) == "legacy":
             raise ValueError("This disc's draft AI is older than CPU team building needs. Build a new disc with CPU team "
                              "building on (a released v0.9 disc takes it through the v0.9 update).")
-        raise ValueError("CPU team building needs a disc built with the draft AI and the 2026 franchise economy.")
+        raise ValueError(TEAM_BUILDING_NEEDS_ECONOMY)
     payload, receipt = module.apply(payload)
     return payload, economy_receipt, receipt
 
 
+# b81 #46 merge (coordinator ruling (a), 11/27): reached by a 128 MB standard disc built without the draft AI or the 2026
+# franchise economy (a player's own build with them off), or with an economy this Studio does not know (an internal beta 81
+# build from before #46): it says what to do.
+TEAM_BUILDING_NEEDS_ECONOMY = ("CPU team building needs a disc built with the draft AI and the 2026 franchise economy. Build "
+                               "a new disc with the franchise economy and CPU team building on (a released v0.9 disc takes "
+                               "it through the v0.9 update).")
 TEAM_BUILDING_V09_USE_UPDATE = ("This is the released SOFTDRINK 2K28 v0.9 disc. Add CPU team building through the v0.9 "
                                 "update instead (update-v09 --team-building): it also brings the disc's CPU decisions, "
                                 "kick aim and history storage current, as a full build has them.")
