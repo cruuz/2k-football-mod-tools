@@ -307,7 +307,8 @@ def generate():
     lines += ["}", f"ROOKIE_TABLE_VA = {ROOKIE_TABLE_VA:#x}", "ROOKIE_TABLE = bytes.fromhex("]
     lines += ['    "' + table[i:i + 40].hex() + '"' for i in range(0, len(table), 40)]
     # b81 #45: price_group (the position -> price group table) for the team-building owner's pace page
-    lines += [")", "SYMBOLS = " + repr({k: v for k, v in symbols.items() if k.startswith("economy_") or k == "price_group"}), ""]
+    lines += [")", "SYMBOLS = " + repr({k: v for k, v in symbols.items()
+                                        if k.startswith("economy_") or k in ("price_group", "rank_twice")}), ""]
     return "\n".join(lines)
 
 

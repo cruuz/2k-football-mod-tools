@@ -429,9 +429,9 @@ PREVIOUS_REVISION_9 = {             # the sites revision 10 rewrites, as revisio
 }
 REVISION = 11
 # b81 #45 (sim speed), revision 11: the price's rank (price_of, value window) is counted through economy_rank_any (in window
-# r10_15e9d0's spare bytes), which is rank_twice unless the team-building owner's pace page runs the free-agency day (the
-# day call at 0x24849A reads `call 0x1535010`); then the page counts the same rank from its memo of the day's ratings
-# (tools/team_building/pace.c). Only those two windows change. An image with them as revision 10 wrote them reads as the
+# r10_15e9d0's spare bytes), which is rank_twice unless the team-building owner's pace page is installed (the day call at
+# 0x24849A reads `call 0x1535010`, in every stage); then every price goes to the page, which calls rank_twice back outside
+# a free-agency day and inside one counts the same rank from its memo of the day's ratings (tools/team_building/pace.c). Only those two windows change. An image with them as revision 10 wrote them reads as the
 # same image with the current windows, but "legacy" where that reads "applied", so apply() rewrites them in place.
 PREVIOUS_REVISION_10 = {
     0x2BD440: "b430e4776aa9076929d3d150cb284c550b63138a810d61850e8b41a838d7d6bd",   # value (price_of called rank_twice)

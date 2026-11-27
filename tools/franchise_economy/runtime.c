@@ -1126,10 +1126,12 @@ SECTION(".r10_rank") unsigned rank_twice(u8 *p) {
     return n2;
 }
 
-/* b81 #45 (sim speed): economy_rank_any is rank_twice, or the same count on the team-building owner's pace page when
- * that owner has put its free-agency day on the stage action (the day call at 0x24849A reads `call 0x1535010`, the page's
- * day entry; only that owner writes it, after reserving the page). The page counts by rank_club's rule, from a memo of
- * each rating for the day and, inside a club's scoring, from lists of the rosters (tools/team_building/pace.c). */
+/* b81 #45 (sim speed): economy_rank_any is rank_twice, or the team-building owner's pace page once that owner is installed
+ * (the day call at 0x24849A reads `call 0x1535010`, the page's day entry; only that owner writes it, after reserving the
+ * page). The test is static, so with the page installed every price in every stage goes to the page: outside a
+ * free-agency day the page calls this rank_twice back (the same count, whatever clubs rank_twice walks); inside a day it
+ * counts by rank_club's rule from a memo of each rating for the day and, inside a club's scoring, from lists of the
+ * rosters (tools/team_building/pace.c). */
 #define PACE_SITE 0x24849Au
 #define PACE_DAY 0x1535010u                    /* the page's day entry (the call's target) */
 #define PACE_RANK 0x1535018u                   /* the page's rank entry: unsigned (u8 *p), as rank_twice */

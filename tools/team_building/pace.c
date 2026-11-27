@@ -27,9 +27,14 @@
  *   the club's offers (0x324180 may change a roster). Nothing else builds or drops them.
  * - pace_rank_twice is the economy's rank_twice (runtime.c: 2 + 2 x others of his price group rated above him + others
  *   level with him, over every club's active list, a man at position 17 or above in no group, the man himself left
- *   out): counted on the lists while they stand, otherwise over the active lists as rank_club does, every rating through
- *   pace_rate. The economy's price reaches it through rank_any (runtime.c) only when 0x24849A calls this page.
- * Outside a day (any other stage) every rating is the native one, as before.
+ *   out). Once this page is installed the economy sends EVERY price's rank here (runtime.c economy_rank_any tests the
+ *   0x24849A call, which is there in every stage), so: outside a day it hands the count to the economy's own rank_twice
+ *   (the same routine, whatever club count the economy walks: #46 makes that 0xC6430, the 32 league clubs, so stage 9
+ *   leaves the Pro Bowl records out); inside a day it counts on the lists while they stand, otherwise over the active
+ *   lists as rank_club does, every rating through pace_rate. Days run in franchise stage 3, where the clubs it walks
+ *   (n_teams, 0xC6430: 32 in franchise mode) are the 32 that the economy's walk reads (0xC4BE0 reads 32 there as well;
+ *   only stage 9 differs, 34 with the Pro Bowl sides).
+ * Outside a day (any other stage) every rating is the native one and every rank is the economy's, as before.
  *
  * Fixed layout (the economy's rank_any and the 0x24849A site name these addresses): +0x00 pace_day, +0x04 "PACE",
  * +0x10 jmp pace_day_entry, +0x18 jmp pace_rank_twice, +0x20 jmp pace_rate, +0x28 jmp pace_lists.
@@ -45,7 +50,8 @@ typedef unsigned int u32;
 #define PACE_GROUPS 15u                     /* economy price groups (a group fits 4 bits; assemble.py checks) */
 extern float FAST n_rating(u8 *p, unsigned flag);                 /* 0x246D80 */
 extern u8 *FAST n_team(unsigned index);                            /* 0xC4C50 */
-extern unsigned n_teams(void);                                     /* 0xC4BE0 */
+extern unsigned n_teams(void);       /* 0xC6430: the league's 32 clubs in franchise mode (0xC4BE0 in modes 1 and 3) */
+extern unsigned rank_twice(u8 *p);   /* the economy's rank_twice (its SYMBOLS; cdecl, as economy_rank_any calls it) */
 extern void FAST n_fa_day(void *menu);                             /* 0x324600: one free-agency day (ECX = menu) */
 extern const u8 price_group[17];                                   /* the economy's position -> price group table */
 
@@ -148,10 +154,11 @@ SECTION(".pace") void FAST pace_lists(unsigned on) {
 }
 
 SECTION(".pace") unsigned pace_rank_twice(u8 *p) {
+    struct pace *d = pace_day;
+    if (!d) return rank_twice(p);           /* outside a day: the economy's own count (review of #46, D1) */
     unsigned g = price_group[p[0x35]], n2 = 2;
     float him = pace_rate(p, 0);
-    struct pace *d = pace_day;
-    if (d && d->lists && g < PACE_GROUPS) {
+    if (d->lists && g < PACE_GROUPS) {
         u32 self = pace_index(p);
         for (u32 k = g ? d->end[g - 1] : 0; k < d->end[g]; ++k) {
             u32 i = d->men[k];

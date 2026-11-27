@@ -16,8 +16,12 @@ Every class fails on 6e37263e1 (the integration head before #45): there is no pa
   (a poisoned entry comes back) and is empty at each day's start; pace_rank_twice equals the economy's rank_twice for
   every player with no day, with a day and with the lists; the lists follow the rosters only when rebuilt (stale lists
   after a roster change give other ranks, so the owner's bracket matters) and stay off for a pointer that is not a
-  player record; rank_any dispatches to the page only when the stage action calls the page; the day entry restores
-  the previous day pointer.
+  player record; rank_any dispatches to the page only when the stage action calls the page, and outside a day the page
+  hands the count back to the economy's rank_twice; the day entry restores the previous day pointer.
+- ProBowl76001 (NFL2K5_B81_KP_76001, root 76001's kept stage-9 state, where 0xC4BE0 reads 34 with the two Pro Bowl
+  sides; else skip): with the page installed, every stage-9 rank and price is the economy's own (the page changes no
+  price outside a day); the page's walk inside a day counts the 32 league clubs (0xC6430), not the Pro Bowl sides; and
+  with the economy's walk on 0xC6430 as #46 makes it, a stage-9 price with the page installed ignores the Pro Bowl sides.
 Fixtures come from the environment only (no private paths in the repo).
 """
 from __future__ import annotations
@@ -526,7 +530,8 @@ class Image(unittest.TestCase):
             m.uc.mem_write(DAY_SITE, bytes.fromhex("e861c10d00"))
             m.uc.ctl_flush_tb()
             b = m.call(rank_any, args=(p,), budget=50_000_000)
-            self.assertEqual((a, seen), (b, ["page", "walk"]))
+            # installed: the page, which outside a day calls the economy's rank_twice back; retail call: rank_twice
+            self.assertEqual((a, seen), (b, ["page", "walk", "walk"]))
             v0 = m.call(0x2BD440, ecx=p, edx=0, args=(0, 1, 1), budget=200_000_000)
             m.uc.mem_write(DAY_SITE, site)
             m.uc.ctl_flush_tb()
@@ -538,6 +543,155 @@ class Image(unittest.TestCase):
             m.uc.hook_del(h1)
             m.uc.hook_del(h2)
             m.uc.ctl_flush_tb()
+
+
+K, P = 1, 2
+
+
+class ProBowl76001(unittest.TestCase):
+    """Review of #46 (D1), coordinator 11/27: once the page is installed every price goes to it (rank_any's test is
+    static), so outside a day it must count exactly as the economy does, and in stage 9 the economy's walk must decide
+    whether the Pro Bowl records count. NFL2K5_B81_KP_76001 = root 76001's kept state (b81-fixtures/kp-cover-76001: the
+    kp-cover build a3dbd0774's executable and the memory before the 2026 stage-9 week-19 advance, n_teams() 34). This
+    branch's economy windows, team-building windows and entries, the four day calls and the pace pages are written over
+    the image (the image's executable has another economy and the previous team-building template)."""
+
+    XBE_SHA256 = "7ae6f10af3dab8b73d98845d8776101eead135e376c9e9a9e16cb04cf0177c9f"
+    WALK_CALL = 0x87DE9          # rank_twice's call of the club count (0xC4BE0 here; #46 retargets it to 0xC6430)
+
+    @classmethod
+    def setUpClass(cls):
+        if not HAVE_UC:
+            raise unittest.SkipTest("Unicorn required")
+        import hashlib
+        root = os.environ.get("NFL2K5_B81_KP_76001")
+        if not root or not (Path(root) / "before-2026-st9-w19.b81mem.gz").is_file():
+            raise unittest.SkipTest("NFL2K5_B81_KP_76001 not set or absent")
+        cls.root = Path(root)
+        cls.xbe = (cls.root / "default.xbe").read_bytes()
+        if hashlib.sha256(cls.xbe).hexdigest() != cls.XBE_SHA256:
+            raise unittest.SkipTest("the 76001 fixture's executable differs")
+
+    def machine(self):
+        from tests.nfl2k5_supersim_draft_fixture import Machine
+        from tools import franchise_invariants as fi
+        from mod_editor.core import nfl2k5_franchise_economy as economy, nfl2k5_team_building as tb
+        code = tb._code()
+        m = Machine(self.xbe, trace_writes=False)
+        for lo, data in fi.load_memory(self.root / "before-2026-st9-w19.b81mem.gz").regions:
+            if lo < 0x3000000:
+                m.uc.mem_write(lo, data)
+        for site in economy.sites():
+            if site.va in economy.WINDOWS:
+                m.uc.mem_write(site.va, site.patched)
+        for va, blob in code.WINDOWS.items():
+            m.uc.mem_write(va, blob)
+        m.uc.mem_write(tb.HEAD_CALL_VA, tb._branch(tb.HEAD_CALL_VA, 0xE8, code.SYMBOLS["tb_order"]))
+        m.uc.mem_write(tb.WISH_JUMP_VA, tb._branch(tb.WISH_JUMP_VA, 0xE9, code.SYMBOLS["tb_wish_entry"]))
+        for va in tb.DAY_CALL_SITES:
+            m.uc.mem_write(va, tb._branch(va, 0xE8, tb.PACE_DAY_ENTRY))
+        for page in range(PAGE_VA, PAGE_VA + 0x7000, 0x1000):
+            if not any(b <= page <= e for b, e, _p in m.uc.mem_regions()):
+                m.uc.mem_map(page, 0x1000)
+        m.uc.mem_write(PAGE_VA, code.PAGE + bytes(code.STATE_SIZE))
+        m.uc.ctl_flush_tb()
+        m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
+        m.leaf(0x14E520, lambda: m.ret(), reason="informational dialog only")
+        self.code = code
+        return m
+
+    @staticmethod
+    def roster(m, t):
+        team = m.call(0xC4C50, ecx=t)
+        return [m.get(team + 4 * i) for i in range(m.uc.mem_read(team + 0x11C, 1)[0])]
+
+    @staticmethod
+    def rating(m, p):
+        stub, scratch = m.STOP + 0x10, 0x3000100
+        m.uc.mem_write(stub, b"\xe8" + struct.pack("<i", 0x246D80 - (stub + 5)) + b"\xd9\x1d" + struct.pack("<I", scratch) + b"\xc3")
+        m.call(stub, ecx=p, edx=0)
+        return struct.unpack("<f", bytes(m.uc.mem_read(scratch, 4)))[0]
+
+    @staticmethod
+    def empty_pro_bowl(m):
+        for t in (32, 33):
+            m.uc.mem_write(m.call(0xC4C50, ecx=t) + 0x11C, bytes([0]))
+
+    def specialists(self, m):
+        return [p for t in range(32) for p in self.roster(m, t) if m.uc.mem_read(p + 0x35, 1)[0] in (K, P)]
+
+    def test_stage9_ranks_and_prices_are_the_economys_own_with_the_page_installed(self):
+        """No day: rank_any goes to the page (the 0x24849A call is there in every stage) and the page hands the count to
+        the economy's rank_twice, so every K's and P's rank and price is the same with the page's entry bypassed (the
+        retail call at 0x24849A). This economy still walks 0xC4BE0 (34 here), so the Pro Bowl kickers do count: the page
+        follows the economy, whichever count it walks. Fails if the page walked its own 32 clubs outside a day."""
+        from mod_editor.core import nfl2k5_franchise_economy_code as eco
+        m = self.machine()
+        self.assertEqual((m.get(0xE576A0), m.get(0xE576AC), m.call(0xC4BE0), m.call(0xC6430)), (2, 34, 34, 32))
+        self.assertEqual(m.get(PAGE_VA), 0)
+        rank_any, value = eco.SYMBOLS["economy_rank_any"], 0x2BD440
+        men = self.specialists(m)
+        site = bytes(m.uc.mem_read(DAY_SITE, 5))
+        got = {}
+        for installed in (True, False):
+            m.uc.mem_write(DAY_SITE, site if installed else bytes.fromhex("e861c10d00"))
+            m.uc.ctl_flush_tb()
+            got[installed] = ([m.call(rank_any, args=(p,), budget=200_000_000) for p in men],
+                              [m.call(value, ecx=p, edx=0, args=(0, 1, 0), budget=200_000_000) for p in men])
+        self.assertEqual(got[True], got[False])
+        self.assertGreater(len(set(got[True][0])), 5)
+
+    def test_inside_a_day_the_page_counts_the_32_league_clubs(self):
+        """A day (the static state current, as pace_day_entry makes it): the page's walk and its lists count the 32
+        league clubs (0xC6430), so each K's and P's count equals the economy's rank_twice with the Pro Bowl lists emptied,
+        and differs from it with them for some man (0xC4BE0 reads 34 here). Free-agency days run in stage 3, where both
+        counts read 32."""
+        m = self.machine()
+        state, pace_rank, rank_twice = PAGE_VA + 0x1000, self.code.SYMBOLS["pace_rank_twice"], 0x87DC0
+        men = self.specialists(m)
+        with_pb = [m.call(rank_twice, args=(p,), budget=200_000_000) for p in men]
+        m.put(PAGE_VA, state)
+        page = [m.call(pace_rank, args=(p,), budget=200_000_000) for p in men]
+        m.call(self.code.SYMBOLS["pace_lists"], ecx=1, budget=50_000_000)
+        self.assertEqual(m.get(state), 1, "the lists did not build")
+        listed = [m.call(pace_rank, args=(p,), budget=200_000_000) for p in men]
+        m.call(self.code.SYMBOLS["pace_lists"], ecx=0, budget=1_000_000)
+        m.put(PAGE_VA, 0)
+        self.empty_pro_bowl(m)
+        without = [m.call(rank_twice, args=(p,), budget=200_000_000) for p in men]
+        self.assertEqual((page, listed), (without, without))
+        self.assertNotEqual(with_pb, without)
+
+    def test_with_the_economy_on_0xC6430_a_stage9_price_ignores_the_pro_bowl_sides(self):
+        """The merged product (#46 retargets rank_twice's club count to 0xC6430): with the page installed and no day, a
+        stage-9 price ignores the Pro Bowl sides. The subject (as #46's test): the best healthy kicker rated below both
+        Pro Bowl kickers, released to free agency, the cap raised eightfold so his ask shows the price; his price and
+        every rostered K's and P's are the same with the Pro Bowl lists emptied. With the economy's walk on 0xC4BE0
+        his price moves when they are emptied, so the test sees the walk the page follows."""
+        value = 0x2BD440
+        got = {}
+        for merged in (False, True):
+            for empty in (False, True):
+                m = self.machine()
+                if merged:
+                    self.assertEqual(bytes(m.uc.mem_read(self.WALK_CALL, 1)), b"\xe8")
+                    m.uc.mem_write(self.WALK_CALL, b"\xe8" + struct.pack("<i", 0xC6430 - self.WALK_CALL - 5))
+                    m.uc.ctl_flush_tb()
+                pro = {p for t in (32, 33) for p in self.roster(m, t)}
+                kickers = [(t, p) for t in range(32) for p in self.roster(m, t)
+                           if m.uc.mem_read(p + 0x35, 1)[0] == K and p not in pro and not m.uc.mem_read(p + 0x23, 1)[0] & 0x80]
+                line = min(self.rating(m, p) for p in pro if m.uc.mem_read(p + 0x35, 1)[0] == K)
+                club, him = max(((t, p) for t, p in kickers if self.rating(m, p) < line), key=lambda tp: self.rating(m, tp[1]))
+                others = [p for p in self.specialists(m) if p != him]
+                m.call(0x2BD900, ecx=m.call(0xC4C50, ecx=club), edx=him, args=(1, 1), budget=200_000_000)
+                m.put(0xE3C278, 8 * m.get(0xE3C278))
+                if empty:
+                    self.empty_pro_bowl(m)
+                self.assertEqual(m.get(PAGE_VA), 0)
+                price = lambda p: m.call(value, ecx=p, edx=0, args=(0, 1, 0), budget=200_000_000)
+                got[merged, empty] = (price(him), [price(p) for p in others])
+        self.assertEqual(got[True, False], got[True, True])
+        self.assertNotEqual(got[False, False][0], got[False, True][0])
 
 
 if __name__ == "__main__":

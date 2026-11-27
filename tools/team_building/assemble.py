@@ -22,7 +22,10 @@ sys.path.insert(0, str(ROOT))
 from tools.team_building.dead_code import WINDOWS  # noqa: E402
 
 TARGET = ROOT / "mod_editor/core/nfl2k5_team_building_code.py"
-NATIVE = {"n_rating": 0x246D80, "n_human": 0x13EC30, "n_team": 0xC4C50, "n_teams": 0xC4BE0,
+# n_teams: 0xC6430, the club count the economy walks after #46 (32 in franchise mode, where 0xC4BE0 reads 34 in stage 9
+# with the Pro Bowl records; the two agree in modes 1 and 3 and in franchise outside stage 9, so every team-building pass
+# and free-agency day, franchise stages 3 and 5, reads 32 either way)
+NATIVE = {"n_rating": 0x246D80, "n_human": 0x13EC30, "n_team": 0xC4C50, "n_teams": 0xC6430,
           "n_at_position": 0xC3CB0, "n_minimum_at": 0x2BD410, "n_maximum_at": 0x2BD400, "n_game_rand": 0x48BC0,
           "n_need": 0x31DEA0, "n_fa_day": 0x324600}
 ENTRIES = ("tb_order", "tb_wish_entry")
@@ -47,7 +50,8 @@ def inputs() -> dict:
     value = [round(draft.VALUE[p] * 100) for p in draft.POSITIONS]
     assert len(decline) == 17 and all(0 < v < 256 for v in decline + value)
     native = dict(NATIVE, economy_value=0x2BD440, economy_room_for_signing=economy.SYMBOLS["economy_room_for_signing"],
-                  price_group=economy.SYMBOLS["price_group"])   # b81 #45: the pace page counts by the economy's groups
+                  price_group=economy.SYMBOLS["price_group"],   # b81 #45: the pace page counts by the economy's groups
+                  rank_twice=economy.SYMBOLS["rank_twice"])     # and, outside a day, by the economy's own rank_twice
     assert native["economy_room_for_signing"] == 0x2D82F0          # the economy's pinned entry (revision 9)
     groups = data["revision_10"]["price"]["position_group"]
     assert len(groups) == 17 and max(groups) < 15 == len(data["revision_10"]["price"]["groups"]), \

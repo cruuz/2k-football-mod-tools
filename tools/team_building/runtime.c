@@ -38,7 +38,7 @@ typedef int i32;
 extern float FAST n_rating(u8 *p, unsigned flag);                          /* 0x246D80 */
 extern unsigned FAST n_human(u8 *team);                                     /* 0x13EC30 */
 extern u8 *FAST n_team(unsigned index);                                     /* 0xC4C50 */
-extern unsigned n_teams(void);                                              /* 0xC4BE0 */
+extern unsigned n_teams(void);    /* 0xC6430: the league's 32 clubs in franchise mode (#46; 0xC4BE0 in modes 1 and 3) */
 extern unsigned FAST n_at_position(u8 *team, unsigned pos);                 /* 0xC3CB0 */
 extern unsigned FAST n_minimum_at(unsigned pos);                            /* 0x2BD410 */
 extern unsigned FAST n_maximum_at(unsigned pos);                            /* 0x2BD400 */

@@ -728,7 +728,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_display_list_stability.py": "34649b364e65566cc798df8e0ad60410609f7178973358e95ee3691b2f6e6031",
         "mod_editor/core/nfl2k5_draft_ai.py": "1877897b5c5493845fbbe982d3a04f669eee7985d6bf8d6ac29e7f6f5ae32fbe",
         "mod_editor/core/nfl2k5_team_building.py": "9f14809125581eed7f242754faa259e0913b490d3943012f55c4303c485d4989",  # b81 team building: the draft AI loads it
-        "mod_editor/core/nfl2k5_team_building_code.py": "e8a5f9093d0ef1f3d8042c9310c9bd970bc8702d54e0d0c79a21a5f84abba230",  # b81 team building: its generated template
+        "mod_editor/core/nfl2k5_team_building_code.py": "5964baeed8884693aa5ab8bab94fc843e5448d7ddc7f7912d6be7ea6a968c50b",  # b81 team building: its generated template
         "mod_editor/core/nfl2k5_team_need.py": "76377be937b0c09991f15452dbc5c3fbee6774663fb9578494a0ab67f8d5f21b",  # b81: the shared team-need rule (Python mirror)
         "mod_editor/core/nfl2k5_draft_class.py": "9961548abfb4946225b724b6b4ec18b477d9f4db9a5049909c1a3ec7015a9671",  # b780 b1-draft: imported by throw_tuning (the draft fixes)
         "mod_editor/core/nfl2k5_dynamic_kickoff.py": "5ed5a2914bd857d734f285f68af3b2b4b41712939e9d8aa42cf88103b11f6b16",
@@ -917,8 +917,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_preseason.py": "5e18c2bba83005798237cc3c85b0e10ee9f7dd8f4e179f52a430f46ed02c951b",
         "mod_editor/core/nfl2k5_probowl_order.py": "6e61b983f57f7e01695c7626b51854aea2242e1c7879049f8bb3a85a44b3cf9f",
         "mod_editor/core/nfl2k5_roster_fill_composition.py": "96547bdc1c66889f68f44deb147bd5f6095ee169d343d53aaa4f532d12ee53e8",
-        "mod_editor/core/nfl2k5_franchise_economy.py": "b2038da913615a463e9baafc7b2733e7b486a4c735596f256babc86172e23260",
-        "mod_editor/core/nfl2k5_franchise_economy_code.py": "dd0880f70c16524780f92e70114d3ff37e055f60921dce3b58df75f32923a976",
+        "mod_editor/core/nfl2k5_franchise_economy.py": "90e1197db6cc62d4501076fb1891cc0b372a0368c54ea2556e7d920c2c0a3936",
+        "mod_editor/core/nfl2k5_franchise_economy_code.py": "f8f62b716f4f19a589693dcd09b4054972fe560a9977dfe3d5e241e5061a5363",
         "mod_editor/core/nfl2k5_progression.py": "27c28380c79df69c82031376b7ee6c990e4bda2781c90053ac29b2b18c14e99a",
         "mod_editor/core/nfl2k5_prospect_names.py": "6f48b67a3b00b72b8bc51ca35527037ceca27c4137b9bb0e1d4542f27c39e7ac",
         "mod_editor/core/nfl2k5_qb_spy_runtime.py": "094e1ed86847a0b78e9ead41b44aea476f6f2f313ff6c986b1db722940553a2c",
