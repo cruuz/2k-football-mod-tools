@@ -14,6 +14,7 @@ studio while they land.
 
 from __future__ import annotations
 
+import copy
 import importlib
 import json
 import os
@@ -1784,6 +1785,8 @@ def apply_preset(plan: BuildPlan, name: str) -> BuildPlan:
         values["sim_qb_injuries"] = None
         values["qb_room"] = None  # b81 qb34: 128 MB standard only
         values["modern_numbers"] = False  # b81 modern numbers (review M1): its page is in the 128 MB scale-out pool
+        values["helmet_side_numbers"] = False  # b81 #43 ruling 2: its fixed page tops the 128 MB scale-out pool
+        values["classic_crowd"] = False        # b81 #43 ruling 2: likewise (the two cost 356 KB at 64 MB, NRG s37)
         values["cpu_trades"] = None  # b81 trades-all: 128 MB standard only
         values["k128_memory"] = False
         values["k128_early"] = False         # b81 relrev M4: both need 128 MB memory
@@ -6183,6 +6186,23 @@ def _compact_build_disc(target, original, receipt, progress):
     return compacted
 
 
+def _refresh_readback(receipt, target, taken, screen_timing=None):
+    """b81 #43 (coordinator ruling 3): a full build takes its readback (inspect) at verify_composed, before the late
+    owner steps (team building, injured reserve, the quarterback room, CPU trades, SportsCenter news, ...). Those steps
+    write only their own result key, so a readback key derived from their owner kept its earlier state: the combined
+    B build's receipt read modern injured reserve "retail" on a disc that carries it. Read the finished build again
+    after the last step: every key still holding the earlier readback's value takes the fresh one, a key the fresh
+    readback adds is added, and a key a step set itself since (a level, a mode, "left_out") keeps the step's value.
+    ``taken`` is a copy of the earlier readback; None (the hires-pack path, verified by identity) leaves the result."""
+    if taken is None:
+        return
+    fresh = inspect(target, screen_timing=screen_timing)
+    result, missing = receipt["result"], object()
+    for key, value in fresh.items():
+        if key not in result or result[key] == taken.get(key, missing):
+            result[key] = value
+
+
 def _verify_finished_game_disc(target, receipt, progress):
     from .nfl2k5_disc_extents import validate_image
     receipt["disc_extents"] = validate_image(target)
@@ -7377,12 +7397,25 @@ def _apply_team_ratings(plan, target, receipt, progress):
     receipt["steps"].append({"step": "team_ratings", **result})
 
 
+# b81 #43 (coordinator ruling 2, 11/27): two fixed pages at the top of the 128 MB scale-out pool, 128 MB only like
+# modern numbers (review M1) and the gadget plays: a 64 MB plan clears them (apply_preset), the memory model refuses
+# them (REQUIRES_128) and their steps refuse them in place.
+HELMET_SIDES_NEED_128 = ("Helmet side numbers need the 128 MB standard build: their code is on a fixed page at the top of "
+                         "the extra executable sections, which a 64 MB build has no room to map. Clear the option for a "
+                         "64 MB build.")
+CLASSIC_CROWD_NEEDS_128 = ("The classic Seamen's crowd needs the 128 MB standard build: its code is on a fixed page at the "
+                           "top of the extra executable sections, which a 64 MB build has no room to map. Clear the option "
+                           "for a 64 MB build.")
+
+
 @_core_step("helmet_side_numbers")
 def _apply_helmet_side_numbers(plan, target, receipt, progress):
     """b81 helmet-sides: after every other executable writer (its late owner is the last in LATE_OWNERS) and after
     every kit writer: the route-5 owner, then the Chargers' two kits. Needs the hair styles growth (set E)."""
     if not plan.helmet_side_numbers:
         return
+    if getattr(plan, "console_memory", None) == 64:   # b81 #43 ruling 2, as modern numbers (review M1)
+        raise ValueError(HELMET_SIDES_NEED_128)
     sides = _core_module("nfl2k5_helmet_side_numbers")
     if sides is None:
         raise ValueError("Helmet side numbers are unavailable in this Studio installation.")
@@ -9641,6 +9674,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
     _step("verify_composed")
     progress("Verifying the composed disc", 0, 0)
     inspection = inspect(target, screen_timing=plan.screen_timing)
+    readback_taken = None  # b81 #43 ruling 3: the readback the receipt carries, until the last step refreshes it
     if plan.hires_pack:
         _step("hires_pack")
         # Retain fixed-offset inspector results only with their pre-remap scope.
@@ -9659,6 +9693,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                              "inspection_scope": "Final archive and XBE verified by identity; earlier patch states are in pre_remap_inspection"}
     else:
         receipt["result"] = inspection
+        readback_taken = copy.deepcopy(inspection)  # b81 #43 ruling 3: refreshed after the last step
     if plan.modern_naming:
         _step("modern_naming")
         rec = tt._finish_naming_image(target, naming_digest, progress)
@@ -9722,6 +9757,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
             receipt["result"]["image_sha256"] = _core_module("nfl2k5_music_archive").file_hash(target)
         else:
             receipt["result"] = inspect(target, screen_timing=plan.screen_timing)
+            readback_taken = copy.deepcopy(receipt["result"])  # b81 #43 ruling 3
     if plan.espn25_rosters:
         _step("espn25_rosters")
         # Historic resource pass plus the guarded native reload repair, on the copy after relocations.
@@ -10058,6 +10094,8 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
         receipt["result"]["classic_teams"] = classic.image_status(target, retail)
         if receipt["result"]["classic_teams"] != "applied":
             raise ValueError("the classic teams failed their read-back on the copy")
+        if plan.classic_crowd and getattr(plan, "console_memory", None) == 64:   # b81 #43 ruling 2: refused, not left out
+            raise ValueError(CLASSIC_CROWD_NEEDS_128)
         if plan.classic_crowd:
             # b81-seamen (the owner 11/25: "fans also wearing dolphins gear"): the Seamen's own crowd, right after the
             # classic teams: fourteen files from the user's own Dolphins crowd files and the redirect in its fixed page
@@ -11177,6 +11215,7 @@ def _build(plan: BuildPlan, progress: ProgressSink | None = None, *, music_edits
                 raise ValueError("the era ball did not survive the final resource passes")
         if not _ball.enabled() and _ball.image_status(target) != "retail":
             raise ValueError("the era ball is off but the ball scene is not the user's own")
+    _refresh_readback(receipt, target, readback_taken, plan.screen_timing)  # b81 #43 ruling 3: after the last step
     if is_image:
         _verify_finished_game_disc(target, receipt, progress)
     return receipt

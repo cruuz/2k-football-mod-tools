@@ -599,8 +599,8 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "4870c5541453fb9c4eb8c3ecd5cc4db9b06e3c01d26129d9e8f5e2ee67fc801a",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "8a5a72b4d84ad2549dc22229fa753335324dcce8ab7f24c7da4b4ba453cb38a1",
-        "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
+        "mod_editor/core/mod_build.py": "49e91abce0355d19004b675c02b031beb87c6010f376ec42c45ef8109238e905",
+        "mod_editor/core/nfl2k5_console_memory.py": "6dcc5ccd961937f22f8e41e8950fb9f57801f0921e042e66307dbac27e066ec0",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
         "mod_editor/core/model.py": "292f0c5444e32f5cea000fd3cabd6963d7d805a5434dcbc364a36ca2c0f0d228",
@@ -1237,7 +1237,7 @@ class Nfl2k5UnifiedVisualProvider:
         "data/nfl2k5_era_kits_pins.json": "de18bdf5f1b32067b286c72c275641a6e3498791f852b6bbe48ea2c80ad0db90",
         "data/nfl2k5_moment_kits.json": "e2fcbb93f376f266f6973626a48e2244521df1f529f3fbe67ec28cfdc7565c18",
         "data/nfl2k5_moment_kits_pins.json": "0931360ad914f68f7e0240a21d6e8247799589be36e2e6fb4f46331a960469b4",
-        "data/nfl2k5_release_gates.json": "204ee436ef9137bddd6f58fcd464444db64b67fc82be732f43ba241a4e4939fa",
+        "data/nfl2k5_release_gates.json": "6d6bdeebea9c2b21cf0c074127e7303786e233b322cc4144fc5c9976cd65daf3",
         "data/nfl2k5_unc_bowl_uniforms_pins.json": "84dc131eebe5188fbfc18eee5187abc8ac5aba572b3796a35d2cd905a2769fe0",
         "data/nfl2k5_nyg_numbers_pins.json": "e1d34f4a340820f6569f362a91e7a1a5f5f96fd74c3a46644d656500a392f2da",
         "data/nfl2k5_kit_fixes_2026.json": "d33818434feb3f30e5d2515eaae1b186f97bfc6344bd477298550885bce96156",
