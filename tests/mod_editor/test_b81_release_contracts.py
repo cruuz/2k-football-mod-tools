@@ -223,11 +223,16 @@ class ReleaseDocumentTests(unittest.TestCase):
                 entry = [c for c in plan["contract_corrections"] + plan["contract_initializations"]
                          if c["index"] == parsons["index"]]
                 self.assertEqual(entry[0]["fields"]["contract_remaining"], 4)
-                # coordinator 11/27: Quenton Nelson (traded IND -> SEA after week 8) is charged IND's full 2026 cap hit
+                # coordinator 11/27, ruling (a): Quenton Nelson (traded IND -> SEA after week 8) is the one named
+                # exception to the full-season rule and keeps the reviewed 11/25 correction, the rest of his base salary
                 nelson = next(c for c in plan["contract_corrections"]
                               if (c["first"], c["last"]) == ("Quenton", "Nelson"))
-                self.assertEqual(nelson["fit"]["source_cap_dollars"], [24200000])
+                self.assertEqual(nelson["fit"]["source_cap_dollars"], [8888889])
                 self.assertEqual((nelson["from_club"], nelson["to_club"]), ("IND", "SEA"))
+                self.assertTrue(nelson["rule"].startswith("DESIGN: the acquiring club owes the rest of the base salary"))
+                self.assertEqual((nelson["fields"]["contract_length"], nelson["fields"]["contract_remaining"]), (1, 1))
+                self.assertEqual([(e["name"], e["full_season_dollars"]) for e in receipt["full_season_exceptions"]],
+                                 [("Quenton Nelson", 24200000)])
                 # the documents are the 11/25 roster documents plus the import, entry for entry
                 before = release_contracts.strip(document)
                 self.assertEqual(hashlib.sha256(release_contracts.dumps(before).encode()).hexdigest(),

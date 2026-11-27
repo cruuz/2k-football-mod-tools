@@ -214,7 +214,8 @@ def in_season_full_2026(row, original):
         hold at this club, or held with its base salary already prorated. There is no unprorated schedule, so the full
         figure is the APY.
     A deal at the same club and unprorated on 09-24 whose charge is lower now (a restructure, forfeited pay) did not
-    move and is not changed here."""
+    move and is not changed here. The release import names its one exception (release_contracts.FULL_SEASON_EXCEPTIONS:
+    Quenton Nelson's reviewed correction, coordinator ruling 11/27)."""
     season = season_entry(row)
     if not season or not season.get('cap_number'):
         return None

@@ -16,9 +16,12 @@ The document changes only through mechanisms it already uses for contracts:
     its rule and its source), the mechanism the refresh already uses for Quenton Nelson;
   * a player the plan lists as injured (status RES, who rejoins his club on IR in the writer and is outside the plan's
     lists) gets a contract-only entry appended to the document's edits, as the fc import layered its contracts.
-An existing correction for an in-season trade (Quenton Nelson's, which charged the rest of his base salary) is
-rewritten in place to the full-season figure; players with no active OTC contract today and schedules the import leaves
-to review keep their contract and are listed in the report. The document's b81_contract_refresh receipt records every
+The one named exception to the full-season rule is FULL_SEASON_EXCEPTIONS: Quenton Nelson keeps the reviewed 11/25
+correction (the rest of his base salary after his week-8 trade), which Seattle really carries in 2026; his full
+figure would start Seattle over the 2026 cap, and a club over the cap at the start has its signings refused (RR1).
+Any other existing correction for an in-season move is rewritten in place to the full-season figure. Players with no
+active OTC contract today and schedules the import leaves to review keep their contract and are listed in the
+report. The document's b81_contract_refresh receipt records every
 entry the import added or replaced, so strip() gives back the document before it: the 64 MB edition is the retail fit
 of the 128 MB document before the import, with the import run on it (tools/nfl2k5_roster_retail_fit.py fit does that
 order; its validate strips both editions, checks the fit, and re-runs the import on the fitted document). Fifth-year
@@ -58,6 +61,13 @@ RULE = ("b81 #48: the player's current OverTheCap contract by gsis id, fitted by
         "tools/franchise_economy/import_contracts.contract_fit (2026 cap schedule; without one, OTC's term at APY; "
         "an in-season mover's 2026 charge at the deal's full-season figure; 2026 charge at least the one-year minimum)")
 RECEIPT = "b81_contract_refresh"
+# coordinator 11/27, #48 review ruling (a): the one named exception to the full-season rule, by gsis id
+FULL_SEASON_EXCEPTIONS = {
+    "00-0034342": ("Quenton Nelson keeps the reviewed 11/25 correction, $8,888,889 (the rest of his $16.0M base salary "
+                   "after his week-8 trade from IND): Seattle really carries that in 2026, and his full-season $24.2M "
+                   "would start Seattle over the 2026 cap, where a club's signings are refused (RR1). His deal ends in "
+                   "2026, as his real schedule does."),
+}
 SNAPSHOT_0924 = ROOT / "fc/data/contract_audit.json"
 FALLBACK_SOURCE = "https://github.com/nflverse/nflverse-data/releases/tag/contracts"
 RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XISO", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
@@ -223,6 +233,10 @@ def refit(doc: dict, body: bytes, rows: list[dict], data: dict, *, as_of: str,
         if how:
             report[f"choice: {how}"] += 1
         moved = in_season_full_2026(row, original_2026(before_0924.get(gsis, []), row))
+        if index in kept and gsis in FULL_SEASON_EXCEPTIONS:
+            untouched["named exception to the full-season rule: reviewed correction kept"].append(
+                {**label, "reason": FULL_SEASON_EXCEPTIONS[gsis], "full_season_dollars": (moved or {}).get("dollars")})
+            continue
         if index in kept:
             if moved is None:
                 untouched["existing reviewed contract correction kept"].append(label)
@@ -327,6 +341,9 @@ def apply(doc: dict, edition: int, meta: dict, rows: list[dict], data: dict):
         "value_only_changed": result["summary"]["value_only_changed"],
         "in_season_moves": result["summary"]["in_season_moves"],
         "by_mechanism": result["summary"]["by_mechanism"], "kept": result["summary"]["untouched"],
+        "full_season_exceptions": [
+            {k: e[k] for k in ("index", "name", "gsis_id", "reason", "full_season_dollars")}
+            for e in result["untouched"].get("named exception to the full-season rule: reviewed correction kept", [])],
         "document_before_sha256": hashlib.sha256(dumps(before).encode("utf-8")).hexdigest(),
         "contracts_before_sha256": contracts_sha256(before),
         "written_body_before_sha256": hashlib.sha256(body).hexdigest(),
