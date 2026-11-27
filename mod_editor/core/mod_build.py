@@ -2070,7 +2070,6 @@ _LATE_OWNER_OPTIONS = (
     ("nfl2k5_ball_carrier_ai", "CPU ball carriers", lambda p: p.cpu_ball_carriers),  # b778-ai5
     ("nfl2k5_star_retention", "CPU clubs keep their stars", lambda p: p.star_retention),  # b778-fa1
     ("nfl2k5_team_building", "CPU team building", lambda p: p.team_building),  # b81 team building
-    ("nfl2k5_team_building_pace", "CPU team building", lambda p: p.team_building),  # b81 #45: its pace page
     ("nfl2k5_star_career", "Rookie and career stars", lambda p: p.star_career),  # b778-st2
     ("nfl2k5_draft_clock", "Franchise draft clock", lambda p: p.franchise_draft_clock),  # b778-dr1
     ("nfl2k5_weekly_progression", "Weekly player progression", lambda p: p.weekly_progression),  # b778-pg1
@@ -5074,7 +5073,7 @@ def availability(official_marks_pack=None) -> dict[str, bool]:
                                ("crib_trophy_room", "nfl2k5_crib_trophy_room"),  # b778-xs1
                                ("inbox_standings", "nfl2k5_inbox_standings"),  # b778-pc3; no allocation
                                ("star_retention", "nfl2k5_star_retention"),  # b778-fa1
-                               ("team_building", "nfl2k5_team_building"),  # b81 team building; no allocation
+                               ("team_building", "nfl2k5_team_building"),  # b81 team building (#45: its pace pages, nfl2k5_team_building_pace)
                                ("practice_injuries", "nfl2k5_practice_injuries"),  # b778-pi1
                                ("cpu_ball_carriers", "nfl2k5_ball_carrier_ai"),  # b778-ai5
                                ("cpu_runner_vision", "nfl2k5_runner_vision"),  # b780 cv2-runner

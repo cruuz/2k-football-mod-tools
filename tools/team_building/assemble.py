@@ -30,6 +30,7 @@ ENTRIES = ("tb_order", "tb_wish_entry")
 # (nfl2k5_xbe_space.TEAM_BUILDING_PACE_VA); its first words and jump table sit at fixed offsets that the 0x24849A site and
 # the economy's rank_any name (pace.c's header comment).
 PAGE_VA, PAGE_SIZE = 0x1535000, 0x1000
+STATE_SIZE = 0x6000                    # b81 #45 review L1: the day state, static, in the six pages after the code page
 PAGE_LAYOUT = {"pace_day": 0x00, "pace_head": 0x00}
 PAGE_JUMPS = {0x10: "pace_day_entry", 0x18: "pace_rank_twice", 0x20: "pace_rate", 0x28: "pace_lists"}
 CFLAGS = ["-m32", "-Os", "-ffreestanding", "-fno-builtin", "-fno-pic", "-fno-pie", "-fno-stack-protector",
@@ -88,8 +89,8 @@ def build(source: str | None = None) -> tuple[dict, dict, dict, dict]:
                         f"-DTB_VALUE={{{','.join(map(str, info['value']))}}}", "-c",
                         str(src), "-o", str(obj)], check=True)
         # b81 #45: the pace page, its own translation unit (only .pace_head and .pace sections)
-        # its day entry's frame is ~21 KB: probed a page at a time, top down, as the game's own large frames are (its
-        # MSVC code calls _chkstk 0x373630), so a stack with a guard page is grown in order
+        # (large frames would be probed a page at a time, as the game's own are through its _chkstk 0x373630; the day
+        # state is static since the review, so no pace.c frame is large)
         subprocess.run(["gcc", *CFLAGS, "-fstack-clash-protection", "-c", str(ROOT / "tools/team_building/pace.c"), "-o",
                         str(pace)], check=True)
         for line in subprocess.check_output(["objdump", "-h", str(pace)], text=True).splitlines():
@@ -163,7 +164,7 @@ def generate() -> str:
         lines += [f'        ).ljust({size}, b"\\xcc")', "    ),"]
     lines += ["}", "RETAIL_SHA256 = {" + ", ".join(f"{va:#x}: {WINDOWS[va][1]!r}" for va in sorted(WINDOWS)) + "}",
               "SYMBOLS = " + repr(dict(sorted(symbols.items()))),
-              f"PAGE_VA = {PAGE_VA:#x}", "PAGE = bytes.fromhex("]
+              f"PAGE_VA = {PAGE_VA:#x}", f"STATE_SIZE = {STATE_SIZE:#x}", "PAGE = bytes.fromhex("]
     lines += ['    "' + page[i:i + 40].hex() + '"' for i in range(0, len(page), 40)]
     lines += [f').ljust({PAGE_SIZE:#x}, b"\\xcc")',
               "INPUTS = " + repr({"decline_after": info["decline"], "value_x100": info["value"]}), ""]

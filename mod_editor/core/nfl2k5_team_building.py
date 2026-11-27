@@ -21,9 +21,10 @@ unreferenced retail functions listed in tools/team_building/dead_code.py):
   best free agent the club can pay, weakness first, one wish a position pool.
 It needs the draft AI (current head) and the franchise economy at revision 9 or later (economy_value and
 economy_room_for_signing, the economy's one affordability routine, are called). No save field.
-b81 #45 (sim speed): the pace page, one fixed page of the scale-out pool at 0x1535000 (owner nfl2k5_team_building_pace,
-tools/team_building/pace.c), and the free-agency day call in the stage action (0x24849A: `call 0x324600` -> the page's
-day entry 0x1535010). For each free-agency day of the offseason's stage 3 it keeps a memo of the native rating
+b81 #45 (sim speed): the pace page, seven fixed pages of the scale-out pool at 0x1535000 (owner
+nfl2k5_team_building_pace, tools/team_building/pace.c: the code page and the day state), and every retail call of a
+free-agency day (the stage action's 0x24849A and the free-agency screen's 0x36260D, 0x3631E8, 0x36324D: `call 0x324600`
+-> the page's day entry 0x1535010). For each free-agency day of the offseason's stage 3 it keeps a memo of the native rating
 0x246D80(p, 0) and, while a club's scoring runs, lists of every rostered man by price group, so this owner's ratings and
 the economy's rank price (through the economy's rank_any, revision 11) stop re-rating the league for every price: stage
 3 -> 4 took 9.6 times the v0.9 control's instructions. The same ratings, ranks and prices come out (pace.c says why).
@@ -58,6 +59,9 @@ WISH_JUMP_VA = 0x324414          # draft_ai body_patch: e9 rel32 -> 0x10B40 (the
 DRAFT_NEED_VA = 0x31DEA0
 DRAFT_CAVE_VA = 0x10B40
 DAY_CALL_VA = 0x24849A          # the stage action's call of one free-agency day (0x324600), retail e8 61 c1 0d 00
+# b81 #45 review M1: every retail call of a free-agency day goes to the page: the stage action's and the free-agency
+# screen's (one day per press 0x36260D, to the end 0x3631E8, 0x36324D); ECX is the menu at each, as 0x324600 takes it
+DAY_CALL_SITES = (DAY_CALL_VA, 0x36260D, 0x3631E8, 0x36324D)
 FA_DAY_VA = 0x324600
 PACE_DAY_ENTRY = 0x1535010       # the pace page's day entry (pace.c's jump table)
 # The previous template (6e37263e1, before #45): sha256 of its 29 windows in address order, and its two entries.
@@ -129,10 +133,17 @@ def _sites(payload: bytes):
                   _branch(HEAD_CALL_VA, 0xE8, DRAFT_NEED_VA)))
     sites.append(("wish_jump", _offset(payload, WISH_JUMP_VA), body, _branch(WISH_JUMP_VA, 0xE9, e["wish"]),
                   _branch(WISH_JUMP_VA, 0xE9, DRAFT_CAVE_VA)))
-    # b81 #45: the free-agency day call (retail bytes; no draft-AI form)
-    sites.append(("day_call", _offset(payload, DAY_CALL_VA), _branch(DAY_CALL_VA, 0xE8, FA_DAY_VA),
-                  _branch(DAY_CALL_VA, 0xE8, PACE_DAY_ENTRY), None))
+    # b81 #45: the free-agency day calls (retail bytes; no draft-AI form)
+    for va in DAY_CALL_SITES:
+        sites.append((f"day_call_{va:x}", _offset(payload, va), _branch(va, 0xE8, FA_DAY_VA), _branch(va, 0xE8, PACE_DAY_ENTRY),
+                      None))
     return sites
+
+
+def _page_content() -> bytes:
+    """b81 #45: the pace allocation as this template fills it: the code page, then the day state (zero)."""
+    code = _code()
+    return code.PAGE + bytes(code.STATE_SIZE)
 
 
 def _space():
@@ -155,7 +166,7 @@ def _page_state(payload: bytes) -> tuple[str, dict | None]:
                                                                     space.TEAM_BUILDING_PACE_SIZE):
         return "foreign", row
     page = payload[row["raw"]:row["raw"] + row["size"]]
-    if page == _code().PAGE:
+    if page == _page_content():
         return "applied", row
     return ("empty" if page == b"\xcc" * row["size"] else "foreign"), row
 
@@ -169,7 +180,8 @@ def _previous(payload: bytes) -> bool:
         return (hashlib.sha256(windows).hexdigest() == PREVIOUS_TEMPLATE["windows_sha256"]
                 and _rel(payload, HEAD_CALL_VA, 0xE8) == PREVIOUS_TEMPLATE["order"]
                 and _rel(payload, WISH_JUMP_VA, 0xE9) == PREVIOUS_TEMPLATE["wish"]
-                and _rel(payload, DAY_CALL_VA, 0xE8) == FA_DAY_VA and _page_state(payload)[0] in ("absent", "empty"))
+                and all(_rel(payload, va, 0xE8) == FA_DAY_VA for va in DAY_CALL_SITES)
+                and _page_state(payload)[0] in ("absent", "empty"))
     except (TeamBuildingError, ValueError, struct.error, KeyError, IndexError):
         return False
 
@@ -270,7 +282,7 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
                      + [{"label": space.TEAM_BUILDING_PACE_OWNER, "va": hex(space.TEAM_BUILDING_PACE_VA),
                          "bytes": space.TEAM_BUILDING_PACE_SIZE}],
                      "changed_bytes": space.count_differing_bytes(original, patched), "code_bytes": used,
-                     "pace_page_bytes": len(_code().PAGE.rstrip(b"\xcc")),
+                     "pace_page_bytes": len(_code().PAGE.rstrip(b"\xcc")), "day_calls": [hex(va) for va in DAY_CALL_SITES],
                      "windows": len(_code().WINDOWS), "hole_percentile": HOLE / tn.SCALE, "margin": MARGIN,
                      **({"upgraded_from": "previous"} if state == "previous" else {})}
 
@@ -292,7 +304,7 @@ def reserved(payload: bytes) -> bytes:
 
 def _with_page(payload: bytes) -> bytes:
     """b81 #45: the pace page reserved and filled."""
-    payload, _ = _space().install_code(reserved(payload), _space().TEAM_BUILDING_PACE_OWNER, _code().PAGE)
+    payload, _ = _space().install_code(reserved(payload), _space().TEAM_BUILDING_PACE_OWNER, _page_content())
     return payload
 
 
@@ -307,7 +319,7 @@ def restore(payload: bytes, retail: bytes) -> tuple[bytes, Mapping[str, object]]
     for label, off, digest, ours, theirs in _sites(payload):
         if theirs is not None:
             pieces.append((off, theirs))
-        elif label == "day_call":
+        elif label.startswith("day_call_"):
             pieces.append((off, digest))           # the retail call of the day (b81 #45)
         else:
             va = int(label.split("_")[1], 16)
@@ -318,7 +330,7 @@ def restore(payload: bytes, retail: bytes) -> tuple[bytes, Mapping[str, object]]
             pieces.append((off, data))
     restored = _write(payload, pieces)
     restored, _ = _space().install_code(restored, _space().TEAM_BUILDING_PACE_OWNER,
-                                        b"\xcc" * _space().TEAM_BUILDING_PACE_SIZE, previous=_code().PAGE)
+                                        b"\xcc" * _space().TEAM_BUILDING_PACE_SIZE, previous=_page_content())
     if status(restored) != "retail":
         raise TeamBuildingError("post-restore verification failed")
     return restored, {"status": "retail", "edits": [label for label, *_ in _sites(payload)]}

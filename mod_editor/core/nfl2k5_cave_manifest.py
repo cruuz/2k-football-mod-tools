@@ -356,9 +356,10 @@ class Recorder:
                 self.reserve(va, len(blob), "nfl2k5_team_building", "full owner window")
             for va in (team_building.HEAD_CALL_VA, team_building.WISH_JUMP_VA):
                 self.reserve(va, 5, "nfl2k5_team_building", "retargeted draft-AI branch")
-            # b81 #45: the free-agency day call in the stage action, to the pace page's day entry (the page itself is
-            # the allocator's row for nfl2k5_team_building_pace)
-            self.reserve(team_building.DAY_CALL_VA, 5, "nfl2k5_team_building", "free-agency day call to the pace page")
+            # b81 #45: the free-agency day calls (the stage action's and the free-agency screen's three), to the pace
+            # page's day entry (the pages themselves are the allocator's row for nfl2k5_team_building_pace)
+            for va in team_building.DAY_CALL_SITES:
+                self.reserve(va, 5, "nfl2k5_team_building", "free-agency day call to the pace page")
         # Preserve the whole shared host, including alignment padding between owners.
         self.reserve(0xB4A60, 16, "nfl2k5_penalties", "shared host allocation including stub padding")
         self.reserve(0xB4A70, 32, "nfl2k5_prospect_names", "shared host allocation")

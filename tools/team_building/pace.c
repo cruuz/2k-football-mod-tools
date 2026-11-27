@@ -1,7 +1,8 @@
 /* b81 #45 (sim speed): the team-building owner's pace page (nfl2k5_xbe_space.TEAM_BUILDING_PACE_VA, 0x1535000), built
  * with runtime.c by tools/team_building/assemble.py. Freestanding i386 C; its own translation unit. The page is in the
- * scale-out pool (RWX): its first word, pace_day, is the only writable word; the day itself lives in the stack frame of
- * pace_day_entry.
+ * scale-out pool (RWX): the code page's first word, pace_day, and the day state in the six pages after it
+ * (0x1536000..0x153BFFF, PACE_STATE) are its writable data. b81 #45 review L1: the day state is static, not a 21 KB
+ * stack frame, so the main thread's stack depth inside a free-agency day (message boxes included) does not change.
  *
  * Why: the offseason's free-agency stage (stage 3 -> 4) runs 0x324600 once a day from the stage action (0x24849A; 45
  * days a season): the day's signings (0x324060), the CPU wishes (0x3242C0, where this owner prices every free agent who
@@ -11,9 +12,11 @@
  * control's instructions for that advance.
  *
  * What, with no decision changed:
- * - pace_day_entry replaces the day's call at 0x24849A (`call 0x324600` -> `call 0x1535010`). Its frame holds the day:
- *   a memo of 0x246D80(p, 0) by player record, empty at the start of each day, and the rank lists. pace_day points at it
- *   while the day runs and is 0 otherwise. No code run inside a day writes a rating's inputs (player bytes 0x2A, 0x2B
+ * - pace_day_entry replaces the day's calls: the stage action's at 0x24849A and the free-agency screen's three (one day
+ *   0x36260D, to the end 0x3631E8, 0x36324D) (`call 0x324600` -> `call 0x1535010`; ECX = the menu, untouched). The day
+ *   state at PACE_STATE holds a memo of 0x246D80(p, 0) by player record, emptied at the start of each day, and the rank
+ *   lists. pace_day points at it while the day runs and is 0 otherwise; a day started inside a day (retail never does)
+ *   runs inside the outer one. No code run inside a day writes a rating's inputs (player bytes 0x2A, 0x2B
  *   and 0x35..0x50, read by 0x246D80 through its attribute table; its own write of 0x2A for linemen, 0x1D2400, is undone
  *   before it returns), so a memoized rating is the value the native routine returns: the memo holds the native float
  *   itself (every return path of 0x246D80 loads a float from memory).
@@ -26,7 +29,7 @@
  *   level with him, over every club's active list, a man at position 17 or above in no group, the man himself left
  *   out): counted on the lists while they stand, otherwise over the active lists as rank_club does, every rating through
  *   pace_rate. The economy's price reaches it through rank_any (runtime.c) only when 0x24849A calls this page.
- * Outside a day (any other stage, or a day run from a free-agency screen) every rating is the native one, as before.
+ * Outside a day (any other stage) every rating is the native one, as before.
  *
  * Fixed layout (the economy's rank_any and the 0x24849A site name these addresses): +0x00 pace_day, +0x04 "PACE",
  * +0x10 jmp pace_day_entry, +0x18 jmp pace_rank_twice, +0x20 jmp pace_rate, +0x28 jmp pace_lists.
@@ -54,6 +57,8 @@ struct pace {
     float rate[PACE_PLAYERS];
 };
 extern struct pace *volatile pace_day;
+#define PACE_STATE ((struct pace *)0x1536000)   /* the pace allocation's second page (assemble.py checks the size) */
+_Static_assert(sizeof(struct pace) <= 0x6000, "the day state fits its six pages");
 unsigned pace_rank_twice(u8 *p);
 float FAST pace_rate(u8 *p, unsigned flag);
 void FAST pace_lists(unsigned on);
@@ -93,13 +98,16 @@ SECTION(".pace") float FAST pace_rate(u8 *p, unsigned flag) {
 }
 
 SECTION(".pace") void FAST pace_day_entry(void *menu) {
-    struct pace d;
-    struct pace *before = pace_day;
-    d.lists = 0;
-    for (u32 k = 0; k < PACE_PLAYERS / 32; ++k) d.known[k] = 0;
-    pace_day = &d;
+    struct pace *d = PACE_STATE;
+    if (pace_day) {                         /* a day inside a day: the outer day's memo stands */
+        n_fa_day(menu);
+        return;
+    }
+    d->lists = 0;
+    for (u32 k = 0; k < PACE_PLAYERS / 32; ++k) d->known[k] = 0;
+    pace_day = d;
     n_fa_day(menu);
-    pace_day = before;
+    pace_day = 0;
 }
 
 SECTION(".pace") void FAST pace_lists(unsigned on) {

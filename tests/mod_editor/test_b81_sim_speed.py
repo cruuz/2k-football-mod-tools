@@ -87,6 +87,8 @@ class Layout(unittest.TestCase):
         self.assertIn(struct.pack("<I", 0x1535018), window)                            # the page's rank entry
         self.assertEqual(tb.PACE_DAY_ENTRY, 0x1535010)
         self.assertEqual(tb._branch(tb.DAY_CALL_VA, 0xE8, tb.FA_DAY_VA), bytes.fromhex("e861c10d00"))
+        # review M1: the free-agency screen's three day calls go to the page too
+        self.assertEqual(tb.DAY_CALL_SITES, (0x24849A, 0x36260D, 0x3631E8, 0x36324D))
         # the price counts through rank_any: price_of's call reaches it, rank_twice keeps its window
         value = eco.WINDOWS[0x2BD440]
         target = eco.SYMBOLS.get("economy_value")
@@ -100,33 +102,33 @@ class Layout(unittest.TestCase):
 
     def test_allocator_places_the_page(self):
         from mod_editor.core import nfl2k5_xbe_space as space
-        self.assertEqual((space.TEAM_BUILDING_PACE_VA, space.TEAM_BUILDING_PACE_SIZE), (PAGE_VA, 0x1000))
+        self.assertEqual((space.TEAM_BUILDING_PACE_VA, space.TEAM_BUILDING_PACE_SIZE), (PAGE_VA, 0x7000))
         self.assertIn(space.TEAM_BUILDING_PACE_OWNER, space.LATE_OWNERS)
         self.assertIn(space.TEAM_BUILDING_PACE_OWNER, space.FIXED_PAGE_OWNERS)
-        self.assertIn((space.TEAM_BUILDING_PACE_OWNER, PAGE_VA, 0x1000), space.POST_SPAN_PAGES)
+        self.assertIn((space.TEAM_BUILDING_PACE_OWNER, PAGE_VA, 0x7000), space.POST_SPAN_PAGES)
         self.assertEqual(space._post_span_pages_at(space.TEAM_BUILDING_PACE_OWNER, 0, 0x1000, 0x1000),
                          PAGE_VA - space.POOL_VA)
         # another owner that would overlap the page steps past it
-        self.assertEqual(space._post_span_pages_at("other", PAGE_VA - space.POOL_VA, 16, 16),
-                         PAGE_VA + 0x1000 - space.POOL_VA)
+        self.assertEqual(space._post_span_pages_at("other", PAGE_VA + 0x3000 - space.POOL_VA, 16, 16),
+                         PAGE_VA + 0x7000 - space.POOL_VA)
 
-    def test_day_frame_is_probed_and_fits_the_harness_stack(self):
+    def test_the_day_state_is_static_not_a_stack_frame(self):
+        """Review L1: the day state (memo and lists, 21,154 bytes) lives in the six pool pages after the code page, so a
+        free-agency day adds only a few bytes of stack (the main thread's depth under a message box is unchanged)."""
         import capstone
         from mod_editor.core import nfl2k5_team_building_code as code
+        self.assertEqual(code.STATE_SIZE, 0x6000)
         entry = code.SYMBOLS["pace_day_entry"]
         md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
-        ins = [(i.mnemonic, i.op_str) for i in md.disasm(code.PAGE[entry - PAGE_VA:entry - PAGE_VA + 48], entry)][:12]
-        # gcc -fstack-clash-protection: the frame is taken a page at a time, each page touched (as the game's own large
-        # frames are, through its _chkstk 0x373630), then the rest
-        probed = next(int(o.split("- ")[1].rstrip("]"), 0) for m, o in ins if m == "lea" and o.startswith("eax, [esp - "))
-        self.assertIn(("sub", "esp, 0x1000"), ins)
-        self.assertIn(("or", "dword ptr [esp], 0"), ins)
-        rest = next(int(o.split(", ")[1], 0) for m, o in ins if m == "sub" and o.startswith("esp, ") and o != "esp, 0x1000")
-        frame = probed + rest
-        # 4 + 2*15 + 2*2112 + 4*128 + 4*4096 = 21,154 bytes (+ alignment and locals); the deepest measured rollover stage
-        # used 2,672 bytes of the harness's 32 KB (0x3000000..0x3008000) and the team-building scoring under it ~2 KB
-        self.assertTrue(21_154 <= frame < 21_400, frame)
-        self.assertLess(frame + 2_672 + 4_096, 0x8000)
+        body = list(md.disasm(code.PAGE[entry - PAGE_VA:entry - PAGE_VA + 96], entry))
+        body = body[:next(k for k, i in enumerate(body) if i.mnemonic == "ret") + 1]
+        self.assertFalse([i for i in body if i.mnemonic == "sub" and i.op_str.startswith("esp")], "no stack frame")
+        self.assertTrue(any("0x1536000" in i.op_str for i in body), "pace_day points at the static state")
+        for name in ("pace_rate", "pace_lists", "pace_rank_twice"):
+            start = code.SYMBOLS[name]
+            frame = [i for i in md.disasm(code.PAGE[start - PAGE_VA:start - PAGE_VA + 32], start)
+                     if i.mnemonic == "sub" and i.op_str.startswith("esp, ")]
+            self.assertTrue(all(int(i.op_str.split(", ")[1], 0) < 0x100 for i in frame), name)
 
 
 class WeeklyPrepPin(unittest.TestCase):
@@ -198,13 +200,17 @@ class Install(unittest.TestCase):
         image = XbeImage(patched)
         self.assertEqual(image.read(PAGE_VA, 0x1000), tb._code().PAGE)
         self.assertEqual(image.read(DAY_SITE, 5), b"\xe8" + struct.pack("<i", 0x1535010 - DAY_SITE - 5))
+        for va in tb.DAY_CALL_SITES:
+            self.assertEqual(image.read(va, 5), b"\xe8" + struct.pack("<i", 0x1535010 - va - 5), hex(va))
+        self.assertEqual(image.read(PAGE_VA + 0x1000, 0x6000), bytes(0x6000))     # the day state, empty on disc
         rows = [r for r in space.layout(patched)["allocations"] if r["owner"] == space.TEAM_BUILDING_PACE_OWNER]
-        self.assertEqual([(r["va"], r["size"], r["kind"]) for r in rows], [(PAGE_VA, 0x1000, "code")])
+        self.assertEqual([(r["va"], r["size"], r["kind"]) for r in rows], [(PAGE_VA, 0x7000, "code")])
         retail = _fixture(os.environ.get("NFL2K5_RETAIL_XBE", ""))
         back, _ = tb.restore(patched, retail)
         self.assertEqual(tb.status(back), "retail")
         self.assertEqual(XbeImage(back).read(PAGE_VA, 0x1000), b"\xcc" * 0x1000)
-        self.assertEqual(XbeImage(back).read(DAY_SITE, 5), bytes.fromhex("e861c10d00"))
+        for va, retail_call in zip(tb.DAY_CALL_SITES, ("e861c10d00", "e8ee1ffcff", "e81314fcff", "e8ae13fcff")):
+            self.assertEqual(XbeImage(back).read(va, 5), bytes.fromhex(retail_call), hex(va))
         again, _ = tb.apply(back)
         self.assertEqual(again, patched)
         # a foreign page refuses
@@ -280,9 +286,9 @@ def _load(cls):
                 i = j
             else:
                 i += 1
-    if not any(b <= PAGE_VA <= e for b, e, _p in m.uc.mem_regions()):
-        m.uc.mem_map(PAGE_VA, 0x1000)
-    m.uc.mem_write(PAGE_VA, cls.code.PAGE)
+    if not any(b <= PAGE_VA + 0x6FFF <= e for b, e, _p in m.uc.mem_regions()):
+        m.uc.mem_map(PAGE_VA, 0x7000)
+    m.uc.mem_write(PAGE_VA, cls.code.PAGE + bytes(cls.code.STATE_SIZE))
     cls.PROBE, cls.DAY = 0x3200000, 0x3210000          # probe code, and a day struct outside the stack
     m.uc.mem_map(cls.PROBE, 0x10000)
     m.uc.mem_map(cls.DAY, 0x8000)
@@ -377,28 +383,35 @@ class Image(unittest.TestCase):
 
     def test_the_day_entry_resets_the_memo_and_restores_the_pointer(self):
         m = self.m
-        saved = bytes(m.uc.mem_read(0x324600, 32))
-        probe = self.PROBE + 0x100
-        # a stand-in day (0x324600): record the day pointer, its lists word and its first known words, and ESP
+        saved = bytes(m.uc.mem_read(0x324600, 40))
+        probe, state = self.PROBE + 0x100, PAGE_VA + 0x1000
+        # a stand-in day (0x324600): record the day pointer, its lists word, ECX (the menu) and ESP
         stub = (b"\xa1" + struct.pack("<I", PAGE_VA) + b"\xa3" + struct.pack("<I", probe)            # mov eax,[day]; mov [probe],eax
                 + b"\x8b\x10\x89\x15" + struct.pack("<I", probe + 4)                                  # mov edx,[eax]; mov [probe+4],edx
-                + b"\x89\x25" + struct.pack("<I", probe + 8) + b"\xc3")                              # mov [probe+8],esp; ret
+                + b"\x89\x25" + struct.pack("<I", probe + 8)                                          # mov [probe+8],esp
+                + b"\x89\x0d" + struct.pack("<I", probe + 12) + b"\xc3")                              # mov [probe+12],ecx; ret
         try:
             m.uc.mem_write(0x324600, stub)
-            m.uc.mem_write(0x3000000, b"\xff" * 0x8000)               # a dirty stack: the frame must clear itself
             m.uc.ctl_flush_tb()
-            for before in (0, self.DAY):
-                m.put(PAGE_VA, before)
-                m.call(self.code.SYMBOLS["pace_day_entry"], ecx=0x21A0000, budget=5_000_000)
-                day, lists, esp = m.get(probe), m.get(probe + 4), m.get(probe + 8)
-                self.assertTrue(0x3000000 <= day < 0x3008000, hex(day))   # the frame is on the stack
-                self.assertEqual(lists, 0)
-                known = (day + 4 + 2 * 15 + 2 * 2112 + 2 + 3) & ~3
-                self.assertEqual(bytes(m.uc.mem_read(known, 512)), bytes(512))
-                self.assertGreater(esp, 0x3000000 + 4096)                # room left under the day
-                self.assertEqual(m.get(PAGE_VA), before, "the previous day pointer is not restored")
+            m.uc.mem_write(state, b"\xff" * 0x6000)                    # a dirty day state: the entry must clear it
+            m.put(PAGE_VA, 0)
+            m.call(self.code.SYMBOLS["pace_day_entry"], ecx=0x21A0000, budget=5_000_000)
+            day, lists, esp, menu = (m.get(probe + k) for k in (0, 4, 8, 12))
+            self.assertEqual((day, lists, menu), (state, 0, 0x21A0000))
+            known = (state + 4 + 2 * 15 + 2 * 2112 + 2 + 3) & ~3
+            self.assertEqual(bytes(m.uc.mem_read(known, 512)), bytes(512))
+            self.assertGreater(esp, 0x3008000 - 64)                       # a few bytes of stack, no frame
+            self.assertEqual(m.get(PAGE_VA), 0, "the day pointer is not cleared after the day")
+            # a day inside a day: the outer state stands (pointer, memo and lists untouched), the menu still arrives
+            m.uc.mem_write(self.DAY, b"\x01" + bytes(3))
+            m.put(PAGE_VA, self.DAY)
+            m.uc.mem_write(state, b"\xee" * 16)
+            m.call(self.code.SYMBOLS["pace_day_entry"], ecx=0x21A0004, budget=5_000_000)
+            self.assertEqual((m.get(probe), m.get(probe + 4), m.get(probe + 12)), (self.DAY, 1, 0x21A0004))
+            self.assertEqual((m.get(PAGE_VA), bytes(m.uc.mem_read(state, 16))), (self.DAY, b"\xee" * 16))
         finally:
             m.uc.mem_write(0x324600, saved)
+            m.uc.mem_write(state, bytes(0x6000))
             m.uc.ctl_flush_tb()
 
     # -- the rank -----------------------------------------------------------------------------------------------
@@ -471,6 +484,31 @@ class Image(unittest.TestCase):
         finally:
             m.put(team, saved)
         self.assertEqual(n, m.uc.mem_read(team + 0x11C, 1)[0])
+
+    def test_the_lists_are_dropped_before_every_offer(self):
+        """Review L3: inside a day, the retail wish routine 0x3242C0 runs every club's team-building pass. The lists must
+        stand while prices are counted in the scoring (some rank call sees them) and be dropped before every offer
+        0x324180 (an offer may change a roster). Fails if pace_lists(0) is dropped or moved after tb_select."""
+        import unicorn as U
+        m, code = self.m, self.code
+        saved = [(lo, bytes(m.uc.mem_read(lo, size))) for lo, size in ((m.ARENA, 0x200000), (0x421000, 0x14BA000 - 0x421000))]
+        seen = {"offer": [], "rank": []}
+        hooks = [m.uc.hook_add(U.UC_HOOK_CODE, lambda *_: seen["offer"].append(m.get(self.DAY)), begin=0x324180,
+                               end=0x324180),
+                 m.uc.hook_add(U.UC_HOOK_CODE, lambda *_: seen["rank"].append(m.get(self.DAY)),
+                               begin=code.SYMBOLS["pace_rank_twice"], end=code.SYMBOLS["pace_rank_twice"])]
+        try:
+            self._day()
+            m.call(0x3242C0, budget=3_000_000_000)
+        finally:
+            for hook in hooks:
+                m.uc.hook_del(hook)
+            for lo, data in saved:
+                m.uc.mem_write(lo, data)
+            m.uc.ctl_flush_tb()
+        self.assertTrue(seen["offer"], "no club made an offer on this image")
+        self.assertEqual(set(seen["offer"]), {0}, "an offer ran with the rank lists standing")
+        self.assertIn(1, seen["rank"], "no price was counted on the lists")
 
     def test_rank_any_goes_to_the_page_only_when_the_stage_action_calls_it(self):
         import unicorn as U

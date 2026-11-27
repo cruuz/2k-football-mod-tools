@@ -882,15 +882,17 @@ LATE_OWNERS += (SIM_OUTCOMES_OWNER,)
 FIXED_PAGE_OWNERS += (SIM_OUTCOMES_OWNER,)
 
 
-# b81 #45 (sim speed): one fixed page at 0x1535000 for the team-building owner's pace page (tools/team_building/pace.c:
-# the free-agency day's rating memo and rank lists; its code and one writable word, the day pointer: the pool is RWX; the
-# day itself lives on the stack). Placed like the pages above: at its absolute address, never advancing the pool cursor,
-# so every other pool owner steps over 0x1535000..0x1535FFF whether or not it is requested, and the owner can be added in
-# place after every other owner (team building's Studio step runs after the late owners). 0x152E000..0x1534FFF are other
-# beta 81 lanes' pages (coord/PAGES_AND_SEEDS.md). The economy's rank_any and the day call at 0x24849A name this address.
+# b81 #45 (sim speed): seven fixed pages at 0x1535000 for the team-building owner's pace page (tools/team_building/pace.c:
+# the free-agency day's rating memo and rank lists): the code page (with one writable word, the day pointer: the pool is
+# RWX) and, since the review (L1), the six pages of the day state 0x1536000..0x153BFFF, so the day needs no stack. Placed
+# like the pages above: at its absolute address, never advancing the pool cursor, so every other pool owner steps over
+# 0x1535000..0x153BFFF whether or not it is requested, and the owner can be added in place after every other owner (team
+# building's Studio step runs after the late owners). 0x152E000..0x1534FFF are other beta 81 lanes' pages
+# (coord/PAGES_AND_SEEDS.md). The economy's economy_rank_any and the day calls (0x24849A and the free-agency screen's
+# 0x36260D, 0x3631E8, 0x36324D) name its address.
 TEAM_BUILDING_PACE_OWNER = "nfl2k5_team_building_pace"
 TEAM_BUILDING_PACE_VA = 0x1535000
-TEAM_BUILDING_PACE_SIZE = PAGE
+TEAM_BUILDING_PACE_SIZE = 7 * PAGE
 TEAM_BUILDING_PACE_REQUEST = (TEAM_BUILDING_PACE_OWNER, "code", TEAM_BUILDING_PACE_SIZE, PAGE)
 LATE_OWNERS += (TEAM_BUILDING_PACE_OWNER,)
 FIXED_PAGE_OWNERS += (TEAM_BUILDING_PACE_OWNER,)
@@ -1307,7 +1309,7 @@ def _scale_allocations(requests):
     _require(all(r == SIM_OUTCOMES_REQUEST for r in requests if r[0] == SIM_OUTCOMES_OWNER),
              "the simulated game outcomes have one fixed page")  # b81 game outcomes
     _require(all(r == TEAM_BUILDING_PACE_REQUEST for r in requests if r[0] == TEAM_BUILDING_PACE_OWNER),
-             "team building's pace page is one fixed page")  # b81 #45
+             "team building's pace pages are one fixed request")  # b81 #45
     gadget = tuple(r for r in requests if r[0] == GADGET_OWNER)
     if gadget:
         _require(gadget == GADGET_REQUESTS, "incomplete or foreign gadget allocation")

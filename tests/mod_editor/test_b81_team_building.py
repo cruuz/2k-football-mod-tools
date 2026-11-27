@@ -630,11 +630,12 @@ CODE_START, CODE_END = 0x10000, 0x420200      # the executable's code (and the d
 
 
 def _write_pace_page(cls):
-    """b81 #45: team building's pace page at its fixed address with no day running (the image predates it)."""
+    """b81 #45: team building's pace pages (code and day state) at their fixed address with no day running (the image
+    predates them)."""
     m, code = cls.m, cls.code
-    if not any(lo <= code.PAGE_VA <= hi for lo, hi, _p in m.uc.mem_regions()):
-        m.uc.mem_map(code.PAGE_VA, 0x1000)
-    m.uc.mem_write(code.PAGE_VA, code.PAGE)
+    if not any(lo <= code.PAGE_VA + 0x6FFF <= hi for lo, hi, _p in m.uc.mem_regions()):
+        m.uc.mem_map(code.PAGE_VA, 0x7000)
+    m.uc.mem_write(code.PAGE_VA, code.PAGE + bytes(code.STATE_SIZE))
 
 
 def _restore_ram(cls):
@@ -717,7 +718,8 @@ class _ImageBase(unittest.TestCase):
         and its pace page)."""
         m, tb = self.m, self.tb
         for va, blob in blobs.items():
-            m.uc.mem_write(va, blob.ljust(len(self.code.WINDOWS[va]) if va in self.code.WINDOWS else 0x1000, b"\xcc"))
+            m.uc.mem_write(va, blob.ljust(len(self.code.WINDOWS[va]) if va in self.code.WINDOWS else 0x1000, b"\xcc")
+                           if va in self.code.WINDOWS else blob)
         m.uc.mem_write(tb.HEAD_CALL_VA, tb._branch(tb.HEAD_CALL_VA, 0xE8, symbols["tb_order"]))
         m.uc.mem_write(tb.WISH_JUMP_VA, tb._branch(tb.WISH_JUMP_VA, 0xE9, symbols["tb_wish_entry"]))
         m.uc.ctl_flush_tb()
