@@ -442,11 +442,136 @@ class Pins(unittest.TestCase):
             self.assertEqual(lv.sha(retail[name][start:end]), pin["retail_sha256"])
             self.assertLess(info["system"] + info["video"], info["retail_system"] + info["retail_video"])
 
+    def test_the_compiled_reflection_equals_its_pin(self):
+        """model_bundle writes the interior cube into the bundle's own reflection span (the night rain bundle has the
+        smallest span); every other byte outside the stretch stays retail."""
+        retail = lv.read_retail(EXTRACTED)
+        interior = lv.read_interior(EXTRACTED)
+        name = "s20nr.iff"
+        model, info = lv.model_bundle(retail[name], name, lv.build(), cameras=lv.allegiant_shots(),
+                                      dry_bundle=retail[lv.dry_of(name)], interior=interior)
+        pin = lv._pin(name)
+        r = pin["reflection"]
+        self.assertEqual((info["reflection"]["offset"], info["reflection"]["length"]), (r["offset"], r["length"]))
+        self.assertEqual(lv.sha(model[r["offset"]:r["offset"] + r["length"]]), r["model_sha256"])
+        self.assertEqual(lv.sha(retail[name][r["offset"]:r["offset"] + r["length"]]), r["retail_sha256"])
+        start, end = lv.stretch(retail[name])
+        self.assertEqual(lv.sha(model[start:end]), pin["model_sha256"])
+        self.assertEqual(model[:start], retail[name][:start])
+        self.assertEqual(model[end:r["offset"]], retail[name][end:r["offset"]])
+        self.assertEqual(model[r["offset"] + r["length"]:], retail[name][r["offset"] + r["length"]:])
+        self.assertEqual(lv.reflection_chunk(model)[1], interior)
+
     def test_every_bundle_is_pinned_and_under_retail(self):
         pins = lv.model_pins()
         self.assertEqual(sorted(p["name"] for p in pins["bundles"]), sorted(lv.VARIANTS))
         for p in pins["bundles"]:
             self.assertLess(p["vertices"], 30000)
+
+
+@unittest.skipUnless(EXTRACTED.is_dir() and lv.PINS_PATH.is_file(), "needs the hydrated retail archive and pins")
+class HelmetReflection(unittest.TestCase):
+    """b81 (the pink helmets at Allegiant): the row is indoor, so the shells take the bundle's reflection cube at full
+    weight; the retail s20 day and afternoon cubes are Oakland's open sky. Every s20 bundle gets SoFi's interior."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_modern_venues_2026 as mv
+        cls.retail = lv.read_retail(EXTRACTED)
+        cls.interior = lv.read_interior(EXTRACTED)
+        ml = lv.sm._ml()
+        pin = next(p for p in mv.venues()["s23"]["bundles"] if p["name"] == lv.INTERIOR_BUNDLE)
+        with ml._outer_image()(str(EXTRACTED)) as archive:
+            e = archive.entries[pin["outer"]]
+            cls.sofi = archive.read(e.virtual_offset, e.size)
+
+    @staticmethod
+    def faces(decoded, chunk, level=0):
+        """[(palette RGBA of each pixel) for the six faces] at one mip level."""
+        tx = lv.sm._ml()._tools()[0]
+        vid = chunk.system_bytes
+        pal = np.frombuffer(decoded[vid + chunk.video_bytes - 1024:vid + chunk.video_bytes], np.uint8).reshape(256, 4)
+        edge = lv.CUBE_EDGE >> level
+        at = sum((lv.CUBE_EDGE >> k) ** 2 for k in range(level))
+        out = []
+        for f in range(lv.CUBE_FACES):
+            o = vid + f * lv.CUBE_FACE_STRIDE + at
+            idx = np.frombuffer(tx.unswizzle_2d(decoded[o:o + edge * edge], edge, edge, 1), np.uint8)
+            out.append(pal[idx].astype(int)[:, [2, 1, 0, 3]])
+        return out
+
+    def test_the_retail_day_cube_is_open_sky(self):
+        """The cause: the retail s20 day cube's top face is blue sky (blue well over red), the afternoon's brown."""
+        chunk, decoded, _t = lv.reflection_chunk(self.retail["s20dd.iff"])
+        top = self.faces(decoded, chunk)[2][:, :3].mean(0)
+        self.assertGreater(top[2], top[0] + 40)
+
+    def test_the_interior_is_sofis_cube_with_a_reduced_top_level(self):
+        """Header, mips, padding and palette are SoFi's bytes; level 0 keeps at most 16 entries of SoFi's palette, and
+        each face's mean stays within 1 of SoFi's."""
+        chunk, sofi, _t = lv.reflection_chunk(self.sofi)
+        interior = self.interior
+        self.assertEqual(len(interior), len(sofi))
+        vid = chunk.system_bytes
+        self.assertEqual(interior[:vid], sofi[:vid])
+        level0 = lv.CUBE_EDGE * lv.CUBE_EDGE
+        for f in range(lv.CUBE_FACES):
+            o = vid + f * lv.CUBE_FACE_STRIDE
+            self.assertEqual(interior[o + level0:o + lv.CUBE_FACE_STRIDE], sofi[o + level0:o + lv.CUBE_FACE_STRIDE])
+        self.assertEqual(interior[-1024:], sofi[-1024:])
+        used = set()
+        for f in range(lv.CUBE_FACES):
+            o = vid + f * lv.CUBE_FACE_STRIDE
+            used |= set(interior[o:o + level0])
+        self.assertLessEqual(len(used), len(lv.REFLECTION_TARGETS))
+        for mine, theirs in zip(self.faces(interior, chunk), self.faces(sofi, chunk)):
+            self.assertLess(np.abs(mine[:, :3].mean(0) - theirs[:, :3].mean(0)).max(), 1.0)
+
+    def test_every_bundle_takes_the_neutral_interior(self):
+        """Each of the nine reflection spans takes the cube at its own stored size, reads back equal to its pin, and
+        reflects no colour: every pixel at every level is grey (R = G = B), so the shells keep their own colour."""
+        pins = {p["name"]: p for p in lv.model_pins()["bundles"]}
+        for name in lv.VARIANTS:
+            bundle = self.retail[name]
+            at, span, info = lv.reflection_span(bundle, self.interior)
+            r = pins[name]["reflection"]
+            self.assertEqual((at, len(span)), (r["offset"], r["length"]), name)
+            self.assertEqual(lv.sha(span), r["model_sha256"], name)
+            out = bundle[:at] + span + bundle[at + len(span):]
+            chunk, decoded, _t = lv.reflection_chunk(out)
+            self.assertEqual(decoded, self.interior, name)
+        chunk, _decoded, _t = lv.reflection_chunk(self.sofi)
+        for level in range(5):
+            for face in self.faces(self.interior, chunk, level):
+                self.assertTrue((face[:, 0] == face[:, 1]).all() and (face[:, 1] == face[:, 2]).all(), level)
+
+    def test_the_bundle_state_needs_the_reflection(self):
+        """A bundle with the model's stretch but the retail reflection (a disc built before b81) reads mixed, so the
+        build refuses it as a source; the stretch and the reflection together read applied."""
+        name = "s20dd.iff"
+        retail = self.retail[name]
+        pin, vpin = lv._pin(name), lv._venue_pins()[name]
+        start, end = pin["offset"], pin["offset"] + pin["length"]
+        model, _info = lv.model_bundle(retail, name, lv.build(), cameras=lv.allegiant_shots(),
+                                       dry_bundle=self.retail[lv.dry_of(name)], interior=self.interior)
+        old = retail[:start] + model[start:end] + retail[end:]
+
+        class Entries:
+            def __init__(self, n):
+                self.n = n
+
+            def __len__(self):
+                return vpin["outer"] + 1
+
+            def __getitem__(self, index):
+                e = _Entry(self.n)
+                e.name_id = vpin["name_id"]
+                return e
+
+        for data, want in ((retail, "retail"), (old, "mixed"), (model, "applied")):
+            archive = _Archive(data)
+            archive.entries = Entries(len(data))
+            self.assertEqual(lv.bundle_state(archive, name), want)
 
 
 class ReleaseCatalog(unittest.TestCase):
@@ -513,7 +638,7 @@ class Surfaces(unittest.TestCase):
         current = colour.modern_bundle(retail[name])[0] if graded else retail[name]
         team = {"endzone_N_M": np.full((128, 256, 4), PAINT, np.uint8)}
         _n, model, _info = lv._compose((name, retail[name], current, settings, pins[name]["outer"], team,
-                                           retail[lv.dry_of(name)]))
+                                           retail[lv.dry_of(name)], lv.read_interior(EXTRACTED)))
         before = ms.bundle_report(_Archive(model), name, _Entry(len(model)), None, deep=True)
         self.assertEqual(before["state"], "retail", before)
         indoor = vv.ALLEGIANT_WORDS[1] == 1
