@@ -781,7 +781,15 @@ SECTION(".roster_h") int STD economy_class_topup(int need, unsigned retiring) {
  * modern maximum (QB 3, FB 2) loses its lowest-rated player; then a position above the keep target from the same
  * 2024 averages (QB 2, WR 6, CB 6, FS 2, SS 2, HB 3, FB 1, TE 3, LB 5, C 2, G 3, T 4, DT 4, DE 4: 49 with K and P);
  * then a position above its minimum (as before); then any position with two or more. K and P keep the old rule
- * (above their minimum of 1 only), so a club that covered a hurt kicker never loses the healthy one to a maximum. */
+ * (above their minimum of 1 only), so a club that covered a hurt kicker never loses the healthy one to a maximum.
+ *
+ * b81 #46c (the combined judge's B8; coordinator 11/27): in season modern IR brings a player back and, at 53, makes his
+ * place with this cut (injured_reserve runtime: CUT_DOWN(club, 52)). The cut ranked by 0x246D80(p, 1), whose flag 1
+ * discounts an injured man, so a starting quarterback out two or three weeks (not an IR case) was the "lowest-rated" man
+ * at a position above its keep target and was released: Daniels (WAS, 76008, hurt week 11, cut week 13), Murray (MIN,
+ * 76003, hurt week 13, cut week 14); 36-44 QBs a ten-season panel were released within four weeks of an injury. The cut
+ * now ranks by the healthy rating (flag 0; equal to flag 1 for a healthy man) and never takes a hurt depth-row-0 man, at
+ * every position. */
 
 /* The lowest-rated active player at a position with more than mins[position] (floor 0), or more than one
  * (floor 1). */
@@ -792,7 +800,10 @@ SECTION(".roster_k") __attribute__((noinline)) static u8 *cut_pick(u8 *team, con
     for (i = 0; i < n; ++i) {
         p = ((u8 **)team)[i]; pos = p[0x35];
         if (pos >= 17 || n_at_position(team, pos) <= (floor ? 1 : mins[pos])) continue;   /* native 0xC3CB0 */
-        if ((r = n_rating(p, 1)) < low || !best) { low = r; best = p; }
+        /* b81 #46c: never a hurt starter (depth row 0), and rank by the healthy rating 0x246D80(p, 0): flag 1 discounts an
+         * injured man (a starting QB out two weeks rates 0.38 against 0.95), so a modern IR return at 53 cut him first */
+        if ((p[0x23] & 0x80) && !(*(u16 *)(p + 0x28) & 0x1C00)) continue;
+        if ((r = n_rating(p, 0)) < low || !best) { low = r; best = p; }
     }
     return best;
 }

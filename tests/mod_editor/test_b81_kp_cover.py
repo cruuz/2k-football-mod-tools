@@ -79,8 +79,8 @@ class Sites(unittest.TestCase):
             self.assertEqual(economy.status(economy.apply(payload)[0]), "applied", name)
 
 
-@unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
-class Cover(unittest.TestCase):
+class CoverMachine:
+    """Club 0 of the retail roster on the retail executable with this economy (the hunt1 tests' fixture)."""
     @classmethod
     def setUpClass(cls):
         cls.after, _ = economy.apply(retail_bytes())
@@ -187,6 +187,10 @@ class Cover(unittest.TestCase):
                     healthy_k=[p for p in self.at(m, team, K) if not self.hurt(m, p)], kickers=self.at(m, team, K),
                     room=m.get(0xE3C278) - m.get(team + 0x124), count=self.count(m, team))
 
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
+class Cover(CoverMachine, unittest.TestCase):
     def test_short_of_room_the_club_releases_by_value_lost_and_signs_a_kicker(self):
         m, team = self.league(room=100)
         got = self.cover(m, team)
@@ -263,6 +267,74 @@ class Cover(unittest.TestCase):
             t = m.team_base + 500 * c
             for pos in (K, P):
                 self.assertEqual(len([p for p in self.at(m, t, pos) if not self.hurt(m, p)]), 1, (c, pos))
+
+
+@unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
+class SmartCut(CoverMachine, unittest.TestCase):
+    """b81 #46c (the combined judge's B8): modern IR brings a man back at 53 with the cut-down 0x2BF9A0 (the economy's smart
+    cut), which ranked by 0x246D80(p, 1). In the composed build flag 1 discounts an injured man (a starting QB out a week:
+    0.951 at flag 0, 0.383 at flag 1, kept image 76002 2029 w14), so a hurt starter at a position above its keep target
+    (QB 3 > 2) was the one released: Daniels (76008, hurt week 11, cut week 13), Murray (76003). The retail rating here has
+    no such discount, so a stub at 0x246D80 gives the hurt man the composed build's flag-1 value and his real one at flag 0.
+    On 6e37263e1 the hurt starter is released."""
+
+    KEEP = (2, 1, 1, 6, 6, 2, 2, 3, 1, 3, 0, 5, 2, 3, 4, 4, 4)      # the smart cut's keep targets (cut_rows row 1)
+
+    def club_with(self, pos, n):
+        """Club 0 with exactly n men at pos and every other position at or under its keep target (about 50 active), so a
+        cut of one man chooses at pos (free agents on one-year deals appended, other men released)."""
+        m, team = self.league(kicker="ok", size=53)
+        lst = m.root + 0x38
+        for q in range(17):
+            limit = n if q == pos else self.KEEP[q] if q not in (1, 2) else 1
+            while len(self.at(m, team, q)) > limit:
+                m.call(0x2BD900, ecx=team, edx=self.at(m, team, q)[-1], args=(1, 0))
+        while len(self.at(m, team, pos)) < n:
+            fa = [p for p in self.free(m) if m.uc.mem_read(p + 0x35, 1)[0] == pos and not self.hurt(m, p)][0]
+            raw = bytearray(m.uc.mem_read(fa, 84))
+            raw[0x27] = (raw[0x27] & 0xF0) | 1; raw[0x24] = (raw[0x24] & 0xF0) | 1
+            struct.pack_into("<H", raw, 10, 30)
+            m.uc.mem_write(fa, bytes(raw))
+            m.call(0x2425C0, ecx=lst, edx=fa)
+            self.assertTrue(m.call(0xC3EE0, ecx=team, edx=fa))
+        m.put(STAGE, 8)
+        return m, team
+
+    def hurt_starter(self, m, team, pos, discounted):
+        """The best-rated man at pos: hurt 2 weeks, depth row 0; with `discounted` 0x246D80(him, 1) returns 0.05."""
+        star = max(self.at(m, team, pos), key=lambda p: self.rating(m, p))
+        m.put(star + 0x20, (m.get(star + 0x20) & 0x003FFFFF) | 0x80000000 | (2 << 22))
+        m.uc.mem_write(star + 0x28, struct.pack("<H", struct.unpack("<H", bytes(m.uc.mem_read(star + 0x28, 2)))[0] & ~0x1C00))
+        if discounted:
+            stub, low = m.STOP + 0x100, 0x3000180
+            m.uc.mem_write(low, struct.pack("<f", 0.05))
+            code = (b"\x81\xf9" + struct.pack("<I", star) + b"\x75\x0b\x85\xd2\x74\x07\xd9\x05" + struct.pack("<I", low) + b"\xc3"
+                    + b"\x52\x0f\xb6\x51\x35")
+            code += b"\xe8" + struct.pack("<i", 0x246D60 - (stub + len(code) + 5)) + b"\xc3"
+            m.uc.mem_write(stub, code)
+            m.uc.mem_write(0x246D80, b"\xe9" + struct.pack("<i", stub - 0x246D85))
+            m.uc.ctl_flush_tb()
+        return star
+
+    def test_the_cut_ranks_by_the_healthy_rating(self):
+        for pos, n in ((0, 3), (15, 5)):           # QB above its keep target 2; DT above 4
+            with self.subTest(position=pos):
+                m, team = self.club_with(pos, n)
+                star = self.hurt_starter(m, team, pos, discounted=True)
+                count = self.count(m, team)
+                m.call(0x2BF9A0, ecx=team, edx=count - 1, budget=400_000_000)
+                self.assertIn(star, self.members(m, team))
+                self.assertEqual((self.count(m, team), len(self.at(m, team, pos))), (count - 1, n - 1))
+
+    def test_a_hurt_starter_at_row_0_is_never_cut(self):
+        """Even when he is the lowest-rated man at his position by the healthy rating."""
+        m, team = self.club_with(0, 3)
+        worst = min(self.at(m, team, 0), key=lambda p: self.rating(m, p))
+        m.put(worst + 0x20, (m.get(worst + 0x20) & 0x003FFFFF) | 0x80000000 | (2 << 22))
+        m.uc.mem_write(worst + 0x28, struct.pack("<H", struct.unpack("<H", bytes(m.uc.mem_read(worst + 0x28, 2)))[0] & ~0x1C00))
+        for _ in range(3):
+            m.call(0x2BF9A0, ecx=team, edx=self.count(m, team) - 1, budget=400_000_000)
+        self.assertIn(worst, self.members(m, team))
 
 
 IMAGES = {   # the combined panels' kept failure images (validator I5); economy sources = 6e37263e1's in both executables

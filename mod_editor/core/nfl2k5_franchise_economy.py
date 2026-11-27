@@ -438,6 +438,7 @@ PREVIOUS_REVISION_9 = {             # the sites revision 10 rewrites, as revisio
     ROOM_FOR_SIGNING_WINDOW: "64db62a40e3106e8cff3ce66159dd8a3dfdb039c4dacfd0ea272378a63da34aa",   # roster_v (revision 9)
     0x3DBC10: "fc3a5ea47bb4cc2fef2fa431b9085d0ae71d3b7e1970b3e9998a1c9b6f6947c7",   # roster_m (the veteran cut's release stub now prunes the trade board)
     ROSTER_H_WINDOW: "7a37c3efb19257e41b61060804e5fb11c2d58c41050791fa86de9de73a7f3e66",   # roster_h with revisions 6-9's naked cover (b81 #46: its tail now holds the stage-9 cover)
+    0x3E9740: "569b2f5f0a7f1525246dd3aa3c8acb121fe1398affde306eac2bb68bfd370bb6",   # roster_k, the smart cut's pick as revisions 4-9 installed it (b81 #46c: healthy rating, no hurt starter)
 }
 REVISION = 10
 # b81 economy revision 10, part 1 (coordinator ruling 6, 11/25): the draft class position mix (window roster_f's
