@@ -149,16 +149,73 @@ def player_index(rows):
     return out
 
 
+def term_end(row):
+    """The last season of an OTC contract row's term (year signed + years - 1), or None."""
+    try:
+        signed, years = int(row.get('year_signed')), int(row.get('years'))
+    except (AttributeError, TypeError, ValueError):
+        return None
+    return signed + years - 1 if years > 0 else None
+
+
+def contract_fit(player, row, data, *, floor_opening=False):
+    """One player's native contract from his active OTC row (or None), as audit() fits it.
+
+    Returns (fit, modeled, excluded): an observed 2026-on cap schedule is fitted as it is; an absent one takes
+    fallback_schedule (modeled). Raises ValueError for the schedules audit() leaves to review (a discontinuous or
+    duplicated positive schedule). floor_opening (b81 #48): OTC prorates the 2026 number of a man signed or traded in
+    season; the game charges a club player a whole season, so a 2026 charge under the one-year minimum for his credited
+    seasons is raised to it (the later years stay as OTC lists them)."""
+    modeled = None
+    try:
+        if row is None:
+            raise ValueError('no active contract in pinned release')
+        cap, excluded = cap_schedule(row)
+    except (ValueError, TypeError) as exc:
+        reason = str(exc)
+        if reason not in ('no active contract in pinned release', 'no continuous cap schedule beginning in 2026'):
+            raise ValueError(reason) from exc
+        future = [s for s in nested(row['season_history']) if str(s.get('year', '')).isdigit()
+                  and int(s['year']) >= 2026 and s.get('cap_number')] if row else []
+        if future:
+            raise ValueError('noncontinuous future schedule requires review') from exc
+        cap, modeled = fallback_schedule(player, row, data)
+        modeled = {**modeled, 'reason': reason}
+        excluded = []
+    if floor_opening:
+        floor = data['minimums']['dollars'][min(rr.accrued_seasons(player.record.values['years_pro']), 7)]
+        if cap[0] < floor:
+            cap = [floor] + list(cap[1:])
+            modeled = {**(modeled or {'evidence': 'DESIGN', 'rule': 'observed 2026 cap schedule'}),
+                       'opening_floor_dollars': floor}
+    # a one-year charge at the minimum takes the smallest legal charge at or above it, never a nearest fit below it
+    floor = data['minimums']['dollars'][min(rr.accrued_seasons(player.record.values['years_pro']), 7)]
+    at_minimum = modeled and len(cap) == 1 and (modeled['rule'] == 'one-year active-roster CBA minimum' or cap[0] <= floor)
+    fit = fit_minimum(cap[0]) if at_minimum else fit_schedule(cap, opening_priority=True)
+    return fit, modeled, excluded
+
+
 def fallback_schedule(player, row, data):
     """DESIGN: imported active-roster role controls modeled missing schedules.
 
     Drafted 2026 rookies use linear interpolation of the cited OTC four-year
     cap schedules by actual draft slot. Other missing histories, undrafted
     rookies, practice players and unsigned veterans use one credited-season
-    minimum deal. Native years_pro proxies credited seasons. No APY is used
-    as an annual cap hit. These are never counted as observed schedules.
+    minimum deal. Native years_pro proxies credited seasons. These are never
+    counted as observed schedules.
+
+    b81 #48 (coordinator 11/27): a matched active contract whose term reaches
+    2026 keeps OTC's term even without a 2026 cap schedule (a just-signed
+    deal, a 2026 undrafted rookie): every year from 2026 to year_signed +
+    years - 1 (at most fifteen) is charged at the deal's APY, the best
+    per-year figure OTC gives without a schedule, never below the one-year
+    minimum for the player's credited seasons. Only a player with no current
+    term falls back to the one-year minimum.
     """
-    if row and row.get('draft_year') == 2026 and row.get('draft_overall'):
+    end = term_end(row) if row else None
+    # the draft-slot schedule is the drafted four-year deal; a 2026 draftee already on another deal (released, then
+    # signed again for one year) keeps that deal's term below (b81 #48)
+    if row and row.get('draft_year') == 2026 and row.get('draft_overall') and (end is None or end >= 2029):
         pick = int(row['draft_overall'])
         knots = [r for r in data['rookie_anchors']['rows'] if len(r.get('cap_hits', [])) == 4]
         knots.sort(key=lambda r: r['pick'])
@@ -174,7 +231,15 @@ def fallback_schedule(player, row, data):
                      'source': data['rookie_anchors']['source'] if 'source' in data['rookie_anchors'] else 'https://overthecap.com/draft'}
     # the CBA minimum is indexed by credited (completed) seasons; the record's years pro counts the current season too
     pro = min(rr.accrued_seasons(player.record.values['years_pro']), 7)
-    return [data['minimums']['dollars'][pro]], {
+    floor = data['minimums']['dollars'][pro]
+    if end is not None and end >= 2026 and row.get('apy'):
+        years = min(end - 2025, 15)
+        apy = millions(row['apy'])
+        return [max(apy, floor)] * years, {
+            'evidence': 'DESIGN', 'rule': 'OTC term at APY (no 2026 cap schedule)', 'term_end': end,
+            'apy_dollars': apy, 'experience_proxy': pro, 'floor_dollars': floor,
+            'source': row.get('player_page') or 'https://overthecap.com'}
+    return [floor], {
         'evidence': 'DESIGN', 'rule': 'one-year active-roster CBA minimum',
         'experience_proxy': pro, 'source': 'https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf'}
 
