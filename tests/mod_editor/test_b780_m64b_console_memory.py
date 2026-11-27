@@ -474,6 +474,11 @@ REFRESH_BASE = Path(os.environ.get("NFL2K5_B780_REFRESH_BASE",
                                    "/home/noah/2k-worktrees/.b77-scratch/i4/inputs/ro1/baseline.body"))
 RETAIL = Path(os.environ.get("NFL2K5_RETAIL_XISO", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
 FITTED_64_SHA256 = "26522689b76cb8791cc2936058513a47f4c3c89fc58a1f47fc4a7622f3737c20"
+PINNED_BASE_SHA256 = "12701297fd05f86ff513acad4363dbe059cdb499d95d13976acb16dd87f8c98e"   # i4/inputs/ro1/baseline.body
+PINNED_FIT_FINAL_SHA256 = "a763287bc066260298adeedd6ffa0c6a418bf0d24b1d31061d68d3835eacd3e3"  # the fit's body on it (rst2 report)
+# its rebuild (b81 fixtures ro1/baseline.body: users_dump_base of this roster on the retail XISO) and the fit's body on it
+REBUILT_BASE_SHA256 = "4385a8bcdb40a91c7747be3d4d2e0e830dc2a09d8db2e94fbe278fd6e9b30647"
+REBUILT_FIT_FINAL_SHA256 = "1fdf203df2d7613e3e72961ec603a0a225260ecb1a8cb0138dfea39caed0eadf"
 
 
 def _proof_inputs():
@@ -513,7 +518,18 @@ class SoftdrinkRosterFitProof(unittest.TestCase):
         cls.sha = hashlib.sha256(cls.raw).hexdigest()
 
     def test_on_the_refresh_pinned_base_it_is_the_validated_file_byte_for_byte(self):
-        variant, receipt = cm.fit_roster_edits(self.source, REFRESH_BASE.read_bytes(), source_sha256=self.sha)
+        base = REFRESH_BASE.read_bytes()
+        variant, receipt = cm.fit_roster_edits(self.source, base, source_sha256=self.sha)
+        if hashlib.sha256(base).hexdigest() != PINNED_BASE_SHA256:
+            # b81 roster-1125: the pinned base (12701297) was deleted 11/25; env.sh names its rebuild by users_dump_base,
+            # pinned here, and the body the fit writes on it is pinned too. The fit differs from the validated file only in
+            # the two receipt hashes that name the base and that body; with them set back to the pinned base's it is the
+            # validated file byte for byte.
+            self.assertEqual(hashlib.sha256(base).hexdigest(), REBUILT_BASE_SHA256)
+            depth = variant["fa3_free_agent_depth"]
+            for block in (depth, depth["retail_capacity"]):
+                self.assertEqual((block["base_sha256"], block["final_body_sha256"]), (REBUILT_BASE_SHA256, REBUILT_FIT_FINAL_SHA256))
+                block.update(base_sha256=PINNED_BASE_SHA256, final_body_sha256=PINNED_FIT_FINAL_SHA256)
         text = json.dumps(variant, indent=1, ensure_ascii=False) + "\n"
         self.assertEqual(hashlib.sha256(text.encode("utf-8")).hexdigest(), FITTED_64_SHA256)
         self.assertEqual((receipt["depth_candidates"], receipt["depth_kept"], receipt["club_players_kept"],

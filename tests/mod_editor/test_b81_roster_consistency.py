@@ -75,6 +75,134 @@ class StockAgesTests(unittest.TestCase):
         self.assertEqual(retired(2026, shifted), original)
 
 
+STANDARD_SOURCES = Path(os.environ.get("NFL2K5_B81_STANDARD_SOURCES", "") or "missing")
+# b81 roster-1125 (Noah: "kirk cousins not on vikings, trade deadline roster not updated?"; the 2026 deadline was 11/10):
+# the release sources load the 11/25 refresh, 128 MB and the 64 MB retail-capacity fit of it.
+RELEASE_ROSTERS = {128: ("roster-edits-b81-refresh-20261125.json",
+                         "b5998c412308966f668c0d5f3007e8bbe57c225214a3913d9cf32c196b7fce53"),
+                   64: ("roster-edits-b81-refresh-20261125-retail-capacity-64mb.json",
+                        "285b80bb63fbe795c52b3d0dc58b1c5a2dfd7e1dfcbf399318de46b20d3a7deb")}
+
+
+@unittest.skipUnless((STANDARD_SOURCES / "recipe.json").is_file(), "private release sources absent: NFL2K5_B81_STANDARD_SOURCES")
+class ReleaseSourcesRosterTests(unittest.TestCase):
+    def test_both_editions_load_the_november_25_roster(self):
+        import hashlib, json, re
+        for memory, (name, digest) in RELEASE_ROSTERS.items():
+            root = STANDARD_SOURCES.parent / f"v10-sources-{memory}"
+            if not (root / "recipe.json").is_file():
+                continue
+            with self.subTest(memory=memory):
+                for document in ("recipe.json", "assets/documents/frozen-recipe.json"):
+                    overrides = json.loads((root / document).read_text(encoding="utf-8"))["overrides"]
+                    self.assertTrue(overrides["roster_edits"].endswith("_" + name), document)
+                    self.assertIn("Roster frozen November 25, 2026.", overrides["notes"])
+                built = json.loads((root / "SOFTDRINK-build-recipe.json").read_text(encoding="utf-8"))["overrides"]
+                path = Path(built["roster_edits"])
+                self.assertEqual(path.parent, root / "assets/files")
+                self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), digest)
+                plan = json.loads(path.read_text(encoding="utf-8"))["roster_refresh"]
+                self.assertEqual(plan["as_of"], "2026-11-25")
+                cousins = next(r for r in plan["players"] if r.get("gsis_id") == "00-0029604")
+                self.assertEqual((cousins["team"], cousins["status"]), ("MIN", "ACT"))
+                minnesota = next(t for t in plan["teams"] if t["team"] == "MIN")
+                self.assertIn(cousins["index"], minnesota["active"])
+                rows = {r["index"]: r for r in plan["players"]}
+                # coordinator 11/25: no two men on a club share a number across the 53, the practice squad and IR. The plan
+                # lists the 53 and the practice squad; which injured men stay on IR the writer decides (the 65-man list),
+                # so IR is checked on the written roster: test_b780_roster1_depth_lint jersey_clashes / lint(shared_numbers=True)
+                for team in plan["teams"]:
+                    numbers = [rows[i]["fields"]["jersey"] for i in set(team["active"]) | set(team["reserves"])]
+                    self.assertEqual(len(numbers), len(set(numbers)), team["team"])
+                # Noah 11/25 on Joe Mixon ("He should be very likely to reinjure himself when signed"): Durability from
+                # his real availability (2025 all season on a reserve list): 85 -> 66
+                if memory == 128:   # the 64 MB fit leaves the free agents in capacity records out, Mixon and the named ones too
+                    mixon = next(r for r in plan["players"] if r.get("gsis_id") == "00-0033897")
+                    self.assertEqual((mixon["status"], mixon["fields"]["durability"]), ("UFA", 66))
+                    # Noah 11/25: the free agents he named
+                    named = {r["source_name"] for r in plan["players"] if (r.get("evidence") or {}).get("kind")
+                             == "owner_named_default_free_agent"}
+                    self.assertEqual(named, {"Johnny Manziel", "Robert Griffin III", "Derek Carr", "Teddy Bridgewater",
+                                             "Blake Bortles", "Tim Tebow", "Allen Hurns", "PJ Walker", "Hakeem Butler"})
+                    self.assertTrue(all(r["index"] in plan["free_agents"] for r in plan["players"]
+                                        if r.get("source_name") in named))
+                    # coordinator ruling 11/25 (option A, tightened after review): real unsigned veterans with NFL snaps in
+                    # 2023 or later who are not publicly retired; fewer than 600 qualify, so fewer ship
+                    tail = [r for r in plan["players"] if (r.get("evidence") or {}).get("kind") == "long_tail_unsigned_veteran"]
+                    self.assertEqual(len(tail), 208)
+                    self.assertTrue(all(r["status"] == "UFA" and r["index"] in plan["free_agents"] for r in tail))
+                    self.assertTrue(all(r["evidence"]["last_nfl_snaps_season"] >= 2023 for r in tail))
+                    # review S4: no row's evidence names the owner (the added rows point to neutral top-level notes; the
+                    # 10/22 depth row for Colin Kaepernick was neutralized too)
+                    self.assertNotIn("Noah", json.dumps([r.get("evidence") for r in plan["players"]]))
+                # coordinator ruling 11/25: Daniel Carlson is Miami's kicker on the 53; the released Zane Gonzalez is not
+                miami = next(t for t in plan["teams"] if t["team"] == "MIA")
+                carlson = next(r for r in plan["players"] if r.get("gsis_id") == "00-0034161")
+                self.assertIn(carlson["index"], miami["active"])
+                self.assertEqual(miami["specialists"]["k"], carlson["index"])
+                gonzalez = next((r for r in plan["players"] if r.get("gsis_id") == "00-0033862"), None)
+                self.assertTrue(gonzalez is None or gonzalez["index"] not in miami["active"] + miami["reserves"])
+                # coordinator 11/25: the ratings-2026 step names this edition's records and no personal name (the 64 MB fit
+                # had carried the 128 MB list: two players it does not carry and Jordan Mason under his 128 MB index)
+                document = json.loads(path.read_text(encoding="utf-8"))
+                step = document["reviewed_ratings_2026_step"]
+                self.assertNotIn("Noah", step["request"])
+                # review round 2: no text in the shipped document names the owner ("Noah" only as a player's name)
+                def strings(node):
+                    if isinstance(node, dict):
+                        for key, value in node.items():
+                            yield key
+                            yield from strings(value)
+                    elif isinstance(node, list):
+                        for value in node:
+                            yield from strings(value)
+                    elif isinstance(node, str):
+                        yield node
+                named = re.compile(r"Noah( [A-Z][\w'.-]+( (Jr\.|Sr\.|II|III|IV))?)?")
+                self.assertEqual([text for text in strings(document) if "Noah" in text and not named.fullmatch(text)], [])
+                by_gsis = {r["gsis_id"]: r["index"] for r in plan["players"] if r.get("gsis_id")}
+                for change in step["changes"]:
+                    if change["gsis_id"] in by_gsis:
+                        self.assertEqual(change["index"], by_gsis[change["gsis_id"]], change["player"])
+                absent = sorted(item.split(" (")[0] for item in step["skipped_absent"])
+                self.assertEqual(absent, [] if memory == 128 else
+                                 ["Ja'Kobi Lane run_route", "Omar Cooper break_tackle", "Omar Cooper catch"])
+                self.assertEqual(len(step["changes"]), step["changed"])
+                self.assertEqual(step["changed"], 354 - len(absent))
+                if memory == 64:
+                    self.assertFalse({c["player"] for c in step["changes"]} & {"Omar Cooper", "Ja'Kobi Lane"})
+                    self.assertEqual({c["index"] for c in step["changes"] if c["player"] == "Jordan Mason"}, {2572})
+
+
+RETAIL_XISO = Path(os.environ.get("NFL2K5_RETAIL_XISO", "") or "missing")
+CLASS_SIZE = 450       # tools/franchise_economy/runtime.c CLASS_SIZE / MIN_CLASS: the free records a generated class takes
+
+
+@unittest.skipUnless((STANDARD_SOURCES / "recipe.json").is_file() and RETAIL_XISO.is_file(),
+                     "private release sources (NFL2K5_B81_STANDARD_SOURCES) or the retail XISO absent")
+class ReleaseRosterCapacityTests(unittest.TestCase):
+    """b81 roster-1125 (review S5): the free agents the 11/25 roster adds use capacity records, which come out of the
+    records a draft class takes. Written the way a build writes it on a user's retail dump, the 128 MB roster still
+    leaves a whole first class free (the disc's 380-record window plus the appended class records)."""
+
+    def test_the_first_draft_class_keeps_its_450_records(self):
+        import json
+        from mod_editor.core import nfl2k5_roster_arena as arena, nfl2k5_roster_refresh as refresh
+        from tests.mod_editor.test_b780_m64b_console_memory import users_dump_base
+        name, _digest = RELEASE_ROSTERS[128]
+        path = STANDARD_SOURCES.parent / "v10-sources-128" / "assets/files"
+        document = json.loads(next(path.glob("*_" + name)).read_text(encoding="utf-8"))
+        records = document["free_agent_capacity"]["records"]
+        grown, _ = arena.migrate(users_dump_base(document), reserves_16=False, capacity_records=records)
+        out, _ = refresh.apply_body(grown, document["roster_refresh"])
+        summary = rr.RosterDocument(out, scheme="one_pool", reference_year=2026).summary()
+        free_for_a_class = summary["draft_slots"] + summary["draft_capacity"]
+        self.assertEqual(summary["draft_slots"], 380)
+        self.assertGreaterEqual(free_for_a_class, CLASS_SIZE)
+        # the appended class records: the 4,096-record table less the records the capacity growth makes primary
+        self.assertEqual(free_for_a_class, 380 + arena.CAPACITY_PRIMARY_LIMIT - document["free_agent_capacity"]["final_primary"])
+
+
 MOD = Path(os.environ.get("NFL2K5_V09_XISO", ""))
 
 
