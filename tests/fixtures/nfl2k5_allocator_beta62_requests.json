@@ -682,5 +682,23 @@
   "code",
   4096,
   4096
+ ],
+ [
+  "nfl2k5_modern_numbers",
+  "code",
+  4096,
+  4096
+ ],
+ [
+  "nfl2k5_sim_outcomes",
+  "code",
+  4096,
+  4096
+ ],
+ [
+  "nfl2k5_franchise_ownership",
+  "code",
+  4096,
+  16
  ]
 ]

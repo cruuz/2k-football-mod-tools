@@ -1083,6 +1083,7 @@ def dormant_union():
     from . import nfl2k5_classic_teams as classic_teams  # b775-ct1: late, last read-only owner
     from . import nfl2k5_return_coverage as return_coverage  # b778-kr1: in build_manifest's all_requests (verification tooling)
     from . import nfl2k5_module_loader as module_loader  # b778-xs1: the last late owner
+    from . import nfl2k5_franchise_ownership as ownership  # b81 integration task 7: its fixed page 0x1528000
     from . import nfl2k5_seven_on_seven as seven
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
@@ -1115,7 +1116,12 @@ def dormant_union():
             + (CPU_TRADES_REQUEST,)  # b81 CPU trades: its two fixed pages after the helmet-sides page
             + (AWARDS_REQUEST,)  # b81 awards (review S3): the award vote's fixed page at 0x1531000
             + (CLASSIC_CROWD_REQUEST,)  # b81-seamen: the classic crowd's fixed page
-            + (SPORTSCENTER_NEWS_REQUEST,))  # b81 sportscenter: its fixed page at 0x1533000 (review S1)
+            + (SPORTSCENTER_NEWS_REQUEST,)  # b81 sportscenter: its fixed page at 0x1533000 (review S1)
+            # b81 integration task 7: the three fixed pages the union lacked. The manifest builder's probe lays out this
+            # union, so without them its directory named no owner for modern numbers' page 0x1530000, the simulated
+            # outcomes' page 0x1534000 or the franchise ownership page 0x1528000 (all three were reserved only as the
+            # allocator's grown pool pages). Appended last, so no earlier directory slot moves.
+            + (MODERN_NUMBERS_REQUEST, SIM_OUTCOMES_REQUEST) + ownership.REQUESTS)
 
 
 def is_scaleout(payload):

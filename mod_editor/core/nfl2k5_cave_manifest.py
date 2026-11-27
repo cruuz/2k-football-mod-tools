@@ -646,6 +646,9 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             # "unattributed final XBE changes at 0x20da75, 0x20da99" (their file offsets). Observe them as season steps.
             for name in ("repair_injury_season_end", "repair_awards_timing"):
                 stack.enter_context(patch.object(season, name, recorder.wrapper(season, name)))
+            # b81 league-aging (review M1): an in-place aging upgrade re-derives star_career's table through refresh(),
+            # outside apply() (mod_build._league_aging_upgrade); observed as a star_career step. installed_body only reads.
+            stack.enter_context(patch.object(star_career, "refresh", recorder.wrapper(star_career, "refresh")))
             receipt = build.build(plan, progress=lambda message, *_: progress(message))
             preset_xbe = build._xbe_bytes(target)
             # The dormant-owner probe needs an XBE WITHOUT an allocator directory: an installed request

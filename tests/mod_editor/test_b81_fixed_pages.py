@@ -76,5 +76,20 @@ class Straddle(unittest.TestCase):
             self.assertFalse(placed["va"] < va + size and placed["va"] + placed["size"] > va, hex(va))
 
 
+class DormantUnion(unittest.TestCase):
+    """b81 integration task 7: the reservation manifest's probe lays out dormant_union() and names each page's owner
+    from that layout, so a fixed page the union lacks is reserved only as the allocator's grown pool page (modern
+    numbers 0x1530000, the simulated outcomes 0x1534000 and franchise ownership 0x1528000 were)."""
+
+    def test_the_union_carries_every_fixed_page_owner(self):
+        owners = {request[0] for request in space.dormant_union()}
+        self.assertEqual([owner for owner in space.FIXED_PAGE_OWNERS if owner not in owners], [])
+
+    def test_each_fixed_page_owner_sits_on_its_own_page_in_the_union_layout(self):
+        layout = space._scale_allocations(space.dormant_union())
+        for owner, va in [(space.FRANCHISE_OWNERSHIP, space.FRANCHISE_OWNERSHIP_VA)] + [(o, v) for o, v, _s in PAGES]:
+            self.assertEqual([a["va"] for a in layout if a["owner"] == owner], [va], owner)
+
+
 if __name__ == "__main__":
     unittest.main()
