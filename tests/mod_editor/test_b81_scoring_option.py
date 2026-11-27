@@ -170,7 +170,8 @@ class InPlaceRoutes(unittest.TestCase):
                 expected = aim.apply(expected)[0]
                 # b81 history-pool: the copy also carries this release's career history pool (the disc has v0.9's),
                 # b81 rookie-faces: after rookie faces' current revision (the disc has GEN1)
-                expected = mod_build._history_pool_upgrade(mod_build._rookie_faces_upgrade(expected)[0])[0]
+                expected = mod_build._history_pool_upgrade(mod_build._league_aging_upgrade(  # b81 league-aging
+                    mod_build._rookie_faces_upgrade(expected)[0])[0])[0]
                 # b81 ot-crash review D3: then the playoff overtime crash fix, as the code applies it
                 expected = mod_build._overtime_crash_fix_upgrade(expected)[0]
                 with self.subTest(mode=mode):

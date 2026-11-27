@@ -176,7 +176,8 @@ class BytesTests(unittest.TestCase):
                 self.assertNotEqual(before, "foreign")
                 self.assertEqual(before, after)
         # b81 integration: owners this release revised read their v0.8 install as "previous" or "legacy" (the overtime
-        # owner since #22, season realism since #27); still installed, unchanged by this one and never foreign
+        # owner since #22, season realism since #27; b81 league-aging: progression and weekly progression read "legacy",
+        # upgraded in place by this release); still installed, unchanged by this one and never foreign
         self.assertGreaterEqual(sum(1 for state in seen.values() if state in ("applied", "previous", "legacy")), 20)
 
     def test_composes_with_the_neighbouring_throw_owners_in_both_orders(self):

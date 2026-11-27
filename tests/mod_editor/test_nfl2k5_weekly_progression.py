@@ -62,9 +62,9 @@ def model(rec, ptr, week, line, played, *, league=2, stage=8):
     years = (struct.unpack_from("<I", rec, 0x24)[0] >> 8) & 31
     h = ((ptr >> 2) + week) & 0xFFFFFFFF
     if verdict == 1 and years <= young_max and not h & wp.GOOD_MASK:
-        for k in keys:
-            if out[k] < 100:
-                out[k] += 1
+        for k in keys:                       # b81 league-aging: YOUNG_STEP (2) a good game, never past 100
+            if out[k] < 101 - wp.YOUNG_STEP:
+                out[k] += wp.YOUNG_STEP
     elif verdict == -1 and years >= old_from and not h & wp.OLD_MASK:
         if out[wp.SPEED]:
             out[wp.SPEED] -= 1
@@ -91,6 +91,20 @@ class StaticTests(unittest.TestCase):
         self.assertEqual(image.read(code_va, wp.CODE_SIZE), wp.code_for(code_va))
         self.assertEqual(self.receipt["file_growth"] % 0x1000, 0)
         self.assertEqual(len(wp.code_for(code_va).rstrip(b"\xcc")) <= wp.CODE_SIZE, True)
+
+    def test_an_earlier_release_reads_legacy_and_upgrades_in_place(self):
+        """b81 league-aging: an executable with the b778 body (+1 a good game) reads legacy; apply rewrites only the
+        owner's allocation, same address, and the result equals a fresh install."""
+        from mod_editor.core import nfl2k5_xbe_space as space
+        code_va = int(self.receipt["code_va"], 16)
+        old, _ = space.install_code(self.applied, wp.OWNER, wp.code_for(code_va, wp.PREVIOUS_YOUNG_STEP),
+                                    previous=wp.code_for(code_va))
+        self.assertEqual(wp.status(old), "legacy")
+        new, receipt = wp.apply(old)
+        self.assertTrue(receipt["upgraded_from_legacy"])
+        self.assertEqual(wp.status(new), "applied")
+        self.assertEqual(new, self.applied)
+        self.assertEqual(wp.YOUNG_STEP, 2)
 
     def test_foreign_prerequisite_is_refused(self):
         bad = repin_edit(self.retail, 0x14EE45, b"\x90")

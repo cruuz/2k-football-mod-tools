@@ -49,11 +49,12 @@
                           # gives one of those before a face a player already wears
 .set OUTK, 4            # heavy outlier: 4 in 256 prospects (1.6 %)
 .set OUTADD, 384
-.set BLUEK, 10           # blue-chip prospects: 10 in 256 (3.9 %)
+.set BLUEK, 10           # b779-rf3 blue-chip prospects: 10 in 256 (3.9 %); unused since b81 league-aging's grade roll
 .set FRAND, 0x48B90       # float rand [0, 1) (ecx = generator)
 .set FTOI, 0xE3F10        # float (stack) -> int, ret 4
 .set GETTAB, 0x4F4CB4     # rating getter/setter table (stride 0x14, setter at -4)
 .set GETEND, 0x4F4EF8
+.set GRADEW, 0x4E696C     # .rdata 0.25f (a retail literal read by 186 sites): b81 league-aging's per-rating weight of the roll
 .set HALF, 0x4E4184       # .rdata 0.5f         # +3 sd on S (sd of S = 128, the table's c = 8 sd)
 .set COLLEGE_TOTAL, 6936   # b780 GEN1 Q84: the sum of the college weights n * n
 .set JERSEY_MIN, 0x521B90  # u32 per position: the bottom of his jersey range (FUN_002BD260)
@@ -232,21 +233,20 @@ regionC:                            # b779-rf3: the rating loop (29 getter/sette
     jns 41b
     mov byte ptr [esi+8], 6         # retail (the record's type byte, the college pick's first instruction)
     jmp collegepick                 # b780 GEN1 Q84
-qsetup:                             # one byte per prospect: a blue-chip (BLUEK in 256) rolls every rating in the upper
-    call rnd                        # half of his template range; the flag lives in the frame's free slot [esp+0x14]
-    cmp al, BLUEK
-    sbb eax, eax
-    mov [esp+4+0x14], eax
+qsetup:                             # b81 league-aging: one grade g per prospect, a float in the frame's free slot
+    mov ecx, RNG                    # [esp+0x14] (b779-rf3's blue-chip flag slot; a high grade is the blue-chip now)
+    call FRAND
+    fstp dword ptr [esp+4+0x14]
     mov edi, GETTAB
     ret
-qrand:                              # st0 = r, or (r + 1) / 2 for a blue-chip
-    call FRAND
-    test byte ptr [esp+4+0x14], 1
-    jz 44f
-    fld1
-    faddp st(1), st
-    fmul dword ptr [HALF]
-44: ret
+qrand:                              # b81 league-aging: st0 = g + GRADEW (u - g), u = FRAND: every rating of a prospect sits
+    call FRAND                      # near his one grade, so a class has real stars and busts (b779-rf3 drew each rating on
+    fsub dword ptr [esp+4+0x14]     # its own: the overall averaged out, a class's spread was half the real one and its best
+    fmul dword ptr [GRADEW]         # rookie 4-8 under the starters' median). A convex mix of g and u stays inside [0, 1):
+    fadd dword ptr [esp+4+0x14]     # no clamp. qsetup + qrand keep b779-rf3's 42 bytes (20 + 20 and a 2-byte fill), so cofs
+                                    # and every later label keep their addresses.
+    ret
+    .fill 42 - (. - qsetup), 1, 0xCC
 cofs:
     .byte 0x4E, 0x51, 0x50
 taken:                              # b780 GEN1: eax = a first-name string -> CF = 1 when another player on the roster
@@ -321,7 +321,7 @@ dlwrap:                             # b780 GEN1 Q83, from the jersey walk at 0x2
 72: jmp JERSEY_WALK
 gearsetup:                          # b780 GEN1 Q82: the face mask from any of the position's four templates (the tier's
     call rnd                        # own pair gave his tier away: 16 of 17 positions' tiers wear different masks), the
-    shr eax, 30                     # retail helmet bit (+0x0C bit 6: mask 15 and up) after it; then the blue-chip setup
+    shr eax, 30                     # retail helmet bit (+0x0C bit 6: mask 15 and up) after it; then the grade setup
     movzx ecx, byte ptr [esi+0x35]
     lea eax, [eax+ecx*4]            # template row 4 * position + k
     mov ecx, [ROSTER]

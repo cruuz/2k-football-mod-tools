@@ -20,6 +20,13 @@ X-Factor``).  Bits 1..5 (the stored move flags and the Guardian cap) are never t
    (rank 33..160) whose hidden development archetype (record +0x24 bits 4..7) has top-decile growth in
    the game's own curve tables (``nfl2k5_progression.PROFILES_VA`` / ``CURVES_VA``; pg1's reshaped
    tables when that option is on).  Gems get Star.
+   b81 league-aging (review M2, coordinator ruling 11/26): the gem threshold is taken from the installed
+   table by rank, the potential at which ``GEM_ROWS`` (20) of the 162 archetype rows qualify, ties
+   included.  The b780 revision fixed it at 70, which was rank 20 on the b780 curves; b81's curves halve
+   the growth ramps and 70 left one row (a single WR archetype), so the gem rate now stays the same
+   whatever the curves.  An executable with the fixed 70 reads "previous" (nfl2k5_star_career_code_b780
+   is that revision's frozen code) and ``apply`` upgrades it in place; ``refresh`` re-derives the table
+   when another owner (nfl2k5_progression) rewrites the curves after the install.
 
    NFL rate shape: rookies selected to the Pro Bowl, from the Wikipedia Pro Bowl roster tables (rookies
    are printed in italics at the bottom of each page): 2021 season 6 (2022 Pro Bowl), 2022 season 3
@@ -58,6 +65,7 @@ import struct
 from typing import Mapping
 
 from . import nfl2k5_star_career_code as assembly
+from . import nfl2k5_star_career_code_b780 as previous_assembly
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_bump_strength import _sections, section_digest
 from .nfl2k5_cave_oracle import XbeImage
@@ -95,7 +103,9 @@ TIER_SUPERSTAR = 93
 MIN_GAMES = 8
 GEM_MIN_RANK = 33
 GEM_MAX_RANK = 160
-GEM_POTENTIAL = 70
+GEM_POTENTIAL = 70   # b780 revision's fixed threshold (PREVIOUS_GEM_POTENTIAL); this revision ranks the table instead
+PREVIOUS_GEM_POTENTIAL = 70
+GEM_ROWS = 20        # b81 league-aging (review M2): archetype rows that qualify, as 70 gave on the b780 curves
 TIER_LIMITS = (0, 2, 4, 7)
 
 # The retail spans the owner calls or leaves untouched around its hooks (GUARDS below pins these bytes).
@@ -212,8 +222,29 @@ def potential_table(payload: bytes) -> bytes:
     return bytes(out)
 
 
-def tables_for(payload: bytes) -> bytes:
-    """The constant tables at the tail of the code allocation (potential read from this payload)."""
+def row_potentials(payload: bytes) -> list[int]:
+    """The potential of each of the 162 archetype rows (as potential_table stores it), in table order."""
+    image = XbeImage(payload)
+    profiles = image.read(PROFILES_VA, PROFILES_SIZE)
+    table = potential_table(payload)
+    out = []
+    for row in range(162):
+        position, profile, sub = profiles[row * 16], profiles[row * 16 + 4], profiles[row * 16 + 5]
+        if position < 17 and profile <= 1 and sub <= 7:
+            out.append(table[position * 16 + profile * 8 + sub])
+    return out
+
+
+def gem_threshold(payload: bytes) -> int:
+    """b81 league-aging (review M2): the potential at which GEM_ROWS archetype rows qualify (ties included): the
+    GEM_ROWS-th highest row potential of the payload's own curves, at least 1."""
+    values = sorted(row_potentials(payload), reverse=True)
+    return max(1, values[GEM_ROWS - 1]) if len(values) >= GEM_ROWS else 1
+
+
+def tables_for(payload: bytes, gem_potential: int | None = None) -> bytes:
+    """The constant tables at the tail of the code allocation (potential read from this payload; the gem threshold
+    ranked from it unless ``gem_potential`` names one)."""
     buf = bytearray(b"\xcc" * CODE_SIZE)
     buf[K_POT:K_POT + 17 * 16] = potential_table(payload)
     struct.pack_into("<17H", buf, K_VALUE, *VALUE)
@@ -223,7 +254,8 @@ def tables_for(payload: bytes) -> bytes:
     struct.pack_into("<17H", buf, K_TLO, *TLO)
     struct.pack_into("<f", buf, K_HUNDRED, 100.0)
     struct.pack_into("<4i", buf, K_CONST, GAIN, LOSE, TIER_X, TIER_SUPERSTAR)
-    struct.pack_into("<4i", buf, K_CONST2, MIN_GAMES, GEM_MIN_RANK, GEM_MAX_RANK, GEM_POTENTIAL)
+    gem = gem_threshold(payload) if gem_potential is None else gem_potential
+    struct.pack_into("<4i", buf, K_CONST2, MIN_GAMES, GEM_MIN_RANK, GEM_MAX_RANK, gem)
     struct.pack_into("<i", buf, K_CONST3, VETERAN_QB_FLOOR)
     buf[K_LIMITS:K_LIMITS + 4] = bytes(TIER_LIMITS)
     return bytes(buf)
@@ -234,20 +266,32 @@ def data_for(payload: bytes) -> bytes:
     return bytes(DATA_SIZE)
 
 
-def code_for(payload: bytes, code_va: int, data_va: int) -> tuple[bytes, dict[str, int]]:
-    """The relocated owner code, its constant tables and its label VAs."""
-    blob = bytearray(assembly.CODE)
+def code_for(payload: bytes, code_va: int, data_va: int, *, revision: str = "current") -> tuple[bytes, dict[str, int]]:
+    """The relocated owner code, its constant tables and its label VAs. ``revision="previous"``: the b780 body (frozen
+    code, fixed gem threshold 70) an executable built before b81 league-aging carries."""
+    _require(revision in ("current", "previous"), f"unknown star-career revision {revision}")
+    code = assembly if revision == "current" else previous_assembly
+    blob = bytearray(code.CODE)
     symbols = {"code": code_va, "code_base": code_va, "data_base": data_va, **SYMBOLS}
-    for offset, kind, symbol, value in assembly.RELOCATIONS:
+    for offset, kind, symbol, value in code.RELOCATIONS:
         target = symbols[symbol] + value + struct.unpack_from("<I", blob, offset)[0]
         if kind == 2:
             target -= code_va + offset
         struct.pack_into("<I", blob, offset, target & 0xFFFFFFFF)
     _require(len(blob) <= K_POT, "the star-career code outgrew its table offset")
     blob = blob.ljust(CODE_SIZE, b"\xcc")
-    tables = tables_for(payload)
+    tables = tables_for(payload, None if revision == "current" else PREVIOUS_GEM_POTENTIAL)
     blob[K_POT:CODE_SIZE] = tables[K_POT:CODE_SIZE]
-    return bytes(blob), {name: code_va + offset for name, offset in assembly.LABELS.items()}
+    return bytes(blob), {name: code_va + offset for name, offset in code.LABELS.items()}
+
+
+def _revision(payload: bytes, code_a: Mapping[str, object], data_a: Mapping[str, object]) -> str:
+    """'current' | 'previous' | 'foreign': which revision's body the code allocation holds for this payload's curves."""
+    code = XbeImage(payload).read(code_a["va"], CODE_SIZE)
+    for revision in ("current", "previous"):
+        if code == code_for(payload, code_a["va"], data_a["va"], revision=revision)[0]:
+            return revision
+    return "foreign"
 
 
 def _owned(payload: bytes) -> tuple[Mapping[str, object], Mapping[str, object]] | None:
@@ -301,7 +345,8 @@ def _site_state(payload: bytes) -> str:
 
 
 def _after_site(payload: bytes, name: str) -> bytes:
-    """The installed hook bytes; needs the code allocation when the owner is installed."""
+    """The installed hook bytes; needs the code allocation when the owner is installed (both revisions place the same
+    labels: the code is the same assembly, only the gem threshold differs)."""
     rows = _owned(payload) if space.status(payload) == "applied" else None
     if rows is None:
         return b""
@@ -317,7 +362,7 @@ def canonical_context(payload: bytes, va: int, raw: bytes) -> bytes:
     overlaps = [(name, at, before, size) for name, at, before, size in HOOKS
                 if at < va + len(raw) and va < at + size and bytes(raw[max(at, va) - va:min(at + size, va + len(raw)) - va])
                 != before[max(at, va) - at:min(at + size, va + len(raw)) - at]]
-    if not overlaps or status(payload) != "applied":
+    if not overlaps or status(payload) not in ("applied", "previous"):
         return raw
     image = XbeImage(payload)
     out = bytearray(raw)
@@ -331,7 +376,8 @@ def canonical_context(payload: bytes, va: int, raw: bytes) -> bytes:
 
 
 def status(payload: bytes) -> str:
-    """retail | applied | foreign for a USA executable."""
+    """retail | applied | previous | foreign for a USA executable (previous: the b780 revision's fixed gem threshold,
+    upgraded in place by ``apply``)."""
     try:
         if payload[:4] != b"XBEH" or struct.unpack_from("<I", payload, 0x104)[0] != IMAGE_BASE:
             return "foreign"
@@ -354,22 +400,29 @@ def status(payload: bytes) -> str:
         data = image.read(data_a["va"], DATA_SIZE)
         if code == b"\xcc" * CODE_SIZE and data == bytes(DATA_SIZE):
             return "retail" if site == "retail" else "foreign"
-        expected, labels = code_for(payload, code_a["va"], data_a["va"])
-        if code != expected:
+        revision = _revision(payload, code_a, data_a)
+        if revision == "foreign":
             return "foreign"
         if data != data_for(payload):
             return "foreign"
-        return "applied" if site == "applied" else "foreign"
+        if site != "applied":
+            return "foreign"
+        return "applied" if revision == "current" else "previous"
     except (StarCareerError, ValueError, KeyError, IndexError, TypeError, struct.error, OverflowError):
         return "foreign"
 
 
 def read_settings(payload: bytes) -> dict[str, object]:
     state = status(payload)
+    gem = None
+    if state in ("applied", "previous"):
+        code_a, _data_a = _owned(payload)
+        gem = struct.unpack_from("<i", XbeImage(payload).read(code_a["va"], CODE_SIZE), K_CONST2 + 12)[0]
     return {"status": state, "owner": OWNER, "experimental": True, "runtime_witnessed": False,
             "code_bytes": CODE_SIZE, "data_bytes": DATA_SIZE, "read_only_bytes": 0,
             "class_stars": "3..5 top prospects + 1..2 gems", "gain": GAIN, "lose": LOSE,
-            "superstar_coin": "1 in 8", "veteran_qb_floor": VETERAN_QB_FLOOR}
+            "superstar_coin": "1 in 8", "veteran_qb_floor": VETERAN_QB_FLOOR,
+            "gem_potential": gem, "gem_rows": GEM_ROWS}
 
 
 def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
@@ -377,6 +430,9 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     state = status(payload)
     if state == "applied":
         return payload, {"status": "already_applied", "changed_bytes": 0, "edits": [], **read_settings(payload)}
+    if state == "previous":                     # b81 league-aging (review M2): the same allocation, this revision's body
+        result, receipt = refresh(payload, installed_body(payload))
+        return result, {**receipt, "upgraded_from": "previous"}
     _require(state == "retail", f"the star-career sites are {state}; rebuild from a supported base")
     _require(_guard_state(payload), "a star-career dependency (class generator/aging/overall/stat) is not retail")
     allocator = space.status(payload)
@@ -416,6 +472,34 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
                     "result_sha256": hashlib.sha256(result).hexdigest(), **read_settings(result)}
 
 
+def installed_body(payload: bytes) -> bytes | None:
+    """The code allocation's bytes when this owner reads applied or previous, else None. Read it BEFORE another owner
+    rewrites the aging curves the potential table was built from (refresh takes it as the body to replace)."""
+    if status(payload) not in ("applied", "previous"):
+        return None
+    code_a, _data_a = _owned(payload)
+    return XbeImage(payload).read(code_a["va"], CODE_SIZE)
+
+
+def refresh(payload: bytes, body: bytes) -> tuple[bytes, Mapping[str, object] | None]:
+    """b81 league-aging (review M1): re-derive the potential table and the gem threshold from the payload's curves as
+    they are now, in place (same allocation; ``body`` is what installed_body read before the curves changed). The hooks
+    do not move. Returns (payload, None) when the installed body is already this revision's for these curves."""
+    _require(body is not None and len(body) == CODE_SIZE, "refresh needs the installed star-career body")
+    code_a, data_a = _owned(payload)
+    _require(XbeImage(payload).read(code_a["va"], CODE_SIZE) == body, "the star-career code is not the body read")
+    new, labels = code_for(payload, code_a["va"], data_a["va"])
+    if new == body:
+        return payload, None
+    _require(labels == code_for(payload, code_a["va"], data_a["va"], revision="previous")[1],
+             "the star-career revisions place different hooks")
+    out, install = space.install_code(payload, OWNER, new, previous=body)
+    _require(status(out) == "applied", "star-career refresh postcondition failed")
+    return out, {"status": "applied", "changed_bytes": sum(a != b for a, b in zip(payload, out)),
+                 "gem_potential": gem_threshold(out), "gem_rows": GEM_ROWS, "code_va": hex(code_a["va"]),
+                 "code_install": install}
+
+
 def reservations(payload: bytes) -> list[dict[str, object]]:
     out = [r for r in space.reservations(payload) if r["owner"] == OWNER]
     for name, va, _before, size in HOOKS:
@@ -427,5 +511,6 @@ def reservations(payload: bytes) -> list[dict[str, object]]:
 __all__ = ["OWNER", "UI_LABEL", "BUILD_CAPTION", "HELP_TEXT", "CODE_SIZE", "DATA_SIZE", "REQUESTS",
            "POSITIONS", "VALUE", "FIELD", "THI", "TMID", "TLO", "GAIN", "LOSE", "VETERAN_QB_FLOOR",
            "TIER_X", "TIER_SUPERSTAR", "MIN_GAMES", "GEM_MIN_RANK", "GEM_MAX_RANK", "GEM_POTENTIAL",
-           "TIER_LIMITS", "HOOKS", "GUARDS", "SYMBOLS", "StarCareerError", "apply", "code_for", "data_for",
-           "potential_table", "read_settings", "reservations", "sites", "status"]
+           "PREVIOUS_GEM_POTENTIAL", "GEM_ROWS", "TIER_LIMITS", "HOOKS", "GUARDS", "SYMBOLS", "StarCareerError", "apply",
+           "code_for", "data_for", "gem_threshold", "installed_body", "potential_table", "read_settings", "refresh",
+           "reservations", "row_potentials", "sites", "status"]

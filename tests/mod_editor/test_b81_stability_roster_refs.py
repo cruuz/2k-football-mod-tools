@@ -400,9 +400,10 @@ class Routes(unittest.TestCase):
         # b81 game outcomes: and the simulated-game outcomes that ride with the realism owner (as a full build)
         from mod_editor.core import nfl2k5_sim_realism as realism
         # b81 rookie-faces: rookie faces' current revision before the pool (a no-op unless the executable has GEN1)
-        expected = mod_build._history_pool_upgrade(mod_build._rookie_faces_upgrade(mod_build._cpu_kick_aim_with_kicking(
-            mod_build._sim_outcomes_with_realism(
-                qb.apply(pressure.apply(realism.apply(xbe)[0])[0], "realistic", reference=reference)[0])[0])[0])[0])[0]
+        expected = mod_build._history_pool_upgrade(mod_build._league_aging_upgrade(  # b81 league-aging
+            mod_build._rookie_faces_upgrade(mod_build._cpu_kick_aim_with_kicking(
+                mod_build._sim_outcomes_with_realism(
+                    qb.apply(pressure.apply(realism.apply(xbe)[0])[0], "realistic", reference=reference)[0])[0])[0])[0])[0])[0]
         expected = mod_build._overtime_crash_fix_upgrade(expected)[0]   # b81 ot-crash review D3
         update = receipt["sim_qb_source_update"]
         self.assertEqual(update["result_sha256"], _sha(expected))
@@ -417,6 +418,7 @@ class Routes(unittest.TestCase):
             receipt.setdefault("steps", [])
         full = {}
         with seam, patch.object(mod_build, "_copy_private_build_source", side_effect=copied), \
+                patch.object(mod_build, "_apply_class_templates_in_place", return_value=None), \
                 patch.object(mod_build, "_compact_build_disc", side_effect=lambda *args: compaction.append(args)), \
                 patch.object(mod_build, "inspect", return_value={}), \
                 patch.object(mod_build, "_verify_finished_game_disc", return_value=None):
@@ -550,6 +552,7 @@ class Routes(unittest.TestCase):
             receipt.setdefault("steps", [])
         receipt = {}
         with unreadable, patch.object(mod_build, "_copy_private_build_source", side_effect=copied), \
+                patch.object(mod_build, "_apply_class_templates_in_place", return_value=None), \
                 patch.object(mod_build, "_compact_build_disc", return_value=None), \
                 patch.object(mod_build, "inspect", return_value={}), \
                 patch.object(mod_build, "_verify_finished_game_disc", return_value=None):
@@ -558,12 +561,14 @@ class Routes(unittest.TestCase):
         from mod_editor.core import nfl2k5_pass_protection as pressure   # combined levers: the legacy centre updated
         from mod_editor.core import nfl2k5_sim_realism as realism        # b81 fb-targets: season realism updated too
         # b81 history-pool: the copy also carries this release's career history pool; b81 game outcomes: and the
-        # simulated-game outcomes that ride with the realism owner; b81 ot-crash review D3: then the playoff overtime
-        # crash fix (the code's order: outcomes, kick aim, rookie faces, history pool, overtime)
+        # simulated-game outcomes that ride with the realism owner; b81 league-aging: player development after rookie
+        # faces; b81 ot-crash review D3: then the playoff overtime crash fix (the code's order: outcomes, kick aim,
+        # rookie faces, league aging, history pool, overtime)
         self._assert_copy(copy, receipt, mod_build._overtime_crash_fix_upgrade(mod_build._history_pool_upgrade(
-            mod_build._rookie_faces_upgrade(  # b81 rookie-faces
-                mod_build._cpu_kick_aim_with_kicking(mod_build._sim_outcomes_with_realism(
-                    pressure.apply(realism.apply(frozen)[0])[0])[0])[0])[0])[0])[0])
+            mod_build._league_aging_upgrade(  # b81 aging
+                mod_build._rookie_faces_upgrade(  # b81 rookie-faces
+                    mod_build._cpu_kick_aim_with_kicking(mod_build._sim_outcomes_with_realism(
+                        pressure.apply(realism.apply(frozen)[0])[0])[0])[0])[0])[0])[0])[0])
         # The sentence once, next to the floor's own notes (practice squad merge: this disc's earlier economy is
         # upgraded in place for the floor, and the report says so).
         floor_notes = receipt["qb_room_source_update"].get("added") or []

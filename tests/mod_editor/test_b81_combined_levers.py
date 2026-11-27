@@ -437,6 +437,8 @@ class StudioRoutes(unittest.TestCase):
                 # b81 rookie-faces: and rookie faces' current revision (the base has the v0.9 one), before the pool
                 expected, faces = mod_build._rookie_faces_upgrade(expected)
                 self.assertEqual(update["rookie_faces_upgraded"], faces is not None)
+                # b81 league-aging: and player development's current revision (the base has the v0.9 one)
+                expected = mod_build._league_aging_upgrade(expected)[0]
                 # b81 history-pool: and this release's career history pool in every mode (the base has the v0.9 one)
                 expected, history = mod_build._history_pool_upgrade(expected)
                 self.assertIsNotNone(history)

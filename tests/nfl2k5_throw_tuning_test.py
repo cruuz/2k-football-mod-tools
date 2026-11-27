@@ -573,13 +573,17 @@ class ProgressionTests(unittest.TestCase):
         curve = [0] * 21
         out = progression.reshape_curve(curve, "routes_passrush_coverage")
         self.assertEqual(out[0], 0)
-        # b779 rf3 re-tuned routes_passrush_coverage to (growth 5.4, decline 1.0/yr after year 10): 5.4 rounds to 5
-        # (b778's 6.0 gave 6), and five extra years of decline at 1/yr leave 5.4 - 5 = 0.4, which rounds to 0 (b778: 1).
+        # b779 rf3 re-tuned routes_passrush_coverage to (growth 5.4, decline 1.0/yr after year 10); b81 league-aging
+        # halves the growth ramps (2.7, the cut that slows ordinary young players): 2.7 rounds to 3, and five extra years
+        # of decline at 1/yr leave 2.7 - 5 = -2.3, which rounds to -2.
         growth, decline, after = progression.SHAPE["routes_passrush_coverage"][:3]
-        self.assertEqual((growth, decline, after), (5.4, 1.0, 10))
-        self.assertEqual(out[5], 5)                      # full growth by year 5 (round(5.4))
-        self.assertEqual(out[10], 5)                     # the plateau
-        self.assertEqual(out[15], 0)                     # 5 extra years of decline at 1/yr (round(5.4 - 5))
+        self.assertEqual((growth, decline, after), (2.7, 1.0, 10))
+        self.assertEqual(progression.PREVIOUS_SHAPE["routes_passrush_coverage"][:3], (5.4, 1.0, 10))
+        self.assertEqual(out[5], 3)                      # full growth by year 5 (round(2.7))
+        self.assertEqual(out[10], 3)                     # the plateau
+        self.assertEqual(out[15], -2)                    # 5 extra years of decline at 1/yr (round(2.7 - 5))
+        prev = progression.reshape_curve(curve, "routes_passrush_coverage", shape=progression.PREVIOUS_SHAPE)
+        self.assertEqual((prev[5], prev[10], prev[15]), (5, 5, 0))   # the b779-rf3 bytes, still read as legacy
         self.assertTrue(all(-127 <= v <= 127 for v in progression.reshape_curve([120] * 21, "consistency")))
         self.assertEqual(progression.reshape_curve([3] * 21, "hidden_4f"), [3] * 21)
 
@@ -624,6 +628,7 @@ class ProgressionRetailTests(unittest.TestCase):
         self.assertEqual([e["label"] for e in receipt["edits"]],
                          ["retirement_base_years", "form_routine_and_aging_tables", "aging_curve_hook",
                           "form_mini_curve_hook", "retirement_decision",   # b780 b4-economy: the rewritten decision
+                          "retirement_chances",                            # b81 league-aging: its chance table
                           "aging_curves", "archetype_weights"])
         with self.assertRaises(progression.ProgressionError):
             progression.apply(patched)

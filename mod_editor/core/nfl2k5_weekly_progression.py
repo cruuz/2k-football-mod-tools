@@ -15,7 +15,8 @@ fields and games played (``0x14EE40``), runs the retail merge, reads them again,
 Only in a franchise (league type 2) regular-season game (stage 8) and only for a healthy player it then moves a few
 ratings by one point:
 
-* a young player (years pro <= 3, QB <= 4) with a good game: +1 on his position's key ratings, every other good game;
+* a young player (years pro <= 3, QB <= 4) with a good game: +YOUNG_STEP (b81: 2) on his position's key ratings, every good
+  game;
 * an older player (years pro >= the position's decline year) who sat out or had a poor game: -1 speed and -1 agility
   or stamina (a QB: speed only), one such week in four;
 * nothing else (poor or idle young players, average games, kickers and punters, injured players, other modes).
@@ -38,8 +39,8 @@ OWNER = "nfl2k5_weekly_progression"
 CODE_SIZE = 608
 REQUESTS = ((OWNER, "code", CODE_SIZE, 16),)
 BUILD_CAPTION = "Franchise: weekly player progression"
-HELP_TEXT = ("EXPERIMENTAL. After each franchise regular-season game, a young player with a good game gains a point on "
-             "his key ratings every other good game, and an older player who sat out or played poorly loses a point of "
+HELP_TEXT = ("EXPERIMENTAL. After each franchise regular-season game, a young player with a good game gains two points "
+             "on his key ratings, and an older player who sat out or played poorly loses a point of "
              "speed every few weeks. Injured players, playoffs and other modes are unchanged. Small next to the "
              "offseason changes.")
 HOOK = ("weekly_merge", 0x00134E05, bytes.fromhex("e8a6e6ffff"))            # call 0x1334B0 (per-player stat merge)
@@ -54,7 +55,14 @@ GUARDS = (  # retail code this owner calls or hooks (the hook's own bytes masked
     (0x000C4E70, 0x06, "6b33a3cdfc251883b056280f93e667454d3a140817693bca265ae92b96924b09"),   # week
 )
 LEAGUE_FRANCHISE, STAGE_REGULAR = 2, 8
-GOOD_MASK, OLD_MASK = 0, 3            # +1 on every good game of a young player, -1 one week in four (h & 3 == 0)
+GOOD_MASK, OLD_MASK = 0, 3            # a step on every good game of a young player, -1 one week in four (h & 3 == 0)
+# b81 league-aging (coordinator 11/25, the owner: "Matthew Golden might be the Packers' number 2 receiver, but he's
+# really their future number 1. He's ascending so quick"): the offseason growth years were cut on the shared curves for
+# every young player (nfl2k5_progression SHAPE), so the cut is made talent-aware here: a young player who plays and
+# produces (a good game by his position's rule) now gains YOUNG_STEP points on each key rating instead of 1. Bench
+# players and poor games get nothing, so the cut lands on ordinary young players and the producers still climb fast.
+YOUNG_STEP = 2
+PREVIOUS_YOUNG_STEP = 1               # b778 pg1 .. b81 integration: read as legacy and upgraded in place
 QB_MIN_ATTEMPTS = 15
 SPEED, AGILITY, STAMINA = 0x36, 0x37, 0x39
 KIND_QB, KIND_SUM, KIND_PLAYED, KIND_NONE = 0, 1, 2, 3
@@ -98,9 +106,10 @@ def rows() -> bytes:
     return bytes(out)
 
 
-def code_for(code_va):
+def code_for(code_va, young_step=None):
     """The cave (CODE_SIZE bytes): wk_merge, called from 0x134E05 with eax = roster player, [esp+4] = match copy,
     [esp+8] = club; it returns like 0x1334B0 (ret 8) with ebx, esi, edi and ebp preserved."""
+    step = YOUNG_STEP if young_step is None else young_step
     a = _Asm(code_va)
     # frame after the prologue: [esp+0..15] four stat fields, [esp+16] games, saved ebp edi esi ebx, return, copy, club
     a.label("wk")
@@ -157,8 +166,12 @@ def code_for(code_va):
     a("f6c3%02x" % GOOD_MASK); a.j8("75", "fin")
     for k in range(3):
         a("0fb6570%x" % (0xB + k) + "85d2"); a.j8("74", "fin")    # movzx edx, byte [edi+11+k]; none left: done
-        a("803c1664"); a.j8("73", f"k{k}")              # cmp byte [esi+edx], 100; jae skip
-        a("fe0416")                                       # inc byte [esi+edx]
+        if step == 1:
+            a("803c1664"); a.j8("73", f"k{k}")          # cmp byte [esi+edx], 100; jae skip
+            a("fe0416")                                   # inc byte [esi+edx]
+        else:
+            a("803c16%02x" % (101 - step)); a.j8("73", f"k{k}")   # cmp byte [esi+edx], 101 - step; jae skip
+            a("800416%02x" % step)                        # add byte [esi+edx], step
         a.label(f"k{k}")
     a.j8("eb", "fin")
     a.label("old")
@@ -208,8 +221,11 @@ def _recognize(payload):
         states.add("retail" if raw == before else "applied" if owned and raw == after else "foreign")
     if owned:
         raw = image.read(owned["va"], CODE_SIZE)
-        states.add("retail" if raw == b"\xcc" * CODE_SIZE else "applied" if raw == code_for(owned["va"]) else "foreign")
-    require(states in ({"retail"}, {"applied"}), "Foreign or mixed weekly progression site/code")
+        states.add("retail" if raw == b"\xcc" * CODE_SIZE else "applied" if raw == code_for(owned["va"]) else
+                   "legacy" if raw == code_for(owned["va"], PREVIOUS_YOUNG_STEP) else "foreign")
+    if states == {"applied", "legacy"}:
+        states = {"legacy"}                              # the hook is the same; the body is the earlier release's
+    require(states in ({"retail"}, {"applied"}, {"legacy"}), "Foreign or mixed weekly progression site/code")
     for va, size, digest in GUARDS:
         content = bytearray(image.read(va, size))
         for _, at, before, _ in edits:
@@ -235,9 +251,18 @@ def apply(payload):
         state = _recognize(payload)
     except _ERRORS as exc:
         raise WeeklyProgressionError(f"foreign/mixed weekly progression input: {exc}") from exc
-    common = dict(owner=OWNER, league="franchise", stage="regular season", roster_fields_only=True, save_growth=0)
+    common = dict(owner=OWNER, league="franchise", stage="regular season", roster_fields_only=True, save_growth=0,
+                  young_step=YOUNG_STEP)
     if state == "applied":
         return payload, dict(common, status="already_applied", changed_bytes=0, edits=[])
+    if state == "legacy":                                # b81 league-aging: the same allocation, the new body in place
+        code_va = allocation(payload)["va"]
+        result, install = space.install_code(payload, OWNER, code_for(code_va),
+                                             previous=code_for(code_va, PREVIOUS_YOUNG_STEP))
+        require(_recognize(result) == "applied" and space.status(result) == "applied",
+                "weekly progression upgrade postcondition failed")
+        return result, dict(common, status="applied", upgraded_from_legacy=True, code_va=hex(code_va),
+                            changed_bytes=space.count_differing_bytes(payload, result), file_growth=0, edits=[])
     before = payload
     allocation_receipt = {}
     if not any(r["owner"] == OWNER for r in space.layout(payload)["allocations"]):
@@ -267,5 +292,5 @@ def apply(payload):
                         reservations=[r for r in space.reservations(result) if r["owner"] == OWNER])
 
 
-__all__ = ["OWNER", "REQUESTS", "CODE_SIZE", "HOOK", "GUARDS", "RULES", "BUILD_CAPTION", "HELP_TEXT", "code_for",
+__all__ = ["OWNER", "REQUESTS", "CODE_SIZE", "HOOK", "GUARDS", "RULES", "BUILD_CAPTION", "HELP_TEXT", "YOUNG_STEP", "code_for",
            "sites", "allocation", "status", "apply", "rows"]

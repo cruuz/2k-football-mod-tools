@@ -39,6 +39,18 @@ retirement ages); a beta-77 executable with only the data tables reads ``legacy`
 b780 b4-economy rewrites the retirement decision ``RETIRE_VA`` in place (see the comment above it): retirement by age,
 and a player who starts or played most of the season never retires before his position's age. A beta-78/79
 executable with the b778 layer but the retail decision also reads ``legacy`` and is upgraded in place.
+
+b81 league-aging (coordinator rulings 11/25 on the lane's DESIGN, the "weekend version"): ten simulated seasons aged
+and inflated the league (CPU starters aged 30+ 19.7 -> 49.6 %, halfback starters +12 overall, first-round rookies
+starting a quarter as often as real ones). In place, same sites: the growth years are shared-curve growth cut
+(``SHAPE`` ramps halved, the retail curves' own change kept at 0.6), the position tables run on the real age clock
+(``AGE_AT_YEAR`` 21) with per-class growth caps from 25 and quarterbacks growing into starters, the running-back
+production shift is for real outliers (1,800 / 2,100 scrimmage yards), and the retirement decision follows real
+starters' career ends (``NFL_RETIRE_BASE``, ``RETIRE_OVERALL_STEP``, ``RETIRE_PRODUCING_STEP``, ``RETIRE_FLOOR``,
+``RETIRE_P`` at 0xACEDB0, no franchise-year damping) with an age rule for unsigned kickers and punters. Every
+earlier executable (the b780 constants, ``PREVIOUS``) reads ``legacy`` and is upgraded in place; ``apply`` also moves
+the class generator's rookie birth base forward a year (nfl2k5_season_length.upgrade_rookie_birth) on an image built
+before it.
 """
 
 from __future__ import annotations
@@ -89,7 +101,7 @@ TABLES = (
 # Consistency: the retail curves add +20 to +40 by year 4 to most archetypes (10.7 % of players at 90+ after four
 # seasons, a wall the community saw inflate sim stats); half of the retail change is kept, plus a 2-point ramp
 # (2.2 % at 90+ after four seasons; the 2026 roster: 0.5 % of 2-4-year players, 3.6 % of 5-8-year players).
-SHAPE = {
+PREVIOUS_SHAPE = {   # b779-rf3 .. b81 integration (v0.9): read as legacy and upgraded in place
     "speed_agility": (0.9, 2.0, 9),
     "strength_jumping_arm_kickpower": (2.7, 1.0, 10),
     "stamina_durability": (0.9, 1.5, 9),
@@ -100,6 +112,24 @@ SHAPE = {
     "pass_accuracy_catch_kick_accuracy": (5.4, 0.5, 11),
     "secure_breaktackle_blocking_tackle": (4.5, 1.0, 10),
     "routes_passrush_coverage": (5.4, 1.0, 10),
+}
+# b81 league-aging: generated men gained +7 (QB, CB) to +14 (ILB) overall from the rookie season to years pro 6 and the
+# league's 22-24-year-olds rose about 5.8 points a season more than the 2026 roster's profile can hold (ten simulated
+# seasons, four roots, two executables). Years pro 1-3 have no per-position table (dd starts at year 4), so the growth
+# years are cut on the shared curves: every ramp halved and 0.6 of the retail curves' own change kept (consistency keeps
+# its 0.5). Modelled on the installed templates, the curve-only gain from years pro 1 to 4 falls WR 10.0 -> 6.1, ILB
+# 7.6 -> 4.2, CB 9.0 -> 5.4, OL 6-7 -> 4-5, QB 4.9 -> 2.9 (quarterbacks get theirs back from the table at 25-28).
+SHAPE = {
+    "speed_agility": (0.45, 2.0, 9, 0.6),
+    "strength_jumping_arm_kickpower": (1.35, 1.0, 10, 0.6),
+    "stamina_durability": (0.45, 1.5, 9, 0.6),
+    "hidden_4f": (0.0, 0.0, 20),                 # drives the scramble style byte, not a rating: unchanged
+    "consistency": (1.0, 0.5, 12, 0.5),
+    "read_coverage_aggression": (2.7, 0.5, 12, 0.6),
+    "leadership_composure": (2.25, 0.0, 20, 0.6),
+    "pass_accuracy_catch_kick_accuracy": (2.7, 0.5, 11, 0.6),
+    "secure_breaktackle_blocking_tackle": (2.25, 1.0, 10, 0.6),
+    "routes_passrush_coverage": (2.7, 1.0, 10, 0.6),
 }
 GROWTH_YEARS = 5
 SPREAD = 0.35
@@ -228,10 +258,11 @@ def _clamp8(value: float) -> int:
     return max(-127, min(127, int(round(value))))
 
 
-def reshape_curve(curve: list[int], family: str, growth_scale: float = 1.0, decline_scale: float = 1.0) -> list[int]:
+def reshape_curve(curve: list[int], family: str, growth_scale: float = 1.0, decline_scale: float = 1.0,
+                  shape: Mapping[str, tuple] | None = None) -> list[int]:
     """Year 0 untouched; a growth ramp over years 1..GROWTH_YEARS; steeper decline after the family's age."""
 
-    growth, decline, after, *rest = SHAPE[family]
+    growth, decline, after, *rest = (shape or SHAPE)[family]
     keep = rest[0] if rest else 1.0               # b779-rf3: share of the retail curve's own change that is kept
     out = []
     for year, value in enumerate(curve):
@@ -243,8 +274,8 @@ def reshape_curve(curve: list[int], family: str, growth_scale: float = 1.0, decl
 
 
 def reshape_curves(tables: Mapping[str, list[list[int]]], growth_scale: float = 1.0,
-                   decline_scale: float = 1.0) -> dict[str, list[list[int]]]:
-    return {family: [reshape_curve(c, family, growth_scale, decline_scale) for c in curves]
+                   decline_scale: float = 1.0, shape: Mapping[str, tuple] | None = None) -> dict[str, list[list[int]]]:
+    return {family: [reshape_curve(c, family, growth_scale, decline_scale, shape) for c in curves]
             for family, curves in tables.items()}
 
 
@@ -295,12 +326,12 @@ def spread_weights(rows: list[dict[str, int]], profiles: bytes, tables: Mapping[
 
 
 def patched_tables(payload_profiles: bytes | None = None, growth_scale: float = 1.0, decline_scale: float = 1.0,
-                   spread: float = SPREAD) -> tuple[bytes, bytes]:
+                   spread: float = SPREAD, shape: Mapping[str, tuple] | None = None) -> tuple[bytes, bytes]:
     """The two replacement blobs (curves, weights) derived from the embedded retail tables."""
 
     retail_c = retail_curves()
     retail_w = retail_weights()
-    tables = reshape_curves(decode_curves(retail_c), growth_scale, decline_scale)
+    tables = reshape_curves(decode_curves(retail_c), growth_scale, decline_scale, shape)
     curves = _encode_curves(tables, retail_c)
     if payload_profiles is None:
         weights = retail_w
@@ -352,7 +383,12 @@ RETIRE_BASE_VA = 0x00ACEDE0       # .data: u32 per position, retirement base yea
 RETAIL_RETIRE_BASE = (13, 12, 10, 9, 8, 8, 8, 8, 8, 8, 8, 8, 11, 10, 10, 10, 10)
 # QB K P WR CB FS SS RB FB TE OLB ILB C G T DT DE.  NFL: a typical starter (overall .7-.8, -2) retires around
 # base + 2 years pro (rookie = 1), a star (.9+, -5) around base + 5; see the report for the nflverse numbers.
-NFL_RETIRE_BASE = (14, 14, 14, 8, 7, 8, 8, 6, 7, 9, 8, 8, 11, 10, 10, 9, 9)
+PREVIOUS_NFL_RETIRE_BASE = (14, 14, 14, 8, 7, 8, 8, 6, 7, 9, 8, 8, 11, 10, 10, 9, 9)
+# b81 league-aging: position ages (base + 24) QB 36, K/P 37, HB 29, CB/S/G/T 30, WR/FB 31, TE/LB/C/DT/DE 32. Scored with
+# the rest of the b81 rule on the CPU starters of ten stored seasons: 3 / 10 / 17 / 27 % a year at coming-season ages
+# 29-30 / 31-32 / 33-34 / 35-36 (the installed rule 0 / 1 / 4 / 9; real NFL starters' career ends 8 / 14 / 22 / 28,
+# cuts included), by group at 31-36 QB 0-5, WR 8-33, OL 11-31, DB 16-38 (real QB 0-8, WR 9-33, OL 18-36, DB 19-36).
+NFL_RETIRE_BASE = (12, 13, 13, 7, 6, 6, 6, 5, 7, 8, 8, 8, 8, 6, 6, 8, 8)
 FN_AGING_CURVE, FN_FORM, FN_STAT_AGO = 0x000E5890, 0x000E63B0, 0x0014EF20
 FN_TEAM_COUNT, FN_TEAM = 0x000C4BE0, 0x000C4C50
 GUARDS = (  # retail code this layer calls or hooks; own edits are masked back to retail before hashing
@@ -386,7 +422,12 @@ QB_YOUNG_MAX_YEARS = 4            # years pro after the rollover: seasons 1..3 j
 QB_LEVEL_EDGES = (-8, 3, 12)      # adjusted yards per attempt x10 above the league: level 0 below -0.8, 3 from +1.2
 # QB form mini-curves, laid out like the retail ones at 0x4F27A4 (mental-ish, skill, physical) for levels 0..3
 QB_MINI = ((-3, 0, 1, 3), (-5, 0, 2, 5), (0, 0, 0, 0))
-RB_PRODUCTION_SHIFT = (1200, 1600)
+# b81 league-aging (owner, 11/25: "Teams also pick up joe mixon and he cooks for years, despite being cooked himself"):
+# 1,200 scrimmage yards was reached by half of the 28-30-year-old CPU halfback starters, so the "generational" exception
+# (the owner, 10/22: "running backs regress faster unless they're generational") had become the rule; halfback starters aged
+# 29+ were 22 % of all (real 8-10 %). Now 1,800 (one year younger) and 2,100 (two).
+PREVIOUS_RB_PRODUCTION_SHIFT = (1200, 1600)
+RB_PRODUCTION_SHIFT = (1800, 2100)
 # Quarterbacks' non-physical ratings (accuracy, reads, arm, consistency, composure...): the yearly change is at least
 # -1 until years pro 16 (age about 36), -2 at 17 and -3 from 18 (NFL QB efficiency: about -0.2 ANY/A a year to 35 against
 # a 1.2 year-to-year spread, a cliff from 37). Physical ratings age by the table.
@@ -403,7 +444,7 @@ DD_BYTES = (CURVE_LEN - DD_FIRST_YEAR + 1) // 2   # 17 nibbles per class/group c
 # per class and group; before the first age the installed curves alone decide (growth years).  Age of the season
 # at years pro y is about 21 + y, so the change applied at the rollover to years pro y is the one at age 20 + y.
 # Shapes from nflverse snap counts 2013-2025 and stats 2000-2025 (delta method; report b778_pg1).
-D_TARGET = {
+PREVIOUS_D_TARGET = {
     "QB": ({27: -1, 30: -2}, {27: 0, 36: -1, 37: -2, 38: -3}),
     "KP": ({29: -1}, {27: 0, 35: -0.5, 37: -1.5}),
     "RB": ({24: -1, 26: -1.5, 27: -2, 28: -2.5, 29: -3, 31: -4}, {26: -0.5, 27: -1, 28: -1.5, 29: -2}),
@@ -416,7 +457,32 @@ D_TARGET = {
     "OL": ({28: -1, 31: -2}, {29: 0, 31: -1, 33: -2}),
     "DL": ({27: -1, 29: -1.5, 31: -2.5}, {29: -0.5, 31: -1.5, 33: -2}),
 }
-AGE_AT_YEAR = 20                  # the change applied at years pro y is the NFL change at age 20 + y
+PREVIOUS_AGE_AT_YEAR = 20
+# b81 league-aging: the real 2026 rookies are 22.76 on 1 September of their rookie season (years pro 1), so a season at
+# years pro y is about age 21.8 + y and the change applied at the rollover to years pro y is the NFL change at age
+# 21 + y (it was 20 + y: every position aged a year late, generated men nearly two). On that clock: skill growth is
+# capped from 25 (0 or +0.5 for a year, then 0) where the shared curves still added +1 to +2 a season; quarterbacks
+# grow +1.5 a season at 25-28 (generated QBs gained +7 in five seasons and never reached the QB1 line) and slide gently
+# from 34 (NFL: about -0.2 ANY/A a year 29-35, a cliff from 37); backs turn a year earlier (real backs' scrimmage per
+# game peaks at 22-23 and falls every year from 24).
+# Retune r1 (the paired ten-season calibration, roots 68001-68004 against the stored 8b180ed5 arm, league-aging
+# out/paired-r0): starters' means by 2035 against 2026 moved HB -7.6, DB -4.7, TE -3.8 (declining a year too early twice:
+# the clock and the table), OL +4.6 (a five-year plateau). Backs keep b780's years-pro placement (labels a year later on
+# the new clock), corners, safeties and tight ends slide a year later on the physical side; linemen slide from 29.
+D_TARGET = {
+    "QB": ({27: -1, 30: -2}, {25: 1.5, 29: 0, 34: -0.5, 36: -1, 37: -2, 38: -3}),
+    "KP": ({29: -1}, {27: 0, 35: -0.5, 37: -1.5}),
+    "RB": ({25: -1, 27: -1.5, 28: -2, 29: -2.5, 30: -3, 32: -4}, {27: -0.5, 28: -1, 29: -1.5, 30: -2}),
+    "FB": ({27: -1, 29: -2, 31: -3}, {29: -1}),
+    "WR": ({26: -0.5, 27: -1.5, 29: -2, 31: -3}, {25: 0, 28: -0.5, 30: -1.5, 32: -2}),
+    "CB": ({27: -1, 28: -1.5, 29: -2.5, 30: -3, 31: -4}, {25: 0.5, 27: 0, 29: -1, 31: -2}),
+    "S": ({28: -1, 29: -1.5, 30: -2.5, 31: -3}, {25: 0.5, 27: 0, 30: -1, 32: -2}),
+    "TE": ({28: -1, 30: -1.5, 32: -2.5}, {25: 0.5, 27: 0, 30: -0.5, 32: -1.5, 34: -2}),
+    "LB": ({26: -1, 28: -2, 30: -3}, {25: 0, 28: -1, 30: -1.5, 31: -2}),
+    "OL": ({28: -1, 30: -1.5, 31: -2}, {25: 0.5, 27: 0, 29: -0.5, 31: -1, 33: -2}),
+    "DL": ({27: -1, 29: -1.5, 31: -2.5}, {25: 0.5, 26: 0, 29: -0.5, 31: -1.5, 33: -2}),
+}
+AGE_AT_YEAR = 21                  # the change applied at years pro y is the NFL change at age 21 + y
 # Rating table 0x4F4CB4 (29 x 20 bytes): (rating byte, curve table VA or 0, family byte). Read only.
 RATING_ENTRIES = (
     (0x36, 0x4F31D0, 0), (0x37, 0x4F31D0, 0), (0x3C, 0x4F3548, 1), (0x3D, 0x4F3548, 1), (0x39, 0x4F38A8, 2),
@@ -462,10 +528,13 @@ def _native_means(curves: bytes, weights: bytes, profiles: bytes) -> dict[tuple[
     return {key: [v / totals[key] if totals[key] else 0.0 for v in acc] for key, acc in sums.items()}
 
 
-def decline_tables(curves: bytes, weights: bytes, profiles: bytes) -> dict[tuple[str, str], tuple[int, ...]]:
+def decline_tables(curves: bytes, weights: bytes, profiles: bytes, target: Mapping | None = None,
+                   age_at_year: int | None = None) -> dict[tuple[str, str], tuple[int, ...]]:
     """(class, group) -> dd[0..20]: the integer change added at the rollover to years pro y, so that the class's
     mean change follows D_TARGET; error diffusion keeps the running total within half a point of the target."""
 
+    target = D_TARGET if target is None else target
+    age_at_year = AGE_AT_YEAR if age_at_year is None else age_at_year
     native = _native_means(curves, weights, profiles)
     out = {}
     for ci, cls in enumerate(CLASSES):
@@ -473,8 +542,8 @@ def decline_tables(curves: bytes, weights: bytes, profiles: bytes) -> dict[tuple
             mean = native.get((ci, gi), [0.0] * CURVE_LEN)
             dd, carry = [0] * CURVE_LEN, 0.0
             for y in range(1, CURVE_LEN):
-                target = _target(D_TARGET[cls][gi], AGE_AT_YEAR + y)
-                carry += 0.0 if target is None else target - mean[y]
+                want = _target(target[cls][gi], age_at_year + y)
+                carry += 0.0 if want is None else want - mean[y]
                 dd[y] = int(round(carry))
                 carry -= dd[y]
             _require(all(-8 <= v <= 7 for v in dd), f"{cls} {group} decline step does not fit a nibble")
@@ -549,7 +618,8 @@ def _nibbles(values: tuple[int, ...]) -> bytes:
     return bytes(((padded[i] & 15) | ((padded[i + 1] & 15) << 4)) for i in range(0, len(padded), 2))
 
 
-def career_code(dd: Mapping[tuple[str, str], tuple[int, ...]]) -> tuple[bytes, dict[str, int]]:
+def career_code(dd: Mapping[tuple[str, str], tuple[int, ...]],
+                rb_shift: tuple[int, int] | None = None) -> tuple[bytes, dict[str, int]]:
     """The PERF_SIZE bytes placed over 0x2BE0F0 (form routine, two hook bodies and their tables) and the labels."""
 
     a = _Asm(PERF_VA)
@@ -673,7 +743,7 @@ def career_code(dd: Mapping[tuple[str, str], tuple[int, ...]]) -> tuple[bytes, d
     a("33f6" "807d35" + "%02x" % POS["RB"]); a.j8("75", "ns")
     a("6a025a" "8bcd" "6a01"); a.call(FN_STAT_AGO); a("50")
     a("6a0d5a" "8bcd" "6a01"); a.call(FN_STAT_AGO); a("5a" "03c2")
-    for yards in RB_PRODUCTION_SHIFT:
+    for yards in (RB_PRODUCTION_SHIFT if rb_shift is None else rb_shift):
         a("3d" + struct.pack("<I", yards).hex()); a.j8("7c", "ns"); a("46")
     a.label("ns")
     a("0fb6442404" "0fb6cb" "3bc1"); a.j8("73", "m"); a("8bc1")   # eax = max(new, old)
@@ -778,20 +848,48 @@ RETAIL_RETIRE_SHA256 = "e9e7517b9d1516b6e877bac8018edf7db613708de7ba88241eb49261
 # corners (nickel), three linebackers (a 4-3; a 3-4's outside backers are edge rushers), two of each line spot.
 RETIRE_STARTERS = (1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 2, 3, 1, 2, 2, 2, 2)
 RETIRE_GAMES = 8
-RETIRE_PRODUCING_STEP = 2
 RETIRE_AGE_OFFSET = 1          # delta = over + this (see above)
 RETIRE_OVERALL_EDGES = (0.9, 0.8, 0.7, 0.6, 0.5)      # the retail .rdata constants, as float32
-RETIRE_OVERALL_STEP = (-5, -4, -2, 1, 2, 3)
-RETIRE_P = (0.0, 0.02, 0.05, 0.1, 0.15, 0.3, 0.4, 0.5, 0.6, 0.7, 1.0)   # retail 0xACEDB0, delta -5..5
+RETAIL_RETIRE_P = (0.0, 0.02, 0.05, 0.1, 0.15, 0.3, 0.4, 0.5, 0.6, 0.7, 1.0)   # retail 0xACEDB0, delta -5..5
 RETIRE_Y = (0.6, 0.7, 0.8, 0.9, 1.0)                                       # retail 0xACEE24, franchise year 0..4+
+PREVIOUS_RETIRE_PRODUCING_STEP = 2
+PREVIOUS_RETIRE_OVERALL_STEP = (-5, -4, -2, 1, 2, 3)
+# b81 league-aging (the lane's DESIGN 1.2, 3.4; coordinator R1/R13 11/25): the b780 constants kept a good starter at
+# delta -3..-1 past his position's age (5-15 % a year, x0.6-0.9 in franchise years 1-4): CPU starters' careers ended
+# 2.6 / 4.1 / 10.0 / 12.5 % a year at 29-30 / 31-32 / 33-34 / 35-36 against 7.9 / 13.5 / 22.0 / 27.6 for real starters.
+# Now: a producer may retire from one year before his position's age (RETIRE_FLOOR), the producing step is 1, stars
+# still last longest (-3 above .9, -2 above .8), the chance table is flatter (RETIRE_P, at 0xACEDB0, read by this
+# routine only) and the franchise-year damping is gone. Unsigned kickers and punters (the owner, 10/28: retirement by age,
+# never "because they're an older free agent nobody signed"; coordinator R13) have their own age: from
+# SPECIALIST_FREE_AGENT_AGE plus 0-3 years of their own (their birth day & 3), the same chances as everyone after it.
+RETIRE_PRODUCING_STEP = 1
+RETIRE_OVERALL_STEP = (-3, -2, 0, 1, 2, 3)
+RETIRE_FLOOR = -1              # a contributor never retires while over < this
+RETIRE_P = (0.0, 0.02, 0.04, 0.07, 0.10, 0.14, 0.19, 0.24, 0.30, 0.38, 0.50)  # 0xACEDB0, delta -5..5
+SPECIALIST_FREE_AGENT_AGE = 29  # a free-agent K or P never retires before this + his 0-3 hold years
 FN_INJURY_RETIRES, FN_CONTRACT_VALUE, FN_RATING, FN_STAT_NOW, FN_DRAW = 0x13E3A0, 0xE5FE0, 0x246D80, 0x14EF00, 0x48B90
 SEASON_BASE_VA, FRANCHISE_YEAR_VA, RNG_VA = 0x247AC7, 0xE576B8, 0xE5FCA0
 RETIRE_P_VA, RETIRE_Y_VA = 0xACEDB0, 0xACEE24
 
 
-def retirement_code() -> tuple[bytes, dict[str, int]]:
+def _version(name: str) -> dict:
+    """Every constant one release of this owner writes: 'b81' (current) or 'b780' (b780 .. b81 integration, v0.9)."""
+    if name == "b81":
+        return {"shape": SHAPE, "target": D_TARGET, "age_at_year": AGE_AT_YEAR, "rb_shift": RB_PRODUCTION_SHIFT,
+                "base": NFL_RETIRE_BASE, "steps": RETIRE_OVERALL_STEP, "producing": RETIRE_PRODUCING_STEP,
+                "floor": RETIRE_FLOOR, "damping": False, "specialists": True, "chances": RETIRE_P}
+    if name == "b780":
+        return {"shape": PREVIOUS_SHAPE, "target": PREVIOUS_D_TARGET, "age_at_year": PREVIOUS_AGE_AT_YEAR,
+                "rb_shift": PREVIOUS_RB_PRODUCTION_SHIFT, "base": PREVIOUS_NFL_RETIRE_BASE,
+                "steps": PREVIOUS_RETIRE_OVERALL_STEP, "producing": PREVIOUS_RETIRE_PRODUCING_STEP, "floor": 0,
+                "damping": True, "specialists": False, "chances": RETAIL_RETIRE_P}
+    raise ProgressionError(f"unknown progression version {name}")
+
+
+def retirement_code(version: str = "b81") -> tuple[bytes, dict[str, int]]:
     """The RETIRE_SIZE bytes placed over 0x2BCF90 (edi = player, one stack argument = the club or 0, ret 4)."""
 
+    v = _version(version)
     a = _Asm(RETIRE_VA)
     a.label("retire")
     a("51")                                # push ecx (the float scratch, as retail)
@@ -810,15 +908,29 @@ def retirement_code() -> tuple[bytes, dict[str, int]]:
     a("83f810"); a.j32("0f87", "no2")      # not a position: never
     a("2b3485" + struct.pack("<I", RETIRE_BASE_VA).hex())   # esi -= base[position]
     a("83ee18")                            # esi = over (years past the position's age)
-    a("33db" "395c2410"); a.j8("74", "rated")   # ebx = 0; not on a club: no contributor test
+    if v["specialists"]:
+        _require(v["base"][POS["K"]] == v["base"][POS["P"]], "kickers and punters share one base")
+        a("33db" "395c2410"); a.j8("75", "club")   # ebx = 0; a club player: the contributor test
+        # a free agent: a kicker or punter is over his own age (SPECIALIST_FREE_AGENT_AGE + his 0-3 hold years), with the
+        # contributor's floor and step; everyone else as before
+        a("8d48ff" "83f901"); a.j8("77", "rated")   # lea ecx, [eax-1]; cmp ecx, 1; ja rated (not K or P)
+        a("8b5718" "c1ea10" "83e203" "2bf2")        # esi -= birth day & 3
+        a("83c6%02x" % ((v["base"][POS["K"]] + 24 - (SPECIALIST_FREE_AGENT_AGE + 1)) & 0xFF))
+        a.j8("eb", "contrib")
+        a.label("club")
+    else:
+        a("33db" "395c2410"); a.j8("74", "rated")   # ebx = 0; not on a club: no contributor test
     a("0fb75728" "c1ea0a" "83e207")        # edx = depth row (+0x28 bits 10..12)
     a("3a90"); a.abs32("starters")         # cmp dl, starters[position]
     a.j8("72", "contrib")
     a("8bcf" "33d2"); a.call(FN_STAT_NOW)  # games this regular season (field 0, this season's slot)
     a("83f8%02x" % RETIRE_GAMES); a.j8("7c", "rated")
     a.label("contrib")
-    a("85f6"); a.j32("0f88", "no2")        # a contributor before his position's age: never
-    a("b3%02x" % RETIRE_PRODUCING_STEP)
+    if v["floor"] == 0:
+        a("85f6"); a.j32("0f88", "no2")    # a contributor before his position's age: never
+    else:
+        a("83fe%02x" % (v["floor"] & 0xFF)); a.j32("0f8c", "no2")   # ... before his position's age + floor: never
+    a("b3%02x" % v["producing"])
     a.label("rated")
     a("2bf3" "83c6%02x" % RETIRE_AGE_OFFSET)   # delta = over - producing step + RETIRE_AGE_OFFSET
     a("ba01000000" "8bcf"); a.call(FN_RATING)   # st0 = overall (boosted), as retail
@@ -835,10 +947,11 @@ def retirement_code() -> tuple[bytes, dict[str, int]]:
     a("83fe05"); a.j8("7e", "c2"); a("6a055e")
     a.label("c2")
     a("d904b5" + struct.pack("<I", RETIRE_P_VA + 20).hex())   # fld P[delta]
-    a("a1" + struct.pack("<I", FRANCHISE_YEAR_VA).hex())
-    a("83f804"); a.j8("76", "y"); a("6a0458")
-    a.label("y")
-    a("d80c85" + struct.pack("<I", RETIRE_Y_VA).hex())        # fmul Y[min(year, 4)]
+    if v["damping"]:
+        a("a1" + struct.pack("<I", FRANCHISE_YEAR_VA).hex())
+        a("83f804"); a.j8("76", "y"); a("6a0458")
+        a.label("y")
+        a("d80c85" + struct.pack("<I", RETIRE_Y_VA).hex())    # fmul Y[min(year, 4)]
     a("d95c2408")                          # fstp [esp+8] (the pushed ecx)
     a("b9" + struct.pack("<I", RNG_VA).hex()); a.call(FN_DRAW)
     a("d85c2408" "dfe0" "f6c405"); a.j8("7a", "no2")   # draw >= chance: stays
@@ -854,7 +967,7 @@ def retirement_code() -> tuple[bytes, dict[str, int]]:
     a.label("edges")
     a.raw(struct.pack("<5f", *RETIRE_OVERALL_EDGES))
     a.label("steps")
-    a.raw(struct.pack("<6b", *RETIRE_OVERALL_STEP))
+    a.raw(struct.pack("<6b", *v["steps"]))
     body = a.assemble()
     _require(len(body) <= RETIRE_SIZE, f"retirement code is {len(body)} bytes, the routine has {RETIRE_SIZE}")
     labels = {k: v for k, v in a.labels.items() if k in ("retire", "starters", "edges", "steps")}
@@ -864,25 +977,33 @@ def retirement_code() -> tuple[bytes, dict[str, int]]:
 
 def retirement_chance(*, position: int, age: int, overall: float, year: int, club: bool, depth_row: int = 7,
                       games: int = 0, prospect: bool = False, injured: bool = False, value: int = 1,
-                      base=NFL_RETIRE_BASE) -> float:
+                      base=None, birth_day: int = 1, version: str = "b81") -> float:
     """The rewritten decision as a probability (the tests compare the native code with it). ``overall`` is the
-    0..1 value of 0x246D80; the edges are compared as the float32 constants the native code reads."""
+    0..1 value of 0x246D80; the edges are compared as the float32 constants the native code reads. ``age`` is the
+    coming season's age; ``birth_day`` gives an unsigned kicker's or punter's hold years (day & 3)."""
 
+    v = _version(version)
+    base = v["base"] if base is None else base
     if prospect:
         return 0.0
     if injured or value == 0:
         return 1.0
     over = age - base[position] - 24
     step = 0
-    if club and (depth_row < RETIRE_STARTERS[position] or games >= RETIRE_GAMES):
-        if over < 0:
+    contributor = club and (depth_row < RETIRE_STARTERS[position] or games >= RETIRE_GAMES)
+    if v["specialists"] and not club and position in (POS["K"], POS["P"]):
+        over = age - (SPECIALIST_FREE_AGENT_AGE + 1) - (birth_day & 3)
+        contributor = True
+    if contributor:
+        if over < v["floor"]:
             return 0.0
-        step = RETIRE_PRODUCING_STEP
+        step = v["producing"]
     delta = over + RETIRE_AGE_OFFSET - step
     edges = struct.unpack("<5f", struct.pack("<5f", *RETIRE_OVERALL_EDGES))
     k = next((i for i, edge in enumerate(edges) if overall > edge), 5)
-    delta = max(-5, min(5, delta + RETIRE_OVERALL_STEP[k]))
-    return RETIRE_P[delta + 5] * RETIRE_Y[min(year, 4)]
+    delta = max(-5, min(5, delta + v["steps"][k]))
+    chances = struct.unpack("<11f", struct.pack("<11f", *v["chances"]))
+    return chances[delta + 5] * (RETIRE_Y[min(year, 4)] if v["damping"] else 1.0)
 
 
 # ---------------------------------------------------------------- XBE plumbing
@@ -904,10 +1025,10 @@ def _profiles(payload: bytes) -> bytes:
     return payload[off: off + WEIGHT_ROWS * 16]
 
 
-def _data_sites(payload: bytes) -> list[tuple[str, int, bytes, bytes]]:
-    """The curve and weight tables (the beta-77 data patch, unchanged by b778)."""
+def _data_sites(payload: bytes, version: str = "b81") -> list[tuple[str, int, bytes, bytes]]:
+    """The curve and weight tables (the beta-77 data patch, reshaped again by b779-rf3 and b81 league-aging)."""
 
-    curves, weights = patched_tables(_profiles(payload))
+    curves, weights = patched_tables(_profiles(payload), shape=_version(version)["shape"])
     return [
         ("aging_curves", CURVES_VA, retail_curves(), curves),
         ("archetype_weights", WEIGHTS_VA, retail_weights(), weights),
@@ -918,32 +1039,39 @@ def _call(at: int, target: int) -> bytes:
     return b"\xe8" + struct.pack("<i", target - (at + 5))
 
 
-def career_layout(payload: bytes) -> tuple[bytes, dict[str, int], dict[tuple[str, str], tuple[int, ...]]]:
+def career_layout(payload: bytes, version: str = "b81") -> tuple[bytes, dict[str, int], dict[tuple[str, str], tuple[int, ...]]]:
     """The routine bytes, their labels and the decline tables, derived from the installed (patched) curves."""
 
+    v = _version(version)
     profiles = _profiles(payload)
-    curves, weights = patched_tables(profiles)
-    dd = decline_tables(curves, weights, profiles)
-    code, labels = career_code(dd)
+    curves, weights = patched_tables(profiles, shape=v["shape"])
+    dd = decline_tables(curves, weights, profiles, v["target"], v["age_at_year"])
+    code, labels = career_code(dd, v["rb_shift"])
     return code, labels, dd
 
 
-def _career_sites(payload: bytes) -> list[tuple[str, int, bytes | None, bytes]]:
-    code, labels, _dd = career_layout(payload)
+def _career_sites(payload: bytes, version: str = "b81") -> list[tuple[str, int, bytes | None, bytes]]:
+    code, labels, _dd = career_layout(payload, version)
     return [
         ("retirement_base_years", RETIRE_BASE_VA, struct.pack("<17I", *RETAIL_RETIRE_BASE),
-         struct.pack("<17I", *NFL_RETIRE_BASE)),
+         struct.pack("<17I", *_version(version)["base"])),
         ("form_routine_and_aging_tables", PERF_VA, None, code),       # retail checked by RETAIL_PERF_SHA256
         ("aging_curve_hook", AGING_CALL_VA, RETAIL_AGING_CALL, _call(AGING_CALL_VA, labels["aging_ext"])),
         ("form_mini_curve_hook", MINI_LOAD_VA, RETAIL_MINI_LOAD, _call(MINI_LOAD_VA, labels["qb_mini"])),
     ]
 
 
-def _retirement_sites() -> list[tuple[str, int, str, bytes]]:
-    """b780 b4-economy: the rewritten retirement decision (retail checked by its sha256)."""
+def _retirement_sites(version: str = "b81") -> list[tuple[str, int, str | bytes, bytes]]:
+    """b780 b4-economy's rewritten retirement decision (retail checked by its sha256) and, from b81 league-aging, the
+    decision's own chance table at 0xACEDB0 (.data, read by the routine only: a scan of the retail executable finds no
+    other reference)."""
 
-    code, _labels = retirement_code()
-    return [("retirement_decision", RETIRE_VA, RETAIL_RETIRE_SHA256, code)]
+    code, _labels = retirement_code(version)
+    sites = [("retirement_decision", RETIRE_VA, RETAIL_RETIRE_SHA256, code)]
+    chances = _version(version)["chances"]
+    if chances != RETAIL_RETIRE_P:
+        sites.append(("retirement_chances", RETIRE_P_VA, struct.pack("<11f", *RETAIL_RETIRE_P), struct.pack("<11f", *chances)))
+    return sites
 
 
 def _site_state(payload: bytes, va: int, before: bytes | str | None, after: bytes) -> str:
@@ -970,23 +1098,37 @@ def _guards_hold(payload: bytes) -> bool:
     return True
 
 
+def _states(payload: bytes, version: str) -> tuple[set, set, set]:
+    data = {_site_state(payload, va, before, after) for _l, va, before, after in _data_sites(payload, version)}
+    career = {_site_state(payload, va, before, after) for _l, va, before, after in _career_sites(payload, version)}
+    retire = {_site_state(payload, va, before, after) for _l, va, before, after in _retirement_sites(version)}
+    return data, career, retire
+
+
+def _rookie_birth_state(payload: bytes) -> str:
+    from . import nfl2k5_season_length as season   # noqa: PLC0415 (the 2026 franchise group's rookie birth base)
+    return season.rookie_birth_state(payload)
+
+
 def status(payload: bytes) -> str:
-    """retail | legacy (the beta-77 curves and weights only, or b778's layer with the retail retirement decision:
-    beta-78 / beta-79) | applied | foreign."""
+    """retail | legacy (an earlier release of this owner: the beta-77 curves and weights only, b778's layer with the
+    retail retirement decision, the b780 constants (v0.9 and the b81 integration), or every b81 site with the class
+    generator's earlier rookie birth base) | applied | foreign."""
 
     try:
-        data = {_site_state(payload, va, before, after) for _l, va, before, after in _data_sites(payload)}
-        career = {_site_state(payload, va, before, after) for _l, va, before, after in _career_sites(payload)}
-        retire = {_site_state(payload, va, before, after) for _l, va, before, after in _retirement_sites()}
         if not _guards_hold(payload):
             return "foreign"
+        current = _states(payload, "b81")
+        if current == ({"applied"}, {"applied"}, {"applied"}):
+            return "legacy" if _rookie_birth_state(payload) == "legacy" else "applied"
+        data, career, retire = _states(payload, "b780")
     except (ProgressionError, ValueError, struct.error, IndexError, KeyError):
         return "foreign"
-    if len(data) != 1 or len(career) != 1 or "foreign" in data | career | retire:
+    if len(data) != 1 or len(career) != 1 or len(retire) != 1 or "foreign" in data | career | retire:
         return "foreign"
     return {("retail", "retail", "retail"): "retail", ("applied", "retail", "retail"): "legacy",
             ("applied", "applied", "retail"): "legacy",
-            ("applied", "applied", "applied"): "applied"}.get((data.pop(), career.pop(), retire.pop()), "foreign")
+            ("applied", "applied", "applied"): "legacy"}.get((data.pop(), career.pop(), retire.pop()), "foreign")
 
 
 def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
@@ -996,7 +1138,7 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     sections = _sections(payload)
     touched = set()
     edits = []
-    sites = _career_sites(payload) + _retirement_sites() + (_data_sites(payload) if state == "retail" else [])
+    sites = _career_sites(payload) + _retirement_sites() + _data_sites(payload)
     for label, va, before, after in sites:
         off = _offset(payload, va)
         old = bytes(buf[off: off + len(after)])
@@ -1009,20 +1151,26 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
             d = section.header_offset + 36
             buf[d: d + 20] = section_digest(bytes(buf), section)
     patched = bytes(buf)
+    from . import nfl2k5_season_length as season   # noqa: PLC0415
+    patched, rookie_receipt = season.upgrade_rookie_birth(patched)
     _require(status(patched) == "applied", "post-apply verification failed")
     changed = sum(1 for a, b in zip(payload, patched) if a != b)
     code, labels, dd = career_layout(patched)
     return patched, {"edits": edits, "changed_bytes": changed, "sections_repinned": sorted(touched),
-                     "upgraded_from_legacy": state == "legacy",
+                     "upgraded_from_legacy": state == "legacy", "rookie_birth": rookie_receipt,
                      "shape": {k: {"growth_by_year_5": v[0], "extra_decline_per_year": v[1], "decline_after_year": v[2],
                                    "retail_change_kept": v[3] if len(v) > 3 else 1.0}
                                for k, v in SHAPE.items()},
-                     "spread": SPREAD,
+                     "spread": SPREAD, "age_at_year": AGE_AT_YEAR,
                      "retirement_base_years": dict(zip(POSITIONS, NFL_RETIRE_BASE)),
                      "retirement_rule": {"by": "age", "position_age": dict(zip(POSITIONS, (b + 24 for b in NFL_RETIRE_BASE))),
                                          "contributor_starting_rows": dict(zip(POSITIONS, RETIRE_STARTERS)),
-                                         "contributor_games": RETIRE_GAMES,
+                                         "contributor_games": RETIRE_GAMES, "contributor_floor": RETIRE_FLOOR,
                                          "producing_step": RETIRE_PRODUCING_STEP, "age_offset": RETIRE_AGE_OFFSET,
+                                         "overall_steps": list(RETIRE_OVERALL_STEP), "chances": list(RETIRE_P),
+                                         "franchise_year_damping": False,
+                                         "unsigned_specialist_age": SPECIALIST_FREE_AGENT_AGE,
+                                         "unsigned_specialist_hold_years": "birth day & 3",
                                          "code_bytes": retirement_code()[1]["used"], "code_capacity": RETIRE_SIZE},
                      "form_code_bytes": labels["used"], "form_code_capacity": PERF_SIZE,
                      "decline_tables": {f"{c}/{g}": list(v[DD_FIRST_YEAR:]) for (c, g), v in sorted(dd.items())},
@@ -1035,5 +1183,7 @@ __all__ = ["ProgressionError", "CURVES_VA", "CURVES_SIZE", "WEIGHTS_VA", "WEIGHT
            "SHAPE", "SPREAD", "PERF_VA", "PERF_SIZE", "AGING_CALL_VA", "MINI_LOAD_VA", "RETIRE_BASE_VA",
            "RETAIL_RETIRE_BASE", "NFL_RETIRE_BASE", "PERF_RULES", "D_TARGET", "CLASSES", "GROUPS", "QB_MINI",
            "RETIRE_VA", "RETIRE_SIZE", "RETIRE_STARTERS", "RETIRE_GAMES", "RETIRE_PRODUCING_STEP", "RETIRE_AGE_OFFSET",
+           "RETIRE_FLOOR", "RETIRE_OVERALL_STEP", "RETIRE_P", "RETAIL_RETIRE_P", "SPECIALIST_FREE_AGENT_AGE", "AGE_AT_YEAR",
+           "RB_PRODUCTION_SHIFT", "PREVIOUS_SHAPE", "PREVIOUS_D_TARGET", "PREVIOUS_NFL_RETIRE_BASE",
            "apply", "career_code", "retirement_code", "retirement_chance", "career_layout", "decline_tables", "decode_curves", "decode_weights",
            "patched_tables", "reshape_curve", "retail_curves", "retail_weights", "spread_weights", "status"]

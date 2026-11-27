@@ -599,7 +599,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/json_stream.py": "5933752561dd8b519a301c18ec1d14f13a457f58e6ae337984f543ab2b0838b0",
         "mod_editor/core/metadata_cache.py": "49874cc7f12cc0d36d15b9355dbca64ffe95590ba7582b460738b05aabcd9024",
         "mod_editor/core/build_steps.py": "4870c5541453fb9c4eb8c3ecd5cc4db9b06e3c01d26129d9e8f5e2ee67fc801a",  # b791-h3: step context and optional steps
-        "mod_editor/core/mod_build.py": "dc1f022881ad905bc7cb2aaf156799466985376f7463d424d17a2d679fd04b62",
+        "mod_editor/core/mod_build.py": "8a5a72b4d84ad2549dc22229fa753335324dcce8ab7f24c7da4b4ba453cb38a1",
         "mod_editor/core/nfl2k5_console_memory.py": "23f83dee0f768a7d3319bb86a64b99b2cd6eb26fef05737ae94f308a46d76538",  # b780-m64b: the 128 MB / 64 MB target (validate_plan)
         "mod_editor/core/studio_inspection.py": "bbe1e2e9b3de63b13e8908d2b37f114ee79b6fb2fc88d26670a6eb1e6e341e1e",  # b780 studio1: mod_build.inspect runs inside its validation memo
         "mod_editor/core/nfl2k5_disc_check.py": "fd57273cf397d47ce5d23d2deaadc7dbf631992e38a70fd13be6dadff098942c",  # b780 studio1: the disc identity names a released SOFTDRINK disc from its list
@@ -681,7 +681,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_modern_arrowhead.py": "0bd6686db5572940b95b0c75211a89ddfb1c8d30aeb278a5ccf6921fca524b17",
         "mod_editor/core/nfl2k5_modern_color.py": "07ba4a7667d28c989cb59d12da91e0e0e8189c68e8c1a971d39289ee0d03617e",
         "mod_editor/core/nfl2k5_bump_strength.py": "79f9264fbe0813db9be66f22e35f8944e35b92ae415132d819eda50920e41bb0",
-        "mod_editor/core/nfl2k5_calendar_engine.py": "24dc9c152a79c81d75232b556f82ebc3ab6892a662c3d8071a4da85a6cd45644",
+        "mod_editor/core/nfl2k5_calendar_engine.py": "3085f0ba5466ead94a3f102cbbdc614aa6f0479cecbc73c5dd1ff9d5a9918859",
         "mod_editor/core/nfl2k5_calendar_engine_code.py": "9b43e835f1df76f85ecb13e7ef593d2eee884a1fa82fe41ea3d813186445ca22",
         "mod_editor/core/nfl2k5_later_schedule.py": "3bcf96d22a24338d02c7f930151d27c1d812612036a38fadfc0797f2a0e446ef",  # b780-season1
         "mod_editor/core/nfl2k5_camera.py": "c2b85ae199f5cd6b334b6b3dfa193caf782671488ce852eba8cb28fd50c34cfb",
@@ -853,7 +853,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_my_career_code.py": "0ce8c85ca30bbc188356e612ca1d95e01e94ceb7dfe2cabcea222672f07e3c2b",
         "mod_editor/core/nfl2k5_my_career_events.py": "228a0b59d43b9b9c52e10ac93cc72072e772e694cc864c8e2e037c5d7c772460",
         "mod_editor/core/nfl2k5_my_career_mode.py": "a204f443618251d3b05b4e31eff19086951bd6a5e5ef99fbd08a1632e7e0e863",
-        "mod_editor/core/nfl2k5_rookie_faces.py": "2b631670c170063ab6aab5fcc297ca1881e927ba857285864aaebeca103b365d",  # b780-int (gen1mc): MyCareer's draft-signing context reads its draft-number byte
+        "mod_editor/core/nfl2k5_rookie_faces.py": "5318fa08d04dd86c7994ee5f473e22d34fb142542046b86932c45ad7b98a8ee7",  # b780-int (gen1mc): MyCareer's draft-signing context reads its draft-number byte
         "mod_editor/core/nfl2k5_my_career_mode_code.py": "dbf9330b042795f057e5dfd92df680f6c004a97eae9f5218a3cd66cd13b5d489",
         "mod_editor/core/nfl2k5_my_career_home.py": "852747c8b6ae3b94bc61a3f0d8b7a3060bde155901667e71021a8346c291a0ab",
         "mod_editor/core/nfl2k5_my_career_mode_code_b779.py": "9774a72e254da1609e82a53d2d5b74701e1d2acec484b6588256fc9b256c0355",  # b780 n6: frozen beta-79 revision
@@ -919,7 +919,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_roster_fill_composition.py": "96547bdc1c66889f68f44deb147bd5f6095ee169d343d53aaa4f532d12ee53e8",
         "mod_editor/core/nfl2k5_franchise_economy.py": "83b14c1f29604091fd69c25af9b7921a514901c2c45e722ab8b175a602d43c39",
         "mod_editor/core/nfl2k5_franchise_economy_code.py": "41df9f0d3d6c626957441632dad2c42870f7171c4457ddab9d64128415bbbf15",
-        "mod_editor/core/nfl2k5_progression.py": "5ff9ab5b8b5a9b38e6acba0526464838abee667c957596368673f26ff88eaf50",
+        "mod_editor/core/nfl2k5_progression.py": "27c28380c79df69c82031376b7ee6c990e4bda2781c90053ac29b2b18c14e99a",
         "mod_editor/core/nfl2k5_prospect_names.py": "6f48b67a3b00b72b8bc51ca35527037ceca27c4137b9bb0e1d4542f27c39e7ac",
         "mod_editor/core/nfl2k5_qb_spy_runtime.py": "094e1ed86847a0b78e9ead41b44aea476f6f2f313ff6c986b1db722940553a2c",
         "mod_editor/core/nfl2k5_qb_spy_runtime_code.py": "759ee92ee3bac1d79d80ac6d6ae539ea6f0e3cef658dc945548a8c7db35c468f",
@@ -967,11 +967,12 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_catch_snap_limit.py": "949c360348a42ef86f14ea338a7fe5493ad3061deeccd7068febff351cee711b",  # b780-cv4
         "mod_editor/core/nfl2k5_speed_threshold.py": "73f076c6af05daebe5f54a661fc5cb4fc2daf4bdbc627e797a42851872f1b08b",  # b780-cv5
         "mod_editor/core/nfl2k5_speed_threshold_code.py": "7578a910fadc5852901edaeca84d983f1a20e2e90ab227f00a678a08554d3e90",  # b780-cv5
-        "mod_editor/core/nfl2k5_star_career.py": "9190271ff9fe7a641a0eee544876b92e7f756950ccb9a498727245d5622d7616",  # b778-st2
+        "mod_editor/core/nfl2k5_star_career.py": "d6ea8be5969e91d483c7f9a9a7df999242b39e9653692f80494ac0f9df376bf9",  # b778-st2
         "mod_editor/core/nfl2k5_star_career_code.py": "47b34490a21113803ba97a985378dcec237c39d53fed8fd6e9f498b82ec39098",  # b778-st2
+        "mod_editor/core/nfl2k5_star_career_code_b780.py": "57d5a6f2d463ed83494aefe1aea813fcb5a09232309a83942cb3b04c33cb97cf",  # b81 league-aging: frozen previous revision
         "mod_editor/core/nfl2k5_sportscenter_lineup.py": "d7901a39e3d80149441eb2b88ce71d49b5cdf6a47a27397ae3947d40f7c29023",  # b778-sc2
         "mod_editor/core/nfl2k5_draft_clock.py": "306e873a85e3c2aaf63815b424faa092a454a15cfd7a6fd334947686262cf4c6",  # b778-dr1
-        "mod_editor/core/nfl2k5_weekly_progression.py": "7a5591e33c51891dae37cf5332fb3d6c46983285feaaaa8eade3e93ccafb61fb",  # b778-pg1
+        "mod_editor/core/nfl2k5_weekly_progression.py": "6153d7c4e7e2767453cee3855710dd90a7ed685fca14225afa7d2fc31a082092",  # b778-pg1
         "mod_editor/core/nfl2k5_player_progress_screen.py": "72730dea7dc942cc301fe89b05717913885897a484ed05f9e5a67e63c40fbbad",  # b778-pg2
         "mod_editor/core/nfl2k5_player_progression.py": "83b48e765dbce3139edfe7c2cf7b16d84d81d9cea4b60956bf455e85ef1998c2",  # b778-pg2
         "mod_editor/core/nfl2k5_franchise_extension.py": "f7ec35994cbbd7f48015a4e478167796db88788d77370fb46ae465e800c9663a",  # b780 j23
@@ -1096,7 +1097,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_screen_hooks_code.py": "bcab9155aceb1e62e2cb1e5a7b98231ec7cf101ae3623a8e0b2397dd4ab27b33",
         "mod_editor/core/nfl2k5_screen_timing.py": "8c7245f79a2c79df3974545b30db4de45c6b1b8071ff5d7a4bc396b2a9903894",
         "mod_editor/core/nfl2k5_season_cap.py": "dda1e4d3a11bfe798d837ab8629bfa1d4e90fc233417e39de1974ac1c5b959c6",
-        "mod_editor/core/nfl2k5_season_length.py": "0640672b47f0205a2dd9e667109fc713290a52379db0471430647cd171092927",
+        "mod_editor/core/nfl2k5_season_length.py": "1015d1bcb69fd075cb5c2a4bc1f4c456381feb7ceae5278ef4ed49522d3ec1ba",
         "mod_editor/core/nfl2k5_senior_bowl.py": "ce39c8aef6d9f5438a98c67360c1392d1e5063d7f5b9094b615dfdae141c255c",
         "mod_editor/core/nfl2k5_senior_bowl_code.py": "000abee8fc9bf5d382d4c8934a0509c32de7976805eadabb5c4aed3ccb0812da",
         "mod_editor/core/nfl2k5_seven_on_seven.py": "8d0da9680a0481ee861c45b0dc8f9e785015bd43e472796a3b6e781597244269",

@@ -3356,6 +3356,10 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     patched, faces_upgrade = _rookie_faces_upgrade(patched)
     if faces_upgrade is not None:
         patch = {**patch, "rookie_faces": {k: v for k, v in faces_upgrade.items() if k != "edits"}}
+    # b81 league-aging: the copy carries player development's current revision (aging, retirement, weekly step).
+    patched, aging_upgrade = _league_aging_upgrade(patched)
+    if aging_upgrade is not None:
+        patch = {**patch, "league_aging": aging_upgrade}
     # b81 history-pool: the copy carries the career history pool's current revision, as a full build does.
     patched, history_upgrade = _history_pool_upgrade(patched)
     if history_upgrade is not None:
@@ -3403,6 +3407,7 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
         "source_simulator": simulator_state, "simulator_upgraded": dependency is not None, "settings": settings,
         "pass_protection_upgraded": pressure is not None,
         "rookie_faces_upgraded": faces_upgrade is not None,
+        "league_aging_upgraded": aging_upgrade is not None,
         "history_pool_upgraded": history_upgrade is not None,
         "overtime_crash_fix": sorted(crash_fix) if crash_fix else [],
         # b81 game outcomes: whether the copy gained the simulated-outcomes page (it rides with season realism)
@@ -3436,6 +3441,7 @@ def _edit_installed_sim_qb(plan, source, target, original, receipt, progress, *,
     _apply_sim_qb_injuries(plan, target, receipt, progress, prepared=(original, patched, patch))
     _apply_qb_room(plan, target, receipt, progress, prepared=room_prepared)
     _apply_cpu_trades(plan, target, receipt, progress, prepared=cpu_prepared)  # b81 trades-all (R6)
+    _apply_class_templates_in_place(target, receipt, progress)  # b81 league-aging (review S2), as a full build
     _compact_build_disc(target, reference, receipt, progress)
     _step("final_checks")
     inspection = inspect(target, screen_timing=plan.screen_timing)
@@ -3741,6 +3747,7 @@ def _edit_installed_gadget(plan, source, target, original, receipt, progress, *,
     else:
         patched, patch = gadget.remove(original)
     patched, faces_upgrade = _rookie_faces_upgrade(patched)  # b81 rookie-faces: as a full build
+    patched, aging_upgrade = _league_aging_upgrade(patched)  # b81 league-aging: as a full build
     patched, history_upgrade = _history_pool_upgrade(patched)  # b81 history-pool: as a full build
     patched, crash_fix = _overtime_crash_fix_upgrade(patched)  # b81 ot-crash review D3: as a full build
     receipt["installed_gadget_only"] = True
@@ -3748,6 +3755,7 @@ def _edit_installed_gadget(plan, source, target, original, receipt, progress, *,
                                        "result_sha256": sha256(patched).hexdigest(),
                                        "source_state": gadget.status(original, books),
                                        "rookie_faces_upgraded": faces_upgrade is not None,
+                                       "league_aging_upgraded": aging_upgrade is not None,
                                        "history_pool_upgraded": history_upgrade is not None,
                                        "overtime_crash_fix": sorted(crash_fix) if crash_fix else []}
     if preflight:
@@ -3767,9 +3775,13 @@ def _edit_installed_gadget(plan, source, target, original, receipt, progress, *,
     if faces_upgrade is not None:
         receipt["steps"].append({"step": "rookie_faces", **{k: v for k, v in faces_upgrade.items() if k != "edits"}})
         receipt["result"]["rookie_faces"] = "applied"
+    if aging_upgrade is not None:
+        receipt["steps"].append({"step": "league_aging", **aging_upgrade})
+        receipt["result"]["league_aging"] = "applied"
     if history_upgrade is not None:
         receipt["steps"].append({"step": "history_pool", **{k: v for k, v in history_upgrade.items() if k != "edits"}})
         receipt["result"]["history_pool"] = "applied"
+    _apply_class_templates_in_place(target, receipt, progress)  # b81 league-aging (review S2), as a full build
     _compact_build_disc(target, reference, receipt, progress)
     _step("final_checks")
     final_state = gadget.read_settings(_xbe_bytes(target), _gadget_resources(target))["status"]
@@ -4194,6 +4206,90 @@ def _rookie_faces_upgrade(payload):
     return module.upgrade_xbe(payload)
 
 
+def _league_aging_upgrade(payload):
+    """b81 league-aging: an in-place copy of a built disc (update-v09, edit-sim-qb, edit-gadget) carries the current
+    revision of player development, as a full build does: nfl2k5_progression (aging clock and tables, retirement, the
+    class generator's rookie birth base) and nfl2k5_weekly_progression (young producers' weekly step), each only when it
+    reads "legacy" (an earlier release of that owner). A retail owner stays retail: a single-setting route never adds
+    one. Review M1 (11/26): nfl2k5_star_career holds a table built from the aging curves progression rewrites, so an
+    installed star_career (applied or its "previous" revision) is read before and re-derived in place after, by the same
+    rule a full build uses (its gem threshold ranked from the new table, review M2). Returns (payload, receipt or None)."""
+    receipt = {}
+    star = _core_module("nfl2k5_star_career")
+    star_body = star.installed_body(payload) if star is not None else None
+    progression = _core_module("nfl2k5_progression")
+    if progression is not None and progression.status(payload) == "legacy":
+        payload, step = progression.apply(payload)
+        receipt["progression"] = {k: step.get(k) for k in ("changed_bytes", "upgraded_from_legacy", "rookie_birth")}
+    weekly = _core_module("nfl2k5_weekly_progression")
+    if weekly is not None and weekly.status(payload) == "legacy":
+        payload, step = weekly.apply(payload)
+        receipt["weekly_progression"] = {k: step.get(k) for k in ("status", "upgraded_from_legacy", "changed_bytes",
+                                                                   "young_step")}
+    if star_body is not None:
+        payload, step = star.refresh(payload, star_body)
+        if step is not None:
+            receipt["star_career"] = {k: step.get(k) for k in ("status", "changed_bytes", "gem_potential", "gem_rows")}
+    return payload, (receipt or None)
+
+
+def _apply_league_aging_in_place(target, receipt, progress):
+    """The v0.9 update's write of _league_aging_upgrade, after rookie faces and before the history pool."""
+    patched, upgrade = _league_aging_upgrade(_xbe_bytes(target))
+    if upgrade is None:
+        return
+    progress("Franchise: player development update (aging, retirement, draft-class ages)", 0, 0)
+    _write_xbe_bytes(target, patched)
+    if (_xbe_bytes(target) != patched
+            or ("progression" in upgrade and _core_module("nfl2k5_progression").status(patched) != "applied")
+            or ("weekly_progression" in upgrade
+                and _core_module("nfl2k5_weekly_progression").status(patched) != "applied")
+            or ("star_career" in upgrade and _core_module("nfl2k5_star_career").status(patched) != "applied")):
+        raise RuntimeError("The player development update did not read back as applied.")
+    receipt["steps"].append({"step": "league_aging", **upgrade})
+    receipt["result"]["league_aging"] = "applied"
+
+
+def _class_templates_roster(raw):
+    """b81 league-aging (review S2): the main roster resource (ROST) with the class generator's templates as a full
+    build's rookie faces step writes them (nfl2k5_rookie_faces.apply_templates); unchanged when they already match."""
+    faces = _core_module("nfl2k5_rookie_faces")
+    out = bytearray(raw)
+    for at, _old, new in faces.template_writes(bytes(raw)):
+        out[at] = new
+    return bytes(out)
+
+
+def _class_templates_pending(source):
+    """How many template bytes the in-place routes will write into this disc's main roster (0: none, or the disc has
+    no rookie faces, the only owner a full build writes them with)."""
+    faces = _core_module("nfl2k5_rookie_faces")
+    if faces is None or faces.xbe_status(_xbe_bytes(source)) not in ("applied", "previous"):
+        return 0
+    from . import nfl2k5_roster_records as rr
+    with rr._outer_image()(source) as archive:
+        entry = archive.entries[faces.MAIN_ROST_OUTER]
+        return len(faces.template_writes(archive.read(entry.virtual_offset, entry.size)))
+
+
+def _apply_class_templates_in_place(target, receipt, progress):
+    """b81 league-aging (review S2): an in-place copy (update-v09, edit-sim-qb, edit-gadget) gets the class generator
+    templates the merged grade roll was tuned with, as a full build's rookie faces step writes them, so a new franchise
+    on the updated disc has a full build's classes. Only on a disc whose rookie faces read applied after the routes'
+    executable writes; existing franchise saves keep their own roster copy (as for a full build)."""
+    faces = _core_module("nfl2k5_rookie_faces")
+    if faces is None or faces.xbe_status(_xbe_bytes(target)) != "applied":
+        return
+    if not _class_templates_pending(target):
+        return
+    progress("Draft classes: rookie templates update", 0, 0)
+    written = faces.apply_templates(target)
+    if _class_templates_pending(target):
+        raise RuntimeError("The rookie templates update did not read back.")
+    receipt["steps"].append({"step": "class_templates", **written})
+    receipt["result"]["class_templates"] = "applied"
+
+
 def _apply_rookie_faces_in_place(target, receipt, progress):
     """The v0.9 update's write of _rookie_faces_upgrade, after the route's own writers and before the history pool."""
     patched, upgrade = _rookie_faces_upgrade(_xbe_bytes(target))
@@ -4528,6 +4624,11 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     expected, faces_upgrade = _rookie_faces_upgrade(expected)  # b81 rookie-faces: every v0.9 update, as a full build
     if faces_upgrade is not None:
         receipt["v09_update"].append("rookie_faces")
+    expected, aging_upgrade = _league_aging_upgrade(expected)  # b81 league-aging: every v0.9 update, as a full build
+    if aging_upgrade is not None:
+        receipt["v09_update"].append("league_aging")
+    if _class_templates_pending(source):  # b81 league-aging (review S2): the main roster's class templates, as a full build
+        receipt["v09_update"].append("class_templates")
     expected, history_upgrade = _history_pool_upgrade(expected)  # b81 history-pool: every v0.9 update, as a full build
     if history_upgrade is not None:
         receipt["v09_update"].append("history_pool")
@@ -4566,10 +4667,12 @@ def _update_v09_disc(plan, progress, *, preflight, project):
     if plan.gadget_play:
         _apply_gadget_play(plan, target, receipt, progress)
     _apply_rookie_faces_in_place(target, receipt, progress)  # b81 rookie-faces (before the history pool, as above)
+    _apply_league_aging_in_place(target, receipt, progress)  # b81 league-aging (same order as the expected chain)
     _apply_history_pool_in_place(target, receipt, progress)  # b81 history-pool
     _apply_overtime_crash_fix_in_place(target, receipt, progress)  # b81 ot-crash review D3 (the expected chain's order)
     _apply_sportscenter_news_in_place(target, receipt, progress)  # b81 sportscenter (the expected chain's order)
     _apply_sportscenter_lines(target, receipt, progress)  # b81 sportscenter: director data, not the executable
+    _apply_class_templates_in_place(target, receipt, progress)  # b81 league-aging (review S2): roster data, after the xbe
     _compact_build_disc(target, source, receipt, progress)
     _step("final_checks")
     if _xbe_bytes(target) != expected:

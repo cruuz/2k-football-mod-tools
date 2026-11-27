@@ -565,7 +565,8 @@ class FloorRuleTests(unittest.TestCase):
             qb.apply(pressure.apply(realism.apply(source)[0])[0], "realistic")[0])[0])
         # b81 history-pool: and this release's career history pool (the disc carries the v0.9 revision), after
         # b81 rookie-faces: rookie faces' current revision (a GEN1 disc is upgraded in place; others are unchanged)
-        aimed = mod_build._history_pool_upgrade(mod_build._rookie_faces_upgrade(aimed)[0])[0]
+        aimed = mod_build._history_pool_upgrade(mod_build._league_aging_upgrade(  # b81 league-aging (after faces)
+            mod_build._rookie_faces_upgrade(aimed)[0])[0])[0]
         aimed = mod_build._overtime_crash_fix_upgrade(aimed)[0]   # b81 ot-crash review D3: and the overtime crash fix
         # b81 integration (practice squad merge): and upgrades the disc's revision 7 economy before the floor
         from mod_editor.core import nfl2k5_franchise_economy as economy
@@ -654,6 +655,7 @@ class InPlacePreflightTests(unittest.TestCase):
         slice1 = mod_build._sim_outcomes_with_realism(slice1)[0]   # b81 game outcomes: the outcomes page, after the option
         slice1, _ = aim.apply(slice1)  # b81 integration (scoring merged): the edit writes the CPU kick aim too
         slice1 = mod_build._rookie_faces_upgrade(slice1)[0]   # b81 rookie-faces: the GEN1 disc's rookie faces upgraded
+        slice1 = mod_build._league_aging_upgrade(slice1)[0]   # b81 league-aging: and its player development
         slice1 = mod_build._history_pool_upgrade(slice1)[0]   # b81 history-pool: and this release's history pool
         slice1 = mod_build._overtime_crash_fix_upgrade(slice1)[0]   # b81 ot-crash review D3
         # The helmet disc has the economy and the practice squad; the edit adds modern IR for the floor and (practice

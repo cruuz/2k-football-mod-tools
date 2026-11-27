@@ -412,10 +412,12 @@ class BuildWiringTests(unittest.TestCase):
         # b81 ot-crash review D3: then the playoff overtime crash fix (the overtime rule's current revision, the show
         # block guard), as a full build does
         upgraded, faces = build._rookie_faces_upgrade(expected)
+        upgraded, aging = build._league_aging_upgrade(upgraded)   # b81 league-aging (the disc has v0.9's)
         upgraded, history = build._history_pool_upgrade(upgraded)
         upgraded, crash_fix = build._overtime_crash_fix_upgrade(upgraded)
         self.assertEqual(receipt["gadget_source_update"]["result_sha256"], _sha(upgraded))
         self.assertEqual(receipt["gadget_source_update"]["rookie_faces_upgraded"], faces is not None)
+        self.assertEqual(receipt["gadget_source_update"]["league_aging_upgraded"], aging is not None)
         self.assertIsNotNone(faces)
         self.assertEqual(receipt["gadget_source_update"]["history_pool_upgraded"], history is not None)
         self.assertEqual(receipt["gadget_source_update"]["overtime_crash_fix"], sorted(crash_fix) if crash_fix else [])

@@ -516,6 +516,10 @@ class NativeRh2(unittest.TestCase):
         and sets the helmet bit (+0x0C bit 6) from it as retail does (masks 15 and up)."""
         from unicorn.x86_const import UC_X86_REG_ESI, UC_X86_REG_ESP
         mu = _emulator(rf.tables(self.firsts, self.lasts, toy_bank()), 782)
+        # b81 league-aging: gearsetup ends in qsetup, which now also draws the prospect's grade with the float rand
+        mu.mem_write(0x48B90, NativeRf3Ratings.FRAND)
+        mu.mem_write(0x4E419C, struct.pack("<f", 1.0))
+        mu.mem_write(0x4E4184, struct.pack("<f", 0.5))
         templates, rec = 0x2580000, 0x2590000
         masks = (3, 9, 17, 22)
         pos = rf.POSITIONS.index("CB")
@@ -1328,7 +1332,11 @@ class RareFaces(unittest.TestCase):
         self.assertLessEqual(len(rf.CODE_C), rf.REGION_C_END - rf.REGION_C)
         self.assertLessEqual(len(rf.CODE_B), rf.REGION_B_END - rf.REGION_B)
         self.assertEqual(len(rf.CODE_A), rf.REGION_A_END - rf.REGION_A)
-        self.assertEqual(sum(x != y for x, y in zip(rf.CODE_C, rf.CODE_C_GEN1)), 1)
+        self.assertEqual(sum(x != y for x, y in zip(rf.CODE_C_FACES, rf.CODE_C_GEN1)), 1)
+        # b81 league-aging: + the grade roll in the qsetup / qrand slots (0xA2..0xCB) and the loop's call to qrand (0x2B)
+        slots = {0x2B, *range(0xA2, 0xCC)}
+        self.assertEqual(sum(x != y for i, (x, y) in enumerate(zip(rf.CODE_C, rf.CODE_C_GEN1)) if i not in slots), 1)
+        self.assertEqual(rf.CODE_C[len(rf.CODE_C_GEN1):], rf.CODE_C_FACES[len(rf.CODE_C_GEN1):], "pick is unchanged")
         self.assertEqual(sum(x != y for x, y in zip(rf.CODE_A, rf.CODE_A_GEN1)), 3)       # NICK0 twice, NICKMASK
         self.assertEqual(sum(x != y for x, y in zip(rf.CODE_B, rf.CODE_B_GEN1)), 2)       # CANARY, NICK0
 
@@ -1464,6 +1472,7 @@ class NativeRf3Ratings(unittest.TestCase):
         mu.mem_write(0x48B90, self.FRAND)                     # retail frand: rand() mantissa | 1.0f, minus 1.0
         mu.mem_write(0x4E419C, struct.pack("<f", 1.0))
         mu.mem_write(0x4E4184, struct.pack("<f", 0.5))
+        mu.mem_write(0x4E696C, struct.pack("<f", 0.25))       # GRADEW: the retail .rdata 0.25f (b81 league-aging's roll)
         mu.mem_write(0xE3F10, bytes.fromhex("d9442404db5c24048b442404c20400"))   # fld [esp+4]; fistp [esp+4]; ret 4
         stubs = 0x600000
         for i in range(29):
@@ -1496,25 +1505,26 @@ class NativeRf3Ratings(unittest.TestCase):
     def test_code_fits(self):
         self.assertLessEqual(len(rf.CODE_C), rf.REGION_C_END - rf.REGION_C)
 
-    def test_ratings_stay_in_the_template_range_and_blue_chips_are_rare(self):
+    def test_ratings_stay_in_the_template_range_and_grades_are_uniform(self):
+        # b81 league-aging (merged on b81 rookie-faces): the frame slot holds the prospect's grade g (a float, uniform in
+        # [0, 1); no blue-chip draw), and every rating's r is g + GRADEW (u - g) (tests/mod_editor/test_b81_league_aging.
+        # GradeRollTests checks that bound)
         res = self.run_region()
-        blue = [r for r, flag in res if flag == -1]
-        plain = [r for r, flag in res if flag == 0]
-        self.assertEqual(len(blue) + len(plain), len(res))
-        self.assertTrue(0.025 < len(blue) / len(res) < 0.06, len(blue))   # BLUEK 10 in 256
-        for r, flag in res:
+        grades = [struct.unpack("<f", struct.pack("<i", flag))[0] for _r, flag in res]
+        self.assertTrue(all(0.0 <= g < 1.0 for g in grades))
+        upper = sum(1 for g in grades if g >= 0.5) / len(grades)
+        self.assertTrue(0.44 < upper < 0.56, upper)
+        for (r, _flag), g in zip(res, grades):
             for i in range(29):
                 if 0x36 + i in (0x4E, 0x50, 0x51):              # the capped rolls write these after the loop
                     continue
                 lo_, hi_ = (40, 80) if (0x36 + i) % 2 else (20, 60)
                 self.assertTrue(lo_ <= r[0x36 + i] <= hi_, (i, r[0x36 + i]))
-                if flag:
-                    self.assertGreaterEqual(r[0x36 + i], (lo_ + hi_) // 2, "a blue-chip rolls the upper half")
             self.assertTrue(30 <= r[0x50] <= 95, r[0x50])          # consistency between its templates
             self.assertTrue(50 <= r[0x51] <= 100, r[0x51])         # a template above 100 counts as 100
             self.assertTrue(70 <= r[0x4E] <= 100, r[0x4E])
-        mean = sum(r[0x37] for r in plain) / len(plain)
-        self.assertLess(abs(mean - 60), 1.5, "an ordinary prospect is uniform between the templates")
+        mean = sum(r[0x37] for r, _f in res) / len(res)
+        self.assertLess(abs(mean - 60), 1.5, "a prospect is uniform between the templates")  # E[r] = 0.75 E[g] + 0.25 E[u] = 1/2
         cons = [r[0x50] for r, _f in res]
         self.assertLess(abs(sum(cons) / len(cons) - 62.5), 2.5)
 

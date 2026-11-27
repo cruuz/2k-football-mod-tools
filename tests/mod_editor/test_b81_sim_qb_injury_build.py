@@ -109,7 +109,8 @@ class ProjectSettings(unittest.TestCase):
                     # b81 rookie-faces: rookie faces' current revision (the discs carry GEN1)
                     paged, outcomes = mod_build._sim_outcomes_with_realism(current)
                     self.assertEqual(faces.xbe_revision(before), "gen1")
-                    result = history.apply(faces.upgrade_xbe(aim.apply(paged)[0])[0])[0]
+                    # b81 league-aging: and player development's current revision, after rookie faces (both v0.9's)
+                    result = history.apply(mod_build._league_aging_upgrade(faces.upgrade_xbe(aim.apply(paged)[0])[0])[0])[0]
                     self.assertEqual(faces.xbe_status(result), "applied")
                     # b81 ot-crash review D3: then the playoff overtime crash fix (both discs: overtime "previous")
                     result, crash_fix = mod_build._overtime_crash_fix_upgrade(result)
@@ -117,7 +118,7 @@ class ProjectSettings(unittest.TestCase):
                         "source_sha256": digest, "result_sha256": hashlib.sha256(result).hexdigest(),
                         "source_simulator": source_state, "simulator_upgraded": source_state == "legacy",
                         "settings": medical.read_settings(current), "pass_protection_upgraded": True,
-                        "rookie_faces_upgraded": True, "history_pool_upgraded": True,
+                        "rookie_faces_upgraded": True, "league_aging_upgraded": True, "history_pool_upgraded": True,
                         "overtime_crash_fix": sorted(crash_fix) if crash_fix else [],
                         "settings": medical.read_settings(current),
                         "sim_outcomes_added": not outcomes["already_applied"],

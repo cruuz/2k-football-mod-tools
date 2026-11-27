@@ -79,7 +79,10 @@ they should be ... the occasional large edge"; SWeaR 10/27: "Some rookie headsho
      (consistency, aggressiveness, composure: templates capped at 100) are the same arithmetic in a small loop, which
      makes the room.  With the rf3 templates (below) and progression, measured with the game's own class loop and OVR
      routine (3 classes of 450): round 1 72.6 OVR (8 at 80+ in 3 classes), round 2 67.7, rounds 4-7 61.9..57.2, UDFA
-     53.7; the real 2026 draft as the SOFTDRINK roster rates it: 74.9, 66.9, 60.7..57.6.
+     53.7; the real 2026 draft as the SOFTDRINK roster rates it: 74.9, 66.9, 60.7..57.6.  b81 league-aging (11/25-26):
+     qsetup rolls one grade g per prospect and qrand gives r = g + GRADEW (u - g) (GRADEW = the retail .rdata 0.25f),
+     so a prospect's ratings move together and a class has the real spread of stars and busts; the blue-chip draw went
+     (its bytes now hold the grade roll) and templates.json's pairs were widened to keep the tested class.
    * templates (Noah 10/28: "fix the templates ... similar to what makes the game play the best"): templates.json
      holds the 68 template rating bytes fitted to the real 2026 rookies on the SOFTDRINK roster, written into the main
      roster by the build (apply_templates).
@@ -162,7 +165,7 @@ position has a bunch of them every draft. The ugly faces should be very rare."):
 
 Saves: the code reads the pool, the roster and the position from the live roster, so an old franchise save gets the
 new faces for every class it generates after the update (its own name pool may lack the nicknames; nothing else
-differs).  Players already in a save keep their portrait ids.  The bodies, the blue-chip draw and the zone are
+differs).  Players already in a save keep their portrait ids.  The bodies, the grade roll and the zone are
 code, so old saves get them; the templates are roster data, and a franchise save carries its own roster copy, so the
 fitted templates reach franchises started on the new disc.
 """
@@ -229,7 +232,24 @@ CODE_A = bytes.fromhex(
     "440d1d44440d1a5f420d4051450b4d3d490b374a450d3949450d8834490987514a08825d4b097177480a4b4e480b0fb6"
     "7e358d3cbd94680e00e813ffffff50668b0fe877ffffff88462ae802ffffff5ac1e00888d00d000000ff668b4f02e85b"
     "ffffff88462b6a0759e8d7feffff01d2806622f1085622eb00")
+# b81 league-aging (merged on b81 rookie-faces): region C rolls one grade per prospect (qsetup, qrand: a convex mix of the
+# grade and a fresh draw per rating, weight GRADEW = the retail .rdata 0.25f at 0x4E696C), so a class has the real spread
+# of stars and busts; qsetup + qrand keep b779-rf3's 42 bytes (qrand starts a byte later) and nothing after them moves. CODE_C_FACES is b81
+# rookie-faces' region C (one draw per rating): an executable with it reads applied (revision "faces") and upgrade_xbe
+# moves it in place.
 CODE_C = bytes.fromhex(
+    "e87101000089d9ff178944241cdb44241cd95c241089e9ff178944241cdb44241cd95c241cb9a0fce500e887000000d9"
+    "442410d864241c51dec9d8442420d91c24e879d1ffff88c289f1ff57fc83c71481fff84e4f007cad6a025f0fb6971d6e"
+    "0e00520fbe041383f8647c036a64580fbe4c150083f9647c036a645929c85150e825faffff0fb7c05a0fafc2c1f81059"
+    "01c85a8804164f79c2c6460806e9e8010000b9a0fce500e8931df6ffd95c2418bfb44c4f00c3e8841df6ffd8642418d8"
+    "0d6c694e00d8442418c3cccc4e515051528b4d008b5504394210750f39f2740b508b42143b461458f9740683c254e2e7"
+    "f85a59c352538b4e2a30e983e1038d1c85000000006a045f8d040b6603059d4f4f008b55548b04c24f740de8afffffff"
+    "73064183e103ebe08946105b5ac3e8aaf9ffff6a048b4610e892ffffff731bff0c2478160fb70d9f4f4f00e84ef9ffff"
+    "89d78b04fb894610ebdb59c383fe64730a83fe5b720583f83c73068bb0901b5200e936641d00e82ff9ffffc1e81e0fb6"
+    "4e358d04888b0d1829b7003b4108732e6bc05403410c8b402033462025007c00003146208b462025007c00003d003c00"
+    "000f93c0c0e00680660c3f08460ce9dffeffff510fb74704662b0784ff780980fb09730501c8d1e891e8c0f8ffff3b14"
+    "24731db00838d873170fb64703d1e86bc80bc1e90529d04839c819c030f8d0e059c3")
+CODE_C_FACES = bytes.fromhex(
     "e87101000089d9ff178944241cdb44241cd95c241089e9ff178944241cdb44241cd95c241cb9a0fce500e886000000d9"
     "442410d864241c51dec9d8442420d91c24e879d1ffff88c289f1ff57fc83c71481fff84e4f007cad6a025f0fb6971d6e"
     "0e00520fbe041383f8647c036a64580fbe4c150083f9647c036a645929c85150e825faffff0fb7c05a0fafc2c1f81059"
@@ -241,6 +261,22 @@ CODE_C = bytes.fromhex(
     "4e358d04888b0d1829b7003b4108732e6bc05403410c8b402033462025007c00003146208b462025007c00003d003c00"
     "000f93c0c0e00680660c3f08460ce9dffeffff510fb74704662b0784ff780980fb09730501c8d1e891e8c0f8ffff3b14"
     "24731db00838d873170fb64703d1e86bc80bc1e90529d04839c819c030f8d0e059c3")
+# b81 league-aging's first revision (job/b81-league-aging up to 0b9b4a92d, the paired-r2 candidate discs): GEN1 with
+# region C = one grade per prospect, g + 0.35 (u - 0.5) clamped, blue-chips (g + 1) / 2 (qsetup2 / qrand2 at the end of
+# region C). Read as previous ("gen1_aging"); upgrade_xbe takes it like GEN1 (the same table layout and region D).
+CODE_C_GEN1_AGING = bytes.fromhex(
+    "e87101000089d9ff178944241cdb44241cd95c241089e9ff178944241cdb44241cd95c241cb9a0fce500e886000000d9"
+    "442410d864241c51dec9d8442420d91c24e879d1ffff88c289f1ff57fc83c71481fff84e4f007cad6a025f0fb6971d6e"
+    "0e00520fbe041383f8647c036a64580fbe4c150083f9647c036a645929c85150e825faffff0fb7c05a0fafc2c1f81059"
+    "01c85a8804164f79c2c6460806e9e8010000e803faffff50e916010000cccccccccccccccce8851df6ffd82584414e00"
+    "d80d4c6f0e00e91b010000cc4e515051528b4d008b5504394210750f39f2740b508b42143b461458f9740683c254e2e7"
+    "f85a59c352538b4e2a30e983e1038d1c85000000006a045f8d040b6603059d4f4f008b55548b04c24f740de8afffffff"
+    "73064183e103ebe08946105b5ac3e8aaf9ffff6a048b4610e892ffffff731bff0c2478160fb70da04f4f00e84ef9ffff"
+    "89d78b04fb894610ebdb59c383fe64730a83fe5b720583f83c73068bb0901b5200e936641d00e82ff9ffffc1e81e0fb6"
+    "4e358d04888b0d1829b7003b4108732e6bc05403410c8b402033462025007c00003146208b462025007c00003d003c00"
+    "000f93c0c0e00680660c3f08460ce9dffeffffb9a0fce500e8721cf6ff583c0a730ad9e8dec1d80d84414e00d95c2418"
+    "bfb44c4f00c3d8442418d9eedbe9dac1ddd9d9e8dbe9dbc1ddd9c33333b33e")
+
 CODE_B = bytes.fromhex(
     "89068b2d1829b7008b5d548b4d5083c3048b4614e8d3f7ffff897c241431d239cf732289f8c1e8020fb68008504f0089"
     "f983e10301c9d3e883e0030fbe90744f4f008b4d508954241083eb048b4610e898f7ffffe80dfeffff8b03668b00663b"
@@ -818,14 +854,21 @@ def _retail_spans(payload: bytes) -> dict[int, bytes]:
             for va, data in _spans(bytes(TABLE_DATA))}
 
 
-def _gen1_spans() -> dict[int, bytes]:
+def _gen1_spans(region_c: bytes | None = None) -> dict[int, bytes]:
     """The b780 GEN1 revision's spans (released v0.9, beta-81 candidates up to c4406481b), the table block's code part
-    without the table bytes and HAIRPTR."""
+    without the table bytes and HAIRPTR. region_c: another region C on the GEN1 layout (CODE_C_GEN1_AGING)."""
     pad = lambda code, size: code + b"\xcc" * (size - len(code))  # noqa: E731
     spans = dict(_spans(bytes(TABLE_DATA)))
     spans.update({REGION_A: pad(CODE_A_GEN1, REGION_A_END - REGION_A), REGION_B: pad(CODE_B_GEN1, REGION_B_END - REGION_B),
-                  REGION_C: pad(CODE_C_GEN1, REGION_C_END - REGION_C),
+                  REGION_C: pad(region_c or CODE_C_GEN1, REGION_C_END - REGION_C),
                   TABLE_VA: bytes(TABLE_DATA) + pad(CODE_D_GEN1, TABLE_END - TABLE_VA - TABLE_DATA - 4) + bytes(4)})
+    return spans
+
+
+def _faces_spans() -> dict[int, bytes]:
+    """b81 rookie-faces' revision (c6b043363): every span of this release with its region C (one draw per rating)."""
+    spans = dict(_spans(bytes(TABLE_DATA)))
+    spans[REGION_C] = CODE_C_FACES + b"\xcc" * (REGION_C_END - REGION_C - len(CODE_C_FACES))
     return spans
 
 
@@ -835,14 +878,19 @@ def xbe_status(payload: bytes) -> str:
     the beta-79 / v0.8 region D (CODE_D_B779) or the first v0.9 release candidate's (CODE_D_B780RC), the last two with
     the b779-rf3 region C (CODE_C_RF3), the retail college bands, draft numbers and Franchise Show record name)."""
     state = xbe_revision(payload)
-    return "previous" if state in PREVIOUS_REVISIONS else state
+    return "previous" if state in PREVIOUS_REVISIONS else "applied" if state in APPLIED_REVISIONS else state
 
 
-PREVIOUS_REVISIONS = ("gen1", "b779")   # b780 GEN1 (v0.9, beta-81 candidates); beta-79 / v0.8 and the v0.9 RC
+PREVIOUS_REVISIONS = ("gen1", "gen1_aging", "b779")   # b780 GEN1 (v0.9, beta-81 candidates), GEN1 with b81 league-aging's
+                                                    # first grade roll; beta-79 / v0.8 and the v0.9 RC
+APPLIED_REVISIONS = ("faces",)          # b81 rookie-faces without the league-aging grade roll: same faces, same tables
 
 
 def xbe_revision(payload: bytes) -> str:
-    """b81 rookie-faces: retail | applied | gen1 | b779 | foreign.  gen1 = the b780 GEN1 revision (released v0.9 and the
+    """b81 rookie-faces: retail | applied | faces | gen1 | gen1_aging | b779 | foreign.  faces = this release with b81
+    rookie-faces' region C (one draw per rating, before the league-aging merge; xbe_status reads it applied, upgrade_xbe
+    moves region C).  gen1_aging = gen1 with league-aging's first grade roll in region C (candidate discs only; taken as
+    gen1).  gen1 = the b780 GEN1 revision (released v0.9 and the
     beta-81 candidates up to c4406481b): every span this release writes, with the older region D draw and table layout;
     its region D calls HAIRPTR like this release's, so the rookie hair helper and MyCareer's draft-number companion accept
     it.  b779 = beta-79 / v0.8 and the first v0.9 RC: retail college bands, draft numbers and Franchise Show name, and
@@ -855,7 +903,8 @@ def xbe_revision(payload: bytes) -> str:
         return "retail"
     d = current[TABLE_VA]
     hair_ok = lambda: _hair_ok(payload, struct.unpack_from("<I", d, len(d) - 4)[0])  # noqa: E731
-    for state, spans in (("applied", dict(_spans(bytes(TABLE_DATA)))), ("gen1", _gen1_spans())):
+    for state, spans in (("applied", dict(_spans(bytes(TABLE_DATA)))), ("faces", _faces_spans()), ("gen1", _gen1_spans()),
+                         ("gen1_aging", _gen1_spans(CODE_C_GEN1_AGING))):
         if all(current[va] == data for va, data in spans.items() if va != TABLE_VA) and \
                 d[TABLE_DATA:-4] == spans[TABLE_VA][TABLE_DATA:-4]:
             return state if hair_ok() else "foreign"
@@ -915,7 +964,7 @@ def apply_hair(payload: bytes) -> tuple[bytes, dict[str, Any]]:
     GEN1 read "previous"; the beta-79 / RC states have padding at HAIRPTR and are not."""
     from . import nfl2k5_xbe_space as space  # noqa: PLC0415
     host = xbe_revision(payload)
-    require(host in ("applied", "gen1"), "rookie faces must be applied before the rookie hair helper")
+    require(host in ("applied", "faces", "gen1", "gen1_aging"), "rookie faces must be applied before the rookie hair helper")
     if hair_status(payload) == "applied":
         return payload, {"state": "applied", "already_applied": True, "changed_bytes": 0}
     require(hair_status(payload) == "off", "HAIRPTR holds a foreign value")
@@ -949,7 +998,9 @@ def upgrade_xbe(payload: bytes, bank: Mapping[str, Any] | None = None) -> tuple[
     the rows are rebuilt from the bank (they must be the bank's rows, so the disc's portrait record holds every face),
     and xbe_apply writes this release's code, keeping the rookie hair pointer.  Any other state is returned unchanged
     (receipt None): a single-setting route never adds rookie faces, and beta-79 / RC executables are not taken."""
-    if xbe_revision(payload) != "gen1":
+    if xbe_revision(payload) == "faces":            # b81 league-aging: only region C differs (the grade roll)
+        return upgrade_region_c(payload)
+    if xbe_revision(payload) not in ("gen1", "gen1_aging"):
         return payload, None
     bank = bank or load_bank()
     old = xbe_tables(payload)
@@ -959,6 +1010,36 @@ def upgrade_xbe(payload: bytes, bank: Mapping[str, Any] | None = None) -> tuple[
     table = table_from_gen1(old, bank)
     out, receipt = xbe_apply(payload, table)
     return out, {**receipt, "upgraded_from": "previous", "table_sha256": sha(table)}
+
+
+def region_c_state(payload: bytes) -> str:
+    """'current' (the merged grade roll), 'faces' (b81 rookie-faces' one draw per rating), 'gen1' (b780), 'gen1_aging'
+    (league-aging's first grade roll) or 'other'."""
+    pad = lambda code: code + b"\xcc" * (REGION_C_END - REGION_C - len(code))  # noqa: E731
+    try:
+        off = _offset(payload, REGION_C, REGION_C_END - REGION_C)
+    except (RookieFacesError, struct.error):
+        return "other"
+    got = payload[off:off + REGION_C_END - REGION_C]
+    return ("current" if got == pad(CODE_C) else "faces" if got == pad(CODE_C_FACES) else
+            "gen1" if got == pad(CODE_C_GEN1) else "gen1_aging" if got == pad(CODE_C_GEN1_AGING) else "other")
+
+
+def upgrade_region_c(payload: bytes) -> tuple[bytes, dict[str, Any] | None]:
+    """b81 league-aging: a "faces" executable (b81 rookie-faces) gets the grade roll in place, region C only."""
+    if xbe_revision(payload) != "faces":
+        return payload, None
+    data = CODE_C + b"\xcc" * (REGION_C_END - REGION_C - len(CODE_C))
+    off = _offset(payload, REGION_C, len(data))
+    buf = bytearray(payload)
+    changed = sum(1 for x, y in zip(buf[off:off + len(data)], data) if x != y)
+    buf[off:off + len(data)] = data
+    for sva, raw, rsize, h in _section_map(payload):
+        if raw <= off < raw + rsize:
+            buf[h + 36:h + 56] = hashlib.sha1(struct.pack("<I", rsize) + bytes(buf[raw:raw + rsize])).digest()  # nosec B324
+    out = bytes(buf)
+    require(xbe_revision(out) == "applied" and region_c_state(out) == "current", "rookie faces region C upgrade read-back")
+    return out, {"state": "applied", "upgraded_from": "faces", "changed_bytes": changed}
 
 
 def table_from_gen1(old: bytes, bank: Mapping[str, Any]) -> bytes:
@@ -1011,7 +1092,7 @@ def xbe_apply(payload: bytes, table: bytes) -> tuple[bytes, dict[str, Any]]:
 
 
 SPAN_LABELS = ("class generator skin/face draw and weight/height roll -> body table + helpers", "class generator portrait pick",
-               "class generator rating loop -> blue-chip draw + compact capped rolls",
+               "class generator rating loop -> one grade per prospect + compact capped rolls",
                "rookie-face tables + code (retail generic range table)", "PORTRAIT record file name",
                "class generator college pick -> per-college weight table", "draft pick keeps the rookie's own jersey number",
                "Franchise Show portrait record file name", "jersey walk: DT / DE stay in the 90s before wrapping")
