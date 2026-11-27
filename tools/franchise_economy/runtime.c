@@ -756,19 +756,12 @@ SECTION(".roster_h") int STD economy_class_topup(int need, unsigned retiring) {
  * at 53 first makes room with the smart cut (0x2BF9A0: the lowest-rated player at a position above its minimum; K
  * and P stay at their minimum of 1, so the hurt kicker stays). The signing goes through 0x322BB0 and the gate (cap
  * room) like every CPU fill. */
-/* ECX = team, EDX = menu (fastcall); K (1), then P (2): no healthy one on the club (the injured bit, +0x23 bit 7, as
- * the trim, the gate and economy_vet_release read it) -> at 53 the smart cut 0x2BF9A0 to 52, then the CPU signing
- * 0x322BB0 (team, pos, 0xFFFF, menu), whose gate keeps the cap-room rule. The free-agent pool always held kickers and
- * punters in the offline seasons (29 to 78); with none the signing fails and the club waits at 52 until one is free. */
-SECTION(".roster_h_tail") __attribute__((naked)) void FAST economy_cover(u8 *team __attribute__((unused)),
-                                                             void *menu __attribute__((unused))) {
-    __asm__("push %ebx\npush %esi\npush %ebp\nmov %ecx, %esi\nmov %edx, %ebp\nxor %ebx, %ebx\ninc %ebx\n"
-            "1: movzbl 0x11c(%esi), %ecx\n"
-            "2: dec %ecx\njs 3f\nmov (%esi,%ecx,4), %eax\ncmpb %bl, 0x35(%eax)\njne 2b\ntestb $0x80, 0x23(%eax)\njnz 2b\njmp 5f\n"
-            "3: cmpb $53, 0x11c(%esi)\njb 4f\npush $52\npop %edx\nmov %esi, %ecx\ncall 0x2bf9a0\n"
-            "4: push %ebp\npush $0xffff\npush %ebx\npush %esi\ncall 0x322bb0\n"
-            "5: inc %ebx\ncmp $3, %ebx\njb 1b\npop %ebp\npop %esi\npop %ebx\nret\n");
-}
+/* ECX = team, EDX = menu (fastcall); K (1), then P (2). Until b81 #46 this was a naked routine here: no healthy one on
+ * the club (the injured bit, +0x23 bit 7, as the trim, the gate and economy_vet_release read it) -> at 53 the smart cut
+ * 0x2BF9A0 to 52, then the CPU signing 0x322BB0 (team, pos, 0xFFFF, menu), whose gate keeps the cap-room rule. b81 #46
+ * (the combined judge's RR1) rewrote it in C (defined at the end of this file, still in this window's tail): a club short
+ * of room makes room first, the cover also acts in the playoffs (stage 9), and a spare K or P is released once the club
+ * has a healthy one again. */
 
 /* b779 rc1 (Noah 10/28: "make it smart, so teams aren't cutting guys that they need at certain positions. They'll
  * prioritize the lowest overall at a position where they have more than they need, according to modern NFL
@@ -1593,4 +1586,72 @@ SECTION(".r10_prove") u8 *economy_prove_club(u8 *p, unsigned ask) {
     u8 *club = 0;
     if (economy_best_room(p, &club) < ask || !club) return 0;
     return economy_hole_first(p, ask, club);
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * b81 #46 (the combined franchise judge's RR1, 2026-11-27; owner's words 11/03: "if a K or P can get hurt in a played or
+ * simulated game, a 53-man club then has no way to replace him in season. Make that signing work, for example by releasing
+ * the lowest-value player the way a real club would"). Game outcomes made kickers and punters injurable in beta 81 and the
+ * ten-season combined panel left CPU clubs with no kicker or punter (validator I5) three ways:
+ * - short of room: the cover's signing goes through the fill gate (economy_fill_gate), whose room rule refuses a club
+ *   with less than a free agent's ask of room (76002 2029 BUF: room 127 against asks of 250 and more, so the punter
+ *   kicked the last five games and three playoff games; 76002 2028 ATL: room 217, one game);
+ * - in the playoffs: the weekly advance's stage-9 path (0x247E6E) jumps past the weekly CPU pass at 0x248010 to
+ *   0x248015, so economy_week, the upkeep and the cover never ran in stage 9 (76001 2031 JAX: no kicker in a conference
+ *   final with 5,005 of room);
+ * - hoarding: the cover never released the man it signed once the starter was healthy again (557 of 1,240 club-seasons
+ *   at week 18 carried two or three kickers; control 43).
+ * Now, for K then P, each in-season upkeep (stages 8 and 9):
+ * - a club with a healthy man keeps its best-rated healthy one and releases every other healthy one (a hurt one stays
+ *   until he is healthy, then the better of the two stays);
+ * - a club with none, when the pool holds a healthy one: at 53 the smart cut to 52 (as before), the gated signing (as
+ *   before); refused, it makes room the way the economy clears the cap (economy_clear_cap's order): one restructure
+ *   (economy_restructure_best, at most three a club), else one release by value lost (economy_vet_pick: the least price
+ *   lost among men whose charge clears the club's shortfall to two minimum salaries, depth-chart starters last, never a
+ *   club's last healthy K or P), then the gated signing again; nothing when the club already has room for two minimum
+ *   salaries (the asks are above it) or nobody can go. The signing stays inside the cap: the QB floor's over-the-cap rung
+ *   was retired for the churn it caused (rev-qb34 REVIEW_FLOOR F1).
+ * In stage 9 the weekly advance's jump-table entry (0x2480A8) comes to economy_stage9, which covers every computer club
+ * and goes on to the stage's own code at 0x247E6E (EBP = the menu there, as at 0x248010). */
+#define KP __attribute__((noinline, optimize("omit-frame-pointer")))
+SECTION(".kp_spare") KP void FAST kp_spare(u8 *team, u8 *mine) {
+    for (unsigned i = team[0x11c]; i-- > 0;) {
+        u8 *q = ((u8 **)team)[i];
+        if (q != mine && q[0x35] == mine[0x35] && HEALTHY(q)) economy_release(team, q);
+    }
+}
+
+/* No healthy man at `pos`: at 53 the smart cut to 52, then the gated signing; refused, one release by value lost and the
+ * signing again (at most six releases). */
+SECTION(".kp_sign") KP void FAST kp_sign(u8 *team, unsigned pos, void *menu) {
+    u8 *q;
+    if (team[0x11c] >= 53) n_cut_to(team, 52);
+    for (unsigned k = 0; k < 6 && !n_cpu_sign(team, pos, 0xFFFF, menu) && (q = economy_vet_pick(team, team)); ++k)
+        economy_release(team, q);
+}
+
+/* The best-rated healthy free agent at `pos`, or 0. */
+SECTION(".kp_fa") KP u8 *FAST kp_free_agent(unsigned pos) {
+    u32 *list = FA_LIST;
+    return best_at((u8 **)list[1], list[0], pos);
+}
+
+/* K, then P: the best healthy one stays and the spares go; with none, sign one when the pool holds a healthy one. */
+SECTION(".kp_cover") KP void FAST economy_cover(u8 *team, void *menu) {
+    for (unsigned pos = 1; pos < 3; ++pos) {
+        u8 *mine = best_at((u8 **)team, team[0x11c], pos);
+        if (mine) kp_spare(team, mine);
+        else if (kp_free_agent(pos)) kp_sign(team, pos, menu);
+    }
+}
+
+SECTION(".roster_h_tail") KP void FAST economy_cover_all(void *menu) {
+    for (unsigned t = 0; t < n_teams(); ++t) {
+        u8 *team = n_team(t);
+        if (CPU(team)) economy_cover(team, menu);
+    }
+}
+
+SECTION(".roster_h_tail") __attribute__((naked)) void economy_stage9(void) {
+    __asm__("mov %ebp, %ecx\ncall economy_cover_all\njmp 0x247e6e\n");
 }

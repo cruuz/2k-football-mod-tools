@@ -116,6 +116,10 @@ WINDOWS = {  # start: (size, sha256 of the retail bytes)
     0x250B70: (92, "700bd9881c81e5c6a617190012d20015931fb89a07552a265abfd94b1a9ddce6"),   # r10: camp_cuttable + camp_fits (G6, M1)
     0x1646E0: (88, "82d666317a88531f6c7bf8b94d162473ed2091efe1ecc2f1386f7c035e2d700f"),   # r10: camp_cover: a CPU club with no K or P signs one in camp (G6)
     0x1D12C0: (88, "08c504bdc413e29bf4740d34454c18fa1da12af8b6434f0639846876f7030546"),   # r10: camp_one: cover, else compete (G6)
+    # b81 #46 (the combined judge's RR1): the K/P cover's make-room signing, the cover itself, and the spare release
+    0x28C2F0: (88, "14a0da4fcd58c1191ae3d9d6bad14469b2968e942e865dfa8f92051d3e76b4a8"),   # kp_sign
+    0x2DCC10: (88, "2652df3f03643ef9692d17b3900a68c430f71c54dc22dfc0f51c229f73f52e25"),   # kp_cover: economy_cover
+    0x2F7D00: (85, "15663e4f66d6ed8c00ac5ab0bda92977a0168a3fe80a7131ed904a26b7629b30"),   # kp_spare + kp_free_agent
 }
 
 

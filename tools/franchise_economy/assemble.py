@@ -64,7 +64,11 @@ R10_WINDOWS = {"r10_5de10": (0x5de10, 84),
                "r10_36f380": (0x36f380, 93),
                "r10_250b70": (0x250b70, 92),
                "r10_1646e0": (0x1646e0, 88),
-               "r10_1d12c0": (0x1d12c0, 88)}
+               "r10_1d12c0": (0x1d12c0, 88),
+               # b81 #46 (the combined judge's RR1): the K/P cover in three more unreferenced retail functions
+               "kp_sign": (0x28c2f0, 88),
+               "kp_cover": (0x2dcc10, 88),
+               "kp_spare": (0x2f7d00, 85)}
 # the input sections each window takes (value: economy_value's own bytes, placed before economy_floor's pin below)
 R10_SECTIONS = {'r10_5de10': ['r10_casualty'],
                 'r10_87dc0': ['r10_rank'],
@@ -115,7 +119,8 @@ R10_SECTIONS = {'r10_5de10': ['r10_casualty'],
                 'r10_250b70': ['r10_camp_ok', 'r10_camp_fits'],
                 'r10_1646e0': ['r10_camp_cover'],
                 'r10_1d12c0': ['r10_camp_pos'],
-                'roster_v': ['r10_holefirst']}
+                'roster_v': ['r10_holefirst'],
+                'kp_spare': ['kp_fa']}
 WINDOWS = {"value": (0x2BD440, 1082), "contracts": (0x3228A0, 215),
            "rookie": (0x322980, 280), "picks": (0x2BAB20, 403),
            "money": (0x31E580, 198), "reconcile": (0x2BFBE0, 370),

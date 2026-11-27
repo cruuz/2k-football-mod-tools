@@ -245,6 +245,8 @@ MONEY_WINDOW = 0x31E580
 # 0x137680 -> 0x1373C0 -> 0x136B10 tests no position), and the CPU fill never asked for a replacement (the native need
 # 0x2BD880 counts injured players). In season the weekly upkeep (roster_a) now calls economy_cover (roster_h, after its
 # read-only byte): a CPU club with no healthy K (or P) signs one, a club at 53 first making room with the smart cut.
+# b81 #46 (revision 10): economy_cover moved to window kp_cover (0x2DCC10) and makes room by value lost when the gate
+# refuses for room, also runs in stage 9 and releases a spare K or P; roster_h's tail holds the stage-9 entry.
 ROSTER_A_WINDOW = 0x396F50
 ROSTER_H_WINDOW = 0x3A5F20
 REVISION_6_WINDOWS = frozenset({ROSTER_M_WINDOW, MONEY_WINDOW, ROSTER_A_WINDOW, ROSTER_H_WINDOW})
@@ -354,6 +356,11 @@ OFFER_JITTER = 0x3241A3             # mov esi, eax; and esi, 3; dec esi (the off
 OFFER_JITTER_PATCHED = bytes.fromhex("31f690909090")   # xor esi, esi (jitter 0; the RNG call before it still runs)
 RESIGN_STAGE = 0x248426             # call 0x323720 (the re-signing stage) in the stage action 0x2480B0
 ROLLOVER_RECONCILE = 0x247BC6       # the rollover's call of the reconcile (revision 1 on)
+# b81 #46 (the combined judge's RR1, 11/27): the weekly advance's stage-9 path (0x247E6E) jumps past its weekly CPU pass
+# (0x248010 -> economy_week), so the in-season K/P cover never ran in the playoffs. Stage 9's entry of the advance's jump
+# table (0x248088 + 8 * 4) now names economy_stage9, which covers every computer club and goes on to 0x247E6E. The cover
+# itself moved out of roster_h's tail into three more unreferenced retail functions (kp_sign, kp_cover, kp_spare below).
+STAGE9_CASE = 0x2480A8
 R10_WINDOW_PINS = {                 # retail sha256 of each window the revision takes
     0x322690: "6c05c4b9b81c9daa33f857035a8a548b1124bd3d94c4b73a35adf01ab65476b5",   # years: the years-wanted routine
     0x5DE10: "a416917f31c92569edf3815ddf7ca6b45072b946cb4fc26c6350573d715c6b77",
@@ -402,12 +409,16 @@ R10_WINDOW_PINS = {                 # retail sha256 of each window the revision 
     0x250B70: "700bd9881c81e5c6a617190012d20015931fb89a07552a265abfd94b1a9ddce6",   # camp_cuttable + camp_fits (G6, M1)
     0x1646E0: "82d666317a88531f6c7bf8b94d162473ed2091efe1ecc2f1386f7c035e2d700f",   # camp_cover
     0x1D12C0: "08c504bdc413e29bf4740d34454c18fa1da12af8b6434f0639846876f7030546",   # camp_one
+    0x28C2F0: "14a0da4fcd58c1191ae3d9d6bad14469b2968e942e865dfa8f92051d3e76b4a8",   # b81 #46 kp_sign: make room, sign a K or P
+    0x2DCC10: "2652df3f03643ef9692d17b3900a68c430f71c54dc22dfc0f51c229f73f52e25",   # b81 #46 kp_cover: economy_cover
+    0x2F7D00: "15663e4f66d6ed8c00ac5ab0bda92977a0168a3fe80a7131ed904a26b7629b30",   # b81 #46 kp_spare + kp_free_agent
 }
 PINS.update(R10_WINDOW_PINS)
 PINS[OFFER_JITTER] = "fa53102234cdfb47e76212cf24faf309c148be7f525d793ad1ee97a9052f9e49"
 PINS[RESIGN_STAGE] = "618dd3590e6d39655c05657a34d3e9158ff05eda2240f73b70f81e07de18746f"
+PINS[STAGE9_CASE] = "cbecd96dd05388e8f039c58e80d00086474944946b5d6261fa0e8e5bba5b92fa"   # retail 0x247E6E
 R10_WINDOWS = frozenset(R10_WINDOW_PINS)
-REVISION_10_NEW = R10_WINDOWS | frozenset({OFFER_JITTER, RESIGN_STAGE})
+REVISION_10_NEW = R10_WINDOWS | frozenset({OFFER_JITTER, RESIGN_STAGE, STAGE9_CASE})
 PREVIOUS_REVISION_9 = {             # the sites revision 10 rewrites, as revisions 8 and 9 installed them (sha256)
     0x264AC0: "419c4e81aba466572026513a360f881beea64cc5e80d2644a10d9583dc76c8a6",   # roster_o
     0x2BD440: "9b65660baaaaeaa82a1c1c3163c4f67759ce3251e1465a26540282fff305a0ac",   # value
@@ -426,6 +437,7 @@ PREVIOUS_REVISION_9 = {             # the sites revision 10 rewrites, as revisio
     0x323BB3: "f8c0693c7061677d6267125e0be1a8f4304d7d675cac935604dfbed77edf511d",   # the offer gate's jump (economy_offer_gate moved with economy_contract)
     ROOM_FOR_SIGNING_WINDOW: "64db62a40e3106e8cff3ce66159dd8a3dfdb039c4dacfd0ea272378a63da34aa",   # roster_v (revision 9)
     0x3DBC10: "fc3a5ea47bb4cc2fef2fa431b9085d0ae71d3b7e1970b3e9998a1c9b6f6947c7",   # roster_m (the veteran cut's release stub now prunes the trade board)
+    ROSTER_H_WINDOW: "7a37c3efb19257e41b61060804e5fb11c2d58c41050791fa86de9de73a7f3e66",   # roster_h with revisions 6-9's naked cover (b81 #46: its tail now holds the stage-9 cover)
 }
 REVISION = 10
 # b81 economy revision 10, part 1 (coordinator ruling 6, 11/25): the draft class position mix (window roster_f's
@@ -513,6 +525,7 @@ def sites(revision: int = REVISION) -> tuple[Site, ...]:
     if revision >= 10:
         replacements[OFFER_JITTER] = OFFER_JITTER_PATCHED
         replacements[RESIGN_STAGE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_resign_stage"] - RESIGN_STAGE - 5)
+        replacements[STAGE9_CASE] = struct.pack("<I", SYMBOLS["economy_stage9"])     # b81 #46
     if revision >= 8:
         replacements[SQUAD_GATE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_gate"] - SQUAD_GATE - 5)
         replacements[SQUAD_EXPIRE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_expire"] - SQUAD_EXPIRE - 5)
