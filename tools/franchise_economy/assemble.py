@@ -147,7 +147,7 @@ WINDOWS = {"value": (0x2BD440, 1082), "contracts": (0x3228A0, 215),
            "years": (0x322690, 133), **{name: window for name, window in R10_WINDOWS.items()}}
 # b778 fa2: retail routines the C code calls directly (rel32 instead of mov/call reg).
 NATIVE = {"n_rating": 0x246D80, "n_recount": 0xC3F00, "n_human": 0x13EC30, "n_team": 0xC4C50,
-          "n_teams": 0xC4BE0, "n_roster_limit": 0x247AF0, "n_salary": 0xE6380, "n_base": 0xE6040,
+          "n_teams": 0xC6430, "n_roster_limit": 0x247AF0, "n_salary": 0xE6380, "n_base": 0xE6040,
           "n_prorated": 0xE6020, "n_frand": 0x48B90, "n_rand": 0x48B50, "n_trunc": 0x322260,
           "n_release": 0x2BD900, "n_cpu_sign": 0x322BB0, "n_cut_to": 0x2BF9A0, "n_need_low": 0x2BD880, "n_prune": 0x2BB9A0,
           "n_need_want": 0x2BD8C0, "n_at_position": 0xC3CB0, "n_minimum_at": 0x2BD410,

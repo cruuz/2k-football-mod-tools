@@ -578,6 +578,43 @@ class Root76001(unittest.TestCase):
                 self.assertEqual([self.roster(m, t) for t in (32, 33)], pro)
                 self.assertEqual((aliased, failing & {"I2", "I6"}), ([], set()))
 
+    @staticmethod
+    def rating(m, p):
+        return CoverMachine.rating(m, p)
+
+    def test_a_kp_free_agents_price_ignores_the_pro_bowl_sides(self):
+        """Coordinator 11/27: every economy walk that prices or counts clubs uses the 32 league clubs (0xC6430, 32 in
+        franchise mode), never the Pro Bowl records. At this state (stage 9, n_teams() 34) the a3dbd0774 economy priced
+        through rank_twice over 34 records, so the two Pro Bowl kickers counted twice for every K rated below them. The
+        subject: the best healthy kicker rated below both Pro Bowl kickers, released to free agency; the cap is raised
+        eightfold so his in-season ask (a quarter of his price) sits above his floor and shows the price. His price is
+        the same with the Pro Bowl lists emptied, and so is every rostered K's and P's (24 of them moved on a3dbd0774)."""
+        value = economy.SYMBOLS["economy_value"]
+        for new in (False, True):
+            got = {}
+            for empty in (False, True):
+                m = self.machine(new=new)
+                pro = {p for t in (32, 33) for p in self.roster(m, t)}
+                kickers = [(t, p) for t in range(32) for p in self.roster(m, t)
+                           if m.uc.mem_read(p + 0x35, 1)[0] == K and p not in pro and not m.uc.mem_read(p + 0x23, 1)[0] & 0x80]
+                line = min(self.rating(m, p) for p in pro if m.uc.mem_read(p + 0x35, 1)[0] == K)
+                club, him = max(((t, p) for t, p in kickers if self.rating(m, p) < line), key=lambda tp: self.rating(m, tp[1]))
+                specialists = [p for t in range(32) for p in self.roster(m, t) if m.uc.mem_read(p + 0x35, 1)[0] in (K, P) and p != him]
+                m.call(0x2BD900, ecx=m.call(0xC4C50, ecx=club), edx=him, args=(1, 1), budget=200_000_000)
+                self.assertIn(him, self.free(m))
+                m.put(0xE3C278, 8 * m.get(0xE3C278))
+                if empty:
+                    for t in (32, 33):
+                        m.uc.mem_write(m.call(0xC4C50, ecx=t) + 0x11C, bytes([0]))
+                price = lambda p: m.call(value, ecx=p, edx=0, args=(0, 1, 0), budget=200_000_000)
+                got[empty] = (self.index(m, him), price(him), [price(p) for p in specialists])
+            (who, with_pb, rostered_pb), (_, without, rostered) = got[False], got[True]
+            if not new:
+                self.assertLess(with_pb, without, who)
+                self.assertGreater(sum(a != b for a, b in zip(rostered_pb, rostered)), 0)
+                continue
+            self.assertEqual((with_pb, rostered_pb), (without, rostered), who)
+
     def test_short_of_room_the_cover_releases_by_the_smart_cut_and_keeps_a_hurt_starter(self):
         """Washington at this state, its kicker off the active list (as modern IR takes him), Daniels hurt at depth row 0
         (the wild card hurt him that week), 1,500 over the cap: the cover's releases are the smart cut's own picks in

@@ -16,7 +16,13 @@ extern float FAST n_rating(u8 *p, unsigned boosted);              /* 0x246D80 */
 extern void FAST n_recount(u8 *team);                              /* 0xC3F00 payroll and count */
 extern unsigned FAST n_human(u8 *team);                            /* 0x13EC30 */
 extern u8 *FAST n_team(unsigned index);                            /* 0xC4C50 */
-extern unsigned n_teams(void);                                     /* 0xC4BE0 */
+/* The league's clubs: 0xC6430 (32 in franchise mode; [0xE576AC] in modes 1 and 3, as 0xC4BE0). b81 #46 (coordinator 11/27,
+ * after 76001): every economy walk counts the 32 league clubs, never the Pro Bowl records. 0xC4BE0, the count it called
+ * before, reads 34 in stage 9 (records 32 and 33, team slots 49 and 50, are the AFC and NFC Pro Bowl rosters), where the
+ * K/P cover's gated signing priced through rank_twice / rank_club and counted the Pro Bowl K and P a second time. Every
+ * other stage reads 32 in both, so nothing changes there; #45's pace page (its own 0xC4BE0 walk, free-agency days only)
+ * keeps lists equal to rank_club's walk. Same call size: no symbol moves. */
+extern unsigned n_teams(void);                                     /* 0xC6430 (was 0xC4BE0) */
 extern unsigned n_roster_limit(void);                              /* 0x247AF0: 65 offseason, 54 season */
 extern unsigned FAST n_salary(u8 *p);                              /* 0xE6380 this season's base */
 extern unsigned FAST n_base(unsigned value, unsigned kind, unsigned bonus, unsigned index, unsigned len); /* 0xE6040 */
