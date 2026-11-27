@@ -11,8 +11,9 @@ overrides (modpack_sources.build_plan), so every beta 81 option whose preset val
   are the reviewed files (sha256 pins); each 128 MB document builds that plan, and each 64 MB document builds the
   v0.9 64 MB plan but for its correctness fixes (no new beta 81 feature at 64 MB in v0.10).
 - FinalBuild: a finished build's own readback (NFL2K5_B81_FINAL_BUILD: the disc image or its default.xbe) reads
-  "applied" for every beta 81 franchise owner its recipe turns on, never "retail"; with NFL2K5_B81_FINAL_RECEIPT, no
-  beta 81 step of the Studio receipt was left out. The readback is taken again here: a full build takes its receipt
+  "applied" for every beta 81 franchise owner its recipe turns on, never "retail"; with NFL2K5_B81_FINAL_RECEIPT, the
+  receipt's plan carries the release values, no step was left out and its left_out list is empty (the final clean
+  build runs with NFL2K5_BUILD_STRICT=1). The readback is taken again here: a full build takes its receipt
   readback before the late owner steps (team building, injured reserve), so the receipt's own copy can be stale.
 """
 from __future__ import annotations
@@ -219,6 +220,10 @@ class FinalBuild(unittest.TestCase):
                     if receipt["plan"].get("console_memory", 128) == 128 and receipt["plan"].get(key) != value]
         problems += [f"{step['step']} left out: {step.get('reason') or step.get('user_notes')}"
                      for step in receipt["steps"] if step.get("status") == "left_out"]
+        # the Seamen lane's rule (11/27): the final clean build runs with NFL2K5_BUILD_STRICT=1, so an optional step that
+        # fails stops it; its receipt's left_out list (build_steps: optional steps restored and left out) must be empty
+        problems += [f"receipt left_out: {row.get('step') if isinstance(row, dict) else row}"
+                     for row in receipt.get("left_out") or ()]
         self.assertEqual(problems, [])
 
 
