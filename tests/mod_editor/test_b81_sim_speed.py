@@ -501,6 +501,7 @@ class Image(unittest.TestCase):
                                end=0x324180),
                  m.uc.hook_add(U.UC_HOOK_CODE, lambda *_: seen["rank"].append(m.get(self.DAY)),
                                begin=code.SYMBOLS["pace_rank_twice"], end=code.SYMBOLS["pace_rank_twice"])]
+        m.uc.ctl_flush_tb()           # code translated by earlier tests carries no hook: translate it again
         try:
             self._day()
             m.call(0x3242C0, budget=3_000_000_000)
@@ -521,6 +522,7 @@ class Image(unittest.TestCase):
         seen = []
         h1 = m.uc.hook_add(U.UC_HOOK_CODE, lambda *_: seen.append("page"), begin=0x1535018, end=0x1535018)
         h2 = m.uc.hook_add(U.UC_HOOK_CODE, lambda *_: seen.append("walk"), begin=0x87DC0, end=0x87DC0)
+        m.uc.ctl_flush_tb()           # code translated by earlier tests carries no hook: translate it again
         rank_any = eco.SYMBOLS["economy_rank_any"]
         p = self.free[0]
         try:
