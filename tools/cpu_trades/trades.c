@@ -26,8 +26,8 @@
      (S3), in stage 8 still in the race (W + 1 >= L). Its needs: up to three pools in its bottom quarter (percentile
      below 64/256), lowest first (S1); in stage 7 also a pool with no present backup (a depth deal, S10).
    - Package for a need: the best man over every seller: fully healthy, no status bits, 2+ years pro, 1+ contract
-     years; in stage 7 not in the first year of his contract (from year index 1; N2: in stage 8 the ledger's signing
-     rows say "just signed"); not star-tagged (+0x53 bit 0, MyCareer's man too); not on the board; not in a signing or
+     years; in stage 7 not in the first year of a contract of 2+ years (from year index 1; b81 #46b: a one-year deal is
+     not "just signed" for its whole term; N2: in stage 8 the ledger's signing rows say "just signed"); not star-tagged (+0x53 bit 0, MyCareer's man too); not on the board; not in a signing or
      trade row of the ledger; not his club's best player, not its best man at a premium pool, not at or above q90, not
      a development asset (S2, S4); not one of the seller's seated starters (header TN_SEATS) unless the seller is losing
      (bit 4) and he has 8+ years pro (R3, S2); the seller keeps its seats filled and its cut minimum; rated at least
@@ -142,7 +142,7 @@ struct counters {
     u32 no_need;                 /* buyers with no pool in their bottom quarter (or thin, stage 7) */
     u32 no_package;              /* needs tried, no seller offers a man who fits */
     u32 rej_health;              /* candidate men refused: not fully healthy, rookie, no contract years */
-    u32 rej_contract;            /* first contract year (stage 7, from year index 1) */
+    u32 rej_contract;            /* first year of a 2+ year deal (stage 7, from year index 1; b81 #46b) */
     u32 rej_protected;           /* star tag, club's best, best at a premium pool, q90, development asset */
     u32 rej_starter;             /* a seated starter of the seller (and not a rebuild sale) */
     u32 rej_depth;               /* the seller would lose a seat or its cut minimum */
@@ -409,7 +409,10 @@ static u32 offer_of(struct club *s, u32 stage, u32 pool, u32 floor, u32 above, i
             ct_counters.rej_health++;
             continue;
         }
-        if (stage == 7 && D(YEAR) && left == (B(p + 0x27) & 15u)) {
+        /* b81 #46b: "just signed" is the first year of a deal of 2+ years. A one-year deal reads "first contract year"
+           for its whole life, and economy revision 10 gives 61% of veterans one-year deals, so the old test froze most of
+           the preseason supply (G-T2 9.11 against 14-28). A man the ledger shows signed or traded is still never offered. */
+        if (stage == 7 && D(YEAR) && left == (B(p + 0x27) & 15u) && left > 1) {
             ct_counters.rej_contract++;
             continue;
         }

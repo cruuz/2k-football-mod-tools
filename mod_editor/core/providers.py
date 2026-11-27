@@ -1017,7 +1017,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_qb_trades_code.py": "6060bc35957410b91ec5e2242e87836b15591e1430996cd2dcb598ea18b5996a",  # b81 qb34 4b: its generated page template
         "mod_editor/core/nfl2k5_qb_trades_code_b81_383.py": "36d9ac7d5e7e7368f3d9b650f0bde1065960cb0f61e21aa2c94d57c68ac2b492",  # b81 4b revision (M1/N6): frozen 383 trades template ("previous")
         "mod_editor/core/nfl2k5_cpu_trades.py": "3a7e29d2c495ad3d9bcbdd863afe6b9bcc3cedbe73e72029bd35773e6f0dd5a2",  # b81 trades-all (R6): mod_build loads it by name, right after the room
-        "mod_editor/core/nfl2k5_cpu_trades_code.py": "6a8bc8afe16a0ccad96782338f38ad290bb650f5c744949f03a7b601b9f81a85",  # b81 trades-all: its generated page template
+        "mod_editor/core/nfl2k5_cpu_trades_code.py": "c4e1fc41244e493d437fe0556f0447f259997981f89225d6d41efda2f1835525",  # b81 trades-all: its generated page template
         "mod_editor/core/nfl2k5_helmet_side_numbers.py": "c10876d8ef2c26740f3559706d8678de673730a7e260285ddc35eaafec9e6069",  # b81 helmet-sides: mod_build loads it by name (route 5 = set E)
         "mod_editor/core/nfl2k5_sportscenter_news.py": "4255429d47b2dadae1cdd56b7254d988d7837ae9a8476fedaf8fb4bba28197eb",  # b81 sportscenter: mod_build loads it by name (MyCareer's guard reads it)
         "mod_editor/core/nfl2k5_sportscenter_lines.py": "008059901a2e3e4153882678fe073da80731bd5c7dab07aefd7d0cb443a1a9df",  # b81 sportscenter: mod_build loads it by name (director lines)
