@@ -245,8 +245,10 @@ MONEY_WINDOW = 0x31E580
 # 0x137680 -> 0x1373C0 -> 0x136B10 tests no position), and the CPU fill never asked for a replacement (the native need
 # 0x2BD880 counts injured players). In season the weekly upkeep (roster_a) now calls economy_cover (roster_h, after its
 # read-only byte): a CPU club with no healthy K (or P) signs one, a club at 53 first making room with the smart cut.
-# b81 #46 (revision 10): economy_cover moved to window kp_cover (0x2DCC10) and makes room by value lost when the gate
-# refuses for room, also runs in stage 9 and releases a spare K or P; roster_h's tail holds the stage-9 entry.
+# b81 #46 (revision 10): economy_cover moved to window kp_cover (0x2DCC10); a full club releases exactly one man (kp_pick:
+# the lowest healthy rating among non-starters at a position above its keep target; never a QB, K or P), then the K or P
+# signs past the cap gate at his league minimum (kp_min, kp_deal); it also runs in stage 9 after the week's games and
+# releases a spare K or P; roster_h's tail holds the stage-9 call.
 ROSTER_A_WINDOW = 0x396F50
 ROSTER_H_WINDOW = 0x3A5F20
 REVISION_6_WINDOWS = frozenset({ROSTER_M_WINDOW, MONEY_WINDOW, ROSTER_A_WINDOW, ROSTER_H_WINDOW})
@@ -357,10 +359,11 @@ OFFER_JITTER_PATCHED = bytes.fromhex("31f690909090")   # xor esi, esi (jitter 0;
 RESIGN_STAGE = 0x248426             # call 0x323720 (the re-signing stage) in the stage action 0x2480B0
 ROLLOVER_RECONCILE = 0x247BC6       # the rollover's call of the reconcile (revision 1 on)
 # b81 #46 (the combined judge's RR1, 11/27): the weekly advance's stage-9 path (0x247E6E) jumps past its weekly CPU pass
-# (0x248010 -> economy_week), so the in-season K/P cover never ran in the playoffs. Stage 9's entry of the advance's jump
-# table (0x248088 + 8 * 4) now names economy_stage9, which covers every computer club and goes on to 0x247E6E. The cover
-# itself moved out of roster_h's tail into three more unreferenced retail functions (kp_sign, kp_cover, kp_spare below).
-STAGE9_CASE = 0x2480A8
+# (0x248010 -> economy_week), so the in-season K/P cover never ran in the playoffs. Stage 9's sim call (0x247E77: call
+# 0xC7CB0, the week's games) now calls economy_stage9, which sims the week, then covers every computer club of the 32 and
+# returns to 0x247E7C: stage 8's order (review F1; the first version covered before the games from the jump-table entry
+# 0x2480A8, which is retail again). The cover itself is in unreferenced retail functions (kp_* windows below).
+STAGE9_SIM = 0x247E77
 R10_WINDOW_PINS = {                 # retail sha256 of each window the revision takes
     0x322690: "6c05c4b9b81c9daa33f857035a8a548b1124bd3d94c4b73a35adf01ab65476b5",   # years: the years-wanted routine
     0x5DE10: "a416917f31c92569edf3815ddf7ca6b45072b946cb4fc26c6350573d715c6b77",
@@ -412,13 +415,16 @@ R10_WINDOW_PINS = {                 # retail sha256 of each window the revision 
     0x28C2F0: "14a0da4fcd58c1191ae3d9d6bad14469b2968e942e865dfa8f92051d3e76b4a8",   # b81 #46 kp_sign: make room, sign a K or P
     0x2DCC10: "2652df3f03643ef9692d17b3900a68c430f71c54dc22dfc0f51c229f73f52e25",   # b81 #46 kp_cover: economy_cover
     0x2F7D00: "15663e4f66d6ed8c00ac5ab0bda92977a0168a3fe80a7131ed904a26b7629b30",   # b81 #46 kp_spare + kp_free_agent
+    0x256120: "c419dd535afc52556e039486fe8550086d9336f55fbbad17665311120e0e7902",   # b81 #46 review: kp_pick (one release)
+    0x28DC10: "82fe6e8994f32d3141bc93b0123e8e900d895958e0c10a5efe6ae75c1ebb3d57",   # b81 #46 review: kp_min (past the cap gate)
+    0x357960: "20f03f798baf9489d32685f6bc3115606680117bdb9729e6745a760bfa50b228",   # b81 #46 review: kp_deal + kp_keep
 }
 PINS.update(R10_WINDOW_PINS)
 PINS[OFFER_JITTER] = "fa53102234cdfb47e76212cf24faf309c148be7f525d793ad1ee97a9052f9e49"
 PINS[RESIGN_STAGE] = "618dd3590e6d39655c05657a34d3e9158ff05eda2240f73b70f81e07de18746f"
-PINS[STAGE9_CASE] = "cbecd96dd05388e8f039c58e80d00086474944946b5d6261fa0e8e5bba5b92fa"   # retail 0x247E6E
+PINS[STAGE9_SIM] = "3dfb6639d0bf2de7a301976dbae6099d310291e8b716ebbbaac35b30f97e6681"   # retail call 0xC7CB0
 R10_WINDOWS = frozenset(R10_WINDOW_PINS)
-REVISION_10_NEW = R10_WINDOWS | frozenset({OFFER_JITTER, RESIGN_STAGE, STAGE9_CASE})
+REVISION_10_NEW = R10_WINDOWS | frozenset({OFFER_JITTER, RESIGN_STAGE, STAGE9_SIM})
 PREVIOUS_REVISION_9 = {             # the sites revision 10 rewrites, as revisions 8 and 9 installed them (sha256)
     0x264AC0: "419c4e81aba466572026513a360f881beea64cc5e80d2644a10d9583dc76c8a6",   # roster_o
     0x2BD440: "9b65660baaaaeaa82a1c1c3163c4f67759ce3251e1465a26540282fff305a0ac",   # value
@@ -526,7 +532,7 @@ def sites(revision: int = REVISION) -> tuple[Site, ...]:
     if revision >= 10:
         replacements[OFFER_JITTER] = OFFER_JITTER_PATCHED
         replacements[RESIGN_STAGE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_resign_stage"] - RESIGN_STAGE - 5)
-        replacements[STAGE9_CASE] = struct.pack("<I", SYMBOLS["economy_stage9"])     # b81 #46
+        replacements[STAGE9_SIM] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_stage9"] - STAGE9_SIM - 5)   # b81 #46
     if revision >= 8:
         replacements[SQUAD_GATE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_gate"] - SQUAD_GATE - 5)
         replacements[SQUAD_EXPIRE] = b"\xe8" + struct.pack("<i", SYMBOLS["economy_squad_expire"] - SQUAD_EXPIRE - 5)

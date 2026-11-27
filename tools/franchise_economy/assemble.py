@@ -68,7 +68,11 @@ R10_WINDOWS = {"r10_5de10": (0x5de10, 84),
                # b81 #46 (the combined judge's RR1): the K/P cover in three more unreferenced retail functions
                "kp_sign": (0x28c2f0, 88),
                "kp_cover": (0x2dcc10, 88),
-               "kp_spare": (0x2f7d00, 85)}
+               "kp_spare": (0x2f7d00, 85),
+               # b81 #46 review (F3-F5, coordinator 11/27): the cover's one release and its minimum signing
+               "kp_pick": (0x256120, 93),
+               "kp_min": (0x28dc10, 91),
+               "kp_deal": (0x357960, 91)}
 # the input sections each window takes (value: economy_value's own bytes, placed before economy_floor's pin below)
 R10_SECTIONS = {'r10_5de10': ['r10_casualty'],
                 'r10_87dc0': ['r10_rank'],
@@ -113,14 +117,15 @@ R10_SECTIONS = {'r10_5de10': ['r10_casualty'],
                 'r10_faa20': ['r10_camp_ahead'],
                 'r10_25cc20': ['r10_camp_keep'],
                 'r10_28d4a0': ['r10_camp_one'],
-                'r10_329c50': ['r10_hash'],
+                'r10_329c50': ['r10_hash', 'r10_clubs'],   # b81 #46: n_teams (the league's clubs) after r10_hash
                 'r10_31b000': ['r10_hole_room'],
                 'r10_36f380': ['r10_camp_cut'],
                 'r10_250b70': ['r10_camp_ok', 'r10_camp_fits'],
                 'r10_1646e0': ['r10_camp_cover'],
                 'r10_1d12c0': ['r10_camp_pos'],
                 'roster_v': ['r10_holefirst'],
-                'kp_spare': ['kp_fa']}
+                'kp_spare': ['kp_fa'],
+                'kp_deal': ['kp_keep']}
 WINDOWS = {"value": (0x2BD440, 1082), "contracts": (0x3228A0, 215),
            "rookie": (0x322980, 280), "picks": (0x2BAB20, 403),
            "money": (0x31E580, 198), "reconcile": (0x2BFBE0, 370),
@@ -147,7 +152,7 @@ WINDOWS = {"value": (0x2BD440, 1082), "contracts": (0x3228A0, 215),
            "years": (0x322690, 133), **{name: window for name, window in R10_WINDOWS.items()}}
 # b778 fa2: retail routines the C code calls directly (rel32 instead of mov/call reg).
 NATIVE = {"n_rating": 0x246D80, "n_recount": 0xC3F00, "n_human": 0x13EC30, "n_team": 0xC4C50,
-          "n_teams": 0xC6430, "n_roster_limit": 0x247AF0, "n_salary": 0xE6380, "n_base": 0xE6040,
+          "n_roster_limit": 0x247AF0, "n_salary": 0xE6380, "n_base": 0xE6040,
           "n_prorated": 0xE6020, "n_frand": 0x48B90, "n_rand": 0x48B50, "n_trunc": 0x322260,
           "n_release": 0x2BD900, "n_cpu_sign": 0x322BB0, "n_cut_to": 0x2BF9A0, "n_need_low": 0x2BD880, "n_prune": 0x2BB9A0,
           "n_need_want": 0x2BD8C0, "n_at_position": 0xC3CB0, "n_minimum_at": 0x2BD410,

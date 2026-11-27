@@ -16,13 +16,14 @@ extern float FAST n_rating(u8 *p, unsigned boosted);              /* 0x246D80 */
 extern void FAST n_recount(u8 *team);                              /* 0xC3F00 payroll and count */
 extern unsigned FAST n_human(u8 *team);                            /* 0x13EC30 */
 extern u8 *FAST n_team(unsigned index);                            /* 0xC4C50 */
-/* The league's clubs: 0xC6430 (32 in franchise mode; [0xE576AC] in modes 1 and 3, as 0xC4BE0). b81 #46 (coordinator 11/27,
- * after 76001): every economy walk counts the 32 league clubs, never the Pro Bowl records. 0xC4BE0, the count it called
- * before, reads 34 in stage 9 (records 32 and 33, team slots 49 and 50, are the AFC and NFC Pro Bowl rosters), where the
- * K/P cover's gated signing priced through rank_twice / rank_club and counted the Pro Bowl K and P a second time. Every
- * other stage reads 32 in both, so nothing changes there; #45's pace page (its own 0xC4BE0 walk, free-agency days only)
- * keeps lists equal to rank_club's walk. Same call size: no symbol moves. */
-extern unsigned n_teams(void);                                     /* 0xC6430 (was 0xC4BE0) */
+/* The league's clubs (n_teams, defined in r10_clubs below): 32 in franchise mode ([0xE576A0] == 2), the native count
+ * 0xC4BE0 in every other mode. b81 #46 (coordinator 11/27, after 76001): every economy walk counts the 32 league clubs,
+ * never the Pro Bowl records. 0xC4BE0, the count it called before, reads [0xE576AC], the registered-team count: 34 in
+ * stage 9 (records 32 and 33, team slots 49 and 50, are the AFC and NFC Pro Bowl rosters), where the K/P cover's
+ * signing priced through rank_twice / rank_club and counted the Pro Bowl K and P a second time; 32 in every other
+ * franchise stage, so nothing changes there. Outside franchise mode the count is the native one, as before (review D2:
+ * 0xC6430 would have changed mode 0's exhibition pricing). Same call size: no symbol moves. */
+unsigned n_teams(void);                                            /* below (r10_clubs); was the native 0xC4BE0 */
 extern unsigned n_roster_limit(void);                              /* 0x247AF0: 65 offseason, 54 season */
 extern unsigned FAST n_salary(u8 *p);                              /* 0xE6380 this season's base */
 extern unsigned FAST n_base(unsigned value, unsigned kind, unsigned bonus, unsigned index, unsigned len); /* 0xE6040 */
@@ -820,10 +821,12 @@ SECTION(".roster_l") void FAST economy_smart_cut(u8 *team, unsigned target) {
     for (k = 0; k < 51; ++k) (&rows[0][0])[k] = (&cut_rows[0][0])[k];
     if (!league_has_olb())          /* the one-pool scheme: OLB slots count as LB */
         for (k = 0; k < 3; ++k) { rows[k][11] += rows[k][10]; rows[k][10] = 0; }
-    while (team[0x11c] > target) {
+    while ((k = team[0x11c]) > target) {
+        unsigned n = k;
         for (k = 0; k < 3 && !(best = cut_pick(team, rows[k], 0)); ++k) {}
         if (k == 3 && !(best = cut_pick(team, rows[2], 1))) return;
         economy_release(team, best);
+        if (team[0x11c] >= n) return;               /* b81 #46 review D3: a release that removed nobody ends the cut */
     }
 }
 
@@ -1366,6 +1369,11 @@ SECTION(".r10_resign") void FAST economy_resign_stage(void *menu) {
     n_prune();                                  /* the expiring men it released have no contract years now */
 }
 
+/* b81 #46: the league's clubs for every economy walk (see n_teams' declaration). */
+SECTION(".r10_clubs") __attribute__((noinline)) unsigned n_teams(void) {
+    return *(u32 *)0xE576A0 == 2 ? 32u : ((unsigned (*)(void))0xC4BE0)();
+}
+
 /* The best-rated healthy man at `pos` in a list of player pointers (a club's active list or the free-agent list). */
 SECTION(".r10_best") u8 *best_at(u8 **list, unsigned n, unsigned pos) {
     u8 *best = 0;
@@ -1628,29 +1636,34 @@ SECTION(".r10_prove") u8 *economy_prove_club(u8 *p, unsigned ask) {
  * - before week 1 (Panel B): the cover ran from stage 8 only, so a club that lost its punter in the preseason opened the
  *   season without one (76005 2034 CLE at the opening check).
  * Now, for K then P, each upkeep from the preseason on (stage 7: its weekly passes and the action after its gate cut, so a
- * club opens week 1 with both; stage 8) and each playoff advance (stage 9):
+ * club opens week 1 with both; stage 8) and each playoff advance after its games (stage 9):
  * - a club with a healthy man keeps its best-rated healthy one and releases every other healthy one (a hurt one stays
  *   until he is healthy, then the better of the two stays);
- * - a club with none, when the pool holds a healthy one: at exactly 53 the smart cut to 52 (a preseason camp above 53
- *   signs into its camp room, the gate allows a K or P up to 64), the gated signing (as before); refused while the club is
- *   short of room for two minimum salaries (economy_vet_short), one more man goes by the smart cut's rule (#46c:
- *   economy_smart_cut to one fewer: the lowest healthy rating, 0x246D80(p, 0), at a position above its keep target, then
- *   above its minimum; never a hurt depth-row-0 starter; a club's only K or P stays), then the gated signing again, at
- *   most six such releases; nothing when the club already has that room (the asks are above it) or nobody can go. The
- *   signing stays inside the cap: the QB floor's over-the-cap rung was retired for the churn it caused (rev-qb34
- *   REVIEW_FLOOR F1). The first version made this room with economy_vet_pick (the least price lost among men whose charge
- *   clears the shortfall), which has no health rule: a hurt starter whose charge cleared it could be the one released
- *   (coordinator 11/27: "the cover's value-lost release pick must use the same rule as your #46c cut").
- * In stage 9 the weekly advance's jump-table entry (0x2480A8) comes to economy_stage9, which covers every computer club of
- * the 32 and goes on to the stage's own code at 0x247E6E (EBP = the menu there, as at 0x248010). Only the 32: in stage 9
- * n_teams() (0xE576AC) reads 34, and records 32 and 33 (team slots 49 and 50) are the two Pro Bowl rosters, 40 of the
+ * - a club with none, when the pool holds a healthy one (the #46 review's F3-F5 and the coordinator's ruling, 11/27: "a
+ *   club must always field a K and a P, and the cover must not gut a roster"):
+ *   - a full roster (53 in the season and the playoffs, or 54 and up there; exactly 53 in the preseason, after its gate
+ *     cut; 64 and up in a camp) releases exactly one man: kp_pick, the lowest healthy rating, 0x246D80(p, 0), among
+ *     non-starters (depth row 1 or below, so never a hurt depth-0 starter) at a position above its keep target (cut_rows
+ *     row 1; OLB + ILB against 3 + 2 in the one-pool scheme). Never a K or a P (their keep target is 30), and a QB only
+ *     beside another healthy QB. Nobody: no signing (the append would refuse);
+ *   - then kp_min signs one past the cap gate at his league minimum: the gate's room rule reads the cap, so the cap word
+ *     is lifted for that one call, and the man it appends gets a one-year deal at economy_floor(his years) (the CBA
+ *     minimum). Over the cap by one minimum salary is the lesser evil beside a game without a kicker; the weekly cap pass
+ *     (economy_clear_cap, after the cover in the upkeep) keeps its own rules. No cap-driven cut cascade: the first
+ *     versions made room for the gate's ask with up to six more releases (by value lost, then by the smart cut), which
+ *     could take a club under 50 in the playoffs or burn six depth players without a signing.
+ *   The weekly cut and the cap pass keep their own rules (#46c).
+ * In stage 9 the advance sims the week at 0x247E77 (call 0xC7CB0); that call now comes to economy_stage9, which sims it,
+ * then covers every computer club of the 32 and returns to 0x247E7C, so stage 9 has stage 8's order (sim, then the
+ * cover) and a club that loses its K or P in a simulated playoff game has one before the user's next game (review F1;
+ * the first version covered before the sim, from the jump-table entry 0x2480A8, now retail again). Only the 32: in
+ * stage 9 0xC4BE0 reads 34, and records 32 and 33 (team slots 49 and 50) are the two Pro Bowl rosters, 40 of the
  * league's players each, the same player records as their clubs' lists. A release from one takes the man off that
  * roster only, adds him to the free-agent list and ends his contract while his club still lists him. The first stage-9
- * cover walked n_teams() (76001 2026, kp-cover panel: a Pro Bowl roster with no healthy K or P, the signing refused,
+ * cover walked 0xC4BE0 (76001 2026, kp-cover panel: a Pro Bowl roster with no healthy K or P, the signing refused,
  * six releases by value lost; Daniels, Stafford, Egbuka and four more stayed on their clubs' lists and in free agency
  * with no contract (validator I2 and I6 from the week-20 check), and in the 2027 re-signing stage a club's signing
- * listed one of them a second time, so the payroll walk 0xC3F00/0xC3E80 never ended). Stage 8 reads 32 to its last
- * week, and the weekly passes and the after-stage pass do not run in stage 9, so no other economy walk meets them. */
+ * listed one of them a second time, so the payroll walk 0xC3F00/0xC3E80 never ended). */
 #define KP __attribute__((noinline, optimize("omit-frame-pointer")))
 SECTION(".kp_spare") KP void FAST kp_spare(u8 *team, u8 *mine) {
     for (unsigned i = team[0x11c]; i-- > 0;) {
@@ -1659,12 +1672,49 @@ SECTION(".kp_spare") KP void FAST kp_spare(u8 *team, u8 *mine) {
     }
 }
 
-/* No healthy man at `pos`: at 53 the smart cut to 52, then the gated signing; refused while short of room, the smart cut
- * releases one more man (#46c's rule) and the signing goes again (at most six releases). */
+/* The cover's one make-room release (above): the lowest healthy rating among men at depth row kp_keep[position] or below,
+ * i.e. non-starters at a position holding more than its keep target (cut_rows row 1; LB 5 for the product's one-pool
+ * scheme, OLB 3 + ILB 2). Never a QB (the QB room manages quarterbacks), a K or a P (30: no row reaches it). 0: nobody. */
+SECTION(".kp_keep") __attribute__((aligned(1), used)) const u8 kp_keep[17] = {30, 30, 30, 6, 6, 2, 2, 3, 1, 3, 3, 5, 2, 3, 4, 4, 4};
+/* Naked to fit its window (gcc's -Os body is 116 bytes): EDI = the club, EBX = the slot (last to first), EBP = the best
+ * so far, [ESP] = its rating's bits (positive floats order as unsigned integers; ties go to the earlier slot). */
+SECTION(".kp_pick") __attribute__((naked)) u8 *FAST kp_pick(u8 *team) {
+    (void)team;
+    __asm__("push %ebx\npush %esi\npush %edi\npush %ebp\npush $-1\n"
+            "mov %ecx, %edi\nxor %ebp, %ebp\nmovzbl 0x11c(%edi), %ebx\n"
+            "1: dec %ebx\njs 3f\n"
+            "mov (%edi,%ebx,4), %esi\nmovzbl 0x35(%esi), %eax\ncmp $17, %al\njae 1b\n"
+            "movzwl 0x28(%esi), %ecx\nshr $10, %ecx\nand $7, %ecx\ncmp kp_keep(%eax), %cl\njb 1b\n"
+            "mov %esi, %ecx\nxor %edx, %edx\ncall 0x246d80\npush %eax\nfstps (%esp)\npop %eax\n"
+            "cmp (%esp), %eax\nja 1b\nmov %eax, (%esp)\nmov %esi, %ebp\njmp 1b\n"
+            "3: pop %eax\nmov %ebp, %eax\npop %ebp\npop %edi\npop %esi\npop %ebx\nret\n");
+}
+
+/* The man the signing appended: a one-year deal at his league minimum (floor_of: the CBA minimum for his years). */
+SECTION(".kp_deal") KP void FAST kp_deal(u8 *q) {
+    *(u16 *)(q + 10) = (u16)((floor_of(q[0x25] & 31) + 9) / 10);
+    *(u32 *)(q + 0x24) = (*(u32 *)(q + 0x24) & 0xF000FFF0u) | 0x01020001u;   /* 1 year left, 1-year length, balanced */
+}
+
+/* Sign the best free agent at `pos` past the cap gate (the cap word lifted for the one call), then kp_deal. */
+SECTION(".kp_min") KP void FAST kp_min(u8 *team, unsigned pos, void *menu) {
+    unsigned n = team[0x11c];
+    CAP += 0x100000u;
+    n_cpu_sign(team, pos, 0xFFFF, menu);
+    CAP -= 0x100000u;
+    if (team[0x11c] > n) kp_deal(((u8 **)team)[n]);
+    n_recount(team);
+}
+
+/* No healthy man at `pos`: a full roster releases exactly one man (kp_pick; nobody: no signing), then kp_min. */
 SECTION(".kp_sign") KP void FAST kp_sign(u8 *team, unsigned pos, void *menu) {
-    if (team[0x11c] == 53) n_cut_to(team, 52);       /* a preseason camp above 53 signs into its camp room */
-    for (unsigned k = 0; k < 6 && !n_cpu_sign(team, pos, 0xFFFF, menu) && economy_vet_short(team) > 0; ++k)
-        n_cut_to(team, team[0x11c] - 1u);
+    unsigned n = team[0x11c];
+    u8 *q;
+    if (n == 53 || n >= 64 || (n > 53 && STAGE >= 8)) {
+        if (!(q = kp_pick(team))) return;
+        economy_release(team, q);
+    }
+    kp_min(team, pos, menu);
 }
 
 /* The best-rated healthy free agent at `pos`, or 0. */
@@ -1689,6 +1739,8 @@ SECTION(".roster_h_tail") KP void FAST economy_cover_all(void *menu) {
     }
 }
 
+/* Stage 9's sim call (0x247E77, ECX = the week, EDX = EBP = the menu): the week's games, then the cover; returns to
+ * 0x247E7C, which reloads EAX itself. */
 SECTION(".roster_h_tail") __attribute__((naked)) void economy_stage9(void) {
-    __asm__("mov %ebp, %ecx\ncall economy_cover_all\njmp 0x247e6e\n");
+    __asm__("call 0xc7cb0\nmov %ebp, %ecx\njmp economy_cover_all\n");
 }

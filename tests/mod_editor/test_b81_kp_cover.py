@@ -35,29 +35,35 @@ K, P = 1, 2
 STAGE = 0xE576A4
 TABLE = 0x248088                      # the weekly advance's jump table (stages 1..9)
 STAGE9_PATH = 0x247E6E                # retail stage 9 entry of that table
-KP_WINDOWS = (0x28C2F0, 0x2DCC10, 0x2F7D00)
+STAGE9_SIM, SIM, AFTER_SIM = 0x247E77, 0xC7CB0, 0x247E7C   # stage 9's call of the week's games, and its return
+KP_WINDOWS = (0x28C2F0, 0x2DCC10, 0x2F7D00, 0x256120, 0x28DC10, 0x357960)
+KP_KEEP = (30, 30, 30, 6, 6, 2, 2, 3, 1, 3, 3, 5, 2, 3, 4, 4, 4)   # kp_pick: a man at depth row >= this may go
 CUT_MIN = (2, 1, 1, 5, 5, 2, 2, 3, 0, 3, 3, 2, 2, 3, 3, 3, 4)   # the smart cut's minimums (cut_rows row 2)
 
 
 class Sites(unittest.TestCase):
-    def test_stage_nine_enters_the_cover_then_its_own_path(self):
+    def test_stage_nine_sims_the_week_then_covers(self):
+        """Review F1: stage 9's sim call (0x247E77) comes to economy_stage9 (call 0xC7CB0; mov ecx, ebp; jmp
+        economy_cover_all), so the cover runs after the week's games as in stage 8; the jump table stays retail."""
         retail = retail_bytes()
         before = struct.unpack("<9I", XbeImage(retail).read(TABLE, 36))
         self.assertEqual(before[8], STAGE9_PATH)
         applied = XbeImage(economy.apply(retail)[0])
         after = struct.unpack("<9I", applied.read(TABLE, 36))
-        stub = economy.SYMBOLS["economy_stage9"]
-        self.assertEqual(after[8], stub)
+        self.assertEqual(after[8], STAGE9_PATH)
         self.assertEqual(after[5], economy.SYMBOLS["economy_stage6"])
         self.assertEqual(after[:5] + after[6:8], before[:5] + before[6:8])
-        code = applied.read(stub, 12)                 # mov ecx, ebp; call economy_cover_all; jmp 0x247E6E
-        self.assertEqual(code[:2], bytes.fromhex("89e9"))
-        self.assertEqual((code[2], code[7]), (0xE8, 0xE9))
-        self.assertEqual(stub + 7 + struct.unpack_from("<i", code, 3)[0], economy.SYMBOLS["economy_cover_all"])
-        self.assertEqual(stub + 12 + struct.unpack_from("<i", code, 8)[0], STAGE9_PATH)
-        site = next(s for s in economy.sites() if s.va == economy.STAGE9_CASE)
-        self.assertEqual(hashlib.sha256(struct.pack("<I", STAGE9_PATH)).hexdigest(), site.digest)
-        self.assertIn(economy.STAGE9_CASE, economy.REVISION_10_NEW)
+        stub = economy.SYMBOLS["economy_stage9"]
+        call = applied.read(STAGE9_SIM, 5)
+        self.assertEqual((call[0], STAGE9_SIM + 5 + struct.unpack_from("<i", call, 1)[0]), (0xE8, stub))
+        code = applied.read(stub, 12)                 # call 0xC7CB0; mov ecx, ebp; jmp economy_cover_all
+        self.assertEqual((code[0], code[5:7], code[7]), (0xE8, bytes.fromhex("89e9"), 0xEB))
+        self.assertEqual(stub + 5 + struct.unpack_from("<i", code, 1)[0], SIM)
+        self.assertEqual(stub + 9 + struct.unpack("<b", code[8:9])[0], economy.SYMBOLS["economy_cover_all"])
+        site = next(s for s in economy.sites() if s.va == economy.STAGE9_SIM)
+        self.assertEqual(hashlib.sha256(XbeImage(retail).read(STAGE9_SIM, 5)).hexdigest(), site.digest)
+        self.assertIn(economy.STAGE9_SIM, economy.REVISION_10_NEW)
+        self.assertFalse(any(s.va == 0x2480A8 for s in economy.sites()))
 
     def test_the_cover_windows_are_unreferenced_retail_functions(self):
         from tools.franchise_economy import dead_code
@@ -192,24 +198,40 @@ class CoverMachine:
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
 class Cover(CoverMachine, unittest.TestCase):
-    def test_short_of_room_the_smart_cut_makes_the_room_and_a_kicker_signs(self):
-        """The room comes from the smart cut's rule (#46c): the man it would release from the same club."""
+    @staticmethod
+    def minimum_value(m, p):
+        """floor_of(his years) (the CBA minimum, runtime.c) as the deal's value / 10, rounded up."""
+        from tools.franchise_economy import assemble
+        minimums = assemble.inputs()[2]
+        pro, season = m.uc.mem_read(p + 0x25, 1)[0] & 31, m.get(0xE576B8)
+        return ((minimums[min(pro, 7)] + min(season, 4) * 45 + 3) // 4 + 9) // 10
+
+    def minimum_deal(self, m, p):
+        """A one-year deal at his league minimum: 1 year left, length 1, balanced, value / 10 = ceil(floor_of / 10)."""
+        raw = bytes(m.uc.mem_read(p, 0x54))
+        self.assertEqual((struct.unpack_from("<H", raw, 10)[0], raw[0x24] & 15, raw[0x27] & 15, raw[0x26]),
+                         (self.minimum_value(m, p), 1, 1, 2))
+
+    def test_short_of_room_the_kicker_signs_past_the_cap_gate_at_his_minimum(self):
+        """Review F3/F4 (coordinator 11/27): no cap-driven releases; the K signs past the gate at his league minimum, so
+        the club ends over the cap by at most that minimum."""
         m, team = self.league(room=100)
         got = self.cover(m, team)
-        self.assertEqual((len(got["healthy_k"]), got["signed_pos"]), (1, [K]))
-        self.assertTrue(got["released"], "a release made the room")
-        self.assertTrue(all(pos not in (K, P) for pos in got["released_pos"]), got["released_pos"])
-        self.assertGreaterEqual(got["room"], 0, "the signing stays inside the cap")
-        twin, twin_team = self.league(room=100)
-        before = self.members(twin, twin_team)
-        twin.call(0x2BF9A0, ecx=twin_team, edx=self.count(twin, twin_team) - 1, budget=400_000_000)
-        self.assertEqual(got["released"][:1], [p for p in before if p not in self.members(twin, twin_team)])
+        self.assertEqual((len(got["healthy_k"]), got["signed_pos"], got["released"]), (1, [K], []))
+        self.minimum_deal(m, got["signed"][0])
+        self.assertGreater(got["room"], -600)
+
+    def test_far_over_the_cap_the_kicker_still_signs_and_nobody_goes(self):
+        m, team = self.league(room=-4000)
+        got = self.cover(m, team)
+        self.assertEqual((len(got["healthy_k"]), got["released"]), (1, []))
+        self.minimum_deal(m, got["signed"][0])
 
     def test_a_hurt_starter_is_never_the_release_that_makes_room(self):
-        """Coordinator 11/27: the room-making release follows the #46c cut (healthy rating, never a hurt depth-row-0 man,
-        the lowest at a position with surplus). The first version took the least price lost among men whose charge clears
-        the shortfall, whatever their health: here only the hurt starter's charge clears it, and it released him."""
-        m, team = self.league(room=100)
+        """Coordinator 11/27: never a hurt depth-row-0 man. The first version took the least price lost among men whose
+        charge clears the shortfall, whatever their health: here only the hurt starter's charge clears it, and it released
+        him. Now a full club releases exactly one non-starter (kp_pick) and the K signs over the cap."""
+        m, team = self.league(size=54, room=100)
         pos = next(q for q in (3, 4, 13, 15, 16) if len(self.at(m, team, q)) > CUT_MIN[q])   # a position with surplus
         star = max(self.at(m, team, pos), key=lambda p: self.rating(m, p))
         m.put(star + 0x20, (m.get(star + 0x20) & 0x003FFFFF) | 0x80000000 | (2 << 22))
@@ -219,22 +241,44 @@ class Cover(CoverMachine, unittest.TestCase):
         m.put(0xE3C278, m.get(team + 0x124) - 4000)            # 4,000 over the cap
         got = self.cover(m, team)
         self.assertIn(star, self.members(m, team))
-        self.assertTrue(got["released"])
-        self.assertLessEqual(len(got["released"]), 6)
-        for p in got["released"]:
-            row = (struct.unpack("<H", bytes(m.uc.mem_read(p + 0x28, 2)))[0] >> 10) & 7
-            self.assertFalse(self.hurt(m, p) and row == 0, hex(p))
+        self.assertEqual((len(got["released"]), got["signed_pos"], got["count"]), (1, [K], 53))
+        row = (struct.unpack("<H", bytes(m.uc.mem_read(got["released"][0] + 0x28, 2)))[0] >> 10) & 7
+        self.assertGreater(row, 0)
 
     def test_with_room_it_signs_and_releases_nobody(self):
         m, team = self.league(room=40000)
         got = self.cover(m, team)
         self.assertEqual((len(got["healthy_k"]), got["signed_pos"], got["released"]), (1, [K], []))
 
-    def test_at_53_the_smart_cut_still_makes_the_place(self):
+    def expected_pick(self, m, team):
+        """kp_pick's rule in Python: the lowest healthy rating (ties: the earlier slot) among men at depth row >= KP_KEEP."""
+        best = None
+        for p in self.members(m, team):
+            raw = bytes(m.uc.mem_read(p, 0x54))
+            if raw[0x35] < 17 and (struct.unpack_from("<H", raw, 0x28)[0] >> 10 & 7) >= KP_KEEP[raw[0x35]]:
+                r = struct.unpack("<I", struct.pack("<f", self.rating(m, p)))[0]
+                if best is None or r <= best[0]:
+                    best = (r, p)
+        return best and best[1]
+
+    def test_at_53_exactly_one_man_goes_by_kp_pick(self):
+        """Review F3-F5: a full club releases exactly one man, the lowest healthy rating among non-starters at a position
+        above its keep target; never a QB, K or P (K and P keep 30, QB 30); the count stays 53."""
         m, team = self.league(size=54, room=40000)          # 53 once the kicker is off the list
         self.assertEqual(self.count(m, team), 53)
+        want = self.expected_pick(m, team)
         got = self.cover(m, team)
-        self.assertEqual((len(got["healthy_k"]), got["count"]), (1, 53))
+        self.assertEqual((len(got["healthy_k"]), got["count"], got["released"]), (1, 53, [want]))
+        self.assertNotIn(got["released_pos"][0], (0, K, P))
+
+    def test_a_full_club_with_nobody_to_release_signs_nobody(self):
+        """Every man at depth row 0 (no non-starter anywhere): kp_pick finds nobody, so no release and no signing (the
+        append would refuse a 54th)."""
+        m, team = self.league(size=54, room=40000)
+        for p in self.members(m, team):
+            m.uc.mem_write(p + 0x28, struct.pack("<H", struct.unpack("<H", bytes(m.uc.mem_read(p + 0x28, 2)))[0] & ~0x1C00))
+        got = self.cover(m, team)
+        self.assertEqual((got["released"], got["signed"], got["count"]), ([], [], 53))
 
     def test_no_healthy_kicker_in_the_pool_means_no_release(self):
         m, team = self.league(room=100, pool_hurt=True)
@@ -264,10 +308,15 @@ class Cover(CoverMachine, unittest.TestCase):
         got = self.cover(m, team)
         self.assertEqual((len(got["healthy_k"]), got["count"], got["released"]), (1, 61, []))
 
-    def test_after_the_gate_cut_a_club_of_53_opens_with_a_kicker(self):
+    def test_after_the_gate_cut_the_stage_7_pass_gives_a_club_of_53_a_kicker(self):
+        """Panel B (76005 2034 CLE opened week 1 without a punter): after the stage-7 action's gate cut the economy's
+        after-stage pass (economy_clubs, STAGE still 7) runs the upkeep, which now covers from stage 7. On the old code
+        (the cover from stage 8 only) the club of 53 stays without a kicker."""
         m, team = self.league(size=54, stage=7, room=40000)
-        got = self.cover(m, team)
-        self.assertEqual((len(got["healthy_k"]), got["count"], len(got["released"])), (1, 53, 1))
+        self.assertEqual(self.count(m, team), 53)
+        m.call(economy.SYMBOLS["economy_clubs"], ecx=m.ARENA + 0x1A0000, edx=0, budget=2_000_000_000)
+        self.assertEqual(len([p for p in self.at(m, team, K) if not self.hurt(m, p)]), 1)
+        self.assertLessEqual(self.count(m, team), 53)
 
     def test_the_preseason_upkeep_runs_the_cover(self):
         """economy_week in stage 7 (the preseason's weekly pass; the same upkeep runs after the stage's gate cut), fills
@@ -277,22 +326,33 @@ class Cover(CoverMachine, unittest.TestCase):
         m.call(economy.SYMBOLS["economy_week"], ecx=m.ARENA + 0x1A0000, edx=0, args=(zero, zero), budget=2_000_000_000)
         self.assertEqual(len([p for p in self.at(m, team, K) if not self.hurt(m, p)]), 1)
 
-    def test_stage_nine_runs_the_cover_for_every_computer_club_then_the_playoff_path(self):
-        m, team = self.league(stage=9, room=40000)
+    def test_a_kicker_hurt_in_a_simulated_playoff_game_is_covered_before_the_next_game(self):
+        """Review F1: stage 9's sim call runs the week's games, then the cover, then returns to the advance (0x247E7C)
+        with its registers. The week's games are stubbed: they hurt club 0's only kicker (3 weeks)."""
+        m, team = self.league(kicker="ok", stage=9, room=40000)
+        mine = self.at(m, team, K)[0]
         menu = m.ARENA + 0x1A0000
+        seen = {}
+
+        def games():
+            seen.update(ecx=m.reg("ECX"), edx=m.reg("EDX"))
+            m.put(mine + 0x20, (m.get(mine + 0x20) & 0x003FFFFF) | 0x80000000 | (3 << 22))
+            m.ret()
+        m.leaf(SIM, games, reason="the week's games: they hurt the kicker")
         regs = dict(EBX=1, ESI=0x5151, EDI=0x6262, EBP=menu)
-        for name, value in dict(ECX=0, EDX=0, EAX=0, ESP=m.STACK, EFLAGS=0x202, **regs).items():
+        for name, value in dict(ECX=19, EDX=menu, EAX=0, ESP=m.STACK, EFLAGS=0x202, **regs).items():
             m.reg(name, value)
-        m.uc.mem_write(m.STACK, struct.pack("<I", m.STOP))
-        m.uc.emu_start(economy.SYMBOLS["economy_stage9"], STAGE9_PATH, count=2_000_000_000)
-        self.assertEqual(m.reg("EIP"), STAGE9_PATH)
+        m.uc.emu_start(STAGE9_SIM, AFTER_SIM, count=2_000_000_000)
+        self.assertEqual(m.reg("EIP"), AFTER_SIM)
+        self.assertEqual(seen, dict(ecx=19, edx=menu))
         self.assertEqual({k: m.reg(k) for k in regs}, regs)
         self.assertEqual(m.reg("ESP"), m.STACK)
+        self.assertTrue(self.hurt(m, mine))
         self.assertEqual(len([p for p in self.at(m, team, K) if not self.hurt(m, p)]), 1)
         for c in range(32):
             t = m.team_base + 500 * c
             for pos in (K, P):
-                self.assertEqual(len([p for p in self.at(m, t, pos) if not self.hurt(m, p)]), 1, (c, pos))
+                self.assertGreaterEqual(len([p for p in self.at(m, t, pos) if not self.hurt(m, p)]), 1, (c, pos))
 
     def test_stage_nine_leaves_the_pro_bowl_rosters_alone(self):
         """In stage 9 n_teams() reads 34: records 32 and 33 (team slots 49 and 50) are the Pro Bowl rosters, the league's
@@ -401,6 +461,18 @@ class SmartCut(CoverMachine, unittest.TestCase):
             m.call(0x2BF9A0, ecx=team, edx=self.count(m, team) - 1, budget=400_000_000)
         self.assertIn(worst, self.members(m, team))
 
+    def test_a_release_that_removes_nobody_ends_the_cut(self):
+        """Review D3: economy_release refuses a record past the 32 clubs, so the smart cut's `while (count > target)`
+        on such a record would never end; a release that leaves the count where it was now ends the cut."""
+        m, team = self.league(kicker="ok", size=53)
+        pro = m.team_base + 500 * 49
+        men = [m.get(m.team_base + 500 * c + 4 * i) for c in range(1, 21) for i in (3, 4)]
+        for i, p in enumerate(men):
+            m.put(pro + 4 * i, p)
+        m.uc.mem_write(pro + 0x11C, bytes([len(men)]))
+        m.call(0x2BF9A0, ecx=pro, edx=len(men) - 1, budget=50_000_000)
+        self.assertEqual(self.members(m, pro), men)
+
 
 IMAGES = {   # the combined panels' kept failure images (validator I5); economy sources = 6e37263e1's in both executables
     "buf": ("A", "76002/validator/FAIL-2029-st8-w14.b81mem.gz", 3),   # Panel A candidate 8f4bd09c
@@ -415,7 +487,7 @@ ENV = {"A": ("NFL2K5_B81_KP_IMAGES", "NFL2K5_B81_KP_IMAGE_XBE"), "B": ("NFL2K5_B
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
 class KeptImages(unittest.TestCase):
-    """NFL2K5_B81_KP_IMAGES = the panel's candidate run folder (…/combined76/candidate), NFL2K5_B81_KP_IMAGE_XBE = its
+    """NFL2K5_B81_KP_IMAGES = the panel's candidate run folder (…/combined76/candidate, or the copy in b81-fixtures), NFL2K5_B81_KP_IMAGE_XBE = its
     executable (8f4bd09c). The images' economy is the integration head's; this build's economy windows and stage-9 entry
     are written over it (economy.sites(), the windows and the entry only) and the cover runs once for every computer club,
     as the upkeep calls it (stage 9's entry into it is Sites and Cover's test). On 6e37263e1 BUF and ATL get no kicker
@@ -447,7 +519,7 @@ class KeptImages(unittest.TestCase):
                 m.uc.mem_write(lo, data)
         if new:
             for site in economy.sites():
-                if site.va in economy.WINDOWS or site.va == getattr(economy, "STAGE9_CASE", None):
+                if site.va in economy.WINDOWS or site.va == economy.STAGE9_SIM:
                     m.uc.mem_write(site.va, site.patched)
         m.uc.ctl_flush_tb()
         m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
@@ -479,8 +551,8 @@ class KeptImages(unittest.TestCase):
                 for c in range(32):
                     k, p, room = self.specialists(m, c)
                     self.assertEqual((k, p), (1, 1), (key, c))
-                    if c == club:
-                        self.assertGreaterEqual(room, 0)
+                    if c == club:                      # signed past the cap gate at a minimum: over by less than one
+                        self.assertGreater(room, -600)
 
 
 ROOT_76001_XBE_SHA256 = "7ae6f10af3dab8b73d98845d8776101eead135e376c9e9a9e16cb04cf0177c9f"   # kp-cover build a3dbd0774
@@ -518,7 +590,7 @@ class Root76001(unittest.TestCase):
                 m.uc.mem_write(lo, data)
         if new:
             for site in economy.sites():
-                if site.va in economy.WINDOWS or site.va == economy.STAGE9_CASE:
+                if site.va in economy.WINDOWS or site.va == economy.STAGE9_SIM:
                     m.uc.mem_write(site.va, site.patched)
         m.uc.ctl_flush_tb()
         m.leaf(0x177990, lambda: m.ret(pop=4), reason="progress renderer only")
@@ -615,40 +687,41 @@ class Root76001(unittest.TestCase):
                 continue
             self.assertEqual((with_pb, rostered_pb), (without, rostered), who)
 
-    def test_short_of_room_the_cover_releases_by_the_smart_cut_and_keeps_a_hurt_starter(self):
-        """Washington at this state, its kicker off the active list (as modern IR takes him), Daniels hurt at depth row 0
-        (the wild card hurt him that week), 1,500 over the cap: the cover's releases are the smart cut's own picks in
-        order (the lowest healthy rating at a position with surplus), none of them a hurt starter, and a kicker signs."""
-        m, twin = self.machine(new=True), self.machine(new=True)
-        for x in (m, twin):
-            team = x.call(0xC4C50, ecx=WAS)
-            daniels = x.get(x.get(0xB72918) + 4) + 0x54 * DANIELS
-            x.put(daniels + 0x20, (x.get(daniels + 0x20) & 0x003FFFFF) | 0x80000000 | (2 << 22))
-            x.uc.mem_write(daniels + 0x28, struct.pack("<H", struct.unpack("<H", bytes(x.uc.mem_read(daniels + 0x28, 2)))[0] & ~0x1C00))
-            for k in [p for p in self.roster(x, WAS) if x.uc.mem_read(p + 0x35, 1)[0] == K]:
-                x.call(0xC3EB0, ecx=team, edx=k)
-            x.call(0xC3F00, ecx=team)
-            x.put(0xE3C278, x.get(team + 0x124) - 1500)
-        team = m.call(0xC4C50, ecx=WAS)
-        before = self.roster(m, WAS)
-        m.call(economy.SYMBOLS["economy_cover"], ecx=team, edx=m.ARENA + 0x1A0000, budget=2_000_000_000)
-        after = self.roster(m, WAS)
-        released = [p for p in before if p not in after]
-        signed = [p for p in after if p not in before]
-        self.assertEqual([m.uc.mem_read(p + 0x35, 1)[0] for p in signed], [K])
-        self.assertTrue(1 <= len(released) <= 6, len(released))
-        self.assertNotIn(DANIELS, [self.index(m, p) for p in released])
-        twin_team, picks = twin.call(0xC4C50, ecx=WAS), []
-        for _ in released:
-            was = self.roster(twin, WAS)
-            twin.call(0x2BF9A0, ecx=twin_team, edx=len(was) - 1, budget=400_000_000)
-            picks += [p for p in was if p not in self.roster(twin, WAS)]
-        self.assertEqual(sorted(released), sorted(picks))
-        for p in released:
-            row = (struct.unpack("<H", bytes(m.uc.mem_read(p + 0x28, 2)))[0] >> 10) & 7
-            self.assertFalse(m.uc.mem_read(p + 0x23, 1)[0] & 0x80 and row == 0)
+    def test_a_full_club_releases_one_non_starter_and_signs_over_the_cap(self):
+        """The first club of 53 at this state, its kicker hurt (still on the list, so the roster is full), its best QB hurt
+        at depth row 0, 1,500 over the cap: exactly one release, kp_pick's (the lowest healthy rating among men at depth
+        row >= KP_KEEP; never a QB, K or P), the hurt QB stays, a kicker signs past the cap gate on a one-year minimum
+        deal, the count stays 53 and the club ends over the cap by that minimum more."""
+        m = self.machine(new=True)
+        club = next(t for t in range(32) if len(self.roster(m, t)) == 53
+                    and [p for p in self.roster(m, t) if m.uc.mem_read(p + 0x35, 1)[0] == K])
+        team = m.call(0xC4C50, ecx=club)
+        hurt = lambda p: m.put(p + 0x20, (m.get(p + 0x20) & 0x003FFFFF) | 0x80000000 | (2 << 22))
+        for k in [p for p in self.roster(m, club) if m.uc.mem_read(p + 0x35, 1)[0] == K]:
+            hurt(k)
+        qb = max((p for p in self.roster(m, club) if m.uc.mem_read(p + 0x35, 1)[0] == 0), key=lambda p: self.rating(m, p))
+        hurt(qb)
+        m.uc.mem_write(qb + 0x28, struct.pack("<H", struct.unpack("<H", bytes(m.uc.mem_read(qb + 0x28, 2)))[0] & ~0x1C00))
         m.call(0xC3F00, ecx=team)
-        self.assertGreaterEqual(m.get(0xE3C278) - m.get(team + 0x124), 0, "the signing stays inside the cap")
+        m.put(0xE3C278, m.get(team + 0x124) - 1500)
+        before, payroll = self.roster(m, club), m.get(team + 0x124)
+        eligible = [p for p in before if m.uc.mem_read(p + 0x35, 1)[0] < 17
+                    and (struct.unpack("<H", bytes(m.uc.mem_read(p + 0x28, 2)))[0] >> 10 & 7) >= KP_KEEP[m.uc.mem_read(p + 0x35, 1)[0]]]
+        bits = {p: struct.unpack("<I", struct.pack("<f", self.rating(m, p)))[0] for p in eligible}
+        want = min(eligible, key=lambda p: (bits[p], before.index(p)))
+        m.call(economy.SYMBOLS["economy_cover"], ecx=team, edx=m.ARENA + 0x1A0000, budget=2_000_000_000)
+        after = self.roster(m, club)
+        released, signed = [p for p in before if p not in after], [p for p in after if p not in before]
+        self.assertEqual(released, [want])
+        self.assertNotIn(m.uc.mem_read(want + 0x35, 1)[0], (0, K, P))
+        self.assertEqual(([m.uc.mem_read(p + 0x35, 1)[0] for p in signed], len(after)), ([K], 53))
+        self.assertIn(qb, after)
+        new = bytes(m.uc.mem_read(signed[0], 0x54))
+        self.assertEqual((new[0x24] & 15, new[0x27] & 15, new[0x26]), (1, 1, 2))
+        self.assertEqual(struct.unpack_from("<H", new, 10)[0], Cover.minimum_value(m, signed[0]))
+        m.call(0xC3F00, ecx=team)
+        self.assertLess(m.get(team + 0x124) - payroll, 600)
+        self.assertGreater(m.get(team + 0x124), m.get(0xE3C278), "over the cap: the lesser evil beside no kicker")
 
 if __name__ == "__main__":
     unittest.main()

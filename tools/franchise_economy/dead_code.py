@@ -120,6 +120,9 @@ WINDOWS = {  # start: (size, sha256 of the retail bytes)
     0x28C2F0: (88, "14a0da4fcd58c1191ae3d9d6bad14469b2968e942e865dfa8f92051d3e76b4a8"),   # kp_sign
     0x2DCC10: (88, "2652df3f03643ef9692d17b3900a68c430f71c54dc22dfc0f51c229f73f52e25"),   # kp_cover: economy_cover
     0x2F7D00: (85, "15663e4f66d6ed8c00ac5ab0bda92977a0168a3fe80a7131ed904a26b7629b30"),   # kp_spare + kp_free_agent
+    0x256120: (93, "c419dd535afc52556e039486fe8550086d9336f55fbbad17665311120e0e7902"),   # kp_pick (#46 review)
+    0x28DC10: (91, "82fe6e8994f32d3141bc93b0123e8e900d895958e0c10a5efe6ae75c1ebb3d57"),   # kp_min (#46 review)
+    0x357960: (91, "20f03f798baf9489d32685f6bc3115606680117bdb9729e6745a760bfa50b228"),   # kp_deal + kp_keep (#46 review)
 }
 
 

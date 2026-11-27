@@ -27,7 +27,8 @@
      below 64/256), lowest first (S1); in stage 7 also a pool with no present backup (a depth deal, S10).
    - Package for a need: the best man over every seller: fully healthy, no status bits, 2+ years pro, 1+ contract
      years; in stage 7 not in the first year of a contract of 2+ years (from year index 1; b81 #46b: a one-year deal is
-     not "just signed" for its whole term; N2: in stage 8 the ledger's signing rows say "just signed"); not star-tagged (+0x53 bit 0, MyCareer's man too); not on the board; not in a signing or
+     not "just signed" for its whole term; at every stage the ledger's signing and trade rows, while still in the
+     600-row ring, say "just signed"); not star-tagged (+0x53 bit 0, MyCareer's man too); not on the board; not in a signing or
      trade row of the ledger; not his club's best player, not its best man at a premium pool, not at or above q90, not
      a development asset (S2, S4); not one of the seller's seated starters (header TN_SEATS) unless the seller is losing
      (bit 4) and he has 8+ years pro (R3, S2); the seller keeps its seats filled and its cut minimum; rated at least
@@ -409,9 +410,12 @@ static u32 offer_of(struct club *s, u32 stage, u32 pool, u32 floor, u32 above, i
             ct_counters.rej_health++;
             continue;
         }
-        /* b81 #46b: "just signed" is the first year of a deal of 2+ years. A one-year deal reads "first contract year"
+        /* b81 #46b: in the preseason "just signed" is the first year of a deal of 2+ years; years left drops only at the
+           rollover, so this is a multi-year deal signed this league year. A one-year deal reads "first contract year"
            for its whole life, and economy revision 10 gives 61% of veterans one-year deals, so the old test froze most of
-           the preseason supply (G-T2 9.11 against 14-28). A man the ledger shows signed or traded is still never offered. */
+           the preseason supply (G-T2 9.11 against 14-28). At every stage a man named by a signing (kind 1: free agent or
+           re-sign) or trade (kind 7) row still in the native 600-row ledger is never offered (in_ledger). The ledger has
+           no week stamp, so "recent" means "still in the ring" (#46 review F2; trades-all RULINGS.md, 11/27). */
         if (stage == 7 && D(YEAR) && left == (B(p + 0x27) & 15u) && left > 1) {
             ct_counters.rej_contract++;
             continue;
