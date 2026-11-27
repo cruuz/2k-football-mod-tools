@@ -8,7 +8,8 @@ overrides (modpack_sources.build_plan), so every beta 81 option whose preset val
 - GateRecipe: the softdrink gate in data/nfl2k5_release_gates.json (the source the staged recipe copies are regenerated
   from) builds a plan with every release option on. Runs everywhere.
 - StagedRecipes: the staged release sources (NFL2K5_B81_STANDARD_SOURCES, v10-sources-128 and its v10-sources-64 sibling)
-  are the reviewed files (sha256 pins) and each of their three recipe documents builds that plan.
+  are the reviewed files (sha256 pins); each 128 MB document builds that plan, and each 64 MB document builds the
+  v0.9 64 MB plan but for its correctness fixes (no new beta 81 feature at 64 MB in v0.10).
 - FinalBuild: a finished build's own readback (NFL2K5_B81_FINAL_BUILD: the disc image or its default.xbe) reads
   "applied" for every beta 81 franchise owner its recipe turns on, never "retail"; with NFL2K5_B81_FINAL_RECEIPT, no
   beta 81 step of the Studio receipt was left out. The readback is taken again here: a full build takes its receipt
@@ -55,25 +56,24 @@ RELEASE_128 = {
 }
 # Unnamed, these follow the quarterback option (DESIGN_CHANGES C1, ruling R6); on the release recipe they resolve to:
 DERIVED_128 = {"qb_room": "realistic", "cpu_trades": "realistic"}
-# The 64 MB edition is the 128 MB recipe fitted by the memory model (nfl2k5_console_memory.recommended_profile), which
-# turns the 128 MB owners off; these must still hold there.
-RELEASE_64 = {key: RELEASE_128[key] for key in (
-    "team_building", "franchise_economy", "draft_ai", "season_2026", "sportscenter_lineup", "classic_crowd",
-    "modern_gillette", "weekly_progression", "helmet_side_numbers", "show_block_guard", "rookie_faces")}
-RELEASE_64["modern_numbers"] = False
+# The 64 MB edition (coordinator ruling 11/27, Noah 11/18: "only update the 128 megabyte version for the time being"):
+# no new beta 81 feature in v0.10, only correctness fixes. Its plan is the v0.9 64 MB recipe's plan but for these:
+CORRECTNESS_64 = {"edition_save_notes": True}   # beta 81 review M1: the 64 MB save messages
+NOT_IN_64 = {"team_building": False, "modern_numbers": False, "sim_qb_injuries": None}
+V09_SOURCES_64 = STANDARD_SOURCES.parent / "v09-sources-64"
 
 # The reviewed staged recipe documents (#43: team_building true and modern_gillette false added to the overrides of
-# each, nothing else changed; regenerate the pins with the folder, never by hand).
+# the three 128 MB documents, nothing else changed; regenerate the pins with the folder, never by hand).
 STAGED_SHA256 = {
     128: {
         "recipe.json": "db157e71c391b8b762eb4f4e42c3f8d737f667186fed9547b1f578bdec45c847",
         "assets/documents/frozen-recipe.json": "9c1f544001b530179a552641d9ae5e203bd43a8c09ab56dd250bed677ce22d03",
         "SOFTDRINK-build-recipe.json": "4fb2a3781a1f287c5abf85cc945e6c21809d8450489ae27ba36835c6f50620ca",
     },
-    64: {
-        "recipe.json": "bbc7161946f16b1e37b19de3b449d30e205e318fc4e5358d9c3c8674533cb544",
-        "assets/documents/frozen-recipe.json": "4ebb2620234d7b17e5aa00d4c9a584886089d65103b6f5fddbf34c294f40465b",
-        "SOFTDRINK-build-recipe.json": "70599893cbbc410fa51247d4a0909b250b826a86abc22a5dc167dc8f423fd6db",
+    64: {   # unchanged by #43 (ruling 1): the v0.10 64 MB documents as staged
+        "recipe.json": "f0482b738fb87b6e04e0124935e392734499caa03d15bdbd23748d495ca5a0a3",
+        "assets/documents/frozen-recipe.json": "2a904f0406dcebfa9e05857337ea839d1e89a91506b9508ee59cfec269b0afb9",
+        "SOFTDRINK-build-recipe.json": "15fcb7a6b20a14c03b72e5d903cc22d410450f86a581f90d39ecd652580714d7",
     },
 }
 
@@ -147,29 +147,42 @@ class GateRecipe(_Assert, unittest.TestCase):
 @unittest.skipUnless((STANDARD_SOURCES / "recipe.json").is_file(), "private release sources absent: NFL2K5_B81_STANDARD_SOURCES")
 class StagedRecipes(_Assert, unittest.TestCase):
     def editions(self):
-        for memory, wanted, derived in ((128, RELEASE_128, DERIVED_128), (64, RELEASE_64, None)):
+        for memory in (128, 64):
             root = STANDARD_SOURCES.parent / f"v10-sources-{memory}"
             if (root / "recipe.json").is_file():
-                yield memory, root, wanted, derived
+                yield memory, root
 
     def test_the_staged_documents_are_the_reviewed_files(self):
-        for memory, root, _wanted, _derived in self.editions():
+        for memory, root in self.editions():
             for name in DOCUMENTS:
                 with self.subTest(memory=memory, document=name):
                     self.assertEqual(hashlib.sha256((root / name).read_bytes()).hexdigest(), STAGED_SHA256[memory][name])
 
     def test_each_staged_document_builds_the_release(self):
-        for memory, root, wanted, derived in self.editions():
+        for memory, root in self.editions():
             for name in DOCUMENTS:
                 with self.subTest(memory=memory, document=name):
                     plan = modpack_sources.build_plan(json.loads((root / name).read_text(encoding="utf-8")))
                     self.assertEqual(plan.console_memory, memory)
-                    self.assert_release(plan, wanted, derived)
                     if memory == 128:
-                        # The staged 64 MB recipe does not fit by the memory model (326 KB over at NRG Stadium s37, before
-                        # and after #43; reported to the coordinator 11/27): its plan check waits for that ruling.
+                        self.assert_release(plan, RELEASE_128, DERIVED_128)
                         self.assertEqual(mod_build.validate_plan(plan), [])
+                    else:
+                        self.assertEqual({key: getattr(plan, key) for key in NOT_IN_64}, NOT_IN_64)
 
+    @unittest.skipUnless((V09_SOURCES_64 / "SOFTDRINK-build-recipe.json").is_file(), "the v0.9 64 MB sources are absent")
+    def test_the_64_mb_edition_is_v09s_but_for_its_correctness_fixes(self):
+        from dataclasses import fields
+        v09 = modpack_sources.build_plan(json.loads((V09_SOURCES_64 / "SOFTDRINK-build-recipe.json").read_text(encoding="utf-8")))
+        sources = {"source", "target", "roster_edits", "notes", "name", "custom_intro", "modern_venues_2026",
+                   "official_marks_pack", "playbook_packs", "weather_plan"}   # the documents' own text and asset paths
+        for name in DOCUMENTS:
+            with self.subTest(document=name):
+                plan = modpack_sources.build_plan(json.loads(
+                    (STANDARD_SOURCES.parent / "v10-sources-64" / name).read_text(encoding="utf-8")))
+                changed = {f.name: getattr(plan, f.name) for f in fields(plan)
+                           if f.name not in sources and getattr(plan, f.name) != getattr(v09, f.name)}
+                self.assertEqual(changed, CORRECTNESS_64)
 
 FINAL_BUILD = os.environ.get("NFL2K5_B81_FINAL_BUILD")
 FINAL_RECIPE = os.environ.get("NFL2K5_B81_FINAL_RECIPE", str(STANDARD_SOURCES / "SOFTDRINK-build-recipe.json"))
