@@ -557,10 +557,11 @@ WINDOWS = {
             "53ff7508e88429270083c40c8b5dfcc9c3"
         ).ljust(86, b"\xcc")
     ),
-    0x6f420: (  # r10_6f420: 78/95 bytes
+    0x6f420: (  # r10_6f420: 93/95 bytes
         bytes.fromhex(
             "5589e5538b5d0853e8a3f50e005a89c231c083fa02772053e8c33e080089c35885db740cba010000"
-            "0089d9e810ab340031c085db0f95c08b5dfcc9c35589e56a016a01e898e42400c9e932c52400"
+            "0089d9e810ab340031c085db0f95c08b5dfcc9c3a11829b7002b481c80fd3d731103481c6a016a01"
+            "e88be42400e926c52400c30f0b"
         ).ljust(95, b"\xcc")
     ),
     0x15e9d0: (  # r10_15e9d0: 47/91 bytes

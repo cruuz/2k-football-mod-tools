@@ -315,6 +315,24 @@ class Cover(CoverMachine, unittest.TestCase):
         rostered = {p for c in range(32) for p in self.members(m, m.team_base + 500 * c)}
         self.assertEqual(rostered & set(self.free(m)), set())
 
+    def test_the_economy_release_refuses_a_record_past_the_32_clubs(self):
+        """Belt and braces (coordinator 11/27): economy_release does nothing for a team record past the 32 league clubs
+        (the Pro Bowl rosters, slots 49 and 50), and releases from a league club as before."""
+        m, team = self.league(stage=9, room=40000)
+        pro = m.team_base + 500 * 49
+        star = self.members(m, m.team_base + 500 * 7)[0]
+        m.put(pro, star)
+        m.uc.mem_write(pro + 0x11C, bytes([1]))
+        contract, free = bytes(m.uc.mem_read(star, 0x54)), self.free(m)
+        m.call(economy.SYMBOLS["economy_release"], ecx=pro, edx=star, budget=50_000_000)
+        self.assertEqual((self.members(m, pro), self.free(m), bytes(m.uc.mem_read(star, 0x54))), ([star], free, contract))
+        self.assertIn(star, self.members(m, m.team_base + 500 * 7))
+        last = m.team_base + 500 * 31
+        man = self.members(m, last)[-1]
+        m.call(economy.SYMBOLS["economy_release"], ecx=last, edx=man, budget=50_000_000)
+        self.assertNotIn(man, self.members(m, last))
+        self.assertIn(man, self.free(m))
+
 
 @unittest.skipUnless(HAVE_UC, "Unicorn is not installed")
 class SmartCut(CoverMachine, unittest.TestCase):

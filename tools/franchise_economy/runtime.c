@@ -1296,9 +1296,16 @@ SECTION(".r10_rollover") void FAST economy_rollover_reconcile(u8 *team) {
  * offer naming a man with no contract years -- the man just released. Without it a pending offer kept naming him after
  * another club took him onto its practice squad or IR (panel 74003, 2031: I8 "side B names a player his club does not
  * have" for eleven weeks; the ownership guard refused it each week, the pruner no longer saw zero years). */
-SECTION(".r10_release") void FAST economy_release(u8 *team, u8 *p) {
-    n_release(team, p, 1, 1);
-    n_prune();
+SECTION(".r10_release") __attribute__((naked)) void FAST economy_release(u8 *team, u8 *p) {
+    /* b81 #46 (coordinator 11/27, after 76001): never a record past the 32 league clubs. In stage 9 n_teams() reads 34 and
+     * records 32 and 33 (team slots 49 and 50) are the Pro Bowl rosters; the practice squad's slot remove refuses them,
+     * and the native release still adds the man to free agency and ends his contract, so he stays on his club and is a
+     * free agent too (the second listing then hung the payroll walk). ECX - the club array (root +0x1C) is below 0x3D00
+     * for clubs 0..31 (31 * 500 = 0x3C8C) and 0x3E80 or more past them; then the native release and the trade board's
+     * pruner as before (ECX restored, EDX = the player, the release's two stack arguments). */
+    (void)team; (void)p;
+    __asm__("mov 0xb72918, %eax\nsub 0x1c(%eax), %ecx\ncmp $0x3d, %ch\njae 1f\nadd 0x1c(%eax), %ecx\n"
+            "push $1\npush $1\ncall 0x2bd900\njmp 0x2bb9a0\n1: ret\n");
 }
 
 /* A veteran the club could cut for room (ruling 4): not a QB (the quarterback room's), K or P; under contract; above the
