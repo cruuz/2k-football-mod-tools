@@ -882,8 +882,10 @@ class OwnerStates(unittest.TestCase):
         self.assertEqual(XbeImage(back).read(text.start, text.raw_size), XbeImage(built).read(text.start, text.raw_size))
 
     def test_the_page_is_fixed_in_every_order(self):
-        union = list(space.dormant_union())
         request = space.MODERN_NUMBERS_REQUEST
+        # b81 integration task 7: the dormant union carries the page itself; the orders below place it against the rest
+        self.assertIn(request, space.dormant_union())
+        union = [r for r in space.dormant_union() if r != request]
         for label, requests in (("alone", [request]), ("first", [request] + union), ("last", union + [request])):
             with self.subTest(label):
                 rows = space.plan(requests)["allocations"]

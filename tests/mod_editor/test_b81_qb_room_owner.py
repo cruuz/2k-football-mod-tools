@@ -53,9 +53,10 @@ class AllocatorPlacementTests(unittest.TestCase):
                 self.assertEqual((row["va"], row["size"], row["align"]), (0x1529000, 0x3000, 0x1000))
                 # C20: the dormant union also carries the trades page right after the room (0x152C000..0x152CFFF) and
                 # (b81 helmet sides) the side-numbers page after it (0x152D000..0x152DFFF).
-                # b81 CPU trades: + 0x152E000..0x152FFFF; b81 integration (#32, #33, #37, #38): + the numbers, award vote,
-                # classic crowd and SportsCenter news pages, so the dormant union ends at 0x1533FFF
-                end = 0x1534000 if name == "dormant union" else 0x152C000
+                # b81 CPU trades: + 0x152E000..0x152FFFF; b81 integration (#33, #37, #38): + the award vote, classic crowd
+                # and SportsCenter news pages; b81 integration task 7: + the numbers page (0x1530000, which the mapping
+                # already spanned) and the simulated outcomes' page, so the dormant union ends at 0x1534FFF
+                end = 0x1535000 if name == "dormant union" else 0x152C000
                 self.assertEqual(report["file_size"] - space.SCALE3_FILE_SIZE, end - space.POOL_VA)
 
     def test_adding_the_room_moves_no_row_and_does_not_advance_the_cursor(self):

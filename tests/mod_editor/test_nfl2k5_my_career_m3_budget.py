@@ -117,15 +117,19 @@ class PlanningTests(unittest.TestCase):
                 #   41 pages.
                 #   Beta 81 awards (integration, #38): the award vote's fixed page (space.AWARDS_VA, 0x1531000) lies below
                 #   the news page, so the pool still ends with SportsCenter news: 41 pages.
+                #   Beta 81 integration task 7: the union also carries the modern numbers (0x1530000), simulated outcomes
+                #   (0x1534000) and franchise ownership (0x1528000) fixed pages; the outcomes page now ends the pool: 42
+                #   pages. The memory model already charges each (nfl2k5_memory_budget.BUILD_OWNER_BYTES).
                 self.assertEqual(before['regions'][:6], after['regions'][:6])
                 injury_va = -(-(space.BACKFIELD_VA + space.BACKFIELD_REQUEST[2]) // space.PAGE) * space.PAGE
                 self.assertGreaterEqual(space.QB_ROOM_VA, injury_va + space.QB_INJURY_REQUEST[2])
                 self.assertEqual(space.QB_FIXED_SPAN, (space.QB_ROOM_VA, space.QB_TRADES_VA + space.QB_TRADES_SIZE))
                 self.assertEqual(space.HELMET_SIDES_VA, space.QB_FIXED_SPAN[1])
                 self.assertEqual(space.SPORTSCENTER_NEWS_VA, 0x1533000)
-                fixed_end = space.SPORTSCENTER_NEWS_VA + space.SPORTSCENTER_NEWS_SIZE
+                self.assertEqual(space.SIM_OUTCOMES_VA, space.SPORTSCENTER_NEWS_VA + space.SPORTSCENTER_NEWS_SIZE)
+                fixed_end = space.SIM_OUTCOMES_VA + space.SIM_OUTCOMES_SIZE
                 budget_size = space.SCALE3_FILE_SIZE + fixed_end - space.POOL_VA
-                self.assertEqual(budget_size, space.SCALE3_FILE_SIZE + 41 * space.PAGE)
+                self.assertEqual(budget_size, space.SCALE3_FILE_SIZE + 42 * space.PAGE)
                 self.assertGreater(space.AWARDS_VA, space.HELMET_SIDES_VA + space.HELMET_SIDES_SIZE - 1)
                 self.assertLess(space.AWARDS_VA, space.SPORTSCENTER_NEWS_VA)
                 expected_size = {'full': space.SCALE3_FILE_SIZE + 4 * space.PAGE,
@@ -140,7 +144,10 @@ class PlanningTests(unittest.TestCase):
                              space.QB_TRADES_REQUEST[:2]: space.QB_TRADES_VA,
                              space.HELMET_SIDES_REQUEST[:2]: space.HELMET_SIDES_VA,
                              space.SPORTSCENTER_NEWS_REQUEST[:2]: space.SPORTSCENTER_NEWS_VA,
-                             space.AWARDS_REQUEST[:2]: space.AWARDS_VA}
+                             space.AWARDS_REQUEST[:2]: space.AWARDS_VA,
+                             space.MODERN_NUMBERS_REQUEST[:2]: space.MODERN_NUMBERS_VA,
+                             space.SIM_OUTCOMES_REQUEST[:2]: space.SIM_OUTCOMES_VA,
+                             (space.FRANCHISE_OWNERSHIP, "code"): space.FRANCHISE_OWNERSHIP_VA}
                     for report in (before, after):
                         self.assertEqual({(a['owner'], a['kind']): a['va'] for a in report['allocations']
                                           if (a['owner'], a['kind']) in fixed}, fixed)

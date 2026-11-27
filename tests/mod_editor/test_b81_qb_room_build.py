@@ -581,9 +581,12 @@ class FloorRuleTests(unittest.TestCase):
                 update = receipt["qb_room_source_update"]
                 self.assertEqual((update["level"], update["stages"]), ("realistic", stages))
                 self.assertEqual(update["result_sha256"], hashlib.sha256(expected).hexdigest())
-                self.assertIn("added modern injured reserve", update["added"][0])
-                self.assertIn("updated the franchise economy", update["added"][1])  # practice squad merge: revision 7 -> 8
-                self.assertIn(update["added"][0], receipt["user_notes"])
+                # b81 integration (f46b51163): both discs carry modern IR's pre-numbers revision, which the floor updates
+                # in place after the economy (practice squad merge: revision 7 -> 8), so the notes say updated, not added
+                self.assertEqual(len(update["added"]), 2)
+                self.assertIn("updated the franchise economy", update["added"][0])
+                self.assertIn("updated modern injured reserve", update["added"][1])
+                self.assertIn(update["added"][1], receipt["user_notes"])
                 self.assertEqual(update["settings"]["stage_names"], room.stage_names(stages))
                 self.assertEqual(update["settings"]["stage_names"][-1:], ["floor"])
                 self.assertEqual(receipt["sim_qb_source_update"]["result_sha256"], hashlib.sha256(aimed).hexdigest())
