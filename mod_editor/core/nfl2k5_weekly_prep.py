@@ -138,10 +138,10 @@ def _recognize(payload):
             if va <= at and at + len(before) <= va + size:
                 raw[at-va:at-va+len(before)] = before
         actual = hashlib.sha256(raw).hexdigest()
-        states = {state for state, pinned in TEAM_BUILDING_GUARDS.get(va, {}).items() if pinned == actual}
-        if actual != digest and states:
+        accepted = {state for state, pinned in TEAM_BUILDING_GUARDS.get(va, {}).items() if pinned == actual}
+        if actual != digest and accepted:
             from . import nfl2k5_team_building as team_building
-            require(team_building.status(payload) in states, f"foreign weekly prep prerequisite at {va:#x}")
+            require(team_building.status(payload) in accepted, f"foreign weekly prep prerequisite at {va:#x}")
             continue
         require(actual == digest, f"foreign weekly prep prerequisite at {va:#x}")
     # the hooks are the same in both revisions; a revision-1 body reads "previous"
