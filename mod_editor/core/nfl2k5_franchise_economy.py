@@ -445,6 +445,7 @@ PREVIOUS_REVISION_9 = {             # the sites revision 10 rewrites, as revisio
     0x3DBC10: "fc3a5ea47bb4cc2fef2fa431b9085d0ae71d3b7e1970b3e9998a1c9b6f6947c7",   # roster_m (the veteran cut's release stub now prunes the trade board)
     ROSTER_H_WINDOW: "7a37c3efb19257e41b61060804e5fb11c2d58c41050791fa86de9de73a7f3e66",   # roster_h with revisions 6-9's naked cover (b81 #46: its tail now holds the stage-9 cover)
     0x3E9740: "569b2f5f0a7f1525246dd3aa3c8acb121fe1398affde306eac2bb68bfd370bb6",   # roster_k, the smart cut's pick as revisions 4-9 installed it (b81 #46c: healthy rating, no hurt starter)
+    0x3E9A90: "0ccb3d08078a4b6f3959263383d321c3077c0ac1420e0d9b25c1e75d84722ff4",   # roster_s, squad expiry as revisions 8-9 installed it (b81 #46: its club walk now calls the economy's n_teams)
 }
 REVISION = 10
 # b81 economy revision 10, part 1 (coordinator ruling 6, 11/25): the draft class position mix (window roster_f's
@@ -605,7 +606,9 @@ def _status_before_9(payload: bytes, assume: frozenset = frozenset()) -> str:
     place); a mix of the two is foreign."""
     try:
         image = XbeImage(payload)
-        eight = {_site_state(image, site) for site in sites() if site.va in REVISION_8_NEW}
+        # b81 #46: a revision-8 window revision 10 rewrites (roster_s, squad expiry's club walk) counts as applied when its
+        # bytes are revision 8's or 9's (`assume`), as the revision-9 and revision-7 rules already read theirs.
+        eight = {"applied" if site.va in assume else _site_state(image, site) for site in sites() if site.va in REVISION_8_NEW}
         rest = _status_before_8(payload, assume)
         if eight == {"applied"}:
             return rest if rest == "applied" else "foreign"

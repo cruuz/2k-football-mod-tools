@@ -917,7 +917,7 @@ class Nfl2k5UnifiedVisualProvider:
         "mod_editor/core/nfl2k5_preseason.py": "5e18c2bba83005798237cc3c85b0e10ee9f7dd8f4e179f52a430f46ed02c951b",
         "mod_editor/core/nfl2k5_probowl_order.py": "6e61b983f57f7e01695c7626b51854aea2242e1c7879049f8bb3a85a44b3cf9f",
         "mod_editor/core/nfl2k5_roster_fill_composition.py": "96547bdc1c66889f68f44deb147bd5f6095ee169d343d53aaa4f532d12ee53e8",
-        "mod_editor/core/nfl2k5_franchise_economy.py": "683bad610941aae6b42734a62065920bb5f6e16250582663872e5a97577eded4",
+        "mod_editor/core/nfl2k5_franchise_economy.py": "12da2c10cdfb4c595a139d7e012ddab03f813578e6cecf5a971f430a5ad732d4",
         "mod_editor/core/nfl2k5_franchise_economy_code.py": "f6604fb20286afc92223b41155d9a0f46d28412c4156b592b20b6446f103a22d",
         "mod_editor/core/nfl2k5_progression.py": "27c28380c79df69c82031376b7ee6c990e4bda2781c90053ac29b2b18c14e99a",
         "mod_editor/core/nfl2k5_prospect_names.py": "6f48b67a3b00b72b8bc51ca35527037ceca27c4137b9bb0e1d4542f27c39e7ac",

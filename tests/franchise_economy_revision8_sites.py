@@ -3,7 +3,7 @@ revision 9's one window (economy_room_for_signing, team building 3647cabab) as r
 
 Generated from the revision-8 code template (job/b81-economy-r10 6dd73d743) and from 3647cabab's template; the sha256
 of each entry equals nfl2k5_franchise_economy.PREVIOUS_REVISION_9. b81 #46 added roster_h (0x3A5F20) from 6e37263e1's
-template (its bytes are the same in revisions 6 to 10 before #46), and roster_k (0x3E9740, revisions 4-10 before #46c). as_revision() builds a revision-8 or revision-9
+template (its bytes are the same in revisions 6 to 10 before #46), roster_k (0x3E9740, revisions 4-10 before #46c) and roster_s (0x3E9A90, revisions 8-10 before #46's club count). as_revision() builds a revision-8 or revision-9
 image from a revision-10 one (older-revision tests start from it)."""
 
 
@@ -105,6 +105,11 @@ SITES = {
         "2884d274206a016a00505653e8bd4b010068c20000006ad8505653e89e5c030083c428eb0f6a006ad8505653e88d5c030083"
         "c4148d65f85b5e5dc208000253565589ce89d531db430fb68e1c0100004978108b048e38583575f5f640238075efeb2080be"
         "1c01000035720a6a345a89f1e8d999f1ff5568ffff00005356e8dccbf7ff4383fb0372c05d5e5bc30f0b"
+    ),
+    0x3e9a90: bytes.fromhex(   # roster_s (revisions 8-9: squad expiry; b81 #46 points its club walk at the economy's n_teams)
+        "5589e5575631f65353e842b1cdff39c6736e89f1e8a7b1cdff89c189c3e8fe85f3ff85c074578a83f201000084c0744d0fb6"
+        "931c0100004831c98883f20100000fb6c001d08d3c838b17890fa11829b7008955f08d4838e8748ae5ff8b55f085c0750a89"
+        "17fe83f2010000eb10806224f0806227f066c7420a0000eba946eb89585b5e5f5de976d4e5ffcccccccc"
     ),
     0x3e9740: bytes.fromhex(   # roster_k (revisions 4-9: the smart cut's pick by 0x246D80(p, 1); b81 #46c rewrote it)
         "5589e5575631f65331db83ec0c8b4508c745f0000000000fb6801c0100008945ec8b45ec39c6735c8b45088b3cb00fb65735"
