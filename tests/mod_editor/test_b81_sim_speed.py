@@ -559,7 +559,7 @@ class ProBowl76001(unittest.TestCase):
     the image (the image's executable has another economy and the previous team-building template)."""
 
     XBE_SHA256 = "7ae6f10af3dab8b73d98845d8776101eead135e376c9e9a9e16cb04cf0177c9f"
-    WALK_CALL = 0x87DE9          # rank_twice's call of the club count (0xC4BE0 here; #46 retargets it to 0xC6430)
+    WALK_CALL = 0x87DE9          # rank_twice's call of the club count (0xC4BE0 on this branch; #46 retargets it to 0xC6430)
 
     @classmethod
     def setUpClass(cls):
@@ -602,6 +602,16 @@ class ProBowl76001(unittest.TestCase):
         self.code = code
         return m
 
+    def walk(self, m, target=None):
+        """rank_twice's club count: the target of its call at WALK_CALL (0xC4BE0 or 0xC6430), set to `target` if given."""
+        self.assertEqual(bytes(m.uc.mem_read(self.WALK_CALL, 1)), b"\xe8")
+        if target is not None:
+            m.uc.mem_write(self.WALK_CALL, b"\xe8" + struct.pack("<i", target - self.WALK_CALL - 5))
+            m.uc.ctl_flush_tb()
+        now = self.WALK_CALL + 5 + struct.unpack("<i", bytes(m.uc.mem_read(self.WALK_CALL + 1, 4)))[0]
+        self.assertIn(now, (0xC4BE0, 0xC6430))
+        return now
+
     @staticmethod
     def roster(m, t):
         team = m.call(0xC4C50, ecx=t)
@@ -625,8 +635,9 @@ class ProBowl76001(unittest.TestCase):
     def test_stage9_ranks_and_prices_are_the_economys_own_with_the_page_installed(self):
         """No day: rank_any goes to the page (the 0x24849A call is there in every stage) and the page hands the count to
         the economy's rank_twice, so every K's and P's rank and price is the same with the page's entry bypassed (the
-        retail call at 0x24849A). This economy still walks 0xC4BE0 (34 here), so the Pro Bowl kickers do count: the page
-        follows the economy, whichever count it walks. Fails if the page walked its own 32 clubs outside a day."""
+        retail call at 0x24849A), with the economy's walk on either count (0xC4BE0 reads 34 here, so the Pro Bowl
+        kickers count; 0xC6430 as after #46, 32): the page follows the economy. Fails if the page walked its own clubs
+        outside a day."""
         from mod_editor.core import nfl2k5_franchise_economy_code as eco
         m = self.machine()
         self.assertEqual((m.get(0xE576A0), m.get(0xE576AC), m.call(0xC4BE0), m.call(0xC6430)), (2, 34, 34, 32))
@@ -634,21 +645,24 @@ class ProBowl76001(unittest.TestCase):
         rank_any, value = eco.SYMBOLS["economy_rank_any"], 0x2BD440
         men = self.specialists(m)
         site = bytes(m.uc.mem_read(DAY_SITE, 5))
-        got = {}
-        for installed in (True, False):
-            m.uc.mem_write(DAY_SITE, site if installed else bytes.fromhex("e861c10d00"))
-            m.uc.ctl_flush_tb()
-            got[installed] = ([m.call(rank_any, args=(p,), budget=200_000_000) for p in men],
-                              [m.call(value, ecx=p, edx=0, args=(0, 1, 0), budget=200_000_000) for p in men])
-        self.assertEqual(got[True], got[False])
-        self.assertGreater(len(set(got[True][0])), 5)
+        for walk in (0xC4BE0, 0xC6430):
+            self.walk(m, walk)
+            got = {}
+            for installed in (True, False):
+                m.uc.mem_write(DAY_SITE, site if installed else bytes.fromhex("e861c10d00"))
+                m.uc.ctl_flush_tb()
+                got[installed] = ([m.call(rank_any, args=(p,), budget=200_000_000) for p in men],
+                                  [m.call(value, ecx=p, edx=0, args=(0, 1, 0), budget=200_000_000) for p in men])
+            self.assertEqual(got[True], got[False], hex(walk))
+            self.assertGreater(len(set(got[True][0])), 5)
 
     def test_inside_a_day_the_page_counts_the_32_league_clubs(self):
         """A day (the static state current, as pace_day_entry makes it): the page's walk and its lists count the 32
         league clubs (0xC6430), so each K's and P's count equals the economy's rank_twice with the Pro Bowl lists emptied,
-        and differs from it with them for some man (0xC4BE0 reads 34 here). Free-agency days run in stage 3, where both
-        counts read 32."""
+        and (with rank_twice's walk on 0xC4BE0, 34 here) differs from it with them for some man. Free-agency days run in
+        stage 3, where both counts read 32."""
         m = self.machine()
+        self.walk(m, 0xC4BE0)
         state, pace_rank, rank_twice = PAGE_VA + 0x1000, self.code.SYMBOLS["pace_rank_twice"], 0x87DC0
         men = self.specialists(m)
         with_pb = [m.call(rank_twice, args=(p,), budget=200_000_000) for p in men]
@@ -669,16 +683,14 @@ class ProBowl76001(unittest.TestCase):
         stage-9 price ignores the Pro Bowl sides. The subject (as #46's test): the best healthy kicker rated below both
         Pro Bowl kickers, released to free agency, the cap raised eightfold so his ask shows the price; his price and
         every rostered K's and P's are the same with the Pro Bowl lists emptied. With the economy's walk on 0xC4BE0
-        his price moves when they are emptied, so the test sees the walk the page follows."""
+        his price moves when they are emptied, so the test sees the walk the page follows. The walk is set both ways,
+        so the test reads the same before and after #46 merges."""
         value = 0x2BD440
         got = {}
         for merged in (False, True):
             for empty in (False, True):
                 m = self.machine()
-                if merged:
-                    self.assertEqual(bytes(m.uc.mem_read(self.WALK_CALL, 1)), b"\xe8")
-                    m.uc.mem_write(self.WALK_CALL, b"\xe8" + struct.pack("<i", 0xC6430 - self.WALK_CALL - 5))
-                    m.uc.ctl_flush_tb()
+                self.walk(m, 0xC6430 if merged else 0xC4BE0)
                 pro = {p for t in (32, 33) for p in self.roster(m, t)}
                 kickers = [(t, p) for t in range(32) for p in self.roster(m, t)
                            if m.uc.mem_read(p + 0x35, 1)[0] == K and p not in pro and not m.uc.mem_read(p + 0x23, 1)[0] & 0x80]
