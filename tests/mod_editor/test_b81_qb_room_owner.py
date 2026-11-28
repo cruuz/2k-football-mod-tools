@@ -40,9 +40,11 @@ class AllocatorPlacementTests(unittest.TestCase):
         # side-numbers page, fixed right after the trades page; b81 CPU trades: its two pages after that; b81 integration
         # (#33, #35, #38): then the outcomes', classic crowd's and award vote's fixed pages (fixed pages never advance
         # the cursor, so their place among the late owners moves nobody)
-        self.assertEqual(space.LATE_OWNERS[-7:], (ROOM[0], space.QB_TRADES_OWNER, space.HELMET_SIDES_OWNER,
+        # b81 #45: and team building's pace page (seven fixed pages at 0x1535000) after the outcomes page
+        self.assertEqual(space.LATE_OWNERS[-8:], (ROOM[0], space.QB_TRADES_OWNER, space.HELMET_SIDES_OWNER,
                                                   space.CPU_TRADES_OWNER, space.SIM_OUTCOMES_OWNER,
-                                                  space.CLASSIC_CROWD_OWNER, space.AWARDS_OWNER))
+                                                  space.TEAM_BUILDING_PACE_OWNER, space.CLASSIC_CROWD_OWNER,
+                                                  space.AWARDS_OWNER))
         self.assertIn(ROOM, space.dormant_union())
 
     def test_the_room_alone_and_in_the_dormant_union_sits_at_its_fixed_pages(self):
@@ -56,7 +58,8 @@ class AllocatorPlacementTests(unittest.TestCase):
                 # b81 CPU trades: + 0x152E000..0x152FFFF; b81 integration (#33, #37, #38): + the award vote, classic crowd
                 # and SportsCenter news pages; b81 integration task 7: + the numbers page (0x1530000, which the mapping
                 # already spanned) and the simulated outcomes' page, so the dormant union ends at 0x1534FFF
-                end = 0x1535000 if name == "dormant union" else 0x152C000
+                # b81 #45: + the pace page's seven pages, so the dormant union ends at 0x153BFFF
+                end = 0x153C000 if name == "dormant union" else 0x152C000
                 self.assertEqual(report["file_size"] - space.SCALE3_FILE_SIZE, end - space.POOL_VA)
 
     def test_adding_the_room_moves_no_row_and_does_not_advance_the_cursor(self):
@@ -89,7 +92,8 @@ class AllocatorPlacementTests(unittest.TestCase):
                 # 0x20000-byte owner would straddle the numbers page (0x1530000), the award vote (0x1531000), the classic
                 # crowd (0x1532000), the SportsCenter news page (0x1533000) and the outcomes page (0x1534000), so it steps
                 # past all five
-                self.assertEqual(placed["va"], space.SIM_OUTCOMES_VA + space.SIM_OUTCOMES_SIZE)
+                # b81 #45: and past the pace page's seven pages (0x1535000..0x153BFFF), the last fixed page
+                self.assertEqual(placed["va"], space.TEAM_BUILDING_PACE_VA + space.TEAM_BUILDING_PACE_SIZE)
                 self.assertEqual(space.FIXED_SPAN_END, 0x1530000)
                 for row in rows:
                     if row["owner"] != ROOM[0]:
@@ -102,7 +106,8 @@ class AllocatorPlacementTests(unittest.TestCase):
         rows = space.plan([filler, bumped, ownership])["allocations"]
         # past trades, side numbers and CPU trades, then (b81 integration) past the numbers, award vote, classic crowd,
         # SportsCenter news and outcomes pages it would otherwise straddle
-        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x1535000)
+        # b81 #45: and the pace page's seven pages, so it lands at 0x153C000
+        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x153C000)
 
     def test_a_foreign_room_request_is_refused(self):
         for request in (("nfl2k5_qb_room", "code", 0x2000, 0x1000), ("nfl2k5_qb_room", "data", 0x3000, 0x1000)):
@@ -509,17 +514,22 @@ class PreviousRevisionTests(unittest.TestCase):
     # windows, D2/D3 the club count and the cut's bound): re-pinned; each rebuild differs from its a44936f8e rebuild only inside
     # the economy's own sites, one section digest (20 bytes) and the table entry 0x2480A8, retail again (floor checked byte
     # for byte). The a3dbd0774 values were D1D2 3b2b3735, REVIEW_67 e31e867d, REVIEW_64 a6cbdcd4, FLOOR 7516651d, FLOOR_EMPTY 04067f62, STAGE_3A a415e37e, STAGE_3A_EMPTY d05a6bf9, HANDOVER_67 ff3eaeed, HANDOVER_64 78d362eb.
-    D1D2_SHA = "c45f5ae1d1c78a593eb760b902097186f3ed0992e0a2449d32a30c71bbb81c88"
-    REVIEW_67_SHA = "dbbf1994da18a20ed288f5304dad674028a2b78989b81c5d1317ecc6c9e8cbf4"
-    REVIEW_64_SHA = "d037908f07c26f21888e9e059584a87afb66fcd83ae164109f5351937edf7475"
-    FLOOR_SHA = "2bba2ade9436f0f0b8323edf19d66ba5ec62503a85c3131e4b6b9883612d8eff"
-    FLOOR_EMPTY_SHA = "07a4e865fb6b0383a30fb62d73db2917314e6b1bf3c46c0aa728000174cf4bd2"
-    STAGE_3A_SHA = "9bb3a54908daa18d4ea81883713dbe51e24d9ad4f3f1fb8b886816a43e45d3e7"
-    STAGE_3A_EMPTY_SHA = "9f1dd43989b02750229aa8748a6613cfc7710d012ba68047842606fe54a86182"
+    # b81 integration (#45 + #46 merge, 11/27): every rebuild is on a base the economy upgraded to the current revision,
+    # and #45 (revision 11) rewrites its two rank windows (value 0x2BD440, r10_15e9d0 0x15E9D0): each rebuild differs from
+    # #46's exactly there and in the section digests (3 runs, 67 bytes; the room's pages and sites unchanged). #46's values
+    # were D1D2 c45f5ae1, REVIEW_67 dbbf1994, REVIEW_64 d037908f, FLOOR 2bba2ade, FLOOR_EMPTY 07a4e865, STAGE_3A 9bb3a549,
+    # STAGE_3A_EMPTY 9f1dd439, HANDOVER_67 30e484cf, HANDOVER_64 d2a0f3b6.
+    D1D2_SHA = "c99e7013e4ef389dd107acf6744359e08cec7756f38dcf504288f443962e9048"
+    REVIEW_67_SHA = "9dddcdd5cfd3d3d1cb0fe6089d07d59cf0b2ea308ea531bf094a4fdd41d78aad"
+    REVIEW_64_SHA = "61c65c9a7cec256b8a53ce45b7fa689b7a90ec8b109ac8e6eaa0c57f8d553ed8"
+    FLOOR_SHA = "827f1eab79acf1af5c0b9c4da532e6318029ce51ee13c068738d9ca9b7c82ae8"
+    FLOOR_EMPTY_SHA = "2cb5341bbd4e241e6e94c28342ceed170d406cc36033f7dc1d49261c12d7b33c"
+    STAGE_3A_SHA = "ef49e73a633d013844544207982628d073761d34b6d925f905d49b9b66468936"
+    STAGE_3A_EMPTY_SHA = "0ade5b38b2df8c0b771319327d09e3e868a70ce22b882028a3e76fcca690e275"
     # b2672e398's page (C21/C23 freeze it as "previous"): the P5 and P6-5ff panels ran f5270f4d (67) and 35ce7727 (64)
     # on slice 1 alone; rebuilt here at the merged head.
-    HANDOVER_67_SHA = "30e484cf3ad5dc3f7333acc9b2b96be9428dbb1244f8b98028364e47f0fc0fa3"
-    HANDOVER_64_SHA = "d2a0f3b644b0358106aa26bef60928f9e37a3806eb0a878eb7cd3250ace96525"
+    HANDOVER_67_SHA = "85fe7b26226ae675a5663de32e7944850747a5704c9314634ffa7cb850fc423a"
+    HANDOVER_64_SHA = "74a1371002a656cc60de7ed7c4a089b1c90844e3d7b15d6f6c67a6347e313b6b"
 
     @classmethod
     # b81 modern numbers (modern IR's number-rights revision, 866fe3a8d / 911e590e3): the fixture's base is built with
