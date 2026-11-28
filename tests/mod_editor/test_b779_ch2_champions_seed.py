@@ -120,9 +120,15 @@ class BuildOrderTests(unittest.TestCase):
                        "qb_module.apply_image(", "classic.apply_to_image(", "metlife.apply_to_image(",
                        '_core_module("nfl2k5_real_portraits")', "_apply_sim_realism(plan, target"):
             self.assertLess(body.index(writer), seed, writer)
-        self.assertLess(seed, body.index("finish_private(target"))
+        # Beta 81 moved the disc compaction into _compact_build_disc (shared with the single-option QB and v0.9
+        # update routes); _build calls it once, after the seed.
+        helper = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "_compact_build_disc")
+        self.assertIn("finish_private(target", ast.get_source_segment(source, helper))
+        self.assertEqual(body.count("_compact_build_disc("), 1)
+        compact = body.index("_compact_build_disc(target")
+        self.assertLess(seed, compact)
         # and the survival gate reads it again on the compacted copy
-        self.assertLess(body.index("finish_private(target"), body.index('read_image(target)'))
+        self.assertLess(compact, body.index('read_image(target)'))
 
     def test_the_honors_history_step_no_longer_touches_the_champions(self):
         source = Path(honors_history.__file__).read_text(encoding="utf-8")

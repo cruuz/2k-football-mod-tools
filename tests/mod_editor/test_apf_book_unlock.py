@@ -5,6 +5,7 @@ from dataclasses import replace
 from contextlib import redirect_stderr
 import io
 import json
+from functools import lru_cache
 from pathlib import Path
 import shutil
 import struct
@@ -78,7 +79,10 @@ def roster_body():
     return bytes(body)
 
 
+@lru_cache(maxsize=32)
 def iff(body, name, kind):
+    # Reuse only immutable input->IFF bytes within this test process. Custom
+    # book factories still supply their own content, and each archive is new.
     encoded = apf_texture_patch.compress_h7a(body, 10)
     packed = struct.pack(">5I", apf_inner.H7A_MAGIC, len(body), len(encoded) + 20, 0, 10) + encoded
     header_size = 0x54

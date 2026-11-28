@@ -20,8 +20,10 @@ class FreeAgentTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.body=retail_roster();cls.doc=rr.RosterDocument(cls.body)
+        # Beta 81 (G05) also groups a free agent who keeps an all-star or historic membership as a free agent (he
+        # has no club); the dated pool writer still refuses those aliases, so the explicit pool leaves them out.
         cls.selected=[dict(pool=p.pool,index=p.index,first=p.first,last=p.last)
-                      for p in cls.doc.players if p.group=='free_agent']
+                      for p in cls.doc.players if p.group=='free_agent' and not p.teams]
         cls.spec=dict(schema=rr.EDITS_SCHEMA,edits=[],free_agent_pool=cls.selected)
 
     def test_retire_five_aliases_without_changing_historical_records(self):

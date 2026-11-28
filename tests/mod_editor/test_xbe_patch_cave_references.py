@@ -376,12 +376,25 @@ class CaveReferenceTests(unittest.TestCase):
         if _Image(self.patched).read(_lo, len(_retire_code)) == _retire_code:
             ranges = {(a, b) for a, b in ranges if not (a < _hi and b > _lo)}
             ranges.add((_lo, _hi))
-        # Scorebar v3 replaces complete pinned live spans. Split adjacent
-        # callbacks at their independently referenced entries, and include
-        # retained byte islands so their displaced branches remain internal.
+        # Each returner routine has its own retail entry. The row getter calls
+        # the position-list lookup and the named KR/PR getter independently.
+        # Pin their callers and both versions of all three adjacent functions.
+        from mod_editor.core import nfl2k5_returner_fix as returner
+        spans = []
+        for entry, before, after in (
+                (returner.ROW_LABEL_VA, returner.RETAIL_ROW_LABEL, returner.row_label_bytes()),
+                (returner.FN_NTH_RETURNER, returner.RETAIL_NTH, returner.lookup_bytes()),
+                (returner.GETTER_VA, returner.RETAIL_GETTER, returner.getter_bytes())):
+            spans.append((entry, entry + len(before), before, after))
+        for caller, entry in ((0x242B7A, returner.FN_NTH_RETURNER), (0x242B9B, returner.GETTER_VA)):
+            call = b"\xe8" + struct.pack("<i", entry - caller - 5)
+            for payload in (self.retail, self.patched):
+                self.assertEqual(payload[caller - BASE:caller - BASE + len(call)], call)
+            self.assertIn(caller, self.targets[entry])
+        # Scorebar v3 also replaces adjacent callbacks at independent entries
+        # and keeps byte islands between their displaced branches.
         from mod_editor.core import nfl2k5_scorebar_v3 as v3
         from mod_editor.core.nfl2k5_cave_oracle import XbeImage
-        spans = []
         for va, old, new, _ in v3.xbe_specs():
             if va >= 0x4e0000:
                 continue
@@ -625,7 +638,13 @@ class CaveReferenceTests(unittest.TestCase):
             # legacy-page gate above is still empty.
             # b780 pres2 (Q51, 9b9d86f38): the sprite scorebug spills to the pool, which grows from 3 to 4 pages; the 12 raw
             # candidates on the new page 0x150E000 are the whole change (test_nfl2k5_xbe_space pins the same 1,140).
-            self.assertEqual(len(proof["encoded_references"]), 1140)  # 1,128 + 12
+            # b81 awards (queue item 38): honors.apply installs the season vote on its fixed page 0x1531000, so the v4
+            # pool mapping runs 0x150B000..0x1532000 (was ..0x150F000). The 356 new raw candidates are 5 on the awards
+            # page and 351 on the 34 mapped pages between; no allocation moved and the legacy gate above is still empty.
+            # The bounded REQUESTS union in test_nfl2k5_xbe_space carries no honors page and stays at 1,140.
+            self.assertIn((space.AWARDS_OWNER, space.AWARDS_VA), {(a["owner"], a["va"]) for a in proof["allocations"]})
+            self.assertEqual(sum(target >= 0x150F000 for _va, _kind, target in proof["encoded_references"]), 356)
+            self.assertEqual(len(proof["encoded_references"]), 1496)  # 1,128 + 12 + 356
         self.assertEqual(relocated.status(self.patched), "applied")
         from mod_editor.core import nfl2k5_scorebug_runtime as runtime
         self.assertEqual(runtime.status(self.patched), "applied")

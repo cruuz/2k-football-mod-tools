@@ -418,19 +418,30 @@ def reservations(payload: bytes | None = None) -> list[dict]:
     return result
 
 
+def _same_installed_requests(wanted, previous) -> bool:
+    """An installed image matches a build's request set. b81 awards: the season award vote's fixed page is appended by
+    its own owner after the build's allocation (honors.apply installs it), so an installed set may also hold exactly that
+    one request; the page sits at its absolute address and every other owner steps over it, so nothing else moves."""
+
+    if wanted == previous or wanted == [LOGO_REQUEST]:
+        return True
+    return (AWARDS_REQUEST in previous and AWARDS_REQUEST not in wanted
+            and [r for r in previous if r != AWARDS_REQUEST] == wanted)
+
+
 def apply(payload: bytes, requests=(), *, scaleout=False) -> tuple[bytes, dict]:
     _require(type(scaleout) is bool, "scaleout must be a boolean")
     grown, _, previous = _validate(payload)
     wanted = _requests(requests)
     if is_scaleout(payload):
-        _require(wanted == previous or wanted == [LOGO_REQUEST], "allocation requests differ; rebuild from base")
+        _require(_same_installed_requests(wanted, previous), "allocation requests differ; rebuild from base")
         return payload, {"status": "already_applied", "changed_bytes": 0, "allocations": _scale_allocations(previous)}
     if not grown and (scaleout or _needs_scaleout(wanted)):
         return _apply_scaleout(payload, wanted)
     _allocations(wanted)
     if grown:
         _require(not scaleout, "scale-out needs a rebuild from base")
-        _require(wanted == previous or wanted == [LOGO_REQUEST], "allocation requests differ; rebuild from base")
+        _require(_same_installed_requests(wanted, previous), "allocation requests differ; rebuild from base")
         return payload, {"status": "already_applied", "changed_bytes": 0, "allocations": _allocations(previous)}
     extended = _extended(wanted)
     if extended:
@@ -793,6 +804,108 @@ LATE_OWNERS += ("nfl2k5_rookie_faces_hair",)  # b780 GEN1 Q81: rookie hair style
 # rookie faces image step only when Hair styles is on (so 64 MB builds never take it); last, so it moves nothing
 # b780-int: the hair owner stays after lineup_roles, intro_autoskip and injured_reserve: all are reserved by the first space pass, the hair owner
 # is appended at the rookie faces image step, so an earlier place would move them and extend_scaleout refuses.
+LATE_OWNERS += ("nfl2k5_offset_toss",)  # Installed after every other owner, including the rookie hair pass.
+# These standard-edition slots were witnessed together in the Xbox. Keeping the vacant gadget
+# slots ahead of Coach Matchup also permits a later in-place install on an existing disc.
+GADGET_OWNER = "nfl2k5_gadget_proof"
+GADGET_REQUESTS = ((GADGET_OWNER, "code", 2048, 16), (GADGET_OWNER, "read_only", 12800, 16))
+BACKFIELD_REQUEST = ("nfl2k5_backfield_cards", "code", 176, 16)
+GADGET_CODE_VA = 0x151F680
+BACKFIELD_VA = 0x1523080
+FRANCHISE_OWNERSHIP = "nfl2k5_franchise_ownership"
+# Keep this optional page independent of the shipped gadget/cards slots and the
+# reviewed standard simulator page (0x1524000 through 0x1527FFF).
+FRANCHISE_OWNERSHIP_VA = 0x1528000
+FRANCHISE_OWNERSHIP_SIZE = PAGE
+LINEUP_SLOT_VA = {GADGET_REQUESTS[0][:2]: GADGET_CODE_VA,
+                  GADGET_REQUESTS[1][:2]: GADGET_CODE_VA + GADGET_REQUESTS[0][2],
+                  BACKFIELD_REQUEST[:2]: BACKFIELD_VA}
+LATE_OWNERS += (GADGET_OWNER, BACKFIELD_REQUEST[0])
+QB_INJURY_OWNER = "nfl2k5_sim_qb_injuries"
+QB_INJURY_REQUEST = (QB_INJURY_OWNER, "code", 4 * PAGE, PAGE)
+LATE_OWNERS += (QB_INJURY_OWNER,)
+LATE_OWNERS += (FRANCHISE_OWNERSHIP,)
+# b81 qb34: the quarterback room (who starts, emergency moves) has three fixed pages right after the ownership page. Like
+# that page it is placed at an absolute address and never advances the pool cursor. Every other pool owner steps over
+# this range whether or not the room is requested, so the room can be added later, in any install order, and an owner
+# installed before it can never take its address. No shipped or tested layout reaches 0x1529000 (qb34 evidence/owner).
+QB_ROOM_OWNER = "nfl2k5_qb_room"
+QB_ROOM_VA = 0x1529000
+QB_ROOM_SIZE = 3 * PAGE
+QB_ROOM_REQUEST = (QB_ROOM_OWNER, "code", QB_ROOM_SIZE, PAGE)
+LATE_OWNERS += (QB_ROOM_OWNER,)
+# b81 qb34 4b (DESIGN_CHANGES C20): the quarterback trades page, fixed right after the room's three pages and placed
+# like them: at its absolute address, never advancing the pool cursor. Every other pool owner steps over the whole span
+# 0x1529000..0x152CFFF whether or not either is requested, so the room keeps its address with or without trades, trades
+# can be added later in any order, and no other owner can take either address.
+QB_TRADES_OWNER = "nfl2k5_qb_trades"
+QB_TRADES_VA = QB_ROOM_VA + QB_ROOM_SIZE
+QB_TRADES_SIZE = PAGE
+QB_TRADES_REQUEST = (QB_TRADES_OWNER, "code", QB_TRADES_SIZE, PAGE)
+LATE_OWNERS += (QB_TRADES_OWNER,)
+QB_FIXED_OWNERS = (QB_ROOM_OWNER, QB_TRADES_OWNER)
+QB_FIXED_SPAN = (QB_ROOM_VA, QB_TRADES_VA + QB_TRADES_SIZE)
+# b81 helmet sides (b): helmet-number route 5 binds set E. One fixed page right after the quarterback trades page (its
+# cave, route table, name and its row record, which the game writes: the pool is RWX), placed like the quarterback pages:
+# at its absolute address, never advancing the pool cursor. Every other pool owner steps over the whole span
+# 0x1529000..0x152DFFF whether or not it is requested, so an owner a disc lacks (the injury bank of a disc built with
+# Simulated injuries Retail) can still be added in place after it (review 11/22). No layout but this owner's reaches
+# 0x1529000 (see the quarterback room above).
+HELMET_SIDES_OWNER = "nfl2k5_helmet_side_numbers"
+HELMET_SIDES_VA = QB_TRADES_VA + QB_TRADES_SIZE
+HELMET_SIDES_SIZE = PAGE
+HELMET_SIDES_REQUEST = (HELMET_SIDES_OWNER, "code", HELMET_SIDES_SIZE, PAGE)
+LATE_OWNERS += (HELMET_SIDES_OWNER,)
+# b81 CPU trades at every position (trades-all, RULINGS R1): two fixed pages right after the helmet-sides page (code,
+# settings record, counters and event ring), placed like the pages above: at their absolute address, never advancing the
+# pool cursor. Every other pool owner steps over 0x1529000..0x152FFFF whether or not they are requested, so the owner can
+# be added in place to a disc that lacks it, in any order. No layout but these owners' reaches 0x1529000.
+CPU_TRADES_OWNER = "nfl2k5_cpu_trades"
+CPU_TRADES_VA = HELMET_SIDES_VA + HELMET_SIDES_SIZE
+CPU_TRADES_SIZE = 2 * PAGE
+CPU_TRADES_REQUEST = (CPU_TRADES_OWNER, "code", CPU_TRADES_SIZE, PAGE)
+LATE_OWNERS += (CPU_TRADES_OWNER,)
+FIXED_PAGE_OWNERS = (FRANCHISE_OWNERSHIP, QB_ROOM_OWNER, QB_TRADES_OWNER, HELMET_SIDES_OWNER, CPU_TRADES_OWNER)
+FIXED_SPAN_END = CPU_TRADES_VA + CPU_TRADES_SIZE     # every pool owner steps over QB_ROOM_VA..FIXED_SPAN_END
+# b81 game outcomes: one fixed page at 0x1534000 for the simulated-game outcomes owner (home field, game-day form, the
+# simulator's two-point chart and tie roll, the regulation end, goal-line runs; code, constants and its per-fixture state:
+# the pool is RWX). Placed like the quarterback and helmet pages: at its absolute address, never advancing the pool cursor,
+# with its own step-over (to_pool, after the fixed-span chain), so every other pool owner steps over 0x1534000..0x1534FFF
+# whether or not it is requested and the owner can be added in place after every other owner. 0x152E000..0x1533FFF are
+# claimed by other beta 81 lanes (CPU trades, modern jersey numbers, awards, classic crowd, SportsCenter news;
+# coord/PAGES_AND_SEEDS.md), so this page sits after them.
+SIM_OUTCOMES_OWNER = "nfl2k5_sim_outcomes"
+SIM_OUTCOMES_VA = 0x1534000
+SIM_OUTCOMES_SIZE = PAGE
+SIM_OUTCOMES_REQUEST = (SIM_OUTCOMES_OWNER, "code", SIM_OUTCOMES_SIZE, PAGE)
+LATE_OWNERS += (SIM_OUTCOMES_OWNER,)
+FIXED_PAGE_OWNERS += (SIM_OUTCOMES_OWNER,)
+
+
+# b81 #45 (sim speed): seven fixed pages at 0x1535000 for the team-building owner's pace page (tools/team_building/pace.c:
+# the free-agency day's rating memo and rank lists): the code page (with one writable word, the day pointer: the pool is
+# RWX) and, since the review (L1), the six pages of the day state 0x1536000..0x153BFFF, so the day needs no stack. Placed
+# like the pages above: at its absolute address, never advancing the pool cursor, so every other pool owner steps over
+# 0x1535000..0x153BFFF whether or not it is requested, and the owner can be added in place after every other owner (team
+# building's Studio step runs after the late owners). 0x152E000..0x1534FFF are other beta 81 lanes' pages
+# (coord/PAGES_AND_SEEDS.md). The economy's economy_rank_any and the day calls (0x24849A and the free-agency screen's
+# 0x36260D, 0x3631E8, 0x36324D) name its address.
+TEAM_BUILDING_PACE_OWNER = "nfl2k5_team_building_pace"
+TEAM_BUILDING_PACE_VA = 0x1535000
+TEAM_BUILDING_PACE_SIZE = 7 * PAGE
+TEAM_BUILDING_PACE_REQUEST = (TEAM_BUILDING_PACE_OWNER, "code", TEAM_BUILDING_PACE_SIZE, PAGE)
+LATE_OWNERS += (TEAM_BUILDING_PACE_OWNER,)
+FIXED_PAGE_OWNERS += (TEAM_BUILDING_PACE_OWNER,)
+
+
+def _sim_outcomes_at(owner, at, size, align):
+    """b81 game outcomes: the fixed page's pool offset for its owner; any other owner overlapping it steps past it."""
+    page = SIM_OUTCOMES_VA - POOL_VA
+    if owner == SIM_OUTCOMES_OWNER:
+        return page
+    if at < page + SIM_OUTCOMES_SIZE and at + size > page:
+        return (page + SIM_OUTCOMES_SIZE + align - 1) & -align
+    return at
 # b77-i1 (coordinator-approved fix of the all-owner union overflow): late owners whose code is placed top-down in the
 # reserved legacy RX page tails (0x14D9000 first, then 0x14BA000) instead of the full scale-out run. Static, so the
 # placement does not depend on which other owners are present.
@@ -805,13 +918,145 @@ TAIL_OWNERS = (("nfl2k5_period_goalposts", "code"), ("nfl2k5_honors", "data"), (
 GAP_OWNERS = (("nfl2k5_honors", "code"), ("nfl2k5_coach_ai", "code"), ("nfl2k5_moment_coaches", "code"),
               ("nfl2k5_human_tap_burst", "code"))
 MYCAREER_M3_STATE_VA = 0x1505000
+# b81 modern numbers: one fixed page at 0x1530000 for the jersey-number owner (code and tables; the pool is RWX), placed
+# like the quarterback and helmet pages: at its absolute address, never advancing the pool cursor. 0x152E000..0x152FFFF
+# is reserved for the CPU trades owner's two pages (job/b81-cpu-trades), so this page sits right after them. It has its
+# own step-over (to_pool, after the fixed-span chain), so FIXED_SPAN_END and the span's tests are not edited here: every
+# other pool owner steps over 0x1530000..0x1530FFF whether or not it is requested, and the owner can be added in place
+# after every other owner. No layout but this owner's reaches 0x1529000 (see the quarterback room above).
+MODERN_NUMBERS_OWNER = "nfl2k5_modern_numbers"
+MODERN_NUMBERS_VA = 0x1530000
+MODERN_NUMBERS_SIZE = PAGE
+MODERN_NUMBERS_REQUEST = (MODERN_NUMBERS_OWNER, "code", MODERN_NUMBERS_SIZE, PAGE)
+# A fixed page never advances the pool cursor, so its place in LATE_OWNERS moves nobody; it sits before the quarterback
+# room so the fixed quarterback, helmet (and, after their merge, CPU trades) owners stay the last late owners.
+LATE_OWNERS = (LATE_OWNERS[:LATE_OWNERS.index(QB_ROOM_OWNER)] + (MODERN_NUMBERS_OWNER,)
+               + LATE_OWNERS[LATE_OWNERS.index(QB_ROOM_OWNER):])
+FIXED_PAGE_OWNERS += (MODERN_NUMBERS_OWNER,)
+
+
+def _modern_numbers_at(owner, at, size, align):
+    """b81 modern numbers: the fixed page's pool offset for its owner; any other owner overlapping it steps past it."""
+    page = MODERN_NUMBERS_VA - POOL_VA
+    if owner == MODERN_NUMBERS_OWNER:
+        return page
+    if at < page + MODERN_NUMBERS_SIZE and at + size > page:
+        return (page + MODERN_NUMBERS_SIZE + align - 1) & -align
+    return at
+
+
+# b81-seamen: one fixed page at 0x1532000 for the classic Seamen's crowd helpers (nfl2k5_classic_crowd: 119 bytes of
+# code and the "SM" text; claimed in the coordinator's page register; the awards lane released it, right after its own page).
+# Placed like the other fixed pages: at its absolute address, never advancing the pool cursor, with its own step-over in
+# to_pool (FIXED_SPAN_END untouched), so every other pool owner skips 0x1532000..0x1532FFF whether or not it is
+# requested. Outside the shared owner unions' v3 runs, so no v3 address moves; installed at the classic teams step.
+CLASSIC_CROWD_OWNER = "nfl2k5_classic_crowd"
+CLASSIC_CROWD_VA = 0x1532000
+CLASSIC_CROWD_SIZE = PAGE
+CLASSIC_CROWD_REQUEST = (CLASSIC_CROWD_OWNER, "code", CLASSIC_CROWD_SIZE, PAGE)
+LATE_OWNERS += (CLASSIC_CROWD_OWNER,)
+FIXED_PAGE_OWNERS += (CLASSIC_CROWD_OWNER,)
+
+
+def _classic_crowd_at(owner, at, size, align):
+    """b81-seamen: the crowd page's pool offset for its owner; any other owner overlapping it steps past it."""
+    page = CLASSIC_CROWD_VA - POOL_VA
+    if owner == CLASSIC_CROWD_OWNER:
+        return page
+    if at < page + CLASSIC_CROWD_SIZE and at + size > page:
+        return (page + CLASSIC_CROWD_SIZE + align - 1) & -align
+    return at
+
+# b81 sportscenter: one fixed page at 0x1533000 for SportsCenter news (nfl2k5_sportscenter_news: modern injured reserve on
+# the injury report, the news windows across a save and load). Claimed in the lanes' page register (the first free page of
+# 0x1533000..0x1534FFF, which the economy released; 0x152E000..0x152FFFF is the CPU trades owner's, 0x1530000 modern
+# numbers', 0x1531000 awards', 0x1532000 the classic crowd's). Placed like those pages: at its absolute address, never
+# advancing the pool cursor, with its own step-over in to_pool (FIXED_SPAN_END untouched), so every other pool owner skips
+# 0x1533000..0x1533FFF whether or not it is requested and the owner can be added in place after every other owner.
+SPORTSCENTER_NEWS_OWNER = "nfl2k5_sportscenter_news"
+SPORTSCENTER_NEWS_VA = 0x1533000
+SPORTSCENTER_NEWS_SIZE = PAGE
+SPORTSCENTER_NEWS_REQUEST = (SPORTSCENTER_NEWS_OWNER, "code", SPORTSCENTER_NEWS_SIZE, PAGE)
+# A fixed page never advances the pool cursor, so its place in LATE_OWNERS moves nobody; it sits before the quarterback
+# room so the fixed quarterback, helmet (and, after their merge, CPU trades) owners stay the last late owners.
+LATE_OWNERS = (LATE_OWNERS[:LATE_OWNERS.index(QB_ROOM_OWNER)] + (SPORTSCENTER_NEWS_OWNER,)
+               + LATE_OWNERS[LATE_OWNERS.index(QB_ROOM_OWNER):])
+FIXED_PAGE_OWNERS += (SPORTSCENTER_NEWS_OWNER,)
+
+
+def _sportscenter_news_at(owner, at, size, align):
+    """b81 sportscenter: the fixed page's pool offset for its owner; any other owner overlapping it steps past it."""
+    page = SPORTSCENTER_NEWS_VA - POOL_VA
+    if owner == SPORTSCENTER_NEWS_OWNER:
+        return page
+    if at < page + SPORTSCENTER_NEWS_SIZE and at + size > page:
+        return (page + SPORTSCENTER_NEWS_SIZE + align - 1) & -align
+    return at
+
+
+# b81 awards: one fixed page at 0x1531000 for the season award vote and the All-Pro team (nfl2k5_awards; claimed in
+# the lane's page register after the CPU trades pages 0x152E000-0x152FFFF and the modern jersey numbers page 0x1530000).
+# Placed like those pages: at its absolute address, never advancing the pool cursor, with its own step-over in to_pool
+# (FIXED_SPAN_END untouched), so every other pool owner skips
+# 0x1531000..0x1531FFF whether or not it is requested and the owner can be added in place after every other owner.
+AWARDS_OWNER = "nfl2k5_awards"
+AWARDS_VA = 0x1531000
+AWARDS_SIZE = PAGE
+AWARDS_REQUEST = (AWARDS_OWNER, "code", AWARDS_SIZE, PAGE)
+LATE_OWNERS += (AWARDS_OWNER,)
+FIXED_PAGE_OWNERS += (AWARDS_OWNER,)
+
+
+def _awards_at(owner, at, size, align):
+    """b81 awards: the fixed page's pool offset for its owner; any other owner overlapping it steps past it."""
+    page = AWARDS_VA - POOL_VA
+    if owner == AWARDS_OWNER:
+        return page
+    if at < page + AWARDS_SIZE and at + size > page:
+        return (page + AWARDS_SIZE + align - 1) & -align
+    return at
+
+
+# b81 integration task 1 (SportsCenter review S2): the fixed pages above the quarterback span in one table, by address.
+# Each lane added its page with its own one-shot step-over; to_pool now places a page owner on its page and steps every
+# other owner past each page it would overlap, rescanning from the lowest page after every step until it overlaps none, so
+# a step past one page that lands on another is caught whatever order the pages were added in. The per-page helpers
+# above stay (their own tests call them); to_pool uses only this loop.
+POST_SPAN_PAGES = tuple(sorted(((MODERN_NUMBERS_OWNER, MODERN_NUMBERS_VA, MODERN_NUMBERS_SIZE),
+                                (AWARDS_OWNER, AWARDS_VA, AWARDS_SIZE),
+                                (CLASSIC_CROWD_OWNER, CLASSIC_CROWD_VA, CLASSIC_CROWD_SIZE),
+                                (SPORTSCENTER_NEWS_OWNER, SPORTSCENTER_NEWS_VA, SPORTSCENTER_NEWS_SIZE),
+                                (SIM_OUTCOMES_OWNER, SIM_OUTCOMES_VA, SIM_OUTCOMES_SIZE),
+                                (TEAM_BUILDING_PACE_OWNER, TEAM_BUILDING_PACE_VA, TEAM_BUILDING_PACE_SIZE)),  # b81 #45
+                               key=lambda page: page[1]))
+_require(all(a[1] + a[2] <= b[1] for a, b in zip(POST_SPAN_PAGES, POST_SPAN_PAGES[1:]))
+         and POST_SPAN_PAGES[0][1] >= FIXED_SPAN_END
+         and all(page[0] in FIXED_PAGE_OWNERS for page in POST_SPAN_PAGES),
+         "the fixed pages above the quarterback span overlap, sit inside it or are not fixed owners")
+
+
+def _post_span_pages_at(owner, at, size, align, pages=None):
+    """b81 integration task 1: a page owner's own page; any other owner past every fixed page it would overlap."""
+    pages = POST_SPAN_PAGES if pages is None else pages
+    for page_owner, va, _size in pages:
+        if owner == page_owner:
+            return va - POOL_VA
+    while True:
+        for _owner, va, page_size in pages:
+            page = va - POOL_VA
+            if at < page + page_size and at + size > page:
+                at = (page + page_size + align - 1) & -align
+                break
+        else:
+            return at
+
 # XSPACE2 is retained as the header envelope for the shipped boot-logo reader.
 # SP03 and the sealed external directory distinguish the v3 interpretation.
 SCALE_TAG = EXT_MAGIC + b"SP03"
 
 
 def dormant_union():
-    """Every allocator owner the manifest builder installs on its disposable disc (beta 61 through beta 63)."""
+    """The requests shared by the manifest generator and its default allocator proof."""
     from . import nfl2k5_dynamic_kickoff_relocated as relocated
     from . import nfl2k5_momentum as momentum, nfl2k5_defensive_try as defensive_try
     from . import nfl2k5_scorebug_runtime as runtime, nfl2k5_zone_drop as zone_drop
@@ -856,6 +1101,8 @@ def dormant_union():
     from . import nfl2k5_classic_teams as classic_teams  # b775-ct1: late, last read-only owner
     from . import nfl2k5_return_coverage as return_coverage  # b778-kr1: in build_manifest's all_requests (verification tooling)
     from . import nfl2k5_module_loader as module_loader  # b778-xs1: the last late owner
+    from . import nfl2k5_franchise_ownership as ownership  # b81 integration task 7: its fixed page 0x1528000
+    from . import nfl2k5_seven_on_seven as seven
     # keep this in step with tests/nfl2k5_allocator_stack.REQUESTS and the manifest builder's all_requests
     return (camera.REQUESTS + relocated.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + runtime.REQUESTS
             + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS
@@ -881,7 +1128,19 @@ def dormant_union():
             + third_down.REQUESTS  # b778-ai8
             + classic_teams.REQUESTS  # b775-ct1 after b775-mo2
             + return_coverage.REQUESTS  # b779-fixD: matches build_manifest's all_requests so allocation_evidence() needs no allocated=
-            + module_loader.REQUESTS)
+            + module_loader.REQUESTS + seven.REQUESTS + GADGET_REQUESTS + (BACKFIELD_REQUEST, QB_INJURY_REQUEST)
+            + (QB_ROOM_REQUEST, QB_TRADES_REQUEST)  # b81 qb34: the fixed quarterback room pages, then trades (C20)
+            + (HELMET_SIDES_REQUEST,)  # b81 helmet sides: its fixed page after the trades page
+            + (CPU_TRADES_REQUEST,)  # b81 CPU trades: its two fixed pages after the helmet-sides page
+            + (AWARDS_REQUEST,)  # b81 awards (review S3): the award vote's fixed page at 0x1531000
+            + (CLASSIC_CROWD_REQUEST,)  # b81-seamen: the classic crowd's fixed page
+            + (SPORTSCENTER_NEWS_REQUEST,)  # b81 sportscenter: its fixed page at 0x1533000 (review S1)
+            # b81 integration task 7: the three fixed pages the union lacked. The manifest builder's probe lays out this
+            # union, so without them its directory named no owner for modern numbers' page 0x1530000, the simulated
+            # outcomes' page 0x1534000 or the franchise ownership page 0x1528000 (all three were reserved only as the
+            # allocator's grown pool pages). Appended last, so no earlier directory slot moves.
+            + (MODERN_NUMBERS_REQUEST, SIM_OUTCOMES_REQUEST) + ownership.REQUESTS
+            + (TEAM_BUILDING_PACE_REQUEST,))   # b81 #45: team building's pace page, appended last (no earlier slot moves)
 
 
 def is_scaleout(payload):
@@ -931,6 +1190,8 @@ def _requests(requests):
 
 def _needs_scaleout(requests):
     normalized = _requests(requests)
+    if any(r[0] in FIXED_PAGE_OWNERS for r in normalized):
+        return True
     # Unknown beta-62 owners never sort ahead of a shipped owner in its pages.
     if any(r[0] not in LEGACY_OWNERS for r in normalized) and any(
             r[0] in LEGACY_OWNERS - {LOGO_REQUEST[0]} for r in normalized):
@@ -1031,6 +1292,35 @@ def _scale_allocations(requests):
     # their protected manifest extents. Existing request sets pack identically.
     requests = sorted(_requests(requests), key=lambda r: (r[0] == 'nfl2k5_roster_arena_growth', r))
     original_requests = tuple(requests)
+    ownership = tuple(r for r in requests if r[0] == FRANCHISE_OWNERSHIP)
+    if ownership:
+        _require(ownership == ((FRANCHISE_OWNERSHIP, "code", FRANCHISE_OWNERSHIP_SIZE, 16),),
+                 "the standard franchise ownership code has a fixed page")
+    _require(all(r == QB_ROOM_REQUEST for r in requests if r[0] == QB_ROOM_OWNER),
+             "the quarterback room has three fixed pages")
+    _require(all(r == QB_TRADES_REQUEST for r in requests if r[0] == QB_TRADES_OWNER),
+             "the quarterback trades page has one fixed page")
+    _require(all(r == HELMET_SIDES_REQUEST for r in requests if r[0] == HELMET_SIDES_OWNER),
+             "the helmet side numbers have one fixed page")
+    _require(all(r == CPU_TRADES_REQUEST for r in requests if r[0] == CPU_TRADES_OWNER),
+             "the CPU trades have two fixed pages")
+    _require(all(r == SPORTSCENTER_NEWS_REQUEST for r in requests if r[0] == SPORTSCENTER_NEWS_OWNER),
+             "SportsCenter news has one fixed page")
+    _require(all(r == SIM_OUTCOMES_REQUEST for r in requests if r[0] == SIM_OUTCOMES_OWNER),
+             "the simulated game outcomes have one fixed page")  # b81 game outcomes
+    _require(all(r == TEAM_BUILDING_PACE_REQUEST for r in requests if r[0] == TEAM_BUILDING_PACE_OWNER),
+             "team building's pace pages are one fixed request")  # b81 #45
+    gadget = tuple(r for r in requests if r[0] == GADGET_OWNER)
+    if gadget:
+        _require(gadget == GADGET_REQUESTS, "incomplete or foreign gadget allocation")
+        _require(all(r == BACKFIELD_REQUEST for r in requests if r[0] == BACKFIELD_REQUEST[0]),
+                 "foreign Backfield card allocation")
+    _require(all(r == MODERN_NUMBERS_REQUEST for r in requests if r[0] == MODERN_NUMBERS_OWNER),
+             "the modern jersey numbers have one fixed page")  # b81 modern numbers
+    _require(all(r == CLASSIC_CROWD_REQUEST for r in requests if r[0] == CLASSIC_CROWD_OWNER),
+             "the classic crowd owner has one fixed page")  # b81-seamen
+    _require(all(r == AWARDS_REQUEST for r in requests if r[0] == AWARDS_OWNER),
+             "the season awards owner has one fixed page")  # b81 awards
     _directory_code_size(requests)  # Validate every named slot before placement.
     requests = [r for r in requests if r[0] not in DIRECTORY_CODE_OWNERS]
     # b76-k1: the K128 owner is placed after every other owner, the promoted MyCareer code and the grown
@@ -1063,10 +1353,38 @@ def _scale_allocations(requests):
 
     def to_pool(owner, kind, size, align):
         at = (pool[0] + align - 1) & -align
+        if gadget:
+            fixed = LINEUP_SLOT_VA.get((owner, kind))
+            if fixed is not None:
+                at = fixed - POOL_VA
+            elif POOL_VA + at < BACKFIELD_VA + BACKFIELD_REQUEST[2] and POOL_VA + at + size > GADGET_CODE_VA:
+                at = (BACKFIELD_VA + BACKFIELD_REQUEST[2] - POOL_VA + align - 1) & -align
+        protected = FRANCHISE_OWNERSHIP_VA - POOL_VA
+        if owner == FRANCHISE_OWNERSHIP:
+            at = protected
+        elif ownership and at < protected + FRANCHISE_OWNERSHIP_SIZE and at + size > protected:
+            at = (protected + FRANCHISE_OWNERSHIP_SIZE + align - 1) & -align
+        # b81 qb34: unconditional, after the ownership step-over (an owner bumped over that page lands here next).
+        room = QB_ROOM_VA - POOL_VA
+        span = FIXED_SPAN_END - QB_ROOM_VA                  # C20: the room's pages, the trades page, (b81) side numbers, CPU trades
+        if owner == QB_ROOM_OWNER:
+            at = room
+        elif owner == QB_TRADES_OWNER:
+            at = QB_TRADES_VA - POOL_VA
+        elif owner == HELMET_SIDES_OWNER:
+            at = HELMET_SIDES_VA - POOL_VA
+        elif owner == CPU_TRADES_OWNER:
+            at = CPU_TRADES_VA - POOL_VA
+        elif at < room + span and at + size > room:
+            at = (room + span + align - 1) & -align
+        # b81 integration task 1: every fixed page above the span (numbers, awards, classic crowd, SportsCenter news,
+        # game outcomes) in one loop, until the owner overlaps none
+        at = _post_span_pages_at(owner, at, size, align)
         _require(at + size <= MAX_POOL_PAGES * PAGE, f"{kind} capacity exceeded for {owner}; the scale-out pool is full")
         out.append(dict(owner=owner, kind=kind, size=size, align=align,
                         va=POOL_VA + at, raw=POOL_RAW + at, owner_offset=0))
-        pool[0] = at + size
+        if owner not in FIXED_PAGE_OWNERS:
+            pool[0] = max(pool[0], at + size)
 
     for owner, kind, size, align in requests:
         if owner in LEGACY_OWNERS:
@@ -1125,6 +1443,16 @@ def _scale_allocations(requests):
             # it fit in packs exactly as before; only a plan that used to be refused here changes.
             to_pool(owner, kind, size, align)
     for owner, kind, size, align in late:
+        if owner == QB_INJURY_OWNER:
+            _require((owner, kind, size, align) == QB_INJURY_REQUEST, "foreign simulated quarterback injury allocation")
+            # Fixture state and code share this bank. The legacy code pages are read-only.
+            # Keep the released gadget and card slots available on sparse custom builds.
+            pool[0] = max(pool[0], BACKFIELD_VA + BACKFIELD_REQUEST[2] - POOL_VA)
+            to_pool(owner, kind, size, align)
+            continue
+        if owner in FIXED_PAGE_OWNERS or (gadget and (owner, kind) in LINEUP_SLOT_VA):
+            to_pool(owner, kind, size, align)
+            continue
         for r in regions:
             if r["kind"] != kind:
                 continue

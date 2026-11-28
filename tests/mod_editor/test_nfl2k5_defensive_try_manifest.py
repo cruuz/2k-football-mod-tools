@@ -113,9 +113,13 @@ class ManifestTests(unittest.TestCase):
         import ast
         tree = ast.parse(Path(builder.__file__).read_text(encoding="utf-8"))
         function = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "build_manifest")
-        for attribute in ("REQUESTS", "apply"):
-            self.assertTrue(any(isinstance(n, ast.Attribute) and isinstance(n.value, ast.Name)
-                                and n.value.id == "defensive_try" and n.attr == attribute for n in ast.walk(function)))
+        self.assertTrue(any(isinstance(n, ast.Attribute) and isinstance(n.value, ast.Name)
+                            and n.value.id == "defensive_try" and n.attr == "apply" for n in ast.walk(function)))
+        # Since f2338d527 the generator allocates space.dormant_union(), the one request list it shares with the
+        # default allocator proof; the owner's requests must be in it.
+        source = Path(builder.__file__).read_text(encoding="utf-8")
+        self.assertIn("all_requests = space.dormant_union()", ast.get_source_segment(source, function))
+        self.assertTrue(set(patch.REQUESTS) <= set(space.dormant_union()))
 
 
 if __name__ == "__main__":

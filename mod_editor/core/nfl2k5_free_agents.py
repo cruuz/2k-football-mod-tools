@@ -152,7 +152,7 @@ def apply_body(body, data=None):
                 "Free-agent pointer buffer is full.")
     # The first non-NFL records are the generator's window. Appended NFL flags
     # after this complete window cannot be overwritten by native class creation.
-    rr._require([p.index for p in doc.by_pool("primary") if p.group == "draft_class"]
+    rr._require([p.index for p in doc.by_pool("primary") if p.group in ("draft_class", "draft_slot")]
                 == list(range(1944, 2324)), "Native draft window changed.")
     for row in old:
         p = by[(row.get("pool", "primary"), row["index"])]

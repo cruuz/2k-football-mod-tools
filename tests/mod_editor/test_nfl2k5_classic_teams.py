@@ -163,6 +163,53 @@ class DataTests(unittest.TestCase):
         self.assertEqual(art.unif_words(words), bytes((0x84, 0x92, 0x00, 255, 0x84, 0x92, 0x00, 255)))
         self.assertEqual(ct.authored_kits()["kits"][0]["sides"]["H"]["atlas"]["ops"][0]["op"], "remap")
 
+    def test_the_seamen_helmet_anchor_fills_the_side_logo_place(self):
+        """b81-seamen (the owner 11/25: "the helmet anchor logo can be larger for the seamen too"): the same anchor art, scaled
+        to the height of the logo the donor shell carries on each side (the 2026 Dolphins mark, 51 texels: 38..108 x
+        48..98 and 38..108 x 157..207 on helmet02 of the v0.10 14H0) and centred where it sits, (73, 73) and (73, 182);
+        it was 33 texels at (72, 72) and (72, 182). Every anchor texel stays inside the painted-out decal island."""
+        import importlib.util
+        import numpy as np
+        spec = importlib.util.spec_from_file_location("ss2_art", ct.ROOT / "tools/b77/ss2_art.py")
+        art = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(art)
+        unit = np.asarray(art.anchor_polys(0, 0, 1.0)["ink"][0])
+        kit = ct.authored_kits()["kits"][0]
+        for s in "HA":
+            for row in kit["sides"][s]["art"]:
+                if row["kind"] != "txtr" or row["texture"] not in ("helmet00", "helmet02"):
+                    continue
+                ops = row["ops"]
+                inks = [ops[i] for i in range(len(ops) - 1) if ops[i]["op"] == "multipoly"
+                        and ops[i]["color"] == "#04201C" and ops[i + 1]["color"] == "#02A081"]
+                self.assertEqual(len(inks), 2, (s, row["texture"]))
+                islands = sorted(op["points"] for op in ops if op.get("note", "").startswith("donor dolphin"))
+                for ink, centre, flip in zip(sorted(inks, key=lambda op: op["polys"][0][0][1]), ((73, 73), (73, 182)),
+                                             (-1, 1)):
+                    pts = np.asarray(ink["polys"][0])
+                    lo, hi = pts.min(0), pts.max(0)
+                    self.assertAlmostEqual(hi[1] - lo[1], 51, delta=0.05)
+                    self.assertTrue(np.allclose((lo + hi) / 2, centre, atol=0.05), ((lo + hi) / 2, centre))
+                    # the same art: the old silhouette scaled (and turned for the upper island)
+                    self.assertTrue(np.allclose((pts - centre) / 51 * flip, unit, atol=0.01))
+                    box = next(b for b in islands if b[0][1] <= lo[1] and hi[1] <= b[2][1])
+                    self.assertTrue(box[0][0] <= lo[0] and hi[0] <= box[1][0])
+
+    def test_the_seamen_far_sheet_is_drawn_whatever_the_donor_holds(self):
+        """b81-seamen: the 11/20 build kept the 2026 Dolphins far-player sheet on both Seamen kits (its 14H0/14A0 sheet,
+        repaired by the sideline step, was not a pinned stock piece), so every player past the near cameras wore the
+        Dolphins' aqua, orange stripe and helmet and sleeve dolphins. The Seamen far sheet is the kit's own look
+        (own_look, with every art row): it draws on whatever pieces the donor holds, and no stock hash is looked up."""
+        from mod_editor.core import nfl2k5_moment_kits as mk
+        kit = ct.authored_kits()["kits"][0]
+        for s in "HA":
+            self.assertIs(kit["sides"][s].get("own_look"), True)
+            self.assertTrue(mk.own_look(kit["sides"][s]))
+        self.assertEqual(mk.stock_needs(ct.authored_kits()), {})        # no stock piece is looked up for them
+        judged = [r for r in mk.judged_rows(ct.authored_kits()) if r["kind"] in ("tset", "txtr", "atlas")]
+        self.assertTrue(judged and all(r["runs_on_user_art"] for r in judged))
+        self.assertFalse(any(mk.own_look(side) for k in mk.document()["kits"] for side in k["sides"].values()))
+
     def test_the_seamen_logo_art_is_the_video_card(self):
         from PIL import Image
         import numpy as np
@@ -233,6 +280,41 @@ class DataTests(unittest.TestCase):
                     self.assertIsNone(look["tone"])
                 else:
                     self.assertIn(look["tone"], range(6))
+
+    def test_the_seamen_named_stars_are_authored(self):
+        """b81-seamen (the owner 11/25: "bus jibber needs a star icon and right stick max abilities", "john mike peter a
+        star too"): Bus Jibber carries the star, the top tier and every stored right-stick move; John Mike Peter the
+        star only. Their ratings stay the videos' (the star does not come from the 90-overall rule)."""
+        tags = {t["name"]: t for t in self.data.presentation["seamen_2006"]["players"]}
+        self.assertEqual(set(tags), {"Bus Jibber", "John Mike Peter"})
+        bus, peter = tags["Bus Jibber"], tags["John Mike Peter"]
+        self.assertIs(bus["star"], True)
+        from mod_editor.core import nfl2k5_roster_records as rr
+        self.assertEqual(rr.ABILITY_TIERS[bus["ability_tier"]], "X-Factor")
+        self.assertEqual(bus["ability_tier"], len(rr.ABILITY_TIERS) - 1)       # the highest tier
+        self.assertEqual(set(bus["abilities"]), set(ct.RIGHT_STICK_ABILITIES))
+        self.assertEqual(set(ct.RIGHT_STICK_ABILITIES), {"right_stick_moves", "juke", "spin", "truck", "hurdle",
+                                                          "stiff_arm"})
+        self.assertEqual({k for k in peter if k != "why"}, {"name", "star"})
+        self.assertIs(peter["star"], True)
+        for key, row in self.data.presentation.items():
+            if key != "seamen_2006":
+                self.assertNotIn("players", row, key)
+
+    def test_player_tags_refuse_what_the_record_cannot_hold(self):
+        import copy
+        bad = [({"name": "Nobody Here", "star": True}, "names no player"),
+               ({"name": "Bus Jibber", "abilities": ["right_stick_moves"]}, "capacity"),
+               ({"name": "Bus Jibber", "ability_tier": 2, "abilities": list(ct.RIGHT_STICK_ABILITIES)}, "capacity"),
+               ({"name": "Bus Jibber", "ability_tier": 3, "abilities": ["moonwalk"]}, "unknown ability"),
+               ({"name": "Bus Jibber", "ability_tier": 4}, "tier"),
+               ({"name": "Bus Jibber", "star": 1}, "star"),
+               ({"name": "Bus Jibber", "colour": "teal"}, "fields")]
+        for tag, words in bad:
+            data = copy.deepcopy(self.data)
+            data.presentation["seamen_2006"]["players"] = [tag]
+            with self.subTest(tag=tag), self.assertRaisesRegex(ct.ClassicTeamsError, words):
+                data.validate()
 
     def test_kits_reuse_existing_styles_and_stadiums_are_franchise_rows(self):
         for key, row in self.data.presentation.items():
@@ -619,6 +701,141 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(ct.xbe_status(after), "applied")
         self.assertEqual(h1.status(after), "applied")
         self.assertEqual(ct.xbe_status(payload), "retail")
+
+    def test_the_seamen_far_sheet_edit_runs_on_a_donor_sheet_that_is_the_users_own(self):
+        """b81-seamen: with every donor piece counted as the user's own art (as the v0.10 far sheets were), the Seamen
+        look is still drawn: nothing kept, the helmet box repainted (the anchor in place of the dolphin)
+        and the donors' orange gone from the home sheet (the retail away sheet keeps one 8-texel-wide stripe column)."""
+        import copy
+        import numpy as np
+        from nfl_txtr import decode_chunk, parse_chunks
+        from mod_editor.core import nfl2k5_classic_kit_art as art
+        from mod_editor.core import nfl2k5_moment_kits as mk
+        from mod_editor.core import nfl2k5_roster_records as rr
+        doc = ct.authored_kits()
+        with rr._outer_image()(self.retail_dir) as archive:
+            by_id = {x.name_id: x for x in archive.entries}
+            packages = {s: archive.read(by_id[mm.name_id(mk.selector_name(s))].virtual_offset,
+                                        by_id[mm.name_id(mk.selector_name(s))].size) for s in mk.donors(doc)}
+        mine = {(selector, chunk) for selector in ("14H0", "14A0") for chunk in range(1, 53)}   # every piece the user's
+        kept = []
+        made = mk.compose(doc, packages, retail=dict(packages), unchanged=[], kept=kept, user_pieces=mine)
+        self.assertEqual(kept, [])                       # nothing of the Seamen look is kept off a donor piece
+        bare = copy.deepcopy(doc)
+        for side in bare["kits"][0]["sides"].values():
+            side["atlas"]["ops"] = []                     # the donor sheet with the pants overlay only
+        plain = mk.compose(bare, packages, retail=dict(packages), unchanged=[], kept=[], user_pieces=mine)
+
+        def sheet(package):
+            c51 = parse_chunks(package)[51]
+            span = package[c51.offset:c51.end_offset]
+            c = parse_chunks(span)[0]
+            return art._read(decode_chunk(span, c)[0], c.system_bytes, art._levels(256, 128, 5))[0][..., :3].astype(int)
+
+        def orange(rgb):
+            return int(((rgb[..., 0] > 180) & (rgb[..., 1] < 150) & (rgb[..., 2] < 110)).sum())
+
+        for name in ("14h14.iff", "14a14.iff"):
+            after, before = sheet(made[name]), sheet(plain[name])
+            helmet = (slice(103, 123), slice(100, 121))
+            self.assertGreaterEqual(int(np.any(after[helmet] != before[helmet], axis=2).sum()), 400, name)
+            self.assertGreater(orange(before), 200, name)
+            self.assertLessEqual(orange(after), 0 if name == "14h14.iff" else 32, name)
+
+    # b81-seamen: Bus Jibber's star, X-Factor tier and right-stick moves; John Mike Peter's star.
+    BUS_WORD = 0x0100 | (3 << 14) | 0x40 | 0x80 | 0x200 | 0x400 | 0x800 | 0x1000    # star, X-Factor, six move flags
+
+    def _seamen_file(self, data):
+        """The Seamen file of a full compile (the identity follows the list position)."""
+        from mod_editor.core import nfl2k5_roster_records as rr
+        with rr._outer_image()(self.retail_dir) as archive:
+            by_id = {x.name_id: x for x in archive.entries}
+            templates = {k: archive.read(by_id[mm.name_id(data.teams[k]["template"])].virtual_offset,
+                                         by_id[mm.name_id(data.teams[k]["template"])].size) for k in data.order()}
+        files, receipts = ct.compile_files(_main_roster(), templates, data, spares={}, has_kit=lambda c, s: True)
+        return dict(files)[receipts["seamen_2006"]["file"]]
+
+    def test_the_seamen_booth_uses_the_games_generic_announcer_id(self):
+        # b81-seamen (coordinator's ruling 3, 11/25): the Dolphins' 1984 template carries play-by-play id 14 (the booth
+        # said Miami / the Dolphins); "announcer": "generic" writes 99, the id the match handler 0x138200 falls back to.
+        # Nothing else of any file changes, and every other classic team keeps its franchise's id.
+        import copy
+        from mod_editor.core import nfl2k5_roster_records as rr
+        self.assertEqual(self.data.presentation["seamen_2006"]["announcer"], "generic")
+        self.assertEqual([k for k in self.data.order() if "announcer" in self.data.presentation[k]], ["seamen_2006"])
+        with rr._outer_image()(self.retail_dir) as archive:
+            by_id = {x.name_id: x for x in archive.entries}
+            templates = {k: archive.read(by_id[mm.name_id(self.data.teams[k]["template"])].virtual_offset,
+                                         by_id[mm.name_id(self.data.teams[k]["template"])].size)
+                         for k in self.data.order()}
+        plain_data = copy.deepcopy(self.data)
+        del plain_data.presentation["seamen_2006"]["announcer"]
+        files, receipts = ct.compile_files(_main_roster(), templates, self.data, spares={}, has_kit=lambda c, s: True)
+        plain, _ = ct.compile_files(_main_roster(), templates, plain_data, spares={}, has_kit=lambda c, s: True)
+        sea = receipts["seamen_2006"]["file"]
+        for (name, raw), (name2, raw2) in zip(files, plain):
+            self.assertEqual(name, name2)
+            if name != sea:
+                self.assertEqual(raw, raw2, name)
+                continue
+            t = ct._team_offset(raw)
+            self.assertEqual(struct.unpack_from("<H", raw2, t + 0x154)[0], 14)          # the Dolphins' template id
+            self.assertEqual(struct.unpack_from("<H", raw, t + 0x154)[0], ct.GENERIC_ANNOUNCER)
+            self.assertEqual(ct.GENERIC_ANNOUNCER, 99)
+            self.assertEqual([i for i in range(len(raw)) if raw[i] != raw2[i]], [t + 0x154])
+        bad = copy.deepcopy(self.data)
+        bad.presentation["seamen_2006"]["announcer"] = 14
+        with self.assertRaises(ValueError):
+            bad.validate()
+
+    def test_the_seamen_tags_change_only_the_two_named_records_footer(self):
+        import copy
+        from mod_editor.core import nfl2k5_roster_records as rr
+        self.assertEqual(self.receipts["seamen_2006"]["player_tags"], ["Bus Jibber", "John Mike Peter"])
+        tagged = self._seamen_file(self.data)
+        plain_data = copy.deepcopy(self.data)
+        del plain_data.presentation["seamen_2006"]["players"]
+        plain = self._seamen_file(plain_data)
+        self.assertEqual(len(tagged), len(plain))
+        doc = rr.RosterDocument(tagged[32:])
+        offsets = {f"{p.first} {p.last}": 32 + p.offset for p in doc.players}
+        bus, peter = offsets["Bus Jibber"], offsets["John Mike Peter"]
+        diff = [i for i in range(len(tagged)) if tagged[i] != plain[i]]
+        self.assertTrue(diff and all(i in (bus + 0x52, bus + 0x53, peter + 0x53) for i in diff), [hex(i) for i in diff])
+        self.assertEqual(struct.unpack_from("<H", plain, bus + 0x52)[0], 0)      # before: no star, tier or move
+        self.assertEqual(struct.unpack_from("<H", tagged, bus + 0x52)[0], self.BUS_WORD)
+        self.assertEqual(struct.unpack_from("<H", tagged, peter + 0x52)[0],
+                         struct.unpack_from("<H", plain, peter + 0x52)[0] | 0x0100)
+        record = rr.PlayerRecord.decode(tagged[bus:bus + rr.PLAYER_SIZE])
+        self.assertEqual((record.values["star_tag"], record.ability_tier), (1, 3))
+        self.assertEqual({k for k, on in record.abilities.items() if on}, set(ct.RIGHT_STICK_ABILITIES))
+        from mod_editor.core import nfl2k5_my_career_prospects as prospects
+        for p in doc.players:                       # every other player keeps the 90-overall rule
+            if f"{p.first} {p.last}" not in ("Bus Jibber", "John Mike Peter"):
+                self.assertEqual(p.record.values["star_tag"], int(prospects.native_overall(p.record) >= mm.STAR_MIN_OVERALL),
+                                 f"{p.first} {p.last}")
+
+    def test_the_seamen_stars_reach_the_imported_records(self):
+        """The import (C1030 with the moments' +0x52 word copy) gives the Quick Game records the file's star, tier and
+        move flags: Bus Jibber's star under him in play (nfl2k5_player_star reads +0x53 bit 0), John Mike Peter's star."""
+        cpu = self.make()
+        name = self.receipts["seamen_2006"]["file"]
+        cpu.team_select(cpu.team(0), cpu.team(15))
+        for _ in range(151):
+            step = cpu.press("home", -1)
+            if step["loaded"] and step["loaded"][0] == name:
+                break
+        else:
+            self.fail("the Seamen never loaded")
+        team = cpu.spare_slots()[0]                 # USER1, the home side's spare slot
+        words = {}
+        for k in range(cpu.read(team + 0x11C, 1)[0]):
+            person = cpu.person(cpu.r(team + 4 * k))
+            words[f"{person['first']} {person['last']}"] = struct.unpack("<H", cpu.read(person["pointer"] + 0x52, 2))[0]
+        self.assertEqual(len(words), 53)
+        self.assertEqual(words["Bus Jibber"], self.BUS_WORD)
+        self.assertEqual(words["John Mike Peter"] & 0x0100, 0x0100)
+        self.assertEqual(sorted(n for n, w in words.items() if w & 0x0100), ["Bus Jibber", "John Mike Peter"])
 
 
 V09_RC_XBE = Path("/media/noah/Storage/2K5-project/b780-rev2-tmp/evidence/v09_rc_default.xbe")

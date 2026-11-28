@@ -69,6 +69,8 @@ class ProjectArrowheadSourceTests(unittest.TestCase):
             _save_image_receipt=colour._save_image_receipt, normalize_settings=colour.normalize_settings,
             settings_id=colour.settings_id, RECEIPT_SCHEMA=colour.RECEIPT_SCHEMA,
             xbe_status=lambda payload, settings=None: "retail",
+            # b81 #43 ruling 3: the finished build's readback reads the colour receipt the image step wrote
+            image_status=lambda source, *, receipt=None, exclude=None: "retail",
             check_image_request=lambda source, settings=None, *, receipt=None: "retail",
             apply=lambda payload, *, enabled=True, settings=None, previous_settings=None: (payload, {"state": "applied"}),
             verify=lambda payload, *, enabled=True, settings=None: None,

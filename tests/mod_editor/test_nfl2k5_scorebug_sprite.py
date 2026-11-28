@@ -308,7 +308,8 @@ class NativeTests(unittest.TestCase):
   m.uc.mem_write(0x2f010,bytes.fromhex('c20400'))
   result=c.run();obj=c.lookup('SCNE','score_bug')
   self.assertEqual(m.get(obj-256+sprite.MARKER_OFFSET),sprite.MAGIC)
-  self.assertEqual(result['fonts'],0);self.assertEqual(result['textures'],34)
+  self.assertEqual(result['fonts'],0);self.assertEqual(result['textures'],35)  # b81-seamen: + the Seamen's own panel sbSEh0
+  self.assertTrue(c.lookup('TXTR','sbSEh0'))
   self.assertLess(receipt['appended_bytes'],400*1024)
   self.assertEqual(m.get(obj+0x1c),11)
   self.assertEqual(m.get(obj-256+sprite.TABLE_OFFSET+28),50)

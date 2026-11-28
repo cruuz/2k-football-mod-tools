@@ -75,26 +75,51 @@ class NativePresentation(unittest.TestCase):
         self.assertEqual(w.get(0xE5FC98), 0)
 
     def test_native_offense_publication_uses_profile_without_virtual_controller(self):
-        from mod_editor.core import nfl2k5_play_scoring as s, nfl2k5_playbook_inspector as ip
+        from mod_editor.core import nfl2k5_play_scoring as s, nfl2k5_playbook_inspector as ip, nfl2k5_vip as vip
         from tools.b77.vp1_verify import settings
+
+        # At 6:00 the leading team's first-and-ten and third-and-one still use
+        # their VIP rings. At 5:00 the clock-aware CPU owns both calls. Third
+        # and long also stays with the native caller outside the clock window.
+        situations = (
+            (0, {**settings(0), "seconds": 360}, True), (0, settings(0), False),
+            (3, settings(3), False),
+            (6, {**settings(6), "seconds": 360}, True), (6, settings(6), False),
+            (12, settings(12), False), (13, settings(13), False),
+            (18, settings(18), True), (19, settings(19), True),
+        )
         for mode in (4, 5, 6, 7):
             w, context = self.world(mode)
             out = s.SOURCE + 0x19100
-            for index in (0, 3, 6, 12, 18, 19):
-                w.configure(**settings(index))
+            stock = ai.SYMBOLS["offense_continue"]
+            w.m.hook_add(w.ucmod.UC_HOOK_CODE, lambda *_: w.visits.update(["stock_offense"]),
+                         begin=stock, end=stock)
+            for index, situation, uses_profile in situations:
+                w.configure(**situation)
                 w.call(0x1B2D40, ecx=0xE5FC60)
                 for _ in range(4):
+                    previous_record = w.get(context + 0xDE8)
+                    vip_draws, stock_calls = w.visits["0x17f1d0"], w.visits["stock_offense"]
                     w.call(0x20B670, ecx=0xE5FC60, edx=out)
                     category, formation, play, coverage = struct.unpack("<4I", w.m.mem_read(out, 16))
                     fi = (formation - s.BOOK - ip.FORMATION_BASE) // ip.FORMATION_SIZE
                     pi = (play - s.BOOK - ip.PLAY_BASE) // ip.PLAY_SIZE
-                    flags = w.get(w.get(0xE5FC60 + 12) + 0x24)
-                    self.assertIn((fi, pi, bool(flags & 0x1004)), {
-                        (c["formation"], c["play"], bool(c["flipped"]))
-                        for c in self.receipt["pools"][index]["choices"]})
+                    record = w.get(context + 0xDE8)
+                    self.assertEqual(w.visits["0x17f1d0"] - vip_draws, int(uses_profile), (mode, situation))
+                    if uses_profile:
+                        flags = w.get(w.get(0xE5FC60 + 12) + 0x24)
+                        self.assertIn((fi, pi, bool(flags & 0x1004)), {
+                            (c["formation"], c["play"], bool(c["flipped"]))
+                            for c in self.receipt["pools"][index]["choices"]})
+                        pool = context + vip.OFFENSE + index * vip.POOL_SIZE
+                        self.assertTrue(pool + 2 <= record < pool + vip.POOL_SIZE)
+                    else:
+                        self.assertEqual(w.visits["stock_offense"] - stock_calls, 1)
+                        self.assertEqual(record, previous_record)
+                        self.assertIn(fi, range(len(w.book.formations)))
+                        self.assertIn(pi, range(len(w.book.plays)))
                     self.assertEqual(play, coverage)
                     self.assertNotEqual(category, 0)
-                    self.assertNotEqual(w.get(context + 0xDE8), 0)
                     self.assertEqual(w.get(0xE5FC98), 0)
                     self.assertEqual(w.get(w.state_va + 60), 0)
                     self.assertEqual(w.get(0xE5FF80), mode)

@@ -264,6 +264,7 @@ class StudioSessionTests(unittest.TestCase):
         first = self._user_file("first.png", b"USER-A-CONTAINER")
         second = self._user_file("second.png", b"USER-B-CONTAINER")
         self.assertTrue(self.session.replace(self.asset, first).modified)
+        self.assertEqual(self.session.staged_path(self.asset.asset_id), self.session.staged_path(self.asset))
         self.assertTrue(self.session.is_modified(self.asset))
         self.assertEqual(self.session.current_path(self.asset).read_bytes(), b"USER-A-CONTAINER")
 
@@ -273,6 +274,7 @@ class StudioSessionTests(unittest.TestCase):
         self.assertEqual(self.session.current_path(self.asset).read_bytes(), b"USER-A-CONTAINER")
 
         self.assertTrue(self.session.revert(self.asset))
+        self.assertIsNone(self.session.staged_path(self.asset.asset_id))
         self.assertFalse(self.session.is_modified(self.asset))
         self.assertEqual(self.session.current_path(self.asset), self.original)
         self.assertEqual(self.session.undo(), "Revert Test Torso")

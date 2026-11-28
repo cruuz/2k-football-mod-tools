@@ -217,7 +217,8 @@ class V05NativeTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.v05 = f4tests._v05_xbe()
+        # df9736d07 folded the v0.5 executable and roster readers into one input pair (disc, or both members).
+        cls.v05, _ = f4tests._v05_inputs()
         sys.path.insert(0, str(REPO / "tools" / "b77"))
         import f4_repair
         import f4b_repair

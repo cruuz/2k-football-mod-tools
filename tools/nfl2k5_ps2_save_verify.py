@@ -9,9 +9,9 @@ the original and edited saves and re-derives, from the bytes alone, that
   2. the payload changed *only* inside the byte ranges the writer declared;
   3. ``EXTRA`` equals the CRC-32 of the edited payload (and the original's
      ``EXTRA`` matched its own payload, so the baseline was sound);
-  4. the ROST arena still parses and every table count *and offset* is
-     unchanged, i.e. the edit stayed inside its fixed allocation instead of
-     moving the arena.
+  4. the ROST tables stay in their original allocations. A full roster edit
+     may change the free-agent list within its allocation. The complete
+     reread must then match the requested payload.
 
 **The verification re-derives the container itself.**  A verifier that reuses
 the writer's parser cannot see a bug in that parser: both sides would read the
@@ -59,6 +59,8 @@ _PAGE_DATA = 512
 _ECC_CHUNK = 128
 _ECC_SPARE_USED = 12
 _ERASED_SPARE = b"\xff" * _ECC_SPARE_USED
+_PCSX2_CHECKSUM_OFFSET = 0x210
+_FORMATTED_FF_ECC = bytes.fromhex("77 7f 7f") * 4
 
 # Page-ECC constants, restated here rather than imported: a verifier that
 # borrowed the writer's ECC could only ever agree with it.
@@ -88,6 +90,7 @@ class DecodedSave:
 
     directory: str
     files: dict[str, bytes] = field(default_factory=dict)
+    card_pages: dict[str, dict[int, int]] = field(default_factory=dict, repr=False, compare=False)
 
     @property
     def payload(self) -> bytes:
@@ -108,10 +111,13 @@ def _relative_pointer(body: bytes, offset: int) -> int | None:
     """Resolve the engine's ``field_offset + int32le(field) - 1`` rule."""
     if offset + 4 > len(body):
         return None
-    raw = struct.unpack_from("<I", body, offset)[0]
+    raw = struct.unpack_from("<i", body, offset)[0]
     if raw == 0:
         return None
-    return offset + raw - 1
+    target = offset + raw - 1
+    if not 0 <= target < len(body):
+        raise VerifyError(f"Relative pointer at 0x{offset:x} is outside the roster")
+    return target
 
 
 def decode_psu(path: Path) -> DecodedSave:
@@ -153,7 +159,7 @@ def decode_directory(path: Path) -> DecodedSave:
     return decoded
 
 
-def decode_memcard(path: Path, directory: str | None = None) -> DecodedSave:
+def decode_memcard(path: Path, directory: str | None = None, *, require_named_payload: bool = True) -> DecodedSave:
     """Read a save out of a .ps2 card image without the writer's reader.
 
     Independently walks the superblock, the indirect FAT and the directory
@@ -216,13 +222,25 @@ def decode_memcard(path: Path, directory: str | None = None) -> DecodedSave:
                 yield mode, length, first, name
                 seen += 1
 
-    def read_file(start: int, length: int) -> bytes:
+    def read_file(start: int, length: int) -> tuple[bytes, dict[int, int]]:
         out = bytearray()
+        pages: dict[int, int] = {}
         for index in chain(start):
-            out += cluster(alloc_offset + index)
+            first_page = (alloc_offset + index) * pages_per_cluster
+            for index_in_cluster in range(pages_per_cluster):
+                remaining = length - len(out)
+                if not remaining:
+                    break
+                physical = first_page + index_in_cluster
+                size = min(remaining, _PAGE_DATA)
+                block = page(physical)
+                _require(len(block) == _PAGE_DATA, f"File page {physical} falls outside the card")
+                pages[physical] = size
+                out += block[:size]
             if len(out) >= length:
                 break
-        return bytes(out[:length])
+        _require(len(out) == length, "The file ends before its declared length")
+        return bytes(out), pages
 
     root_count = next(records(rootdir, 1))[1]
     found: list[DecodedSave] = []
@@ -237,8 +255,8 @@ def decode_memcard(path: Path, directory: str | None = None) -> DecodedSave:
                 continue
             if not entry_mode & 0x8000:
                 continue
-            decoded.files[entry_name] = read_file(entry_first, entry_len)
-        if decoded.directory in decoded.files:
+            decoded.files[entry_name], decoded.card_pages[entry_name] = read_file(entry_first, entry_len)
+        if decoded.directory in decoded.files or (directory is not None and not require_named_payload):
             found.append(decoded)
     if not found:
         raise VerifyError(f"{path}: no matching save on this memory card")
@@ -340,7 +358,7 @@ def audit_memcard_ecc(path: Path) -> dict:
     raw = Path(path).read_bytes()
     if len(raw) % _PAGE:
         raise VerifyError(f"{path}: not a {_PAGE}-byte-page memory-card image")
-    checked = erased = 0
+    checked = erased = pcsx2_checksum_pages = 0
     bad: list[int] = []
     for page in range(len(raw) // _PAGE):
         base = page * _PAGE
@@ -348,6 +366,13 @@ def audit_memcard_ecc(path: Path) -> dict:
         spare = raw[base + _PAGE_DATA : base + _PAGE][:_ECC_SPARE_USED]
         if spare == _ERASED_SPARE:
             erased += 1
+            continue
+        # PCSX2 FileMemoryCard::Close writes its 64-bit state checksum at 0x210
+        # without replacing the reserved page's formatted NAND parity.
+        if (base == _PCSX2_CHECKSUM_OFFSET and raw.startswith(b"Sony PS2 Memory Card Format")
+                and data[:8] != b"\xff" * 8 and data[8:] == b"\xff" * (_PAGE_DATA - 8)
+                and spare == _FORMATTED_FF_ECC):
+            pcsx2_checksum_pages += 1
             continue
         expected = b"".join(
             _chunk_ecc(data[start : start + _ECC_CHUNK])
@@ -359,6 +384,7 @@ def audit_memcard_ecc(path: Path) -> dict:
     return {
         "pages_checked": checked,
         "pages_erased": erased,
+        "pcsx2_checksum_pages": pcsx2_checksum_pages,
         "pages_bad": len(bad),
         "first_bad_pages": bad[:8],
     }
@@ -366,7 +392,7 @@ def audit_memcard_ecc(path: Path) -> dict:
 
 def verify_memcard_write(
     original_card: Path, written_card: Path, directory: str,
-    declared: list[dict] | None = None,
+    declared: list[dict] | None = None, *, expected_payload: bytes | None = None,
 ) -> dict:
     """Verify a save edited directly into a memory-card image.
 
@@ -384,27 +410,39 @@ def verify_memcard_write(
     )
     report["ecc"] = ecc
 
-    before_all = {save.directory: save for save in decode_memcard_all(original_card)}
-    after_all = {save.directory: save for save in decode_memcard_all(written_card)}
-    _require(
-        set(before_all) == set(after_all),
-        "the set of saves on the card changed: "
-        f"{sorted(set(before_all) ^ set(after_all))}",
-    )
-    _require(directory in after_all, f"{written_card} has no save named {directory}")
-
-    untouched = []
-    for name in sorted(before_all):
-        if name == directory:
+    before = decode_memcard(original_card, directory)
+    after = decode_memcard(written_card, directory)
+    original = Path(original_card).read_bytes()
+    written = Path(written_card).read_bytes()
+    _require(len(original) == len(written), "Memory card size changed")
+    editable = {**before.card_pages[directory], **before.card_pages.get("EXTRA", {})}
+    changed_pages = []
+    for start in range(0, len(original), _PAGE):
+        prior = original[start:start + _PAGE]
+        current = written[start:start + _PAGE]
+        if prior == current:
             continue
-        _require(
-            before_all[name].files == after_all[name].files,
-            f"save {name} changed, but only {directory} may be written",
-        )
-        untouched.append(name)
-    report["other_saves_untouched"] = untouched
-
-    report["save"] = verify(before_all[directory], after_all[directory], declared)
+        index = start // _PAGE
+        _require(index in editable, f"Page {index} changed outside the selected save")
+        file_bytes = editable[index]
+        _require(prior[file_bytes:_PAGE_DATA] == current[file_bytes:_PAGE_DATA],
+                 f"Page {index} changed beyond the selected file")
+        _require(prior[_PAGE_DATA + _ECC_SPARE_USED:] == current[_PAGE_DATA + _ECC_SPARE_USED:],
+                 f"Page {index} changed reserved spare bytes")
+        parity = b"".join(_chunk_ecc(current[i:i + _ECC_CHUNK]) for i in range(0, _PAGE_DATA, _ECC_CHUNK))
+        _require(current[_PAGE_DATA:_PAGE_DATA + _ECC_SPARE_USED] == parity,
+                 f"Edited page {index} has wrong ECC")
+        changed_pages.append(index)
+    report["changed_card_pages"] = changed_pages
+    other_names = sorted(name for name in _memcard_directories(original_card) if name != directory)
+    for name in other_names:
+        # A second save could reference one of the edited physical pages. Other
+        # games also use names such as "game.dat" for their own payload.
+        sibling_before = decode_memcard(original_card, name, require_named_payload=False)
+        sibling_after = decode_memcard(written_card, name, require_named_payload=False)
+        _require(sibling_before.files == sibling_after.files, f"Save {name} changed outside the selected save")
+    report["other_saves_untouched"] = other_names
+    report["save"] = verify(before, after, declared, expected_payload=expected_payload)
     report["result"] = "PASS"
     return report
 
@@ -426,12 +464,7 @@ def decode_save(path: Path, directory: str | None = None) -> DecodedSave:
     return decode_psu(path)
 
 
-def decode_roster_tables(payload: bytes) -> dict[str, tuple[int, int]]:
-    """Locate the ROST arena and return {table: (count, offset)}.
-
-    Independently re-derived: this finds the container, follows the root
-    pointer and walks the table geometry using the constants above.
-    """
+def _roster_arena(payload: bytes) -> tuple[bytes, int]:
     base = None
     for candidate in (0, _FRANCHISE_PREFIX):
         if payload[candidate : candidate + 4] == _ROST_MAGIC:
@@ -442,12 +475,19 @@ def decode_roster_tables(payload: bytes) -> dict[str, tuple[int, int]]:
     stored = struct.unpack_from("<I", payload, base + 4)[0]
     if base + _WRAPPER_SIZE + stored > len(payload):
         raise VerifyError("the ROST container overruns the payload")
-    body = payload[base + _WRAPPER_SIZE :]
+    body = payload[base + _WRAPPER_SIZE : base + _WRAPPER_SIZE + stored]
     if body[0x0C:0x10] != _ROST_MAGIC:
         raise VerifyError("the ROST object header is malformed")
     root = _relative_pointer(body, 0x14)
     if root is None:
         raise VerifyError("the ROST root pointer is null")
+    _require(root + 0x60 <= len(body), "the ROST root overruns the arena")
+    return body, root
+
+
+def decode_roster_tables(payload: bytes) -> dict[str, tuple[int, int]]:
+    """Independently walk the ROST root and return {table: (count, offset)}."""
+    body, root = _roster_arena(payload)
     tables: dict[str, tuple[int, int]] = {}
     for name, count_offset, pointer_offset, stride in _TABLE_GEOMETRY:
         count = struct.unpack_from("<I", body, root + count_offset)[0]
@@ -460,6 +500,33 @@ def decode_roster_tables(payload: bytes) -> dict[str, tuple[int, int]]:
             raise VerifyError(f"table {name} overruns the arena")
         tables[name] = (count, pointer)
     return tables
+
+
+def _verify_free_agents(original: bytes, edited: bytes, before_count: int,
+                        tables: dict[str, tuple[int, int]]) -> None:
+    """A signing or release changes occupancy of the game's fixed free-agent list."""
+    count, start = tables["player_pointer_vector"]
+    if start < 0:
+        return  # decode_roster_tables already requires an empty list for a null pointer.
+    body, root = _roster_arena(edited)
+    end = start + 4 * count
+    if count == before_count and _roster_arena(original)[0][start:end] == body[start:end]:
+        return
+    # The two additional object pointers are the string and career-history pools.
+    starts = [offset for _, offset in tables.values()]
+    starts.extend(_relative_pointer(body, root + field) for field in (0x2C, 0x44))
+    limit = min((offset for offset in starts if offset is not None and offset > start), default=len(body))
+    _require(count <= 2500 and end <= limit, "the free-agent list exceeds its allocation")
+    players = set()
+    for name in ("primary_players", "secondary_players"):
+        size, first = tables[name]
+        players.update(range(first, first + size * 0x54, 0x54))
+    seen = set()
+    for offset in range(start, end, 4):
+        target = _relative_pointer(body, offset)
+        _require(target in players, "a free-agent pointer does not address a player record")
+        _require(target not in seen, "a player appears twice in the free-agent list")
+        seen.add(target)
 
 
 class VerifyError(AssertionError):
@@ -489,8 +556,26 @@ def changed_ranges(before: bytes, after: bytes) -> list[tuple[int, int]]:
     return spans
 
 
+def _player_names(payload: bytes, table: tuple[int, int]) -> dict:
+    base = 0 if payload.startswith(_ROST_MAGIC) else _FRANCHISE_PREFIX
+    body = payload[base + _WRAPPER_SIZE:]
+    count, start = table
+    names = {}
+    for index in range(count):
+        for field, offset in (("first", 0x10), ("last", 0x14)):
+            ptr = _relative_pointer(body, start + index * 0x54 + offset)
+            if ptr is None:
+                continue
+            end = ptr
+            while end + 2 <= len(body) and body[end:end + 2] != b"\0\0":
+                end += 2
+            _require(end + 2 <= len(body), f"player {index} {field} name has no terminator")
+            names[index, field] = body[ptr:end]
+    return names
+
+
 def verify(original: DecodedSave, edited: DecodedSave,
-           declared: list[dict] | None = None) -> dict:
+           declared: list[dict] | None = None, *, expected_payload: bytes | None = None) -> dict:
     report: dict[str, object] = {"schema": "nfl2k5_ps2_save_verify/v1"}
 
     _require(original.directory == edited.directory,
@@ -511,6 +596,8 @@ def verify(original: DecodedSave, edited: DecodedSave,
              "the baseline is not a sound reference")
     _require(edited.stored_crc == edited.computed_crc(),
              "the edited save's EXTRA does not match its payload CRC-32")
+    if expected_payload is not None:
+        _require(edited.payload == expected_payload, "the reread roster differs from the requested edits")
 
     spans = changed_ranges(original.payload, edited.payload)
     report["changed_spans"] = [{"offset": off, "length": length} for off, length in spans]
@@ -536,12 +623,22 @@ def verify(original: DecodedSave, edited: DecodedSave,
     for name in before_tables:
         before_count, before_offset = before_tables[name]
         after_count, after_offset = after_tables[name]
-        _require(before_count == after_count,
-                 f"ROST table {name} count changed "
-                 f"{before_count} -> {after_count}")
         _require(before_offset == after_offset,
                  f"ROST table {name} moved; the arena must not be relocated")
+        if expected_payload is not None and name == "player_pointer_vector":
+            _verify_free_agents(original.payload, edited.payload, before_count, after_tables)
+        else:
+            _require(before_count == after_count,
+                     f"ROST table {name} count changed {before_count} -> {after_count}")
     report["tables_checked"] = len(before_tables)
+    if declared and all({"player", "field", "value"} <= item.keys() for item in declared):
+        expected = _player_names(original.payload, before_tables["primary_players"])
+        for item in declared:
+            key = (int(item["player"]), item["field"])
+            _require(key in expected, f"No original name for {key}")
+            expected[key] = item["value"].encode("utf-16le")
+        _require(_player_names(edited.payload, after_tables["primary_players"]) == expected,
+                 "A player name differs from the declared changes")
     report["payload_bytes"] = len(edited.payload)
     report["crc32"] = zlib.crc32(edited.payload) & 0xFFFFFFFF
     report["result"] = "PASS"

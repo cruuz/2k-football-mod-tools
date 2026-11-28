@@ -149,16 +149,157 @@ def player_index(rows):
     return out
 
 
+def term_end(row):
+    """The last season of an OTC contract row's term (year signed + years - 1), or None."""
+    try:
+        signed, years = int(row.get('year_signed')), int(row.get('years'))
+    except (AttributeError, TypeError, ValueError):
+        return None
+    return signed + years - 1 if years > 0 else None
+
+
+PRORATION_TOLERANCE = 10_000      # dollars: OTC rounds its millions to six places
+# a full figure within this of the player's one-year minimum is "at or near the minimum" (coordinator 11/27): the
+# bonus a minimum-salary deal carries in OTC's 2026 rows (Casey Kreiter, Max Mitchell: $1.3M / $1.215M + $187,500)
+NEAR_MINIMUM = 187_500
+
+
+def season_entry(row, year=2026):
+    for season in nested(row.get('season_history')) if row else []:
+        if str(season.get('year', '')) == str(year):
+            return season
+    return None
+
+
+def paid_for_part_of_2026(row, season):
+    """OTC pays a man who joins a club in season only the weeks left: his 2026 cash is under his base salary, or, on a
+    one-year deal (which may carry a signing bonus), under the deal's whole value."""
+    if season is None or season.get('cash_paid') is None:
+        return False
+    cash = millions(season['cash_paid'])
+    if season.get('base_salary') and cash < millions(season['base_salary']) - PRORATION_TOLERANCE:
+        return True
+    return int(row.get('years') or 0) == 1 and bool(row.get('apy')) and \
+        cash < millions(row['apy']) - PRORATION_TOLERANCE
+
+
+def deal_history(row):
+    """The contract_history entries of the row's own deal: the same years and value (OTC may restate the year signed of
+    a deal that changed clubs)."""
+    history = row.get('contract_history')
+    return [c for c in (nested(history) if history is not None else []) if c.get('yrs') == row.get('years')
+            and c.get('total') is not None and row.get('value') is not None
+            and abs(millions(c['total']) - millions(row['value'])) <= 1000]
+
+
+def changed_clubs(row):
+    """OTC lists more than one club for the deal ("ARI/HOU"), or its history shows it traded or claimed."""
+    return '/' in str(row.get('team') or '') or any(c.get('status') in ('Traded', 'Claimed') for c in deal_history(row))
+
+
+def in_season_full_2026(row, original):
+    """b81 #48 review (coordinator 11/27): a player who moved in season is charged the deal's full-season 2026 figure,
+    not OverTheCap's prorated slice: the original schedule's 2026 cap hit, or the deal's APY when that is missing.
+    Returns {'dollars', 'how', ...} when OTC's 2026 entry for this contract is a proration from an in-season trade,
+    waiver claim or signing, else None.
+
+    original: this contract's 2026 entry in the import's 09-24 snapshot (fc/data/contract_audit.json ledger: the same
+    gsis id, years and value, signed no later; release_contracts.original_2026), or None. The cases, in order:
+      * traded or claimed after 09-24: the 09-24 entry is at another club and charged more. The full figure is that
+        entry's cap number, the original schedule's 2026 cap hit;
+      * traded or claimed in season with no pre-move entry: the deal changed clubs (changed_clubs) and he was paid
+        for part of 2026 only (paid_for_part_of_2026). The original schedule is not in today's row (its
+        bonus proration stays with the old club), so the full figure is the APY;
+      * signed in season: a 2026 deal, not an extension, paid for part of 2026 only, which the 09-24 snapshot does not
+        hold at this club, or held with its base salary already prorated. There is no unprorated schedule, so the full
+        figure is the APY.
+    A deal at the same club and unprorated on 09-24 whose charge is lower now (a restructure, forfeited pay) did not
+    move and is not changed here. The release import names its one exception (release_contracts.FULL_SEASON_EXCEPTIONS:
+    Quenton Nelson's reviewed correction, coordinator ruling 11/27)."""
+    season = season_entry(row)
+    if not season or not season.get('cap_number'):
+        return None
+    cap = millions(season['cap_number'])
+    if original is not None:
+        before = millions(original.get('cap_number') or 0)
+        if original.get('team') != season.get('team') and cap < before - PRORATION_TOLERANCE:
+            return {'dollars': before, 'how': "traded or claimed after 09-24: the 09-24 schedule's 2026 cap hit",
+                    'from_club': original.get('team'), 'to_club': season.get('team'), 'otc_2026_dollars': cap}
+    if not paid_for_part_of_2026(row, season) or not row.get('apy'):
+        return None
+    if changed_clubs(row):
+        return {'dollars': millions(row['apy']), 'clubs': row.get('team'), 'otc_2026_dollars': cap,
+                'how': "traded or claimed in season (no pre-move schedule): the deal's APY"}
+    held = original is not None and original.get('team') == season.get('team') and not (
+        original.get('cash_paid') is not None and original.get('base_salary')
+        and millions(original['cash_paid']) < millions(original['base_salary']) - PRORATION_TOLERANCE)
+    extension = any(c.get('contract_type') == 'Extension' for c in deal_history(row)[-1:])
+    if int(row.get('year_signed') or 0) == 2026 and not held and not extension:
+        return {'dollars': millions(row['apy']), 'how': "signed in season: the deal's APY", 'otc_2026_dollars': cap}
+    return None
+
+
+def contract_fit(player, row, data, *, floor_opening=False, full_2026=None):
+    """One player's native contract from his active OTC row (or None), as audit() fits it.
+
+    Returns (fit, modeled, excluded): an observed 2026-on cap schedule is fitted as it is; an absent one takes
+    fallback_schedule (modeled). Raises ValueError for the schedules audit() leaves to review (a discontinuous or
+    duplicated positive schedule). b81 #48: full_2026 (in_season_full_2026) replaces an in-season mover's prorated
+    2026 charge with the deal's full-season figure when that is above his one-year minimum by more than NEAR_MINIMUM;
+    floor_opening raises a 2026 charge still under that minimum to it (a full figure at or near the minimum, or a
+    lower charge with no move behind it). The later years stay as OTC lists them."""
+    modeled = None
+    try:
+        if row is None:
+            raise ValueError('no active contract in pinned release')
+        cap, excluded = cap_schedule(row)
+    except (ValueError, TypeError) as exc:
+        reason = str(exc)
+        if reason not in ('no active contract in pinned release', 'no continuous cap schedule beginning in 2026'):
+            raise ValueError(reason) from exc
+        future = [s for s in nested(row['season_history']) if str(s.get('year', '')).isdigit()
+                  and int(s['year']) >= 2026 and s.get('cap_number')] if row else []
+        if future:
+            raise ValueError('noncontinuous future schedule requires review') from exc
+        cap, modeled = fallback_schedule(player, row, data)
+        modeled = {**modeled, 'reason': reason}
+        excluded = []
+    floor = data['minimums']['dollars'][min(rr.accrued_seasons(player.record.values['years_pro']), 7)]
+    if full_2026 is not None and modeled is None and cap[0] < full_2026['dollars'] and \
+            full_2026['dollars'] > floor + NEAR_MINIMUM:
+        modeled = {'evidence': 'DESIGN', 'rule': 'observed 2026 cap schedule', 'in_season_2026': full_2026}
+        cap = [full_2026['dollars']] + list(cap[1:])
+    if floor_opening and cap[0] < floor:
+        cap = [floor] + list(cap[1:])
+        modeled = {**(modeled or {'evidence': 'DESIGN', 'rule': 'observed 2026 cap schedule'}),
+                   'opening_floor_dollars': floor}
+    # a one-year charge at the minimum takes the smallest legal charge at or above it, never a nearest fit below it
+    at_minimum = modeled and len(cap) == 1 and (modeled['rule'] == 'one-year active-roster CBA minimum' or cap[0] <= floor)
+    fit = fit_minimum(cap[0]) if at_minimum else fit_schedule(cap, opening_priority=True)
+    return fit, modeled, excluded
+
+
 def fallback_schedule(player, row, data):
     """DESIGN: imported active-roster role controls modeled missing schedules.
 
     Drafted 2026 rookies use linear interpolation of the cited OTC four-year
     cap schedules by actual draft slot. Other missing histories, undrafted
     rookies, practice players and unsigned veterans use one credited-season
-    minimum deal. Native years_pro proxies credited seasons. No APY is used
-    as an annual cap hit. These are never counted as observed schedules.
+    minimum deal. Native years_pro proxies credited seasons. These are never
+    counted as observed schedules.
+
+    b81 #48 (coordinator 11/27): a matched active contract whose term reaches
+    2026 keeps OTC's term even without a 2026 cap schedule (a just-signed
+    deal, a 2026 undrafted rookie): every year from 2026 to year_signed +
+    years - 1 (at most fifteen) is charged at the deal's APY, the best
+    per-year figure OTC gives without a schedule, never below the one-year
+    minimum for the player's credited seasons. Only a player with no current
+    term falls back to the one-year minimum.
     """
-    if row and row.get('draft_year') == 2026 and row.get('draft_overall'):
+    end = term_end(row) if row else None
+    # the draft-slot schedule is the drafted four-year deal; a 2026 draftee already on another deal (released, then
+    # signed again for one year) keeps that deal's term below (b81 #48)
+    if row and row.get('draft_year') == 2026 and row.get('draft_overall') and (end is None or end >= 2029):
         pick = int(row['draft_overall'])
         knots = [r for r in data['rookie_anchors']['rows'] if len(r.get('cap_hits', [])) == 4]
         knots.sort(key=lambda r: r['pick'])
@@ -174,7 +315,15 @@ def fallback_schedule(player, row, data):
                      'source': data['rookie_anchors']['source'] if 'source' in data['rookie_anchors'] else 'https://overthecap.com/draft'}
     # the CBA minimum is indexed by credited (completed) seasons; the record's years pro counts the current season too
     pro = min(rr.accrued_seasons(player.record.values['years_pro']), 7)
-    return [data['minimums']['dollars'][pro]], {
+    floor = data['minimums']['dollars'][pro]
+    if end is not None and end >= 2026 and row.get('apy'):
+        years = min(end - 2025, 15)
+        apy = millions(row['apy'])
+        return [max(apy, floor)] * years, {
+            'evidence': 'DESIGN', 'rule': 'OTC term at APY (no 2026 cap schedule)', 'term_end': end,
+            'apy_dollars': apy, 'experience_proxy': pro, 'floor_dollars': floor,
+            'source': row.get('player_page') or 'https://overthecap.com'}
+    return [floor], {
         'evidence': 'DESIGN', 'rule': 'one-year active-roster CBA minimum',
         'experience_proxy': pro, 'source': 'https://nflpaweb.blob.core.windows.net/website/PDFs/CBA/March-15-2020-NFL-NFLPA-Collective-Bargaining-Agreement-Final-Executed-Copy.pdf'}
 

@@ -22,7 +22,6 @@ from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from mod_editor.core.nfl2k5_bump_strength import _sections,section_digest
 from nfl2k5_xiso_fixture import SyntheticXiso
 from test_nfl2k5_animation_retail import INDEX,INVENTORY,XBE
-from test_nfl2k5_animation import NativeReferenceTests
 
 DISC=Path(os.environ.get('NFL2K5_RETAIL_XISO','/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso'))
 
@@ -91,6 +90,7 @@ class RetailImportTests(unittest.TestCase):
                 I.image_edits(fixture.path,(p,))
 
     def test_authored_pose_matches_independent_recovered_c(self):
+        from test_nfl2k5_animation import NativeReferenceTests
         NativeReferenceTests.setUpClass();self.addCleanup(NativeReferenceTests.doClassCleanups)
         base=self.source.load('archive:3107/27');p=I.author_referee_variant(base)
         count=0;maximum=0.

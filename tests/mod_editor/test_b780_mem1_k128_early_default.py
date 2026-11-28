@@ -81,5 +81,69 @@ class BuildPanelDefaultTests(unittest.TestCase):
         self.assertFalse(self.early.isChecked())
 
 
+class ExperimentalPresetTests(unittest.TestCase):
+    """b81 relrev M4. Beta 81 turned 128 MB memory on in the Experimental preset (for Realistic injuries) after the loop that
+    sets the early form and the roster heap off in every preset, so the Build tab's Experimental button gave the late form
+    alone: the setup Check my project's note above is about, and a memory layout the SOFTDRINK release disc never had (its
+    recipe turns all three on). A preset never gives the late form alone, and Experimental matches the release recipe."""
+
+    def test_no_preset_gives_128_mb_memory_without_the_early_form(self):
+        for name in mod_build.PRESETS:
+            with self.subTest(preset=name):
+                plan = mod_build.apply_preset(mod_build.BuildPlan('source.iso', 'output.iso'), name)
+                self.assertTrue(plan.k128_early or not plan.k128_memory)
+                notes = [f for f in project_check.check(plan, run_preflight=False).findings if f.code == 'k128.early_off']
+                self.assertEqual(notes, [])
+        plan = mod_build.apply_preset(mod_build.BuildPlan('source.iso', 'output.iso'), 'softdrink_experimental')
+        self.assertEqual((plan.k128_memory, plan.k128_early, plan.k128_roster_heap), (True, True, True))
+        compact = mod_build.apply_preset(mod_build.BuildPlan('source.iso', 'output.iso', console_memory=64),
+                                         'softdrink_experimental')
+        self.assertEqual((compact.k128_memory, compact.k128_early, compact.k128_roster_heap), (False, False, False))
+
+    def test_choosing_realistic_injuries_brings_the_early_form_with_128_mb_memory(self):
+        app = QApplication.instance() or QApplication([])
+        panel = BuildPanel()
+        self.addCleanup(panel.deleteLater)
+        panel.apply_state(dict(path='source.iso', container='xiso', **{k: 'retail' for k in panel._boxes()}))
+        mode = panel.qb_injury_mode
+        mode.setCurrentIndex(mode.findData('realistic'))
+        app.processEvents()
+        plan = panel.plan()
+        self.assertEqual((plan.k128_memory, plan.k128_early), (True, True))
+        notes = [f for f in project_check.check(plan, run_preflight=False).findings if f.code == 'k128.early_off']
+        self.assertEqual(notes, [])
+
+    def test_an_older_source_recipe_keeps_its_own_memory_forms(self):
+        from mod_editor.core import modpack_sources
+        older = modpack_sources.build_plan({'preset': 'softdrink_experimental', 'overrides': {}})
+        self.assertEqual((older.k128_memory, older.k128_early, older.k128_roster_heap), (False, False, False))
+        late = modpack_sources.build_plan({'preset': 'softdrink_experimental', 'overrides': {'k128_memory': True}})
+        self.assertEqual((late.k128_memory, late.k128_early, late.k128_roster_heap), (True, False, False))
+        current = modpack_sources.build_plan({'preset': 'softdrink_experimental',
+                                              'overrides': {'sim_qb_injuries': 'realistic'}})
+        self.assertEqual((current.k128_memory, current.k128_early, current.k128_roster_heap), (True, True, True))
+
+    def test_the_build_tab_button_ticks_all_three(self):
+        app = QApplication.instance() or QApplication([])
+        panel = BuildPanel()
+        self.addCleanup(panel.deleteLater)
+        panel.apply_state(dict(path='source.iso', container='xiso', **{k: 'retail' for k in panel._boxes()}))
+        panel.apply_preset('softdrink_experimental')
+        app.processEvents()
+        plan = panel.plan()
+        self.assertEqual((plan.k128_memory, plan.k128_early, plan.k128_roster_heap), (True, True, True))
+
+    def test_the_release_recipe_on_disk_agrees(self):
+        import json
+        sources = Path(os.environ.get('NFL2K5_B81_STANDARD_SOURCES', '') or 'missing') / 'recipe.json'
+        if not sources.is_file():
+            self.skipTest('the standard release sources are absent')
+        recipe = json.loads(sources.read_text(encoding='utf-8'))
+        self.assertEqual(recipe['preset'], 'softdrink_experimental')
+        for key in ('k128_memory', 'k128_early', 'k128_roster_heap'):
+            self.assertIs(recipe['overrides'].get(key, mod_build.PRESETS['softdrink_experimental'][key]),
+                          mod_build.PRESETS['softdrink_experimental'][key], key)
+
+
 if __name__ == '__main__':
     unittest.main()

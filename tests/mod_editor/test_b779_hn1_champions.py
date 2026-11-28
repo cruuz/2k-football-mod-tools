@@ -103,8 +103,10 @@ class StaticTests(unittest.TestCase):
         marks = dict(champions.OTHERWORLDLY_MARKS)
         self.assertEqual(marks, {"sacks2": 60, "tackles": 300, "rush_yds": 2500, "rec_yds": 2200, "pass_yds": 6000,
                                  "pass_td": 60, "def_int": 15})
-        for fragment in ("/ 60;", "/ 300;", "/ 2500;", "/ 2200;", "/ 6000;", "/ 60;", "/ 15;"):
-            self.assertIn(fragment, source)
+        fields = ("pass_yds", "pass_td", "pass_int", "rush_yds", "rush_td", "rec", "rec_yds", "rec_td",
+                  "tackles", "sacks2", "def_int", "ff")
+        for key, value in marks.items():
+            self.assertIn("{%d, %d}" % (fields.index(key), value), source)
 
 
 def line(**kw):
@@ -146,7 +148,12 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(got["mvp"], "QBWINNER")
         self.assertEqual(got["opoy"], "QBLOSER")              # not the MVP, so he can still be offensive player of the year
 
-    def test_otherworldly_seasons_win_mvp_at_any_position_and_on_any_team(self):
+    def test_otherworldly_seasons_no_longer_take_the_mvp_from_a_great_quarterback(self):
+        """b81 (job b81-awards; owner 11-25: "non qbs can win mvp, but not when a qb plays like that"): this owner's
+        vote still names an "otherworldly" season at the champions stage, but the award vote that runs right after it
+        (nfl2k5_awards, site 0x116E5A) has the last word: a record-breaking defender or a 2,500-yard back on a 6-11 club
+        does not take the MVP from a 45-touchdown quarterback on a 14-3 club."""
+        from mod_editor.core import nfl2k5_awards as awards
         qb = player("QB1", "QB", 0, pass_yds=5000, pass_td=45, pass_int=8)
         cases = {
             "edge": player("EDGE", "DE", 2, sacks2=62, tackles=60),                  # 31 sacks
@@ -158,12 +165,14 @@ class ModelTests(unittest.TestCase):
         }
         for label, wonder in cases.items():
             with self.subTest(label):
-                self.assertEqual(self.names([qb, wonder])["mvp"], wonder["name"])
+                self.assertEqual(self.names([qb, wonder])["mvp"], wonder["name"])   # the champions stage (superseded)
+                final = awards.choose_awards([qb, wonder], lambda t: self.RECORDS[t])
+                self.assertEqual(final["mvp"]["name"], "QB1")
         near = player("NEAR", "DE", 2, sacks2=58, tackles=60)                       # 29 sacks: great, not otherworldly
         self.assertEqual(self.names([qb, near])["mvp"], "QB1")
         self.assertEqual(self.names([qb, near])["dpoy"], "NEAR")
-        two = [player("A", "DE", 2, sacks2=61), player("B", "ILB", 2, tackles=450)]  # the bigger ratio wins
-        self.assertEqual(self.names([qb] + two)["mvp"], "B")
+        final = awards.choose_awards([qb, near], lambda t: self.RECORDS[t])
+        self.assertEqual((final["mvp"]["name"], final["dpoy"]["name"]), ("QB1", "NEAR"))
 
     def test_elite_edges_corners_tackles_and_linebackers_win_defensive_awards_when_the_season_merits_it(self):
         # a typical field of the simulated league's best defenders, then one elite season of each kind (lines in the
@@ -340,12 +349,13 @@ class LeagueMachine(Machine):
             self.uc.mem_write(self.GAP - 352, history.RESERVE_MAGIC + bytes(344))
 
     def history(self):
-        return history.read_block(bytes(self.uc.mem_read(self.GAP, history.USED)))
+        return history.read_block(bytes(self.uc.mem_read(self.GAP, history.MAX_USED)))
 
     def wire(self, players):
         self.put(self.ROOT + 0x1C, self.TEAMS)
         self.put(self.ROOT + 0x18, 52)
         self.put(LEAGUE_MODE, 2)
+        self.put(0xE576AC, 32)
         for i in range(34):                               # the league's club table (mode 2 reads it, not the roster)
             self.put(LEAGUE_TEAMS + 4 * i, self.team_ptr(i))
 
@@ -421,6 +431,24 @@ class NativeTests(unittest.TestCase):
                                    "super_bowl_mvp": {"initial": "K", "last": "WALKER", "position": "HB"},
                                    "season_mvp": {"initial": "M", "last": "STAFFORD", "position": "QB"},
                                    "season_mvp_club": 4})         # a generational suffix is not kept, the club is Seattle's
+
+    def test_extended_final_scores_share_a_ring_with_unchanged_beta80_seasons(self):
+        m = self.machine()
+        old = history.seeded_block()
+        m.uc.mem_write(m.GAP, old)
+        self.season(m, high=67, low=64)
+        m.call(self.champ["champions_advance"], ecx=0xCAFE)
+        row = m.history()[0]
+        self.assertEqual((row["champion_points"], row["runner_up_points"]), (67, 64))
+        self.assertEqual(row["super_bowl_mvp"]["last"], "WALKER")
+        self.assertTrue(any(row["super_bowl"] == 60 for row in m.history()))
+        self.season(m, high=200, low=170)
+        row_index = m.uc.mem_read(SB_ROW, 1)[0]
+        m.uc.mem_write(SCORES + row_index * 17 * 10, bytes([255] * 5 + [240] * 5))
+        m.call(self.champ["champions_advance"], ecx=0xCAFE)
+        row = m.history()[0]
+        self.assertEqual((row["champion_points"], row["runner_up_points"]), (1275, 1200))
+        self.assertEqual(bytes(m.uc.mem_read(m.GAP + history.MAX_USED, 14)), bytes(14))
 
     def test_a_road_winner_and_a_missing_mvp(self):
         m = self.machine()
@@ -704,6 +732,18 @@ class NativeTests(unittest.TestCase):
     ]
     RECORDS = {0: (14, 3, 0), 1: (12, 5, 0), 2: (6, 11, 0), 3: (9, 8, 0)}
 
+    def test_native_vote_includes_a_quarterback_on_injured_reserve(self):
+        m = self.machine()
+        specs = [("Allen", "QB", 0, 7, dict(pass_yds=5600, pass_td=55)),
+                 ("Backup", "QB", 0, 2, dict(pass_yds=1800, pass_td=10))]
+        records = {0: (13, 4, 0)}
+        allen, backup = self.league(m, specs, records)
+        m.club(0, "Buffalo", "Bills", "BUF", [backup], records[0])
+        m.put(0xE421E0, allen)
+        m.record(AWARD_TAIL, "award tail")
+        m.call(self.champ["champions_awards"])
+        self.assertEqual((m.get(AWARDS + 0x5800), m.get(AWARDS + 0x5804)), (allen, m.team_ptr(0)))
+
     def test_the_native_vote_matches_the_model(self):
         m = self.machine()
         got, recs, want = self.run_awards(m, self.SPECS, self.RECORDS)
@@ -712,18 +752,26 @@ class NativeTests(unittest.TestCase):
         self.assertEqual(names["oroy"], "RQB")
         self.assertEqual(names["droy"], "RDE")
 
-    def test_otherworldly_seasons_win_mvp_natively(self):
+    def test_otherworldly_seasons_no_longer_take_the_final_mvp_natively(self):
+        """b81 (job b81-awards): the champions stage still names the otherworldly season; the award vote that the
+        honors install puts right after it (0x116E5A) writes the MVP again, and it goes to the 14-3 club's quarterback."""
+        from mod_editor.core import nfl2k5_awards as awards
+        vote = awards.labels()["awards_vote"]
         for label, spec in (("edge", ("WONDER", "DE", 2, 6, dict(sacks2=62, tackles=50))),
                             ("linebacker", ("WONDER", "ILB", 2, 6, dict(tackles=305))),
                             ("runner", ("WONDER", "HB", 2, 6, dict(rush_yds=2510, rush_td=19))),
-                            ("receiver", ("WONDER", "WR", 2, 6, dict(rec=150, rec_yds=2210, rec_td=15)))):
+                            ("receiver", ("WONDER", "WR", 2, 6, dict(rec=150, rec_yds=2210, rec_td=15))),
+                            ("corner", ("WONDER", "CB", 2, 6, dict(def_int=15)))):
             with self.subTest(label):
                 m = self.machine()
                 got, recs, want = self.run_awards(m, self.SPECS + [spec], self.RECORDS)
-                self.assertEqual(got["mvp"], recs[-1])
+                self.assertEqual(got["mvp"], recs[-1])                     # the champions stage
                 self.assertEqual(want["mvp"]["name"], "WONDER")
-                self.assertNotEqual(got["opoy"], recs[-1])
-                self.assertNotEqual(got["dpoy"], recs[-1])
+                m.call(vote)
+                # after the award vote: QBA (4,600 yds, 38 TD, 300 rushing: 36,600 offence points, 14-3) has an
+                # MVP-calibre season on a winning club, so neither RBA's historic 2,400 scrimmage yards nor the
+                # otherworldly man on the 6-11 club can take it (review S6)
+                self.assertEqual(m.get(AWARDS + 0x5800), recs[0])
 
     def test_a_league_without_candidates_keeps_the_retail_winners(self):
         m = self.machine()

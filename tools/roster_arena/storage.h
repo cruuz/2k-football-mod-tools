@@ -11,14 +11,9 @@
 #endif
 extern const u32 arena_options;
 static NOINLINE u32 available_count(void);
-static NOINLINE u32 crc(const u8 *b) {
-    u32 c=0xffffffffU,i,j;
-    for(i=0;i<352;i++) {
-        c^=(i>=20 && i<24)?0:b[i];
-        for(j=0;j<8;j++) c=(c>>1)^((0U-(c&1))&0xedb88320U);
-    }
-    return c^0xffffffffU;
-}
+#define ROSTER_RESERVE_CRC crc
+#include "reserve_crc.h"
+#undef ROSTER_RESERVE_CRC
 static NOINLINE u8 *block(void) {
     u8 *r=ROOT,*b;
     if(!r || U32((u8 *)0xB72808,0)!=ARENA_SIZE) return 0;

@@ -4,6 +4,7 @@ Found by the integrator's owner scan of the stacked v0.6 executable: w1's rain f
 inside nfl2k5_weather_haze's pinned table, and p9's Modern 2 two-point hook lies inside nfl2k5_era_rules' retail
 dependency guard at 0x206E70. Each tolerates exactly the other owner's bytes and nothing else.
 """
+import hashlib
 import os
 import struct
 import sys
@@ -49,7 +50,8 @@ class Constants(unittest.TestCase):
     def test_the_two_point_site_is_the_only_money_downs_hook_inside_an_era_guard(self):
         import json
         guards = json.loads((era.ROOT / "data/nfl2k5_era_rules.json").read_text())["retail_guards"]
-        inside = [name for name, (va, raw) in money_downs.HOOKS2.items()
+        # beta 81 fake kicks: the gate's three sites (HOOKS4) are checked too (review 11/22).
+        inside = [name for name, (va, raw) in {**money_downs.HOOKS2, **money_downs.HOOKS4}.items()
                   if any(g["va"] < va + len(raw) and va < g["va"] + g["size"] for g in guards)]
         self.assertEqual(inside, ["two_point"])
 
@@ -136,8 +138,21 @@ class StackedExecutable(unittest.TestCase):
         payload = Path(os.environ["B77_V6_XBE"]).read_bytes()
         self.assertEqual(haze.status(payload), "applied")
         self.assertEqual(color.status(payload), "applied")
-        self.assertEqual(era.status(payload), "applied")
         self.assertEqual(money_downs.status(payload), "applied")
+        if hashlib.sha256(payload).hexdigest() == "f67e6fc1cb76c9ea1f1ad504e4a6491ff126483d66a9da8ddb92950bbaf740ba":
+            # The shipped v0.6 OT predates today's OT recognizer. Check the era's own sealed install and
+            # verify every byte of the shared dependency after accounting for the actual Modern 2 hook.
+            self.assertEqual(era.status(payload, neighbors=False), "applied")
+            base = era.underlying_view(payload)
+            va, retail = money_downs.HOOKS2["two_point"]
+            self.assertEqual(va, 0x206E70)
+            self.assertEqual(era._money_downs_two_point(base), ((va, retail),))
+            span = XbeImage(base).read(va, 50)
+            self.assertEqual(span[:len(retail)], bytes.fromhex("e9cd552d01"))
+            self.assertEqual(hashlib.sha256(retail + span[len(retail):]).hexdigest(),
+                             "fd736b3810aa270181f6357887a3c391acfdefdf7b7d60b4f4dbb394f4c7bd80")
+        else:
+            self.assertEqual(era.status(payload), "applied")
 
 
 if __name__ == "__main__":

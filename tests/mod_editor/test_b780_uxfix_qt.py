@@ -563,6 +563,11 @@ class StudioWindowTests(unittest.TestCase):
         window.navigation.setCurrentRow(0)
         _pump(self.app)
         first = window.welcome_install_button
+        links = [label for label in window.findChildren(QLabel, "cardBody")
+                 if label.isVisible() and label.openExternalLinks() and ".2k5patch" in label.text()]
+        self.assertEqual(len(links), 1)
+        self.assertIn('releases/tag/v0.10">v0.10 for 128 MiB</a>', links[0].text())
+        self.assertIn('releases/download/v0.9/SOFTDRINK-2K28-v0.9-64MB.2k5patch', links[0].text())
         self.assertEqual(first.text(), "Install SOFTDRINK 2K28…")
         self.assertEqual(first.objectName(), "primaryButton")
         self.assertEqual(window.welcome_open_button.objectName(), "secondaryButton")
@@ -672,6 +677,15 @@ class StudioWindowTests(unittest.TestCase):
                     self.assertGreaterEqual(button.width(), button.sizeHint().width())   # nothing elided or clipped
                     right = button.mapTo(window, button.rect().topRight()).x()
                     self.assertLessEqual(right, window.width())
+            header_items = (window.source_pill, window.open_project_button,
+                            window.save_project_button, window.open_source_button)
+            for index, control in enumerate(header_items):
+                with self.subTest(font=tag or "platform", width=width, header=control.text()):
+                    right = control.mapTo(window, control.rect().topRight()).x()
+                    self.assertLess(right, window.width())
+                    self.assertGreaterEqual(control.width(), control.sizeHint().width())
+                    for previous in header_items[:index]:
+                        self.assertFalse(control.geometry().intersects(previous.geometry()))
             self.assertIn("…", continue_button.text())              # the long name is shortened, not the page widened
             lowest = max(b.mapTo(window, b.rect().bottomLeft()).y()
                          for b in (window.welcome_install_button, window.welcome_open_button, *window.welcome_task_buttons))

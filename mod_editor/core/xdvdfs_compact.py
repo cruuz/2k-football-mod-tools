@@ -24,7 +24,7 @@ from tools import nfl_uniform_color_xiso_direct_patch as xiso
 SECTOR = 2048
 BLOCK = 1024 * 1024
 MAX_METADATA = 32 * BLOCK
-STUDIO_RECEIPTS = (".colour-lighting.json", ".venues-2026.json", ".surfaces.json")
+STUDIO_RECEIPTS = (".colour-lighting.json", ".venues-2026.json", ".surfaces.json", ".greens.json")
 # PROVED OFFLINE: physical order of the pinned USA retail rip. These are names,
 # never physical read addresses. Restores slots even when the input was rebuilt.
 NFL_ORDER = ("update.xbe", "default.xbe", "dashupdate.xbe") + tuple(
@@ -478,6 +478,28 @@ def _verify(output, layout, planned, hashes, progress):
                 files=[dict(row, sha256=hashes[row["path"]]) for row in planned["files"]],
                 directory_count=len(fresh.directories), all_file_hashes_identical=True,
                 studio_directory_check=True, runtime_witnessed=False)
+
+
+def game_files_changed(source, finished_files, progress):
+    """Compare the verified compacted game files with the input, ignoring partition layout and padding."""
+    with Path(source).open("rb", buffering=0) as stream:
+        entries = {key: e for key, e in read_layout(stream).entries.items() if not e.attributes & 0x10}
+        expected = {row["path"].casefold(): row for row in finished_files}
+        if entries.keys() != expected.keys() or any(e.size != expected[key]["size"] for key, e in entries.items()):
+            return True
+        # Executable and small files first: common changes need only one short read.
+        done, total = 0, sum(e.size for e in entries.values())
+        for key in sorted(entries, key=lambda k: (k != "default.xbe", entries[k].size)):
+            entry = entries[key]
+            digest = hashlib.sha256()
+            for at in range(0, entry.size, BLOCK):
+                count = min(BLOCK, entry.size - at)
+                digest.update(read_at(stream, entry.byte_offset + at, count))
+                done += count
+                progress("Checking which game files changed", done, total)
+            if digest.hexdigest() != expected[key]["sha256"]:
+                return True
+        return False
 
 
 def finish_private(target, *, original=None, progress=None):

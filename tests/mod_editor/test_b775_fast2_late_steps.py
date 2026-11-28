@@ -168,6 +168,24 @@ def selected_pack(_task):
 
 
 class WorkerCount(unittest.TestCase):
+    def test_macos_uses_reported_page_size_and_reclaimable_pages(self):
+        stats = ("Mach Virtual Memory Statistics: (page size of 16384 bytes)\n"
+                 "Pages free:                 12345.\nPages inactive:             45678.\n"
+                 "Pages wired down:           99999.\n")
+        with patch.object(sys, "platform", "darwin"), patch.object(subprocess, "run") as run:
+            run.return_value.stdout = stats
+            self.assertEqual(late._available_memory(), (12345 + 45678) * 16384)
+            run.return_value.stdout = "Mach Virtual Memory Statistics: (page size of 4096 bytes)\nPages free: 5.\n"
+            self.assertIsNone(late._available_memory())
+            run.side_effect = subprocess.TimeoutExpired("vm_stat", 3)
+            self.assertIsNone(late._available_memory())
+
+    @unittest.skipUnless(sys.platform == "darwin", "uses the macOS kernel memory counters")
+    def test_installed_macos_reports_physical_memory(self):
+        available = late._available_memory()
+        self.assertIsInstance(available, int)
+        self.assertGreaterEqual(available, 0)
+
     def test_serial_switches_and_small_jobs_use_one_worker(self):
         with environment(NFL2K5_SERIAL_LATE_STEPS="1", NFL2K5_BUILD_WORKERS=None):
             self.assertEqual(late.worker_count(50, "NFL2K5_SERIAL_FAN_ART"), 1)

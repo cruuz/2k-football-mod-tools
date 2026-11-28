@@ -264,5 +264,152 @@ class AtomicPathTests(unittest.TestCase):
         self.assertIs(caught.exception, failure)
 
 
+@unittest.skipIf(os.name == "nt", "Windows uses its no-replace rename for files")
+class HardLinkPublicationTests(unittest.TestCase):
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = Path(tmp.name)
+        self.stage, self.output = self.root / "draft", self.root / "copy"
+        self.stage.write_bytes(b"verified output")
+        self.fd = os.open(self.root, os.O_RDONLY | os.O_DIRECTORY)
+        self.addCleanup(os.close, self.fd)
+        renameat2 = mock.patch.object(platform_compat, "_linux_renameat2", return_value=None)
+        renameat2.start()
+        self.addCleanup(renameat2.stop)
+
+    def publish(self, relative=False):
+        if relative:
+            return platform_compat.publish_no_replace(self.stage.name, self.output.name, dir_fd=self.fd)
+        return platform_compat.publish_no_replace(self.stage, self.output)
+
+    def refuse_staging_unlink(self):
+        unlink = os.unlink
+        def refuse(name, *args, **kwargs):
+            if os.path.basename(name) == self.stage.name:
+                raise OSError(errno.EIO, "staging unlink refused")
+            return unlink(name, *args, **kwargs)
+        return mock.patch.object(os, "unlink", side_effect=refuse)
+
+    def test_failed_staging_unlink_withdraws_the_link_and_the_same_names_can_retry(self):
+        for relative in (False, True):
+            with self.subTest(relative=relative):
+                with self.refuse_staging_unlink(), self.assertRaisesRegex(OSError, "staging unlink refused"):
+                    self.publish(relative)
+                self.assertEqual(list(self.root.iterdir()), [self.stage])
+                self.assertEqual(self.stage.read_bytes(), b"verified output")
+        self.assertTrue(self.publish(relative=True).atomic_no_clobber)
+        self.assertFalse(self.stage.exists())
+        self.assertEqual(self.output.read_bytes(), b"verified output")
+
+    def test_replacement_during_capture_goes_back_to_its_name_or_remains_in_recovery(self):
+        rename = os.rename
+        foreign = self.root / "incoming"
+        for collision in (False, True):
+            with self.subTest(collision=collision):
+                foreign.write_bytes(b"replacement")
+                def race(src, dst, **kwargs):
+                    self.assertEqual(Path(src).name, self.output.name)
+                    os.replace(foreign, self.output)
+                    rename(src, dst, **kwargs)
+                    if collision:
+                        self.output.write_bytes(b"later owner")
+
+                with self.refuse_staging_unlink(), mock.patch.object(os, "rename", side_effect=race), \
+                     self.assertRaisesRegex(OSError, "staging unlink refused") as failure:
+                    self.publish(relative=True)
+                self.assertEqual(self.stage.read_bytes(), b"verified output")
+                if collision:
+                    self.assertEqual(self.output.read_bytes(), b"later owner")
+                    captured, = self.root.glob(".2k5-link-recovery-*/entry")
+                    self.assertEqual(captured.read_bytes(), b"replacement")
+                    self.assertIn(captured.parent.name, str(failure.exception))
+                else:
+                    self.assertEqual(self.output.read_bytes(), b"replacement")
+                    self.assertEqual(list(self.root.glob(".2k5-link-recovery-*")), [])
+                self.output.unlink()
+
+    def test_recovery_setup_and_cleanup_errors_identify_the_affected_names(self):
+        for operation in ("mkdir", "rmdir"):
+            with self.subTest(operation=operation):
+                with self.refuse_staging_unlink(), mock.patch.object(os, operation, side_effect=PermissionError("read only")), \
+                     self.assertRaises(OSError) as failure:
+                    self.publish()
+                message = str(failure.exception)
+                self.assertIn(str(self.stage), message)
+                self.assertIn(str(self.output), message)
+                self.assertIn("read only", message)
+                if operation == "mkdir":
+                    self.assertTrue(os.path.samefile(self.output, self.stage))
+                    self.output.unlink()
+                else:
+                    self.assertFalse(self.output.exists())
+                    spare, = self.root.glob(".2k5-link-recovery-*")
+                    self.assertIn(str(spare), message)
+                    self.assertEqual(list(spare.iterdir()), [])
+                self.assertEqual(self.stage.read_bytes(), b"verified output")
+
+    def test_dangling_replacement_keeps_its_identity_when_returned_or_held(self):
+        rename = os.rename
+        incoming = self.root / "incoming"
+        incoming.symlink_to("missing target")
+        identity = incoming.lstat()
+        def race(src, dst, **kwargs):
+            os.replace(incoming, self.output)
+            rename(src, dst, **kwargs)
+
+        with self.refuse_staging_unlink(), mock.patch.object(os, "rename", side_effect=race), \
+             self.assertRaisesRegex(OSError, "staging unlink refused") as failure:
+            self.publish(relative=True)
+        if platform_compat._LINK_SUPPORTS_FOLLOW_SYMLINKS:
+            returned = self.output
+            self.assertEqual(list(self.root.glob(".2k5-link-recovery-*")), [])
+        else:
+            returned, = self.root.glob(".2k5-link-recovery-*/entry")
+            self.assertIn(returned.parent.name, str(failure.exception))
+        self.assertTrue(os.path.samestat(identity, returned.lstat()))
+        self.assertEqual(os.readlink(returned), "missing target")
+        self.assertEqual(self.stage.read_bytes(), b"verified output")
+
+    def test_existing_name_refused_and_completed_unlink_reported_as_success(self):
+        self.output.write_bytes(b"earlier output")
+        with self.assertRaises(FileExistsError):
+            self.publish(relative=True)
+        self.assertEqual(self.output.read_bytes(), b"earlier output")
+        self.assertEqual(self.stage.read_bytes(), b"verified output")
+        self.output.unlink()
+        unlink = os.unlink
+        def late_error(path, *args, **kwargs):
+            unlink(path, *args, **kwargs)
+            if os.path.basename(path) == self.stage.name:
+                raise OSError(errno.EIO, "error after the name was consumed")
+        with mock.patch.object(os, "unlink", side_effect=late_error):
+            self.assertTrue(self.publish(relative=True).atomic_no_clobber)
+        self.assertFalse(self.stage.exists())
+        self.assertEqual(self.output.read_bytes(), b"verified output")
+
+    def test_replacement_after_the_restoring_link_keeps_the_captured_file(self):
+        link, rename = os.link, os.rename
+        incoming, latest = self.root / "incoming", self.root / "latest"
+        incoming.write_bytes(b"first foreign")
+        latest.write_bytes(b"second foreign")
+        def race(src, dst, **kwargs):
+            os.replace(incoming, self.output)
+            rename(src, dst, **kwargs)
+        def replace_after_restore(src, dst, **kwargs):
+            link(src, dst, **kwargs)
+            if Path(src).name == "entry":
+                os.replace(latest, self.output)
+
+        with self.refuse_staging_unlink(), mock.patch.object(os, "rename", side_effect=race), \
+             mock.patch.object(os, "link", side_effect=replace_after_restore), self.assertRaises(OSError) as failure:
+            self.publish()
+        kept, = self.root.glob(".2k5-link-recovery-*/entry")
+        self.assertEqual(kept.read_bytes(), b"first foreign")
+        self.assertEqual(self.output.read_bytes(), b"second foreign")
+        self.assertEqual(self.stage.read_bytes(), b"verified output")
+        self.assertIn(str(kept), str(failure.exception))
+
+
 if __name__ == "__main__":
     unittest.main()

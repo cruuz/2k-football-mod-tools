@@ -119,6 +119,8 @@ static u32 weeks_out(const u8 *p) { return (*(const u32 *)(p + 0x20) >> 22) & 0x
 static u32 count_of(const u8 *club) { return club[TEAM_COUNT]; }
 
 static i32 played(u32 c) {
+    /* Stage 7 uses a separate preseason grid, replaced on opening day. */
+    if (STAGE_GET() < 8) return 0;
     const u8 *cell = (const u8 *)GRID;
     i32 n = 0;
     for (u32 i = 0; i < GRID_CELLS; i++, cell += 8)
@@ -198,6 +200,17 @@ FC u32 ir_payroll(u8 *club) {
     return total;
 }
 
+/* Cap Manager forecasts and its three highest-paid rows share the retail loop at
+   0x347CA0. Feed its existing salary calculation the same active + IR membership as RECOUNT. */
+FC u32 ir_display_count(u8 *club) {
+    return count_of(club) + (MODE_GET() == 2 ? ir_count(club) : 0);
+}
+
+FC u8 *ir_display_player(u8 *club, u32 slot) {
+    u32 n = count_of(club);
+    return slot < n ? ((u8 **)club)[slot] : ir_get(club, slot - n);
+}
+
 static u32 place(u8 *p, u8 *club, u32 how) {
     u32 c = CLUB_INDEX(club);
     if (c >= CLUBS || !p) return 0;                                   /* Q66: no Pro Bowl club, no write past */
@@ -230,6 +243,22 @@ FC u32 ir_find(u8 *p, u8 **club_out) {
     return 1;
 }
 
+/* b81 modern numbers (owner 11/25: "if a guy goes on injured reserve, just don't give away his jersey number ... when
+   they come back, they should get their jersey number back"): a player on injured reserve keeps the rights to his
+   number. With the modern numbers owner nobody on his club can be given it while he is out; a club-mate who wears it
+   anyway (a save or roster made before, or a 2004 build) is renumbered when he comes back, after the append, through
+   the game's jersey routine 0x2BD260 (keep = 1: the returner, now on the active list, holds the number, so the routine
+   gives the club-mate a free one). The returner's own number is never changed. Retail gave an IR man's number away
+   (its routine reads only the active list) and his return made a duplicate. */
+#define JERSEY ((void (FC *)(u8 *, u8 *, u32))0x002BD260)
+static __attribute__((noinline)) void restore_number(u8 *club, u8 *p) {
+    u8 *const *list = (u8 *const *)club;
+    for (u32 i = 0; i < count_of(club) && i < SLOTS; i++) {
+        u8 *q = list[i];
+        if (q && q != p && !((*(const u32 *)(q + 0x20) ^ *(const u32 *)(p + 0x20)) & 0x3F8)) JERSEY(q, club, 1);
+    }
+}
+
 static u32 append_room(u8 *club) {
     return ps_on() ? 1 : count_of(club) < SLOTS;                  /* the practice squad's append checks itself */
 }
@@ -239,13 +268,18 @@ void ir_rollover(void) {
         u8 *club = CLUB_AT(c);
         struct club *k = &S->c[c];
         struct entry was[CAP];
-        u32 n = k->n, kept = 0;
+        u8 *back[CAP];
+        u32 n = k->n, kept = 0, b = 0;
         for (u32 i = 0; i < n; i++) was[i] = k->e[i];
         k->n = 0;                      /* off the store (and the mirror) first: the append's own "owned" checks */
         mirror(c);
         for (u32 i = 0; i < n; i++) {
             struct entry e = was[i];
-            if (club && append_room(club) && APPEND(club, e.p)) { S->rollover_back++; continue; }
+            if (club && append_room(club) && APPEND(club, e.p)) {
+                back[b++] = e.p;
+                S->rollover_back++;
+                continue;
+            }
             e.base = CARRY;                                           /* no room: stays, eligible at once */
             e.flags = 0;
             k->e[kept++] = e;
@@ -256,6 +290,9 @@ void ir_rollover(void) {
         k->returns = 0;
         mirror(c);
         if (club) RECOUNT(club);
+        /* b81: each returner wears his own number again. Only now, with the store rebuilt: a club-mate the jersey routine
+           renumbers must see the men who stay on IR (review S2), and every returner is on the active list. */
+        for (u32 i = 0; i < b; i++) restore_number(club, back[i]);
     }
 }
 
@@ -286,6 +323,7 @@ static u32 activate(u32 c, u32 i, u8 *club, u32 how) {
         mirror(c);
         return NOT_ADDED;
     }
+    restore_number(club, p);                                          /* b81: he wears his own number again */
     k->returns++;
     RECOUNT(club);
     if (how == HOW_CPU) S->back_cpu++; else S->back_user++;
@@ -483,7 +521,7 @@ void ir_load_ext(u8 *office) {
             if (!p || locate(p, 0) >= 0) continue;
             u32 st = ext ? nib(office, W_STATES, c * LEGACY + i) : 0;
             k->e[k->n].p = p;
-            k->e[k->n].base = (i16)(now - (i32)(st & 7));
+            k->e[k->n].base = (i16)(now - (STAGE_GET() >= 8 ? (i32)(st & 7) : 0));
             k->e[k->n].flags = (st & 8) ? F_SEASON : 0;
             k->e[k->n].how = HOW_LOAD;
             k->n++;
@@ -495,7 +533,7 @@ void ir_load_ext(u8 *office) {
                 u8 *p = table + 0x54 * index;
                 if (index >= players || k->n >= CAP || locate(p, 0) >= 0 || listed_anywhere(p)) { S->dropped++; continue; }
                 k->e[k->n].p = p;
-                k->e[k->n].base = (i16)(now - (i32)(st & 7));
+                k->e[k->n].base = (i16)(now - (STAGE_GET() >= 8 ? (i32)(st & 7) : 0));
                 k->e[k->n].flags = (st & 8) ? F_SEASON : 0;
                 k->e[k->n].how = HOW_LOAD;
                 k->n++;
@@ -504,6 +542,13 @@ void ir_load_ext(u8 *office) {
         mirror(c);
     }
     if (ext) S->loads_extended++; else S->loads_legacy++;
+    if (MODE_GET() == 2) {
+        if (ir_config.flags) ((void (FC *)(u8 *, struct store *))ir_config.flags)(r, S);
+        for (u32 c = 0; c < CLUBS; c++) {
+            u8 *club = CLUB_AT(c);
+            if (club) RECOUNT(club);
+        }
+    }
     S->magic = 0x52493236u;
     S->version = 1;
 }

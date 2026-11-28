@@ -17,6 +17,7 @@ import unittest
 from unittest.mock import patch
 
 from tools import apf_field_art_patch as art
+from tools import apf_texture_patch as texture
 from tools import setup_reviewed_helpers as setup
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -52,11 +53,14 @@ class PermissionTests(unittest.TestCase):
 
     def test_setup_corrects_exact_helper_and_is_idempotent(self):
         before = self.helper.read_bytes()
-        with linux_x86_64(), patch.object(art, '_OPTIMAL_BINARY', self.helper):
+        with linux_x86_64(), patch.object(art, '_OPTIMAL_BINARY', self.helper), \
+                patch.object(texture, '_OPTIMAL_BINARY', self.helper):
             self.assertIsNone(art._optimal_binary())
+            self.assertIsNone(texture._optimal_binary())
             self.assertEqual(art.optimal_encoder_diagnostic()['code'], 'unsafe_permissions')
             receipt = setup.normalize(self.root)
             self.assertTrue(receipt['changed'])
+            self.assertEqual(texture._optimal_binary(), self.helper)
             self.assertEqual(stat.S_IMODE(self.helper.stat().st_mode), 0o755)
             self.assertEqual(art._optimal_binary(), self.helper)
             self.assertEqual(art.optimal_encoder_diagnostic()['code'], 'available')

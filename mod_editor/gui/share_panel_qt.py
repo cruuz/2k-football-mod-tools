@@ -75,7 +75,7 @@ class _Task(QRunnable):
             last = ["", 0.0]
             def progress(stage, done, total):
                 if self.cancelled.is_set():
-                    raise modpack.ModpackError("Cancelled. The source is unchanged; incomplete output was removed.")
+                    raise modpack.ModpackError("Cancelled. Any completed source files can be verified and reused when you resume.")
                 now = time.monotonic()
                 if stage != last[0] or now - last[1] >= 0.1 or done == total:
                     self.signals.progress.emit(stage, done, total)
@@ -103,6 +103,10 @@ class SharePanel(QWidget):
         self.last_export: dict | None = None
         self.last_check: dict | None = None
         self.last_apply: dict | None = None
+        self._last_build_pair = None
+        self._last_build_memory = {}
+        self._last_build_identity = None
+        self._last_build_compacted = False
         self._build_pair_owned = False     # a finished Build owns base/patched; the open disc must not replace them
         self._progress_stage = None
         self._progress_started = 0.0
@@ -236,7 +240,9 @@ class SharePanel(QWidget):
 
         apply_box = QGroupBox("Install SOFTDRINK 2K28")
         apply_layout = QVBoxLayout(apply_box)
-        self.install_hint = WrappedLabel("Select the .2k5patch file itself. Keep it as downloaded; you do not need to extract it or choose a folder.")
+        self.install_hint = WrappedLabel(
+            f"Download {console_memory.PACK_DOWNLOAD_LINKS}. Select the downloaded .2k5patch file directly.")
+        self.install_hint.setOpenExternalLinks(True)
         self.install_hint.setWordWrap(True)
         apply_layout.addWidget(self.install_hint)
         self.install_softdrink_button = QPushButton("Install SOFTDRINK 2K28")
@@ -247,17 +253,17 @@ class SharePanel(QWidget):
         apply_layout.addWidget(self.install_softdrink_button)
         self.customize_softdrink_button = QPushButton("Customize SOFTDRINK 2K28…")
         self.customize_softdrink_button.clicked.connect(self.customize_softdrink)
-        # b780-m64b: the pack is the full 128 MB build; Customize can load its sources for the experimental 64 MB target
         customize_row = QHBoxLayout()
         customize_row.addWidget(self.customize_softdrink_button)
         self.customize_memory_caption = QLabel(console_memory.SHARE_CHOICE_CAPTION)
         customize_row.addWidget(self.customize_memory_caption)
         self.customize_memory_combo = QComboBox()
+        self.customize_memory_combo.addItem("Use the selected pack's edition", None)
         for value in console_memory.CHOICES:
             self.customize_memory_combo.addItem(console_memory.LABELS[value], value)
-        self.customize_memory_combo.setCurrentIndex(self.customize_memory_combo.findData(console_memory.DEFAULT))
         self.customize_memory_combo.setAccessibleName("Customize SOFTDRINK 2K28: build for console memory")
-        self.customize_memory_combo.setToolTip(console_memory.SHARE_CHOICE_HELP)
+        self.customize_memory_combo.setToolTip(
+            "Use the pack's edition or choose a target for this customization. " + console_memory.SHARE_CHOICE_HELP)
         self.customize_memory_combo.setMinimumWidth(220)
         self.customize_memory_caption.setBuddy(self.customize_memory_combo)
         customize_row.addWidget(self.customize_memory_combo, 1)
@@ -310,6 +316,34 @@ class SharePanel(QWidget):
         self.cancel_button.hide()
         layout.addWidget(self.cancel_button)
         layout.addStretch(1)
+        self.pack_field.textChanged.connect(self._pack_edited)
+        self.pack_field.editingFinished.connect(self._open_typed_pack)
+        self.source_field.textChanged.connect(self._source_edited)
+        self.source_field.editingFinished.connect(self.describe_source)
+
+    def _invalidate_check(self):
+        self._check_state = None
+        self.last_check = None
+        self.check_status.clear()
+        self.apply_status.clear()
+        self._refresh()
+
+    def _pack_edited(self):
+        if self._pack is not None:
+            self.customize_memory_combo.setCurrentIndex(0)
+        self._pack = None
+        self.pack_summary.clear()
+        self.memory_note.setText(console_memory.SHARE_NOTE)
+        self._invalidate_check()
+
+    def _open_typed_pack(self):
+        path = self.pack_field.text().strip()
+        if path and self._pack is None:
+            self.load_pack(Path(path))
+
+    def _source_edited(self):
+        self.source_identity.clear()
+        self._invalidate_check()
 
     def _path_row(self, parent: QVBoxLayout, label: str, chooser: Callable[[], None]) -> tuple[QLineEdit, QPushButton]:
         row = QHBoxLayout()
@@ -344,6 +378,10 @@ class SharePanel(QWidget):
         self.install_softdrink_button.setEnabled(not self.busy)
         self.customize_softdrink_button.setEnabled(not self.busy)
         self.customize_memory_combo.setEnabled(not self.busy)  # b780-m64b
+        for widget in (self.pack_field, self.pack_button, self.source_field, self.source_button, self.target_field, self.target_button):
+            widget.setEnabled(not self.busy)
+        self.quick_export_button.setEnabled(self._build_pair_owned and not self.busy and
+                                            self._last_build_pair == (Path(self.base_field.text()), Path(self.patched_field.text())))
         if self.busy:
             for button in (self.export_button, self.check_button, self.apply_button):
                 button.setEnabled(False)
@@ -359,16 +397,26 @@ class SharePanel(QWidget):
         source, target = Path(str(receipt.get("source", ""))), Path(str(receipt.get("target", "")))
         if not source.name or not target.name:
             return
+        pair = (source, target)
+        plan = receipt.get("plan") if isinstance(receipt.get("plan"), dict) else {}
+        self._last_build_compacted = bool(receipt.get("disc_compaction"))
+        self._last_build_memory = {key: plan[key] for key in ("console_memory", "k128_memory") if key in plan}
+        digest = (receipt.get("outcome") or {}).get("output", {}).get("sha256") or (receipt.get("result") or {}).get("image_sha256")
+        identity = (pair, digest, plan)
+        if self._last_build_identity != identity:
+            self.set_assets([])
+            self.project_field.clear()
+            self.retail_field.clear()
+            self.name_field.setText(str(plan.get("name") or "My NFL 2K5 patch"))
+            self.author_field.setText(str(plan.get("author") or ""))
+            self.version_field.setText(str(plan.get("version") or "1"))
+            self.description_field.setPlainText(str(plan.get("notes") or ""))
+        self._last_build_identity = identity
+        self._last_build_pair = pair
         self.base_field.setText(str(source))
         self.patched_field.setText(str(target))
         self._build_pair_owned = True
         self.out_field.setText(str(target.with_name(target.name.split(".xiso")[0] + modpack.EXTENSION)))
-        plan = receipt.get("plan") if isinstance(receipt.get("plan"), dict) else {}
-        if not self.name_field.text().strip():
-            self.name_field.setText(str(plan.get("name") or "My NFL 2K5 patch"))
-        if not self.version_field.text().strip():
-            self.version_field.setText("1")
-        self.quick_export_button.setEnabled(True)
         self.quick_export_button.setToolTip("Writes the mod file named below, next to the disc you just made.")
         self.quick_reason.hide()
         self.quick_target_label.setText(f"From {source.name} to {target.name}.\nMod file: {self.out_field.text()}")
@@ -383,14 +431,15 @@ class SharePanel(QWidget):
             self.assets_list.addItem(str(path))
         self._refresh()
 
-    def load_pack(self, path: Path) -> None:
+    def load_pack(self, path: Path, *, keep_customization_target: bool = False) -> None:
         """Read a patch file's manifest (fast; no disc access) and show its summary."""
 
+        if not keep_customization_target and self._pack is not None and not platform_compat.paths_alias(path, self._pack.path):
+            self.customize_memory_combo.setCurrentIndex(0)
         self.pack_field.blockSignals(True)
         self.pack_field.setText(str(path))
         self.pack_field.blockSignals(False)
-        self._check_state = None
-        self.check_status.setText("")
+        self._invalidate_check()
         try:
             self._pack = modpack.load(path)
         except (modpack.ModpackError, OSError) as exc:
@@ -399,14 +448,20 @@ class SharePanel(QWidget):
             self._refresh()
             return
         self.pack_summary.setText(self.summarize(modpack.inspect(self._pack)))
+        if console_memory.of(self._pack.manifest.recipe) == 64:
+            self.memory_note.setText("This patch installs a 64 MB disc. In xemu, set System Memory to 64 MiB. "
+                                     "Customize uses the Build for choice above.")
+        else:
+            self.memory_note.setText(console_memory.SHARE_NOTE)
         self._refresh()
 
     @staticmethod
     def summarize(info: dict) -> str:
         if info.get("format") == 3:
-            return (f"{info['name']}: {len(info['files'])} verified game files. "
-                    f"Pack {_human(info['pack_bytes'])}. Accepts clean USA Xbox dumps with different file order or a video partition. "
-                    f"Sources: {_human(info['assets_bytes'])}. Extract sources to customize with the full builder.")
+            base = ("clean USA Xbox dumps" if info["base"].get("is_retail_equivalent") else "the author’s starting game files")
+            return (f"{info['name']}  v{info['version'] or '-'}  by {info['author'] or 'unknown'}\n"
+                    f"{info['description']}\n{len(info['files'])} verified game files. Pack {_human(info['pack_bytes'])}. "
+                    f"Accepts {base} with different file order or a video partition. Sources: {_human(info['assets_bytes'])}.")
         base = info["base"]
         lines = [f"{info['name']}  v{info['version'] or '-'}  by {info['author'] or 'unknown'}"]
         if info["description"]:
@@ -446,7 +501,7 @@ class SharePanel(QWidget):
         word = {"ready": "Ready to apply", "applied": "Already installed",
                 "mismatch": "Doesn't match this mod's required starting disc"}.get(
             str(report["state"]), str(report["state"]).replace("_", " ").capitalize())
-        self.check_status.setText(f"{word} — {report['explanation']}")
+        self.check_status.setText(f"{word}: {report['explanation']}")
         self._refresh()
 
     # ------------------------------------------------------------------ choosers
@@ -620,11 +675,14 @@ class SharePanel(QWidget):
         path, _ = QFileDialog.getOpenFileName(self, "Choose the SOFTDRINK pack", "", PACK_FILTER)
         if not path:
             return
-        self.load_pack(Path(path))
-        if self._pack is None or self._pack.manifest.raw.get("format") != 3:
+        self.load_pack(Path(path), keep_customization_target=True)
+        if self._pack is None:
             return
         pack = self._pack
-        folder = QFileDialog.getExistingDirectory(self, "Choose a new folder for editable SOFTDRINK sources")
+        if pack.manifest.recipe.get("schema") != "softdrink_sources/v1" and not pack.manifest.recipe.get("sources_bundle"):
+            self._notify("error", "Editable sources required", "Choose a SOFTDRINK patch that includes editable Studio sources or its matching sources bundle.")
+            return
+        folder = QFileDialog.getExistingDirectory(self, "Choose a folder for editable sources (existing verified files can be resumed)")
         if not folder:
             return
         bundle = None
@@ -636,33 +694,36 @@ class SharePanel(QWidget):
             from mod_editor.core import modpack_sources
             progress("Extracting editable sources", 0, 0)
             if bundle:
-                recipe = modpack_sources.extract_bundle(bundle, folder, pack.manifest.recipe["sources_bundle"])
+                recipe = modpack_sources.extract_bundle(bundle, folder, pack.manifest.recipe["sources_bundle"], resume=True, progress=progress)
             else:
-                modpack.extract_assets(pack, folder)
+                modpack.extract_assets(pack, folder, resume=True, progress=progress)
                 recipe = pack.manifest.recipe
             from mod_editor.core import nfl2k5_marks_store
             # The extracted sources carry their own logos; a failed save for later builds only reports.
             _saved, error = nfl2k5_marks_store.try_register(pack)
             if error:
                 progress(error, 0, 0)
-            return modpack_sources.materialize(recipe, folder)
+            progress("Preparing editable project", 0, 0)
+            return modpack_sources.materialize(recipe, folder, resume=True, console_target=memory)
         memory = self.customize_memory()
         def done(recipe):
-            if memory == 64:   # b780-m64b: the Build tab switches to the experimental 64 MB target
-                recipe = {**recipe, console_memory.FIELD: 64}
+            self.customize_memory_combo.setCurrentIndex(0)
             self.customization_ready.emit(recipe)
             text = "Sources ready. Build now has the frozen recipe and league artwork. Change its options, then Make my disc. Custom builds use the full builder and take longer than installation."
             if memory == 64:
-                text += (f" Console memory is set to 64 MB ({console_memory.STATUS_64}) with the recommended 64 MB set: the "
-                         "options that need 128 MB are off and the Build tab lists what else it turned off. "
-                         + console_memory.ROSTER_FIT_NOTE)
+                text += f" Console memory is set to 64 MB ({console_memory.STATUS_64})."
+                if console_memory.of(pack.manifest.recipe) != 64:
+                    text += " The working recipe includes the recommended 64 MB settings."
+                text += " " + console_memory.ROSTER_FIT_NOTE
             self.apply_status.setText(text)
         self._start(operation, done, self._apply_failed)
 
     def customize_memory(self) -> int:
-        """b780-m64b: the console memory Customize SOFTDRINK 2K28 builds for (128 unless 64 is chosen)."""
+        """The explicit target or the selected pack's memory edition."""
         value = self.customize_memory_combo.currentData()
-        return value if value in console_memory.CHOICES else console_memory.DEFAULT
+        if value in console_memory.CHOICES:
+            return value
+        return console_memory.of(self._pack.manifest.recipe if self._pack else {})
 
     def describe_source(self) -> str:
         """Name the disc image in the source field (also used by tests)."""
@@ -754,6 +815,9 @@ class SharePanel(QWidget):
             "project": self.project_field.text().strip() or None,
             "retail_image": self.retail_field.text().strip() or None,
         }
+        if self._last_build_pair == (base, patched):
+            meta["file_based"] = self._last_build_compacted
+            meta["console_settings"] = dict(self._last_build_memory)
         overwrite = False
         if out.exists():
             if not self._confirm("Replace the mod file?", f"{out} already exists. Replace it?"):
@@ -762,16 +826,18 @@ class SharePanel(QWidget):
         self.export_status.setText("Comparing the two images…")
 
         def operation(progress: modpack.ProgressSink) -> object:
-            from mod_editor.core import modpack_ops
-            named_files = modpack_ops.changed_file_operations(base, patched)
-            return modpack.export(base, patched, out, meta, overwrite=overwrite, progress=progress,
-                                  file_operations=named_files)
+            from mod_editor.core import modpack_files
+            return modpack_files.export_for_share(base, patched, out, meta, overwrite=overwrite, progress=progress)
 
         self._start(operation, self._export_done, self._export_failed)
 
     def _export_done(self, receipt: object) -> None:
         assert isinstance(receipt, dict)
         self.last_export = receipt
+        if receipt.get("format") == 3:
+            self.export_status.setText(f"Wrote {Path(receipt['pack']).name}. " + self.summarize(receipt))
+            self._notify("info", "Mod file written", receipt["pack"])
+            return
         base = receipt["base"]
         text = (f"Wrote {Path(receipt['pack']).name} ({_human(receipt['pack_bytes'])}): {receipt['runs']} run(s), "
                 f"{_human(receipt['bytes'])} changed, {len(receipt['assets'])} asset(s), in {receipt['elapsed_seconds']} s. "
@@ -798,7 +864,10 @@ class SharePanel(QWidget):
         def operation(progress: modpack.ProgressSink) -> object:
             return modpack.check(pack, source, progress=progress)
 
-        self._start(operation, self._check_done, self._check_failed)
+        def current():
+            return self._pack is pack and Path(self.source_field.text()) == source
+        self._start(operation, lambda report: self._check_done(report) if current() else None,
+                    lambda message: self._check_failed(message) if current() else None)
 
     def _check_done(self, report: object) -> None:
         assert isinstance(report, dict)
@@ -833,7 +902,9 @@ class SharePanel(QWidget):
         self.apply_status.setText("Copying your disc image and applying the patch…")
 
         def operation(progress: modpack.ProgressSink) -> object:
-            return modpack.apply(pack, source, target, overwrite=overwrite, progress=progress)
+            receipt = modpack.apply(pack, source, target, overwrite=overwrite, progress=progress)
+            receipt["console_memory"] = console_memory.of(pack.manifest.recipe)
+            return receipt
 
         self._start(operation, self._apply_done, self._apply_failed)
 
@@ -862,12 +933,13 @@ class SharePanel(QWidget):
         self.apply_status.setText(f"Disc ready: {Path(target['path']).name} in {receipt['elapsed_seconds']} s; {result}." + extra)
         self._check_state = None
         self.disc_written.emit(str(target["path"]))
-        next_steps = disc_next_steps(target["path"])
+        memory = receipt.get("console_memory", 128)
+        next_steps = disc_next_steps(target["path"], memory, console_memory.NEXT_STEPS_64)
         self.apply_status.setText(self.apply_status.text() + "\n" + next_steps)
         # b780-uxfix: a disc that needs the 128 MiB / Complex 4627 setup says where to set it, before play
-        setup = ("\n\n" + XEMU_SETUP_STEPS) if receipt.get("memory_tip") else ""
+        setup = ("\n\n" + XEMU_SETUP_STEPS) if memory == 128 and receipt.get("memory_tip") else ""
         self._ready_disc = str(target["path"])
-        self._notify("info", "Disc ready", f"{target['path']}\n\n{next_steps}\n\n" + XEMU_LINE + extra + setup)
+        self._notify("info", "Disc ready", f"{target['path']}\n\n{next_steps}" + ("\n\n" + XEMU_LINE if memory == 128 else "") + extra + setup)
 
     def _apply_failed(self, message: str) -> None:
         self.apply_status.setText(f"Couldn't make the disc: {message}")

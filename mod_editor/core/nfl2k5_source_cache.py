@@ -9,6 +9,7 @@ only).
 from __future__ import annotations
 
 from dataclasses import dataclass
+import errno
 import hashlib
 import json
 import os
@@ -260,27 +261,76 @@ class Nfl2k5SourceCache:
             }
             self._atomic_write_json(temporary / "cache.json", marker)
             (temporary / "originals").mkdir()
-            try:
-                os.replace(temporary, final)
-            except FileExistsError:
-                existing = self._load_existing(final, source)
-                if existing is None:
-                    raise ValidationError("Another indexing process published an invalid cache")
-                platform_compat.remove_private_tree(temporary)
-                return existing
-        except BaseException:
+            self._publish_index(temporary, final, source, marker, selected, progress)
+        finally:
             if temporary.exists():
                 # Not ``shutil.rmtree``: the staging tree holds files this
                 # product deliberately makes read-only, which Windows refuses to
                 # delete at all.  The helper clears that attribute first there
                 # and is exactly ``shutil.rmtree`` on POSIX.
                 platform_compat.remove_private_tree(temporary)
-            raise
         result = self._load_existing(final, source)
         if result is None:
             raise ValidationError("Game index publication failed")
         _emit(progress, "Game index ready", 1, 1)
         return result
+
+    def _publish_index(self, staged, final, source, marker, selected, progress):
+        try:
+            platform_compat.publish_no_replace(staged, final, is_directory=True)
+            return
+        except platform_compat.NoReplacePublishUnavailable:
+            # Volumes without an atomic directory publish can still create a new private folder.
+            try:
+                final.mkdir(mode=0o700)
+            except FileExistsError:
+                pass
+            else:
+                self._require_private_directory(final, "The private NFL 2K5 cache directory")
+                self._atomic_write_json(final / "cache.json", marker)
+        except OSError as exc:
+            if exc.errno not in (errno.EEXIST, errno.ENOTEMPTY) and not (
+                    platform_compat.IS_WINDOWS and getattr(exc, "winerror", 0) in (5, 183) and final.is_dir()):
+                raise
+        existing = self._load_existing(final, source)
+        if existing is not None:
+            self._verify_cached_source(selected, existing, progress)
+            return
+        if self._owned_marker(final, source) != marker:
+            raise ValidationError(f"The cache folder contains unrecognized files: {final}. "
+                                  "Move that folder aside and open the disc again.")
+        self._restore_missing(staged, final, marker)
+
+    @staticmethod
+    def _restore_missing(staged: Path, final: Path, marker: dict) -> None:
+        """Keep existing files and user originals. Restore only the verified source-derived members."""
+        members = [PACK_FOLDER / row["name"] for row in marker["packs"]] + [INVENTORY_RELATIVE]
+        missing = []
+        for member in members:
+            path = final
+            for part in member.parts[:-1]:
+                path = path / part
+                if os.path.lexists(path):
+                    info = path.lstat()
+                    if not stat.S_ISDIR(info.st_mode) or _is_reparse_point(info):
+                        raise ValidationError(f"The cached archive folder is not a regular directory: {path}")
+            path = final / member
+            if os.path.lexists(path):
+                _regular_non_symlink(path, "existing cache member")
+                if _digest(path) != _digest(staged / member):
+                    raise ValidationError(f"A cached game file has different contents: {path}. "
+                                          "Move the cache folder aside and open the disc again.")
+            else:
+                missing.append(member)
+        for member in missing:
+            path = final / member
+            path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+            try:
+                platform_compat.publish_no_replace(staged / member, path)
+            except FileExistsError:
+                _regular_non_symlink(path, "concurrently published cache member")
+                if _digest(path) != _digest(staged / member):
+                    raise ValidationError(f"A different game file appeared in the cache: {path}")
 
     @staticmethod
     def _verify_cached_source(selected: Path, cached: SourceCache,
@@ -356,7 +406,8 @@ class Nfl2k5SourceCache:
         except platform_compat.PrivatePathError as exc:
             raise ValidationError(str(exc)) from exc
 
-    def _load_existing(self, root: Path, source: SourceRecord) -> SourceCache | None:
+    @staticmethod
+    def _owned_marker(root: Path, source: SourceRecord) -> dict | None:
         # A pre-existing cache root is attacker-reachable: refuse to read one
         # that is a symlink or a Windows junction/reparse point (which S_ISLNK
         # would miss) before trusting anything inside it.  A missing root is
@@ -383,13 +434,22 @@ class Nfl2k5SourceCache:
         except (OSError, json.JSONDecodeError):
             return None
         if (
-            marker.get("schema") != CACHE_SCHEMA
+            not isinstance(marker, dict) or marker.get("schema") != CACHE_SCHEMA
             or marker.get("source") != {"sha256": source.sha256, "size": source.size}
         ):
             return None
+        return marker
+
+    def _load_existing(self, root: Path, source: SourceRecord) -> SourceCache | None:
+        marker = self._owned_marker(root, source)
+        if marker is None:
+            return None
         pack_folder = root / PACK_FOLDER
         pack_rows = marker.get("packs")
-        if not isinstance(pack_rows, list) or not pack_rows:
+        if (not isinstance(pack_rows, list) or len(pack_rows) != 16
+                or any(not isinstance(row, dict) or not isinstance(row.get("name"), str)
+                       or type(row.get("size")) is not int for row in pack_rows)
+                or {row["name"] for row in pack_rows} != set("0123456789ABCDEF")):
             return None
         for row in pack_rows:
             path = pack_folder / str(row.get("name", ""))
@@ -410,6 +470,8 @@ class Nfl2k5SourceCache:
         ):
             return None
         summary = marker.get("summary", {})
+        if not isinstance(summary, dict):
+            return None
         counts = summary.get("resource_kind_counts", {})
         if not isinstance(counts, dict):
             return None

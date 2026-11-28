@@ -125,9 +125,10 @@ class StaticTests(unittest.TestCase):
     def test_states_and_upgrade_from_the_beta77_patch(self):
         self.assertEqual(p.status(self.retail), "retail")
         self.assertEqual(p.status(self.applied), "applied")
-        # a beta-77 disc (curves and weights only) reads "legacy" and is upgraded in place to the same bytes
+        # a beta-77 disc (curves and weights only) reads "legacy" and is upgraded in place to the same bytes (b81
+        # league-aging: the curves an earlier release wrote are the "b780" version's; the current ones are reshaped again)
         legacy = bytearray(self.retail)
-        for _label, va, _before, after in p._data_sites(self.retail):
+        for _label, va, _before, after in p._data_sites(self.retail, "b780"):
             off = p._offset(self.retail, va)
             legacy[off:off + len(after)] = after
         from mod_editor.core.nfl2k5_bump_strength import _sections, section_digest

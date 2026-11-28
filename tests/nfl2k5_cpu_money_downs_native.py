@@ -28,8 +28,8 @@ class Machine(BaseMachine):
         settings = patch.read_settings(payload)
         self.level = settings["level"] if settings else "retail"
         variant = settings.get("variant") if settings else None
-        if variant == "b778_late":
-            self.labels = patch.assembly.LABELS2_LATE
+        if variant in patch.LATE_VARIANTS:
+            self.labels = patch._m2(variant)[2]      # b81f: the gated template's own labels
         elif self.level == "modern2":
             self.labels = patch.assembly.LABELS2
         else:

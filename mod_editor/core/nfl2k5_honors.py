@@ -1,6 +1,6 @@
 """Player Card honors page (job F5, beta 77): award history on a second card page, live through Franchise. EXPERIMENTAL.
 
-Noah, 2026-10-07: "add another page you can switch to with the bumper buttons on player cards showing award history
+The owner, 2026-10-07: "add another page you can switch to with the bumper buttons on player cards showing award history
 for MVPs, Super Bowls, DPOY, ROY, etc. ... (and this dynamically updates throughout MyNFL)".
 
 What the retail game has (static RE of the USA ``default.xbe``; job F5 report)
@@ -23,7 +23,8 @@ What this owner adds
 * Live updates: after the game's season awards (the tail jump at 0x116E5F) the MVP, OPOY, DPOY, OROY, DROY, the ten
   best-at-position players (as All-Pro) and the rushing champion get their honor; after a game commit
   (``FUN_00135310``'s last call, 0x1356B4) that ``FUN_00133A30`` calls the Super Bowl, every player of the winning
-  team and the Super Bowl MVP get theirs. Franchise only (``[0xE576A0] == 2``). Pro Bowl honors are seeded, not live.
+  team and the Super Bowl MVP get theirs. Franchise only (``[0xE576A0] == 2``). Pro Bowl honors come from the game's own
+  AFC and NFC all-star clubs at Advance to offseason (the champions owner's ``award_pro_bowl``, b780-season1).
 * The history fold (``FUN_0014EFE0``, run when the pool is full) merges a season by sum or max from ``.data``
   0xAA26C0[field]; past field 86 that lookup reads unrelated variables, so fields 96..127 get a fixed rule: sum (the ten
   honors, the pressure and QB-hit counters 106..110 of job st1, and any field added after them; b779-hn1).
@@ -60,15 +61,21 @@ import hashlib
 import struct
 from typing import Mapping
 
+from . import nfl2k5_awards as awards  # b81: the season vote and All-Pro team (installed with this owner)
 from . import nfl2k5_champions as champions
 from . import nfl2k5_history_pool as history_pool  # b780 hist1: its in-place sites lie inside two guarded spans
 from . import nfl2k5_honors_code as runtime
+from . import nfl2k5_honors_code_b779 as runtime_b779   # b81: the runtime from beta-79 to the beta 81 integration
 from . import nfl2k5_rdata_sites as rdata
 from . import nfl2k5_xbe_space as space
 from .nfl2k5_cave_oracle import XbeImage
 
 OWNER = "nfl2k5_honors"
 UPGRADES_PREVIOUS = True   # b780 n6: status() may read "previous" (the beta-79 install); apply() upgrades it
+# b81 sb-ir-honors: this release's runtime also gives the Super Bowl honor to the winners on injured reserve. Every install
+# of the earlier runtime (beta-79 to the beta 81 integration, with any champions revision) reads "previous", and apply()
+# installs the new runtime in place (the entries kept their offsets, so the seven sites do not change).
+HONORS_PREVIOUS_REVISION = "beta-79 honors runtime (no injured-reserve Super Bowl honor)"
 EVIDENCE = "EXPERIMENTAL"
 CODE_SIZE = 2560
 DATA_SIZE = 16
@@ -76,6 +83,8 @@ DATA_SIZE = 16
 # option: one toggle, one status, one set of requests.
 HONORS_REQUESTS = ((OWNER, "code", CODE_SIZE, 16), (OWNER, "data", DATA_SIZE, 16))
 REQUESTS = HONORS_REQUESTS + champions.REQUESTS
+# b81: the award vote (nfl2k5_awards) is not in this request set: it has its own fixed page (space.AWARDS_VA), which
+# awards.install appends after these owners, so every layout of the honors and champions owners stays as it was.
 
 UI_LABEL = "Player Card honors, Super Bowl champions and award votes"  # b779-int1: 60-character caption rule
 HELP_TEXT = (
@@ -84,10 +93,11 @@ HELP_TEXT = (
     "MVP, offensive and defensive player of the year, rookies of the year, Super Bowls, Super Bowl MVP, Pro Bowls, "
     "All-Pro and rushing titles, with the years. Each honor is saved in the player's career history, so it moves "
     "with him and survives saves; season awards appear when the final regular-season week is completed, and "
-    "Super Bowl champions and MVP after that game is committed. Pro Bowls are historical seeds only. "
+    "Super Bowl champions and MVP after that game is committed. Pro Bowls go to the game's own AFC and NFC all-star "
+    "teams at Advance to offseason (seasons before 2026 come from the sourced history). "
     "Comeback, weekly/monthly awards and record books are not tracked on this page. Old saves start tracking "
     "new supported honors without gaining missing past awards. Pair with the sourced history for new franchises. "
-    "Beta 79 adds: " + champions.HELP_TEXT)
+    "Beta 79 adds: " + champions.HELP_TEXT + " Beta 81: " + awards.HELP_TEXT)
 BUILD_CAPTION = UI_LABEL
 
 FIELD0 = 96
@@ -173,7 +183,8 @@ def _rel32(source_end: int, target: int) -> bytes:
     return struct.pack("<i", target - source_end)
 
 
-def code_for(code_va: int, data_va: int, champions_code_va: int = 0, *, champions_previous: bool = False) -> bytes:
+def code_for(code_va: int, data_va: int, champions_code_va: int = 0, *, champions_previous: bool = False,
+             honors_previous: bool = False) -> bytes:
     """The owned RX content with the template's relocations applied, padded to CODE_SIZE with int3.
 
     ``champions_code_va`` is the champions owner's code page: the card's third page calls into it. 0 (no such owner)
@@ -188,8 +199,9 @@ def code_for(code_va: int, data_va: int, champions_code_va: int = 0, *, champion
         symbols["champ_bio"] = at["champions_bio"]
         symbols["champ_flip"] = at["champions_flip"]
         symbols["champ_enter"] = at["champions_enter"]
-    result = bytearray(runtime.CODE)
-    for offset, kind, symbol, value in runtime.RELOCATIONS:
+    template = runtime_b779 if honors_previous else runtime   # b81: the earlier honors runtime, for "previous"
+    result = bytearray(template.CODE)
+    for offset, kind, symbol, value in template.RELOCATIONS:
         target = symbols[symbol] + value + struct.unpack_from("<i", result, offset)[0]
         if kind == 2:
             target -= code_va + offset
@@ -202,15 +214,17 @@ def labels(code_va: int) -> dict[str, int]:
     return {name: code_va + offset for name, offset in runtime.LABELS.items()}
 
 
-def sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
-    """Every executable edit as (label, VA, retail bytes, patched bytes)."""
-
-    at = labels(code_va)
+def _sites_for_labels(at) -> list[tuple[str, int, bytes, bytes]]:
     out = []
     for label, va, before, entry, opcode, length in SITE_TABLE:
         after = bytes([opcode]) + _rel32(va + 5, at[entry]) + b"\x90" * (length - 5)
         out.append((label, va, before, after))
     return out
+
+
+def sites(code_va: int) -> list[tuple[str, int, bytes, bytes]]:
+    """Every executable edit as (label, VA, retail bytes, patched bytes)."""
+    return _sites_for_labels(labels(code_va))
 
 
 def _guard_digest(image: XbeImage, va: int, size: int, checked_sites) -> str:
@@ -236,7 +250,9 @@ def _check_guards(image: XbeImage, checked_sites) -> None:
     # b779-hn1: the champions owner's two sites (0x116E55 lies inside the 'season awards' span) are masked like our own
     # b780 hist1: so are the history-pool owner's sites in the fold (0x14EFE0) and the writer (0x14F249), but only while
     # that owner reads exactly applied (its fold calls the rule at 0x14F168, this owner's site, for every field below 87)
-    masked = list(checked_sites) + champions.sites(0x14DA000) + history_pool.applied_sites(image)
+    # b81 awards: the season vote's site 0x116E5A lies inside the 'season awards' span, masked while that owner reads applied
+    masked = (list(checked_sites) + champions.sites(0x14DA000) + history_pool.applied_sites(image)
+              + awards.applied_sites(image))
     for name, va, size, digest in GUARDS:
         _require(_guard_digest(image, va, size, masked) == digest, f"foreign honors dependency: {name} ({va:#x})")
     _require(image.read(0x00133A41, 1)[0] in SUPER_BOWL_ROWS, "foreign Super Bowl row predicate")
@@ -275,11 +291,14 @@ def _owned_state(payload: bytes):
     image = XbeImage(payload)
     found = allocations(payload)
     champions_state = champions.owned_state(payload)[0]
+    awards_state = awards.status(payload)       # b81: "retail" on an older install (upgraded by apply), else "applied"
+    _require(awards_state in ("retail", "applied"), "foreign awards owner")
     if not found:
         retail_sites = sites(0x14DA000)  # the retail bytes do not depend on the pages
         _require(rdata.status(payload, retail_sites) == "retail", "honors sites changed without an allocation")
         _check_guards(image, retail_sites)
         _champions_va(payload, found)
+        _require(awards_state == "retail", "honors and awards installations differ")
         return "retail", None
     code_va, data_va = found["code"]["va"], found["data"]["va"]
     champs_va = _champions_va(payload, found)
@@ -289,17 +308,25 @@ def _owned_state(payload: bytes):
         _require(rdata.status(payload, edits) == "retail", "honors sites changed with an empty allocation")
         _check_guards(image, edits)
         _require(champions_state == "retail", "honors and champions installations differ")
+        _require(awards_state == "retail", "honors and awards installations differ")
         return "retail", found
-    if code == code_for(code_va, data_va, champs_va):
-        state = "applied"
+    revision = champions.installed_revision(payload, champs_va) if champs_va else False
+    if code == code_for(code_va, data_va, champs_va, champions_previous=revision):
+        code_state = "previous" if revision else "applied"
     else:
-        _require(bool(champs_va) and code == code_for(code_va, data_va, champs_va, champions_previous=True),
+        # b81 sb-ir-honors: the earlier honors runtime, linked to whichever champions revision is installed beside it
+        _require(code == code_for(code_va, data_va, champs_va, champions_previous=revision, honors_previous=True),
                  "foreign honors code")
-        state = "previous"
+        code_state = "previous"
     edits = sites(code_va)
     _require(rdata.status(payload, edits) == "applied", "mixed honors sites")
     _check_guards(image, edits)
-    _require(champions_state == state, "honors and champions installations differ")
+    # b81 sb-ir-honors: an earlier honors runtime may sit beside an up-to-date champions owner (beta-80 to the beta 81
+    # integration)
+    _require(champions_state == code_state or (code_state, champions_state) == ("previous", "applied"),
+             "honors and champions installations differ")
+    # b81 awards: an install without the award vote (beta 79 to beta 81 before that lane) reads "previous"; apply adds it
+    state = "previous" if code_state == "previous" or awards_state == "retail" else "applied"
     return state, found
 
 
@@ -310,9 +337,30 @@ def status(payload: bytes) -> str:
         return "foreign"
 
 
+def _standalone_sites(payload):
+    """The pre-Champions F5 install in b775, for readers of the shared fold only."""
+    found = allocations(payload)
+    if not found or (found["code"]["va"], found["data"]["va"]) != (0x14E0050, 0x14BBFF0):
+        return []
+    code_va = found["code"]["va"]
+    image = XbeImage(payload)
+    # The original F5 writer at 741cc3c6d reproduces all 2,560 relocated bytes at these two VAs.
+    if hashlib.sha256(image.read(code_va, CODE_SIZE)).hexdigest() != "ec0b2658457dd4b21d8682ae3762bd8f64f504b0e49cf6cae6c981407683891a":
+        return []
+    if champions.owned_state(payload) != ("retail", None):
+        return []
+    offsets = {"honors_page_input": 0, "honors_page_enter": 0x3D, "honors_page_ratings": 0x4E,
+               "honors_page_bio": 0x62, "honors_season_hook": 0x76, "honors_sb_hook": 0x85,
+               "honors_fold_rule": 0x94}
+    edits = _sites_for_labels({name: code_va + offset for name, offset in offsets.items()})
+    _require(rdata.status(payload, edits) == "applied", "mixed standalone honors sites")
+    _check_guards(image, edits)
+    return edits
+
+
 def fold_site_edit(payload: bytes) -> list[tuple[int, bytes]]:
     """[(VA, retail bytes)] of the history-fold edit while this owner is *exactly* applied (this release's install or
-    the exact beta-79 one, whose fold hook is the same code), else [].
+    the beta-79 or standalone b775 installs), else [].
 
     b77-f5b: ``nfl2k5_defensive_try`` pins the whole history engine (0x14E7E0, 3,216 bytes) because it writes field 59
     through the engine's writer. This owner's only edit inside that span is the 7-byte rule-table load of the fold
@@ -321,17 +369,37 @@ def fold_site_edit(payload: bytes) -> list[tuple[int, bytes]]:
     these retail bytes before it hashes its context, and only when the whole honors installation validates here.
     """
 
-    if status(payload) not in ("applied", "previous"):
+    state = status(payload)
+    try:
+        if state in ("applied", "previous"):
+            edits = sites(allocations(payload)["code"]["va"])
+        elif state == "foreign":
+            edits = _standalone_sites(payload)
+        else:
+            return []
+    except (ValueError, IndexError, KeyError, TypeError, struct.error, OverflowError):
         return []
-    return [(va, before) for label, va, before, _after in sites(allocations(payload)["code"]["va"]) if label == "history_fold"]
+    return [(va, before) for label, va, before, _after in edits if label == "history_fold"]
 
 
 def read_settings(payload: bytes) -> dict:
     state = status(payload)
     installed = state in ("applied", "previous")   # b780 n6: "previous" = the beta-79 install (upgraded by apply)
+    prior = {}
+    if state == "previous":
+        revision = champions.installed_revision(payload, champions.allocations(payload)["code"]["va"])
+        found = allocations(payload)
+        earlier_code = code_for(found["code"]["va"], found["data"]["va"], _champions_va(payload, found),
+                                champions_previous=revision, honors_previous=True)
+        earlier = XbeImage(payload).read(found["code"]["va"], CODE_SIZE) == earlier_code
+        # b81 integration (#23 + #38): the oldest difference names the revision: the champions owner's, then the earlier
+        # honors runtime (no injured-reserve Super Bowl honor), then an install without the award vote
+        prior = {"revision": (champions.PREVIOUS_REVISION if revision is True else revision) if revision
+                 else HONORS_PREVIOUS_REVISION if earlier else "beta-81 without the award vote", "needs_update": True}
+    voted = installed and awards.status(payload) == "applied"
     return {"status": state, "honors_page": installed, "fields": dict(FIELDS) if installed else None,
             "champions": installed, "award_rule": champions.AWARD_RULE if installed else None,
-            **({"revision": champions.PREVIOUS_REVISION, "needs_update": True} if state == "previous" else {})}
+            "awards_vote": voted, **prior}
 
 
 def reservations(payload: bytes) -> list[dict]:
@@ -340,7 +408,7 @@ def reservations(payload: bytes) -> list[dict]:
     edits = sites(base["code"]["va"] if base else 0x14DA000)
     return rows + [dict(owner=OWNER, start=hex(va), end=hex(va + len(before)), size=len(before),
                         basis="pinned live " + label + "; not a cave") for label, va, before, _after in edits
-                   ] + champions.reservations(payload)
+                   ] + champions.reservations(payload) + awards.reservations(payload)
 
 
 def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
@@ -358,15 +426,21 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     if state == "previous":
         code_va, data_va = found["code"]["va"], found["data"]["va"]
         champs_va = _champions_va(payload, found)
-        relinked, code_receipt = space.install_code(
-            payload, OWNER, code_for(code_va, data_va, champs_va),
-            previous=code_for(code_va, data_va, champs_va, champions_previous=True))
-        result, champions_receipt = champions.install(relinked)
+        upgraded, code_receipt, champions_receipt = payload, None, None
+        current = code_for(code_va, data_va, champs_va)
+        installed_code = XbeImage(payload).read(code_va, CODE_SIZE)
+        if installed_code != current:     # b81 integration (#23 + #38): an earlier champions link or honors runtime
+            upgraded, code_receipt = space.install_code(payload, OWNER, current, previous=installed_code)
+        if champions.status(upgraded) == "previous":
+            upgraded, champions_receipt = champions.install(upgraded)
+        result, awards_receipt = awards.install(upgraded)          # b81: the award vote's page and two sites
         _require(status(result) == "applied", "honors upgrade postcondition failed")
-        return result, {**common, "already_applied": False, "upgraded_from": champions.PREVIOUS_REVISION,
+        return result, {**common, "already_applied": False,
+                        "upgraded_from": (champions_receipt["upgraded_from"] if champions_receipt
+                                          else HONORS_PREVIOUS_REVISION if code_receipt else "beta-81"),
                         "code_install": code_receipt, "code_va": hex(code_va), "data_va": hex(data_va),
                         "changed_bytes": sum(a != b for a, b in zip(before, result)) + abs(len(result) - len(before)),
-                        "champions": champions_receipt,
+                        "champions": champions_receipt, "awards": awards_receipt,
                         "before_sha256": hashlib.sha256(before).hexdigest(),
                         "after_sha256": hashlib.sha256(result).hexdigest()}
     if not found:
@@ -380,12 +454,13 @@ def apply(payload: bytes) -> tuple[bytes, Mapping[str, object]]:
     champs_va = _champions_va(payload, found)
     installed, code_receipt = space.install_code(payload, OWNER, code_for(code_va, data_va, champs_va))
     installed, site_receipt = rdata.apply(installed, sites(code_va), OWNER)
-    result, champions_receipt = champions.install(installed)
+    installed, champions_receipt = champions.install(installed)
+    result, awards_receipt = awards.install(installed)             # b81: the award vote's page and two sites
     _require(status(result) == "applied", "honors postcondition failed")
     changed = sum(a != b for a, b in zip(before, result)) + abs(len(result) - len(before))
     return result, {**common, **site_receipt, "already_applied": False, "code_install": code_receipt,
                     "code_va": hex(code_va), "data_va": hex(data_va), "changed_bytes": changed,
-                    "champions": champions_receipt,
+                    "champions": champions_receipt, "awards": awards_receipt,
                     "sites": [{"label": label, "va": hex(va), "size": len(before_bytes)}
                               for label, va, before_bytes, _after in sites(code_va)],
                     "before_sha256": hashlib.sha256(before).hexdigest(),

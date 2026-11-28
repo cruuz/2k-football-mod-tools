@@ -1,0 +1,591 @@
+"""b81-uniforms: the 2026 jersey relief at level B on every 2026 kit package (Noah 2026-11-19: "B. Keep new.").
+
+data/nfl2k5_relief_2026_b81u.json and its art folder, mod_editor/core/nfl2k5_relief_2026.py and the optional build step
+relief_2026_b81u. b81-retail-free-art (schema v2): the retail-derived base of every map (the 2004 folds softened, the
+2004 construction lifted out) is derived at build time from the user's own disc; only the authored differences ship.
+
+The document's shape and pins; that no shipped relief file is a retail-derived map (the guard the catalog generator
+applies, and the measured old masters it refuses); the numpy base port against scipy (where scipy is installed); the
+composer and its mip chain against the bump writer's; the build hook; and, with the retail disc and the released v0.9
+disc on this machine (B81_RETAIL_DISC, B81_UNIFORM_DISC), every slot waiting at its pinned input and a sample of kits
+derived from the retail disc and compiled to their output pins."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+
+import numpy as np
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path[:0] = [str(ROOT), str(ROOT / "tools"), str(ROOT / "tools/b77")]
+from mod_editor.core import build_steps, mod_build, nfl2k5_relief_2026 as rl  # noqa: E402
+from mod_editor.core import nfl2k5_bump_texture_writer as bump  # noqa: E402
+import modern_art_png_catalog as catalog  # noqa: E402
+
+DISC = Path(os.environ.get("B81_UNIFORM_DISC", "/media/noah/Storage/2K5 Discs/SOFTDRINK 2K28 v0.9 (2026-11-05).xiso.iso"))
+RETAIL = Path(os.environ.get("B81_RETAIL_DISC", "/media/noah/Storage/for codex 1.0/ESPN NFL 2K5 (USA).xiso.iso"))
+SIZES = {"bump_jersey": (512, 256), "bump_sleeve": (128, 128), "bump_pants": (512, 256)}
+#: three kits with different collar openings, shields and maker's marks (Cowboys throwback: the small shield, the pants
+#: shield at its own place, swooshes on the torso caps with wrap-over slivers)
+SAMPLE = ("18H0", "01A0", "07H9")
+ART = "data/nfl2k5_relief_2026_b81u/"
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def tilt(rgba):
+    n = rgba[..., :2].astype(float) / 127.5 - 1.0
+    return np.hypot(n[..., 0], n[..., 1]) * 127
+
+
+def normal_map(rng, h, w):
+    """A plausible absolute tangent-space normal map (what the withdrawn v1 masters were)."""
+    xy = rng.normal(0, 0.15, (h, w, 2))
+    z = np.sqrt(np.clip(1 - (xy ** 2).sum(-1), 0, 1))
+    n = np.dstack([xy, z])
+    return np.dstack([np.clip(np.round(n * 127.5 + 127.5), 0, 255).astype(np.uint8), np.full((h, w), 255, np.uint8)])
+
+
+def png(rgba):
+    from io import BytesIO
+    from PIL import Image
+    out = BytesIO()
+    Image.fromarray(rgba, "RGBA").save(out, "PNG")
+    return out.getvalue()
+
+
+class OpeningOverride(unittest.TestCase):
+    """b81-uniform-pass2 (11/24): a jersey row's collar opening comes from the kit's torso, or for a ``retail_base`` row
+    from the retail base sculpt's own torso (retail_maps' ``opening``); the row's pin checks either."""
+
+    def test_a_retail_base_row_takes_the_retail_opening_and_its_pin_still_checks(self):
+        torso = np.zeros((256, 512, 4), np.uint8)
+        torso[..., :3] = (10, 42, 78)                  # the neck opening painted in the body's colour: the finder floods
+        torso[..., 3] = 255
+        flooded = rl.collar_opening(torso)
+        base = np.zeros((256, 512), bool)
+        base[0:70, 140:180] = True
+        retail = {"opening": base}
+        row = {"selector": "XXH0", "slot": "bump_jersey", "opening": "retail_base", "opening_sha256": rl.opening_sha256(base)}
+        self.assertTrue(np.array_equal(rl.kit_opening(row, torso, retail), base))
+        self.assertFalse(np.array_equal(flooded, base))
+        with self.assertRaises(ValueError):
+            rl.kit_opening(dict(row, opening_sha256=rl.opening_sha256(flooded)), torso, retail)
+        with self.assertRaises(ValueError):
+            rl.kit_opening(row, torso, None)          # without the retail maps there is no base opening
+        plain = {"selector": "XXH0", "slot": "bump_jersey", "opening_sha256": rl.opening_sha256(flooded)}
+        self.assertTrue(np.array_equal(rl.kit_opening(plain, torso, retail), flooded))   # the default reads the torso
+
+    def test_an_unknown_opening_source_is_refused(self):
+        import tempfile
+        doc = json.loads(rl.DATA_B81U.read_text(encoding="utf-8"))
+        row = next(r for r in doc["slots"] if r["slot"] == "bump_jersey")
+        for bad in ({"opening": "mask"}, ):
+            with self.subTest(bad=bad), tempfile.TemporaryDirectory() as d:
+                changed = json.loads(json.dumps(doc))
+                next(r for r in changed["slots"] if r is not None and r["selector"] == row["selector"] and r["slot"] == "bump_jersey").update(bad)
+                path = Path(d) / "doc.json"
+                path.write_text(json.dumps(changed), encoding="utf-8")
+                with self.assertRaises(ValueError):
+                    rl.spec(path)
+        sleeve = json.loads(json.dumps(doc))
+        next(r for r in sleeve["slots"] if r["slot"] == "bump_sleeve")["opening"] = "retail_base"
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "doc.json"
+            path.write_text(json.dumps(sleeve), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                rl.spec(path)
+
+
+class Document(unittest.TestCase):
+    def setUp(self):
+        self.doc = rl.relief_b81u()
+
+    # b81-uniform-pass2 fold-in (11/24): the approved Seahawks torsos (art_v4: 26H0/26A0 and the combination slots 26H4/26A4
+    # that wear them) paint the neck opening in the body's colour, within the 14 levels collar_opening separates by, so the
+    # opening it derives floods the chest (20,969 texels, tip at row 157). Coordinator's ruling: a per-kit override, no
+    # other pin moving: their jersey rows take the retail base sculpt's own opening ("retail_base").
+    RETAIL_BASE_OPENING = ("26A0", "26A4", "26H0", "26H4")
+
+    def test_every_kit_has_its_three_slots_pinned(self):
+        slots = self.doc["slots"]
+        kits = {r["selector"] for r in slots}
+        self.assertEqual(len(kits), 178)
+        self.assertEqual(len(slots), 3 * 178)
+        self.assertEqual(sorted(r["selector"] for r in slots if "opening" in r), list(self.RETAIL_BASE_OPENING))
+        self.assertTrue(all(r["opening"] == "retail_base" and r["slot"] == "bump_jersey" for r in slots if "opening" in r))
+        for row in slots:
+            for key in ("before_sha256", "after_sha256", "composed_sha256"):
+                self.assertEqual(len(row[key]), 64, row)
+            self.assertNotEqual(row["before_sha256"], row["after_sha256"], row)
+            self.assertEqual(row["base"], "before" if row["slot"] == "bump_pants" else "retail")
+            self.assertEqual(row["chunk"], {"bump_jersey": 45, "bump_sleeve": 46, "bump_pants": 47}[row["slot"]])
+            self.assertEqual(row["offset"] + row["length"] <= row["resource_size"], True)
+            if row["slot"] == "bump_pants":
+                self.assertEqual([tuple(b) for b in row["worked"][:2]], list(rl.OLD_PANTS))
+
+    def test_the_bases_are_pinned_retail_maps_and_the_kernels_are_stored(self):
+        self.assertEqual(set(self.doc["bases"]), {"bump_jersey", "bump_sleeve"})
+        jersey = self.doc["bases"]["bump_jersey"]                 # review F1: the islands come from the disc's mesh
+        self.assertEqual(len(jersey["mesh_span_sha256"]), 64)
+        self.assertEqual(len(jersey["islands_sha256"]), 64)
+        self.assertNotIn("islands", jersey)
+        self.assertNotIn("openings", jersey)
+        for row in self.doc["slots"]:                            # review F2: each opening from the kit's torso
+            if row["slot"] == "bump_jersey":
+                self.assertEqual(len(row["opening_sha256"]), 64)
+        for slot, entry in self.doc["bases"].items():
+            self.assertEqual((entry["selector"], entry["chunk"]), ("18H0", {"bump_jersey": 45, "bump_sleeve": 46}[slot]))
+            self.assertEqual(len(entry["span_sha256"]), 64)
+        kernels = rl.Kernels(self.doc["gauss_kernels"])
+        self.assertEqual(sorted(kernels.table), sorted(float(s) for s in rl.SIGMAS))
+        for sigma, weights in kernels.table.items():        # stored, so no platform exp() is used at build time
+            self.assertLess(abs(float(weights.sum()) - 1.0), 1e-12, sigma)
+            self.assertEqual(int(np.argmax(weights)), len(weights) // 2, sigma)
+
+    def test_the_art_is_two_difference_masters_and_small_patches_each_stored_once(self):
+        folder = rl.art_folder(self.doc)
+        self.assertEqual(folder, ROOT / "data/nfl2k5_relief_2026_b81u")
+        self.assertEqual(set(self.doc["masters"]), {"bump_jersey", "bump_sleeve"})     # pants: patches only
+        for name, entry in self.doc["masters"].items():
+            self.assertEqual((entry["width"], entry["height"]), SIZES[name])
+        files = sorted(p.name for p in folder.glob("*.png"))
+        named = sorted([m["png"] for m in self.doc["masters"].values()] + [p["png"] for p in self.doc["patches"].values()])
+        self.assertEqual(files, named)                           # no layout mask ships (review F1, F2)
+        self.assertEqual(len(set(p["sha256"] for p in self.doc["patches"].values())), len(self.doc["patches"]))
+        self.assertLess(sum((folder / f).stat().st_size for f in files), 1024 * 1024)
+        used = {r["patch"] for r in self.doc["slots"] if r["patch"]}
+        self.assertEqual(used, set(self.doc["patches"]))
+        for key, entry in self.doc["patches"].items():
+            patch = rl.read_art(folder, entry)
+            w, h = SIZES[entry["slot"]]
+            self.assertLessEqual(entry["x"] + entry["width"], w)
+            self.assertLessEqual(entry["y"] + entry["height"], h)
+            self.assertTrue(set(np.unique(patch[..., 3])) <= {0, 255}, key)
+            self.assertLess(int((patch[..., 3] == 255).sum()), 6000, key)              # a patch, not a map
+
+    def test_a_pinned_png_that_changed_is_refused(self):
+        entry = dict(next(iter(self.doc["masters"].values())))
+        entry["sha256"] = "0" * 64
+        with self.assertRaises(ValueError):
+            rl.read_art(rl.art_folder(self.doc), entry)
+
+    def test_the_art_folder_must_be_a_plain_relief_folder_name(self):
+        for name in ("../nfl2k5_relief_2026_b81u", "nfl2k5_kit_fixes_2026", None):
+            with self.assertRaises(ValueError):
+                rl.art_folder(dict(self.doc, art=name))
+
+    def test_a_v1_document_with_absolute_masters_is_refused(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "v1.json"
+            path.write_text(json.dumps(dict(self.doc, schema="nfl2k5_relief_2026/v1")), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                rl.spec(path)
+            rows = [dict(r, base="master") if r["slot"] == "bump_jersey" else r for r in self.doc["slots"]]
+            path.write_text(json.dumps(dict(self.doc, slots=rows)), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                rl.spec(path)
+
+
+class RetailFree(unittest.TestCase):
+    """b81-retail-free-art: a relief file that carries a retail-derived map must never reach the package again."""
+
+    def test_no_shipped_relief_file_decodes_as_an_absolute_normal_map(self):
+        allow = (ROOT / "packaging/release-allowlist.txt").read_text(encoding="utf-8").splitlines()
+        shipped = sorted(line.strip() for line in allow if line.strip().startswith(ART) and line.strip().endswith(".png"))
+        on_disk = sorted(ART + p.name for p in rl.art_folder(rl.relief_b81u()).glob("*.png"))
+        self.assertEqual(shipped, on_disk)
+        for relative in shipped:
+            self.assertIsNone(catalog.relief_problem(relative, (ROOT / relative).read_bytes()), relative)
+
+    def test_the_guard_refuses_an_absolute_map_a_patch_of_one_and_a_grey_island_mask(self):
+        rng = np.random.default_rng(81)
+        self.assertIsNotNone(catalog.relief_problem(ART + "master_jersey.png", png(normal_map(rng, 256, 512))))
+        patch = np.zeros((40, 60, 4), np.uint8)
+        patch[5:35, 5:55] = normal_map(rng, 30, 50)
+        self.assertIsNotNone(catalog.relief_problem(ART + "pants_0123456789abcdef.png", png(patch)))
+        mask = np.zeros((16, 16, 4), np.uint8)                   # review F1, F2: no layout mask may ship, by any name
+        mask[..., 3] = 255
+        mask[4:12, 2:9, :3] = 255
+        self.assertIsNotNone(catalog.relief_problem(ART + "islands_jersey.png", png(mask)))
+        self.assertIsNotNone(catalog.relief_problem(ART + "jersey_0123456789abcdef.png", png(mask)))
+        diff = np.zeros((256, 512, 4), np.uint8)
+        diff[..., 3] = 255
+        diff[100:110, 100:110, :3] = (3, 251, 254)
+        self.assertIsNone(catalog.relief_problem(ART + "difference_jersey.png", png(diff)))
+
+    def test_the_catalog_lists_every_relief_file_and_refuses_a_retail_shaped_one(self):
+        document = json.loads((ROOT / catalog.CATALOG).read_text(encoding="utf-8"))
+        listed = sorted(p for p in document["files"] if p.startswith(ART))
+        self.assertEqual(listed, sorted(ART + p.name for p in rl.art_folder(rl.relief_b81u()).glob("*.png")))
+        self.assertIn(ART, catalog.FOLDERS)
+        self.assertIn("refuses any relief file", document["classification"])
+
+    def test_the_difference_masters_are_mostly_zero(self):
+        doc = rl.relief_b81u()
+        for name, entry in doc["masters"].items():
+            d = rl.read_art(rl.art_folder(doc), entry)[..., :3]
+            self.assertGreater(float((d == 0).all(-1).mean()), 0.5, name)
+
+
+try:
+    from scipy import ndimage as ndi
+except ImportError:      # the Studio runtime has no scipy; the port is checked where the authoring tools run
+    ndi = None
+import platform  # noqa: E402
+
+#: the port reproduces the scipy and Pillow builds the art was authored with (x86-64 Linux, scipy 1.11.4, Pillow
+#: 10.2.0). Other builds of those libraries (an arm64 scipy may fuse multiply-adds) are not what the Studio runs, so
+#: the parity checks run only on x86-64; test_b81_retail_free_platforms pins the port's own output on every platform.
+AUTHORING_LIKE = platform.machine().lower() in ("x86_64", "amd64")
+
+
+def exact_gaussian_kernel(sigma, radius):
+    """scipy's _gaussian_kernel1d (order 0) with a correctly rounded exp: each tap's exp is taken to 40 digits and
+    rounded once to the nearest double, then divided by the taps' numpy sum as scipy does."""
+    import decimal
+    sd = float(sigma)
+    x = np.arange(-radius, radius + 1)
+    with decimal.localcontext() as context:
+        context.prec = 40
+        phi = np.array([float(decimal.Decimal(float(t)).exp()) for t in -0.5 / (sd * sd) * x ** 2])
+    return phi / phi.sum()
+
+
+@unittest.skipIf(ndi is None or not AUTHORING_LIKE, "scipy parity: x86-64 with scipy installed (authoring machines)")
+class BasePortEqualsScipy(unittest.TestCase):
+    """The build-time base is bump_true's scipy arithmetic to the bit."""
+
+    def setUp(self):
+        self.rng = np.random.default_rng(2026)
+        self.gauss = rl.Kernels(rl.relief_b81u()["gauss_kernels"])
+
+    def test_gaussian_filter(self):
+        """scipy.ndimage.gaussian_filter is _gaussian_kernel1d's weights (np.exp of the taps, divided by their sum) and
+        then correlate1d along each axis (mode reflect). The document stores the authoring run's weights so that no
+        platform's exp() is involved at build time; scipy computes them again with this machine's np.exp, which is not
+        the same function everywhere: on an x86-64 runner with AVX-512, numpy's float64 exp is its own SIMD routine
+        and can differ from the authoring glibc exp in the last bit (hosted run 44923189204: sigma 3.0 differed on two
+        Ubuntu jobs and on no AVX2 machine). So the weights are checked to the bit against the same recipe with a
+        correctly rounded exp, and the filter to the bit against scipy's own correlation with those weights. Where this
+        machine's exp gives the stored weights, scipy's gaussian_filter itself must match to the bit as well."""
+        for sigma in rl.SIGMAS:
+            a = self.rng.standard_normal((96, 160))
+            weights = self.gauss.table[float(sigma)]
+            radius = len(weights) // 2
+            self.assertTrue(np.array_equal(weights, exact_gaussian_kernel(sigma, radius)), sigma)
+            ours = self.gauss(a, sigma)
+            theirs = a
+            for axis in range(a.ndim):
+                theirs = ndi.correlate1d(theirs, weights[::-1], axis, mode="reflect")
+            self.assertTrue(np.array_equal(ours, theirs), sigma)
+            impulse = np.zeros(2 * radius + 1)
+            impulse[radius] = 1.0
+            here = ndi.gaussian_filter1d(impulse, sigma, mode="constant")     # this machine's scipy weights, exactly
+            if np.array_equal(here, weights):
+                self.assertTrue(np.array_equal(ours, ndi.gaussian_filter(a, sigma)), sigma)
+            else:
+                np.testing.assert_array_max_ulp(here, weights, maxulp=4)
+                np.testing.assert_allclose(ours, ndi.gaussian_filter(a, sigma), rtol=1e-13, atol=1e-14)
+
+    def test_morphology_components_and_holes(self):
+        m = self.rng.random((120, 200)) > 0.55
+        for n in (1, 4, 6):
+            self.assertTrue(np.array_equal(rl.dilate(m, n), ndi.binary_dilation(m, iterations=n)))
+            self.assertTrue(np.array_equal(rl.erode(m, n), ndi.binary_erosion(m, iterations=n)))
+            self.assertTrue(np.array_equal(rl.dilate(rl.erode(m, n), n), ndi.binary_opening(m, iterations=n)))
+            self.assertTrue(np.array_equal(rl.erode(rl.dilate(m, n), n), ndi.binary_closing(m, iterations=n)))
+        labels, sizes = rl.components(m)
+        theirs, count = ndi.label(m)
+        self.assertEqual(len(sizes) - 1, count)
+        self.assertEqual(sorted(sizes[1:].tolist()), sorted(ndi.sum(m, theirs, np.arange(1, count + 1)).astype(int).tolist()))
+        self.assertTrue(np.array_equal(rl.fill_holes(m), ndi.binary_fill_holes(m)))
+
+    def test_distance_below_the_cap(self):
+        feature = self.rng.random((90, 130)) > 0.995
+        mine = rl.distance_within(feature, 28)
+        theirs = ndi.distance_transform_edt(~feature)
+        near = theirs < 28
+        self.assertTrue(np.array_equal(mine[near], theirs[near]))
+        self.assertTrue((mine[~near] >= 28).all())
+
+    def test_bilinear_enlargement(self):
+        import PIL
+        from PIL import Image
+        if PIL.__version__ != "10.2.0":
+            self.skipTest("Pillow parity is checked against the authoring Pillow 10.2.0, not " + PIL.__version__)
+        rgb = self.rng.integers(0, 256, (32, 48, 3), dtype=np.uint8)
+        theirs = np.asarray(Image.fromarray(rgb).resize((96, 64), Image.BILINEAR)).astype(np.float64) / 127.5 - 1.0
+        self.assertTrue(np.array_equal(rl.decode_map(np.dstack([rgb, rgb[..., :1]])), theirs))
+
+
+class Composer(unittest.TestCase):
+    def test_the_mip_chain_is_the_bump_writers_box_filter(self):
+        rng = np.random.default_rng(81)
+        for w, h, levels in ((512, 256, 6), (128, 128, 5)):
+            rgba = rng.integers(0, 256, (h, w, 4), dtype=np.uint8)
+            mine = rl.mip_levels(rgba, levels)
+            theirs = bump.generate_mips(rgba.tobytes(), w, h, levels)
+            self.assertEqual([m.tobytes() for m in mine], [t.rgba for t in theirs])
+
+    def test_a_patch_replaces_only_its_opaque_texels_and_alpha_ends_opaque(self):
+        base = np.zeros((8, 8, 4), np.uint8)
+        base[..., 3] = 7
+        patch = np.zeros((2, 3, 4), np.uint8)
+        patch[0, 1] = (10, 20, 30, 255)
+        out = rl.compose(base, patch, (4, 5))
+        self.assertEqual(tuple(out[5, 5]), (10, 20, 30, 255))
+        self.assertEqual(int((out[..., :3] != 0).any(-1).sum()), 1)
+        self.assertTrue((out[..., 3] == 255).all())
+        half = patch.copy()
+        half[1, 1, 3] = 128
+        with self.assertRaises(ValueError):
+            rl.compose(base, half, (4, 5))
+        with self.assertRaises(ValueError):
+            rl.compose(base, patch, (6, 5))
+
+    def test_a_difference_adds_back_to_the_authored_map_modulo_256(self):
+        rng = np.random.default_rng(7)
+        authored = rng.integers(0, 256, (16, 16, 4), dtype=np.uint8)
+        base = rng.integers(0, 256, (16, 16, 4), dtype=np.uint8)
+        difference = rl.difference_of(authored, base)
+        back = rl.add_difference(base, difference)
+        self.assertTrue(np.array_equal(back[..., :3], authored[..., :3]))
+        self.assertTrue((back[..., 3] == 255).all())
+        self.assertTrue((rl.difference_of(base, base)[..., :3] == 0).all())
+
+    def test_the_body_is_the_system_buffer_then_the_swizzled_bgra_chain(self):
+        rgba = np.zeros((4, 4, 4), np.uint8)
+        rgba[..., 0] = 200
+        rgba[..., 3] = 255
+        out = rl.body(b"SYS", rgba, 3)
+        self.assertTrue(out.startswith(b"SYS"))
+        self.assertEqual(len(out), 3 + 4 * (16 + 4 + 1))
+        self.assertEqual(out[3:7], bytes((0, 0, 200, 255)))                 # stored B, G, R, A
+
+
+class BuildHook(unittest.TestCase):
+    def test_an_optional_labelled_step_right_after_the_uniform_pass_numbers_reading_the_retail_disc(self):
+        self.assertIn("relief_2026_b81u", mod_build.OPTIONAL_STEPS)
+        self.assertEqual(build_steps.STEP_LABELS["relief_2026_b81u"], "the 2026 jersey relief")
+        source = (ROOT / "mod_editor/core/mod_build.py").read_text(encoding="utf-8")
+        digits = source.index("apply_digits_b81(target)")
+        relief = source.index("apply_relief_b81u(target")
+        self.assertLess(digits, relief)
+        self.assertLess(relief, source.index('if loaded_weather_plan is not None:'))
+        self.assertIn('"2026 jersey relief"), progress=progress)', source[relief:relief + 400])
+
+    def test_the_module_document_and_art_are_shipped_and_pinned(self):
+        from mod_editor.core.providers import Nfl2k5UnifiedVisualProvider
+        provider = Nfl2k5UnifiedVisualProvider()
+        allow = (ROOT / "packaging/release-allowlist.txt").read_text(encoding="utf-8").splitlines()
+        self.assertIn("mod_editor/core/nfl2k5_relief_2026.py", allow)
+        self.assertIn("mod_editor/core/nfl2k5_relief_2026.py", provider.module_pins)
+        paths = ["data/nfl2k5_relief_2026_b81u.json"] + [f"data/nfl2k5_relief_2026_b81u/{p.name}"
+                                                          for p in sorted(rl.art_folder(rl.relief_b81u()).glob("*.png"))]
+        for path in paths:
+            self.assertIn(path, allow)
+            self.assertEqual(provider.data_pins[path], sha((ROOT / path).read_bytes()), path)
+
+    def test_an_image_it_cannot_read_is_left_alone_unless_strict(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "not_a_disc.iso"
+            path.write_bytes(b"\0" * 4096)
+            self.assertEqual(rl.apply_relief_b81u(path)["state"], "other_image")
+            with self.assertRaises((ValueError, OSError)):
+                rl.apply_relief_b81u(path, strict=True)
+
+    def test_a_disc_without_the_pinned_retail_maps_gives_no_base_and_says_why(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "not_a_disc.iso"
+            path.write_bytes(b"\0" * 4096)
+            problems = []
+            self.assertIsNone(rl.retail_maps(rl.relief_b81u(), path, problems))
+            self.assertEqual(len(problems), 1)
+            self.assertIn("not_a_disc.iso", problems[0])
+
+    def test_a_wrong_disc_leaves_the_relief_out_with_a_plain_sentence_never_silently(self):
+        """Review F7: the build's optional-step wrapper turns this error into a left-out step with a user note."""
+        source = (ROOT / "mod_editor/core/nfl2k5_relief_2026.py").read_text(encoding="utf-8")
+        at = source.index("maps = retail_maps(document, source, problems)")
+        block = source[at:at + 700]
+        self.assertIn("raise ValueError(\"2026 jersey relief left out", block)
+        self.assertNotIn("return dict(state=\"no_retail_base\"", source)
+
+
+@unittest.skipUnless(DISC.is_file() and RETAIL.is_file(), "the released v0.9 disc or the retail disc is not on this machine")
+class ReleasedDisc(unittest.TestCase):
+    """The bump spans of a v0.10 build at this step are the released v0.9 ones (this job's two other passes change
+    colour textures and digits only), so every slot waits at its pinned input on the released disc."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.doc = rl.relief_b81u()
+        cls.kits = {}
+        with bump._Image.open(DISC, writable=False) as image:
+            index = bump._parsed_index(image)
+            for entry in index.entries:
+                name = bump.logical_name_for(entry.name_id)
+                if name and name[:-4] in {r["selector"] for r in cls.doc["slots"]}:
+                    cls.kits[name[:-4]] = image.read_segments(index.sub_extents(entry, 0, entry.size))
+        cls.retail = rl.retail_maps(cls.doc, RETAIL)
+
+    def test_every_slot_waits_at_its_pinned_input(self):
+        states = {}
+        for row in self.doc["slots"]:
+            state, _chunk, _span = rl.state_of(row, self.kits[row["selector"]])
+            states.setdefault(state, []).append((row["selector"], row["slot"]))
+        self.assertEqual(sorted(states), ["before"], {k: v[:5] for k, v in states.items()})
+
+    def as_built(self, selector):
+        """The kit package as a build holds it at this step: the released one with the b81 helmet and uniform passes
+        (they change colour textures, so the torso the collar opening is read from)."""
+        from mod_editor.core import nfl2k5_kit_fixes_2026 as kf
+        raw = self.kits[selector]
+        for document in (kf.helmets_b81(), kf.uniforms_b81()):
+            if not any(r["selector"] == selector for r in document["textures"]):
+                continue
+            replacements, _receipt = kf.compile_resource(selector, raw, strict=False, document=document)
+            out = bytearray(raw)
+            for offset, data in replacements:
+                out[offset:offset + len(data)] = data
+            raw = bytes(out)
+        return raw
+
+    def test_the_retail_disc_holds_the_pinned_base_maps(self):
+        self.assertIsNotNone(self.retail)
+        self.assertEqual(self.retail["bump_jersey"].shape, (256, 512, 4))
+        self.assertEqual(self.retail["bump_sleeve"].shape, (128, 128, 4))
+        self.assertEqual(self.retail["islands"].shape, (512, 1024))      # derived from the disc's hi_body mesh
+
+    def test_a_sample_compiles_from_the_retail_base_to_its_pins_and_decodes_to_the_composed_map(self):
+        from nfl_txtr import decode_chunk, parse_chunks, parse_texture, texture_to_rgba
+        rows = [r for r in self.doc["slots"] if r["selector"] in SAMPLE]
+        spans, torsos = {}, {}
+        for row in rows:
+            spans[(row["selector"], row["slot"])] = rl.state_of(row, self.kits[row["selector"]])[2]
+            torsos[row["selector"]] = rl.torso_rgba(self.as_built(row["selector"]))
+        results = rl.compile_slots(rows, spans, self.doc, retail=self.retail, torsos=torsos, count=1)
+        for row in rows:
+            new, detail = results[(row["selector"], row["slot"])]
+            self.assertEqual(sha(new), row["after_sha256"], row["selector"] + " " + row["slot"])
+            self.assertLessEqual(detail["packed_bytes"], detail["stored_size"])
+            chunk = parse_chunks(new)[0]
+            decoded, _ = decode_chunk(new, chunk)
+            texture = parse_texture(decoded, chunk)
+            rgba = np.frombuffer(texture_to_rgba(decoded, chunk, texture), np.uint8).reshape(texture.height, texture.width, 4)
+            self.assertEqual(sha(rgba.tobytes()), row["composed_sha256"])
+            if row["slot"] == "bump_jersey":                        # the approved prototype, within 10 percent
+                t = tilt(rgba)
+                self.assertLess(abs(float(np.median(t[t > 0.5])) - 9.9), 0.99, row["selector"])
+                self.assertLess(abs(float(np.percentile(t, 90)) - 25.6), 2.56, row["selector"])
+
+    def test_the_shipped_differences_hold_no_retail_texel(self):
+        """The difference master is not the retail map, nor the base derived from it: almost no texel of it equals
+        either (the zero difference is no texel value of any map)."""
+        gauss = rl.Kernels(self.doc["gauss_kernels"])
+        folder = rl.art_folder(self.doc)
+        for slot in ("bump_jersey", "bump_sleeve"):
+            difference = rl.read_art(folder, self.doc["masters"][slot])[..., :3]
+            if slot == "bump_sleeve":
+                base = rl.sleeve_base(gauss, self.retail[slot])
+            else:
+                row = next(r for r in self.doc["slots"] if r["selector"] == "18H0" and r["slot"] == "bump_jersey")
+                row = next(r for r in self.doc["slots"] if r["selector"] == "18H0" and r["slot"] == "bump_jersey")
+                opening = rl.kit_opening(row, rl.torso_rgba(self.as_built("18H0")))
+                base = rl.jersey_base(gauss, self.retail[slot], opening, self.retail["islands"])
+            for reference in (self.retail[slot][..., :3], base[..., :3]):
+                same = (difference == reference).all(-1)
+                self.assertLess(float(same.mean()), 0.001, slot)
+
+    def test_a_slot_holding_other_art_is_left_alone_and_refused_when_strict(self):
+        row = next(r for r in self.doc["slots"] if r["selector"] == "18H0" and r["slot"] == "bump_sleeve")
+        raw = bytearray(self.kits["18H0"])
+        raw[row["offset"] + 100] ^= 0xFF
+        self.assertEqual(rl.state_of(row, bytes(raw))[0], "other")
+
+
+class UserTorsoArtMovesTheCollar(unittest.TestCase):
+    """b81 Edwards rehearsal (1c7b2afda; Coach Edwards' 10/27 project under Windows CPython in Wine, BUILD_OK with
+    left_out relief_2026_b81u): his own torso art moves the collar opening of every kit's jersey relief. kit_opening
+    raised inside the compile, so the optional step left the 2026 relief out of EVERY kit. Not strict, only the jersey
+    slot of a kit whose collar moved keeps its relief and every other slot is written; strict still refuses. Offline: the
+    image, its index and the compile are stand-ins; the collar check is the shipped kit_opening."""
+
+    def run_step(self, strict):
+        from contextlib import contextmanager
+        from types import SimpleNamespace
+        from unittest import mock
+        stock = np.zeros((8, 8), bool)
+        stock[2:4, 3:5] = True
+        moved = np.zeros((8, 8), bool)
+        moved[2:5, 2:6] = True                               # the user's torso art: a wider collar
+        torso = {b"AAH0": stock, b"BBH0": moved}
+        rows = []
+        for selector in ("AAH0", "BBH0"):
+            for slot in ("bump_jersey", "bump_sleeve"):
+                new = (selector + slot).encode().ljust(48, b"\x01")
+                rows.append(dict(selector=selector, slot=slot, chunk=0, base="authored", new=new,
+                                 opening_sha256=rl.opening_sha256(stock), after_sha256=sha(new)))
+        document = {"slots": rows}
+        disc = self.disc = {}
+
+        class Image:
+            def read_segments(self, segments):
+                return disc[segments] if segments in disc else segments[0].encode()
+
+            def write_segments(self, segments, data):
+                disc[segments] = bytes(data)
+
+        @contextmanager
+        def open_image(path, writable=False):
+            yield Image()
+
+        index = SimpleNamespace(entries=[SimpleNamespace(name_id=s, size=4096) for s in ("AAH0", "BBH0")],
+                                sub_extents=lambda entry, offset, size: (entry.name_id, offset, size))
+
+        def state_of(row, raw):
+            span = row["new"][:rl.HEADER.size] + bytes(len(row["new"]) - rl.HEADER.size)
+            return "before", SimpleNamespace(offset=0 if row["slot"] == "bump_jersey" else 1024), span
+
+        def compile_slots(todo, spans, document, *, retail=None, torsos=None, count=None, progress=None):
+            # the shipped contract of compose_maps: every jersey's collar opening is checked against its pin
+            for row in todo:
+                if row["slot"] == "bump_jersey":
+                    rl.kit_opening(row, torsos[row["selector"]])
+            return {(r["selector"], r["slot"]): (r["new"], {}) for r in todo}
+
+        with mock.patch.object(rl.bump, "_Image", SimpleNamespace(open=open_image)), \
+                mock.patch.object(rl.bump, "_parsed_index", lambda image: index), \
+                mock.patch.object(rl.bump, "logical_name_for", lambda name_id: name_id + ".IFF"), \
+                mock.patch.object(rl, "state_of", state_of), \
+                mock.patch.object(rl, "torso_rgba", lambda raw: torso[raw]), \
+                mock.patch.object(rl, "collar_opening", lambda rgba: rgba), \
+                mock.patch.object(rl, "compile_slots", compile_slots):
+            notes = []
+            result = rl.apply_to_image("disc.iso", None, strict=strict, document=document,
+                                       progress=lambda message, done, total: notes.append(message))
+        return result, {segments[0] + ":" + data.decode().strip("\x01")[4:] for segments, data in disc.items()}, notes
+
+    def test_only_the_moved_collar_keeps_its_jersey_relief(self):
+        result, written, notes = self.run_step(strict=False)
+        self.assertEqual(result["state"], "applied")
+        self.assertEqual(result["skipped_slots"], ["BBH0:bump_jersey"])
+        self.assertEqual(written, {"AAH0:bump_jersey", "AAH0:bump_sleeve", "BBH0:bump_sleeve"})
+        self.assertEqual(result["written_spans"], 3)
+        self.assertIn("BBH0", result["user_notes"][0])
+        self.assertEqual(notes, result["user_notes"])
+
+    def test_strict_still_refuses_and_writes_nothing(self):
+        with self.assertRaisesRegex(ValueError, "collar opening is not the one its relief was drawn for"):
+            self.run_step(strict=True)
+        self.assertEqual(self.disc, {})
+
+
+if __name__ == "__main__":
+    unittest.main()

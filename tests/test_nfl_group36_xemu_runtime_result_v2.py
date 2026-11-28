@@ -23,6 +23,8 @@ import nfl_group36_xemu_runtime_result_v2 as result  # noqa: E402
 REPORT = ROOT / "reports/assets/nfl2k5_group36_s42_xemu_runtime_positive.v2.json"
 SCHEMA = ROOT / "reports/specs/nfl2k5_group36_xemu_runtime_result.v2.schema.json"
 
+V1_TEST = "tests/test_nfl_group36_xemu_runtime_result.py"
+V1_TEST_WITH_GUARD_SHA256 = "093ffe1875c5830287eb5c72941a90bd78552a22465425074c4b1b620280189b"
 V1_PINS = {
     "docs/research/nfl_group36_xemu_runtime_result.md": (
         5_577,
@@ -36,7 +38,7 @@ V1_PINS = {
         6_934,
         "ca553ac95199813fec740a6eca305f4860daf21f062303ce2d98c689af3854b1",
     ),
-    "tests/test_nfl_group36_xemu_runtime_result.py": (
+    V1_TEST: (
         9_842,
         "e449e3da9d525e59e6601df1f4f1ac53f9ed6e1b6f24169eebe23066466ab444",
     ),
@@ -47,6 +49,21 @@ V1_PINS = {
     "tools/validate_nfl_group36_xemu_runtime_result.sh": (
         5_007,
         "94f5b0213959ae7a8b725ee8490af50bdc11520a7082c7e607971b3e4f815227",
+    ),
+}
+
+# Only the v1 test's missing-report guard (442d947cf) and its validator's reference to
+# that test changed. Pin those live files too, then reverse the edits to verify the originals.
+V1_HARNESS_EDITS = {
+    V1_TEST: (
+        V1_TEST_WITH_GUARD_SHA256,
+        b'        if not REPORT.exists():\n            raise unittest.SkipTest(f"Missing asset: {REPORT}")\n',
+        b"",
+    ),
+    "tools/validate_nfl_group36_xemu_runtime_result.sh": (
+        "3f885f3996c323de93b01219a546f428634f0edbe001a7be621a48961b16db54",
+        V1_TEST_WITH_GUARD_SHA256.encode("ascii"),
+        V1_PINS[V1_TEST][1].encode("ascii"),
     ),
 }
 
@@ -183,9 +200,14 @@ class RuntimeResultV2Tests(unittest.TestCase):
         self.assertEqual(self.document["schema"], result.SCHEMA_ID)
         self.assertNotIn("selector_skip_negative", json.dumps(self.document))
         for relative, (size, sha256) in V1_PINS.items():
-            path = ROOT / relative
-            self.assertEqual(path.stat().st_size, size, relative)
-            self.assertEqual(digest(path), sha256, relative)
+            data = (ROOT / relative).read_bytes()
+            if relative in V1_HARNESS_EDITS:
+                live_sha256, new, original = V1_HARNESS_EDITS[relative]
+                self.assertEqual(hashlib.sha256(data).hexdigest(), live_sha256, relative)
+                self.assertEqual(data.count(new), 1, relative)
+                data = data.replace(new, original, 1)
+            self.assertEqual(len(data), size, relative)
+            self.assertEqual(hashlib.sha256(data).hexdigest(), sha256, relative)
 
     def test_file_verifier_refuses_size_hash_and_symlink_drift(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

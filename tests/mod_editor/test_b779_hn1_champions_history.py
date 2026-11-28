@@ -81,7 +81,7 @@ class DataTests(unittest.TestCase):
     def test_validate_refuses_bad_data(self):
         good = history.load()
         for mutate in (lambda d: d.update(schema="x"),
-                       lambda d: d["seasons"][0].update(champion_points=64),
+                       lambda d: d["seasons"][0].update(champion_points=1276),
                        lambda d: d["seasons"][0].update(sources=["nope"]),
                        lambda d: d["seasons"][0]["season_mvp"].update(position="LS"),
                        lambda d: d["seasons"].append(dict(d["seasons"][0])),

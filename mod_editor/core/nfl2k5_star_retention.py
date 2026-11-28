@@ -46,6 +46,9 @@ ECONOMY_SURPLUS = (0x002BFB61, bytes.fromhex("6a01"), bytes.fromhex("6a00"))  # 
 # b780 hunt1: franchise economy revision 6 sends the cut's own release call (call 0x2BD900) through its guard that
 # never releases a club's last healthy K or P; that one call reads as retail here.
 ECONOMY_RELEASE = (0x002BFBBD, bytes.fromhex("e83eddffff"))
+# b81 qb34: the quarterback room's signing call (stage 4a and the floor) replaces the weekly advance's call 0x323870 at
+# 0x248010, inside the stage-6 caller window below; that one call, into the room's own fixed page, reads as retail here.
+QB_ROOM_SIGN = (0x00248010, bytes.fromhex("e85bb80d00"))
 GUARDS = (
     (0x002BFAF0, 236, "beaa2d14440a4f43aee883aef9d3682d00204417226488de04181f61478cae59"),   # veteran cap cut
     (0x00247FD7, 62, "a1dfd9babaf3039cf3611dc8f3c74b6eb9febbee3bb19d8cedf507880cfc05e1"),    # stage-6 caller
@@ -137,8 +140,23 @@ def _recognize(payload):
             at = release_va - va
             if bytes(content[at:at + len(release_retail)]) == _economy_release():
                 content[at:at + len(release_retail)] = release_retail
+        sign_va, sign_retail = QB_ROOM_SIGN
+        if va <= sign_va and sign_va + len(sign_retail) <= va + size:
+            at = sign_va - va
+            if bytes(content[at:at + len(sign_retail)]) in _qb_room_sign_calls():
+                content[at:at + len(sign_retail)] = sign_retail
         require(hashlib.sha256(content).hexdigest() == digest, f"Foreign star retention prerequisite at {va:#x}")
     return next(iter(states))
+
+
+def _qb_room_sign_calls():
+    """The quarterback room's own calls at 0x248010 (its fixed page and the sign_entry label, current and earlier page
+    revisions), or an empty set."""
+    try:
+        from . import nfl2k5_qb_room as room
+        return room.sign_calls()
+    except (ImportError, AttributeError, ValueError, KeyError):
+        return set()
 
 
 def _economy_release():

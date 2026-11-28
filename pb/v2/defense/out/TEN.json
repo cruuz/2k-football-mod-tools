@@ -2179,7 +2179,7 @@
  "receipt": {
   "team": "TEN",
   "offense_pack": "data/playbooks/softdrink_ten_modern.2k5book",
-  "offense_pack_sha256": "c7d34d1b24a68d61cbbc1ffda1d9c7911070ec65f3f525ccbd78b22f06b5b71c",
+  "offense_pack_sha256": "9340d5280264f2113198c3f808519617435deae052a59e4e7280dd0b174bf781",
   "source_fingerprint": "1ef9791c12d9a23839cf9a61e15c3f7f03e687dd7369f0223bc29a7dfe1ef2dc",
   "replacement_sha256": "7a8dea0036ef811cf8730307ac2b1eaad28450a4671e5c89f4cfe17ed498367e",
   "semantic_sha256": "1ef22b888758a9317c4a21a1341919897310e8d70a510e77140a04d16d9fa562",

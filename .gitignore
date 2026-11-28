@@ -21,6 +21,13 @@ build-sanitize/
 build-static-recomp-apf/
 artifacts/
 assets/
+# CMake builds these authored host-renderer sources. Keep game asset caches ignored.
+!/src/assets/
+/src/assets/*
+!/src/assets/bitmap_font_metrics.c
+!/src/assets/model_animation.c
+!/src/assets/model_loader.c
+!/src/assets/png_texture.c
 
 # --- Ghidra / reverse-engineering heavy data -------------------------------
 ghidra_projects/

@@ -32,13 +32,14 @@ RELEASES_API = (
     "https://api.github.com/repos/cruuz/2k-football-mod-tools/releases?per_page=10"
 )
 RELEASES_PAGE = "https://github.com/cruuz/2k-football-mod-tools/releases"
-#: The community Discord (Noah's invite, 2026-09-04): linked from the Help menu of both studios.
-COMMUNITY_DISCORD = "https://discord.gg/dpMJCnJZD"
+#: The public community Discord invite, defined in mod_editor.core.errors and read by both Studios' Help menus.
+from .errors import COMMUNITY_DISCORD  # noqa: E402,F401
+ISSUES_PAGE = "https://github.com/cruuz/2k-football-mod-tools/issues"
 
 #: The release this build was cut from. Packaging updates it when a release is
 #: tagged; the check compares it with the newest published tag, which works
 #: across the two products' different version schemes without parsing either.
-BUILD_RELEASE_TAG = "beta-80"
+BUILD_RELEASE_TAG = "beta-81"
 
 DEFAULT_TIMEOUT_SECONDS = 6.0
 MAX_RESPONSE_BYTES = 1024 * 1024

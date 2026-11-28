@@ -38,7 +38,11 @@ def run_case(payload, name):
     m.put(m.root + 0x38, 1)
     m.uc.mem_write(player + 10, b"\0\0")
     m.uc.mem_write(player + 0x24, b"\0\0\x02\x01")
-    m.uc.mem_write(player + 0x35, b"\0")
+    # b81 economy r10 retune: a linebacker (11). Revision 10 prices by rank on the market curve and the offer (0x324180)
+    # draws 0.90-1.12 of that price; at price scale 1.0 a rookie QB prices at 225 (the curve's bottom, 0.3% of the cap)
+    # and a receiver's drawn offer can pass the 222 floor, so neither boundary is the floor any more. The linebacker
+    # curve ends at 0.1% of the cap: his drawn offer stays far below the floor, which decides, as these cases need.
+    m.uc.mem_write(player + 0x35, b"\x0b")
     m.uc.mem_write(player + 0x38, bytes([30] * (84 - 0x38)))
     minimum = m.call(0x2BD440, ecx=player, args=(0, 1, 0))
     assert minimum == 222, minimum  # PROVED OFFLINE: ceil(885 / 4), game thousands.
@@ -78,7 +82,7 @@ def run_case(payload, name):
                       begin=address, end=address)
     before = bytes(m.uc.mem_read(m.ARENA, 0x200000))
     count = m.uc.mem_read(team + 0x11C, 1)[0]
-    result = m.call(chain.ENTRY, args=(0 if name == "null_team" else team, 0, budget, 0),
+    result = m.call(chain.ENTRY, args=(0 if name == "null_team" else team, 11, budget, 0),
                     budget=5000000)
     success = name in ("minimum_cap_allowed", "minimum_budget_allowed", "season_52_with_reserve")
     assert result == int(success), (name, result, dict(visits))

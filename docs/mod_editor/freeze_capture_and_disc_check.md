@@ -1,37 +1,27 @@
 # When the game freezes: check your disc, then capture the freeze
 
-Some freezes look the same from the outside: the picture stops, and the commentators repeat the same words
-over and over. That sound is the sound card replaying its last bit of audio after the game has stopped. Two
-very different things cause it:
-
-* **A damaged or incomplete copy of the disc.** The game reads commentary and other files from the disc all
-  through a game, including between plays. A copy that was cut short or damaged (an SD card, a transfer that
-  stopped early, a drive that filled up while installing) stops the game at the first read that fails.
-* **A real game problem.** Then the useful thing to know is where the game stopped.
-
-Two small tools tell these apart. Neither changes your disc or your saves.
+When the picture stops, commentary may repeat the last audio the emulator played. That symptom can accompany an incomplete copy, a custom edit, a particular save, an emulator issue or a game bug. Check your disc first. If the freeze repeats, capture where it happens and include the save, game mode and emulator settings you used.
 
 ## 1. Check your SOFTDRINK disc
 
-This compares your disc image with the released SOFTDRINK 2K28 disc, file by file, and says either that it
-matches or which file is damaged and where.
+In Studio, open **Help → Check my SOFTDRINK disc…** and select your finished game image. Studio compares the game files with its list of released discs. You can copy the result into a bug report.
 
 Linux, Steam Deck and macOS (open a terminal in the 2K5 Mod Studio folder):
 
-    python3 -m mod_editor.core.nfl2k5_disc_check "/path/to/SOFTDRINK 2K28 v0.8.xiso.iso"
+    python3 -m mod_editor.core.nfl2k5_disc_check "/path/to/SOFTDRINK 2K28 v0.10.xiso.iso"
 
 Windows (installed Studio: open a Command Prompt in the Studio's `app` folder):
 
-    ..\runtime\python.exe -m mod_editor.core.nfl2k5_disc_check "D:\Games\SOFTDRINK 2K28 v0.8.xiso.iso"
+    ..\runtime\python.exe -m mod_editor.core.nfl2k5_disc_check "D:\Games\SOFTDRINK 2K28 v0.10.xiso.iso"
 
-It takes a few minutes (it reads the whole disc). The answer is one of:
+The check reads the game files across the entire disc and can take several minutes.
 
-* **matches**: the copy is good. A freeze on it is a real problem; capture it (below) and report it.
-* **damaged or incomplete copy**: it names the files and the places (in MiB) that differ, or says the file
-  ends early. Install or copy the disc again (Install SOFTDRINK 2K28 in the Studio, or a fresh download) and
-  check again.
-* **a different disc**: most of it differs. That is normal for a disc made with Customize SOFTDRINK or other
-  Build options, so the check cannot judge it. To test the released disc, install it and check that image.
+* **The files match.** If the game freezes, include the screen and last input in your report.
+* **A file is cut short.** The image ends before the game can read the whole file. Install from your clean disc again and check the new image.
+* **Some files differ.** The report names the files and shows the affected ranges in MiB. An intentional edit to a playbook or the game executable can produce this result. Compare it with your Build summary. If you expected the official game, use **Install SOFTDRINK 2K28** and check the new image.
+* **The disc differs more broadly.** Customize and other build options can change file sizes or contents. To check the release, select an image made with the official patch.
+
+For a script, pass `--json` to the same command. The existing `damaged` state covers both small differences and truncation. A nonempty `cut_short` list identifies a file that actually runs past the end of the image.
 
 ## 2. Capture a freeze
 

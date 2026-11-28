@@ -290,7 +290,16 @@ class WorkspaceTests(unittest.TestCase):
                 watch.inventory(owner)
                 self.pump_until(lambda: bool(fired))
                 def blocked_ui_handler():
-                    time.sleep(.32)
+                    # Hold the UI thread past the threshold until the sampler thread has taken its stack (at least
+                    # .32 s, at most 5 s). A fixed .32 s block once ended before the sampler ran on a loaded hosted
+                    # macOS runner (py3.13, 11/22), which logged no stall; the stall itself is still exactly one.
+                    start = time.monotonic()
+                    while True:
+                        time.sleep(.02)
+                        held = time.monotonic() - start
+                        if held >= 5 or (held >= .32 and any("blocked_ui_handler" in row.get("stack", "")
+                                                             for row in list(watch.stalls))):
+                            break
                 blocked_ui_handler()
                 self.app.processEvents()
             finally:

@@ -32,11 +32,11 @@ PLAN_COLUMNS = ("What", "Name", "Replaces", "Status", "Why")
 #: What the format honestly cannot do, shown on every install so nobody ships a
 #: pack promising it (the engine limits, not the studio's).
 ENGINE_LIMITS_TEXT = (
-    "What the engine cannot do, whatever a pack says: no pre-snap motion, no "
-    "give-or-throw RPO (the ball sim walks each chain once, so a quarterback who "
-    "hands off cannot throw later), and no tempo / no-huddle. Option routes and "
-    "keep-or-throw RPOs are accepted by the ported retail validator but have "
-    "never been witnessed in game."
+    "For manual pre-snap motion, close the audible panel. On the left stick or D-pad, "
+    "use up/down to select an eligible player, then left/right to send him in motion. "
+    "The modern books do not script motion. Give-or-throw RPOs are restricted by the one-pass ball simulation. "
+    "A pack can supply a no-huddle menu; the game controls the tempo. "
+    "Option routes and keep-or-throw RPOs pass the retail validator and still need on-field verification."
 )
 
 
@@ -44,12 +44,15 @@ def pack_summary_lines(pack: pack_mod.PlaybookPack) -> tuple[str, ...]:
     """Header lines for one pack: who made it, what it is, what it starts from."""
 
     lines = [
-        f"{pack.book.name}  —  v{pack.book.version} by {pack.book.author}  ({pack.book.license})",
+        f"{pack.book.name}: v{pack.book.version} by {pack.book.author}  ({pack.book.license})",
         f"Authored on {pack.book.team}: {len(pack.formations)} formation(s), {len(pack.plays)} play(s); "
         f"started from a book with {pack.base.donor_formation_count} formations, "
         f"{pack.base.donor_play_count} plays, {pack.base.donor_node_count} nodes "
         f"(fingerprint {pack.base.book_fingerprint[:12]}…)",
     ]
+    if pack.book.offset_toss_flip:
+        lines.append("On an offset shotgun pitch to the back’s side, R3 flips the full play so the exchange follows "
+                     "the back. Black flips the full play on every eligible call.")
     if any(p.play_type == "defense" for p in pack.plays):
         from mod_editor.core import nfl2k5_play_library as lib
         totals = pack_mod.budget_totals(pack)
@@ -69,7 +72,7 @@ def team_choices(pack: pack_mod.PlaybookPack, available: Sequence[str]) -> tuple
 
     choices: list[tuple[str, object]] = []
     if pack.book.team in available:
-        choices.append((f"As authored — {pack.book.team}", pack.book.team))
+        choices.append((f"As authored: {pack.book.team}", pack.book.team))
     if any(p.option_intent for p in pack.plays):
         return tuple(choices)
     for team in available:
@@ -110,7 +113,7 @@ def install_blockers(preview: pack_mod.PackPreview) -> tuple[str, ...]:
     reasons: list[str] = []
     for row in preview.plan.rows:
         if row.status not in ("ok", "retargeted"):
-            reasons.append(f"{row.kind} “{row.name}”: {row.status} — {row.detail}")
+            reasons.append(f"{row.kind} “{row.name}”: {row.status}, {row.detail}")
     reasons.extend(preview.plan.blocked)
     reasons.extend(preview.check.errors)
     return tuple(reasons)
@@ -172,7 +175,7 @@ class PlaybookPackInstallDialog(QDialog):
         self.pack = host.load_playbook_pack(self.path)
         self.preview: pack_mod.PackPreview | None = None
         self.installed_teams: tuple[str, ...] = ()
-        self.setWindowTitle(f"Install Playbook Pack — {self.pack.book.name}")
+        self.setWindowTitle(f"Install Playbook Pack: {self.pack.book.name}")
         self.setMinimumSize(940, 640)
 
         layout = QVBoxLayout(self)
@@ -279,10 +282,10 @@ class PlaybookPackInstallDialog(QDialog):
             note = self.preview.plan.budget_line()
             if self.preview.retargeted:
                 changed = sum(1 for r in self.preview.resolutions if r.how == "ranked")
-                note += (f"  —  retargeted to {team}"
+                note += (f": retargeted to {team}"
                          + (f", {changed} entry target(s) re-resolved by rank" if changed else ""))
             if multi:
-                note += f"  —  will be staged into all {len(self.selected_teams())} team books"
+                note += f": will be staged into all {len(self.selected_teams())} team books"
             self.status.setText(note)
         self.buttons.button(QDialogButtonBox.Ok).setEnabled(not blockers)
 

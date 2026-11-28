@@ -216,6 +216,59 @@ class B775Tests(unittest.TestCase):
             self.assertEqual(module.status(self.final), module.status(self.b775), module.__name__)
         self.assertEqual(reads.read_settings(self.final), {"status": "applied", "zone_windows": True, "recheck": True, "tiers": False})
 
+    def test_ui1_extent_requires_its_exact_block_descriptor_and_padding(self):
+        from mod_editor.core import nfl2k5_my_career_home as home
+        start = home.RAW
+        header = space.scale_music_slots(self.b775)[0]
+        size = home.UI1_SIZE
+        self.assertEqual(self.final[start:start + size], self.b775[start:start + size])
+        self.assertEqual(self.final[header:header + 56], self.b775[header:header + 56])
+        for change in ("resealed content", "preload", "full size", "counter", "gap"):
+            with self.subTest(change=change):
+                edited = bytearray(self.b775)
+                if change == "resealed content":
+                    edited[start + home.HEADER + 8] ^= 1
+                    length = struct.unpack_from("<I", edited, start + 8)[0]
+                    content = edited[start + home.HEADER:start + home.HEADER + length]
+                    edited[start + 12:start + 44] = hashlib.sha256(content).digest()
+                    edited[header + 36:header + 56] = space._digest(edited[start:start + size])
+                elif change == "preload":
+                    edited[header] ^= 2
+                elif change == "full size":
+                    for at in (8, 16):
+                        struct.pack_into("<I", edited, header + at, home.SIZE)
+                    edited[header + 36:header + 56] = space._digest(edited[start:start + home.SIZE])
+                elif change == "counter":
+                    edited[header + 28] ^= 2
+                else:
+                    edited[start + size] = 1
+                self.assertEqual(space.status(bytes(edited)), "foreign")
+                with self.assertRaises(ValueError):
+                    reads.apply(bytes(edited), recheck=True)
+
+    def test_pre_champions_fold_requires_all_hooks_owned_code_and_guards(self):
+        from mod_editor.core import nfl2k5_defensive_try as defensive_try, nfl2k5_honors as honors
+        fold = [(0x14F168, bytes.fromhex("8b04b5c026aa00"))]
+        self.assertEqual(honors.fold_site_edit(self.final), fold)
+        self.assertEqual(defensive_try.status(self.final), "applied")
+        # The standalone writer never installed Champions or its third page.
+        self.assertFalse(honors.read_settings(self.final)["champions"])
+        with self.assertRaises(ValueError):
+            honors.apply(self.final)
+        code = honors.allocations(self.b775)["code"]
+        resealed = bytearray(self.b775)
+        resealed[code["raw"] + 3] ^= 1
+        space._seal_scaleout(resealed, space._read_scale_directory(self.b775))
+        cases = {"resealed owner": bytes(resealed)}
+        for label, va in (("other hook", 0x320D7B), ("fold target", 0x14F169), ("called routine", 0x46921)):
+            original = XbeImage(self.b775).read(va, 1)[0]
+            cases[label] = repin_edit(self.b775, va, bytes([original ^ 1]))
+        for label, edited in cases.items():
+            with self.subTest(change=label):
+                self.assertEqual(space.status(edited), "applied")
+                self.assertEqual(honors.fold_site_edit(edited), [])
+                self.assertEqual(defensive_try.status(edited), "foreign")
+
 
 if __name__ == "__main__":
     unittest.main()

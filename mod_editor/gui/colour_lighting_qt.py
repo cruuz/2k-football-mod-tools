@@ -39,6 +39,8 @@ class ColourLightingControls(QWidget):
         self._settings = colour.default_settings()
         self.rows, self.groups, self.links = {}, {}, {}
         root = QVBoxLayout(self)
+        # The enclosing Build section already provides the outer margin for these controls.
+        root.setContentsMargins(0, 0, 0, 0)
         title = QLabel("Colour & lighting")
         root.addWidget(title)
         buttons = QHBoxLayout()

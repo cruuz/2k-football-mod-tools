@@ -1841,7 +1841,7 @@
  "receipt": {
   "team": "CLE",
   "offense_pack": "data/playbooks/softdrink_cle_modern.2k5book",
-  "offense_pack_sha256": "2e542859074856661df11aa065bd5b3df18bac6187770f014c4f708a96e74351",
+  "offense_pack_sha256": "6acb84b82f67801df1eaa2f9baa7bc58f17d92c99f2e2c94a9997a2651b090d5",
   "source_fingerprint": "e6a9e716c5d72ff79244b009d349758cd97f0ea07acdcc5bd4bda67767e89418",
   "replacement_sha256": "80ba05d3e7ef20e016f6d01533f594d0e7cf5a4712afcd3ce9ff214cffe665c5",
   "semantic_sha256": "9f95228210bb76437d8c1b71e8edaa86cd8bcf8d753e8cf97300f8782305917e",

@@ -158,10 +158,77 @@ class Data:
                         and 0 <= self.presentation[key]["stadium_id"] <= 255, f"{key}: stadium_id")
             if "stadium_info" in self.presentation[key]:
                 require(isinstance(self.presentation[key]["stadium_info"], dict), f"{key}: stadium_info")
+            if "announcer" in self.presentation[key]:
+                require(self.presentation[key]["announcer"] == "generic", f"{key}: announcer")   # b81-seamen
+            for tag in self.presentation[key].get("players", ()):
+                _validate_tag(key, tag, rows)
 
     def filename(self, key, prefix=""):
         t = self.teams[key]
         return f"{prefix}h-{t['asset_code']}-{t['season']}-{t['selector']}-{FILE_NUMBER}.iff"
+
+
+# b81-seamen (the owner 11/25, playing the 11/20 private disc: "bus jibber needs a star icon and right stick max abilities",
+# "john mike peter a star too"): classic.json may name players whose record footer is authored. The +0x52 word holds
+# the depth locks (0x001F), the stored move flags (0x1EE0), the star tag (0x0100: the star under him), the Guardian
+# cap (0x2000) and the ability tier (0xC000, nfl2k5_abilities_runtime: Unranked, Star, Superstar, X-Factor). A tag sets
+# only what it names; the import copies the whole word (nfl2k5_espn25_more_moments.star_code), so the Quick Game record
+# carries it. The 90-overall star rule still decides every other player.
+PLAYER_TAG_FIELDS = frozenset(("name", "star", "ability_tier", "abilities", "why"))
+# The stored flags the right stick and its special moves read (the Right-Stick Moves permission and the five moves).
+RIGHT_STICK_ABILITIES = ("right_stick_moves", "juke", "spin", "truck", "hurdle", "stiff_arm")
+
+
+def _tag_row(rows, name):
+    hits = [i for i, r in enumerate(rows) if f"{r['first']} {r['last']}" == name]
+    require(len(hits) == 1, f"player tag {name!r} names no player of the roster (or more than one)")
+    return hits[0]
+
+
+def _validate_tag(key, tag, rows):
+    from . import nfl2k5_abilities_editor as editor
+    from . import nfl2k5_roster_records as rr
+    require(isinstance(tag, dict) and "name" in tag and set(tag) <= PLAYER_TAG_FIELDS,
+            f"{key}: player tag fields are {sorted(PLAYER_TAG_FIELDS)}")
+    _tag_row(rows, tag["name"])
+    require(type(tag.get("star", False)) is bool, f"{key} {tag['name']}: star is true or false")
+    tier = tag.get("ability_tier", 0)
+    require(type(tier) is int and 0 <= tier < len(rr.ABILITY_TIERS), f"{key} {tag['name']}: ability tier 0..3")
+    abilities = tag.get("abilities", [])
+    require(isinstance(abilities, list) and len(set(abilities)) == len(abilities), f"{key} {tag['name']}: abilities")
+    for name in abilities:
+        require(name in rr.ABILITY_BITS, f"{key} {tag['name']}: unknown ability {name!r}")
+    require(len(abilities) <= editor.LIMITS[tier],
+            f"{key} {tag['name']}: {len(abilities)} abilities exceed the {rr.ABILITY_TIERS[tier]} capacity "
+            f"({editor.LIMITS[tier]})")
+
+
+def tag_players(raw, rows, tags):
+    """A compiled one-team file with each authored player tag set on his record (row k is record k, as compile_team
+    lays them out): the star tag, the ability tier and the stored move flags it names. Nothing else changes."""
+    if not tags:
+        return raw
+    from . import nfl2k5_roster_records as rr
+    body = bytearray(raw[32:])
+    players = sorted(rr.RosterDocument(bytes(body)).players, key=lambda p: p.index)
+    expected = {}
+    for tag in tags:
+        slot = players[_tag_row(rows, tag["name"])]
+        require(f"{slot.first} {slot.last}" == tag["name"], f"player tag {tag['name']!r}: record order")
+        record = rr.PlayerRecord.decode(bytes(body[slot.offset:slot.offset + rr.PLAYER_SIZE]))
+        if tag.get("star"):
+            record.values["star_tag"] = 1
+        if "ability_tier" in tag:
+            record.ability_tier = tag["ability_tier"]
+        for name in tag.get("abilities", ()):
+            record.set_ability(name, True)
+        encoded = record.encode()
+        body[slot.offset:slot.offset + rr.PLAYER_SIZE] = encoded
+        expected[slot.offset] = encoded
+    result = raw[:32] + bytes(body)
+    for offset, encoded in expected.items():
+        require(result[32 + offset:32 + offset + rr.PLAYER_SIZE] == encoded, "player tag read-back")
+    return result
 
 
 
@@ -597,11 +664,22 @@ def resolve_kit(choice, code, spares, has_kit):
     return choice, "existing"
 
 
-def finish_file(raw, team, *, identity, stadium_id, style):
-    """Identity, home row id and kit on a compiled team file."""
+# b81-seamen: the team play-by-play id (team +0x154, Finn facts TEAM_AND_HISTORY: the match handler 0x138200 hands it
+# to the speech archive check 0x67390 and returns 99 when the "lines" archive has no cue for it). A template's id names
+# its franchise in the booth; a team of its own (the Seamen ride the Dolphins' 1984 template, id 14) takes 99, a
+# play-by-play id with no team line: no team-keyed array of the "lines" or "teams" SPCI holds 99 (review, 11/25), so the
+# booth uses its generic calls (the team-name resolver 0x1398E0 falls back to 997/998), as for a created team. In the
+# retail roster 99 is also the "Los Angeles DreamTeam" row's id; nothing recorded is keyed to it.
+GENERIC_ANNOUNCER = 0x63
+
+
+def finish_file(raw, team, *, identity, stadium_id, style, announcer=None):
+    """Identity, home row id, kit and (when named) the play-by-play id on a compiled team file."""
     out = bytearray(raw)
     t = _team_offset(out)
     struct.pack_into("<H", out, t + 0x118, identity)
+    if announcer == "generic":
+        struct.pack_into("<H", out, t + 0x154, GENERIC_ANNOUNCER)
     out[_stadium_offset(out) + 0x7C] = stadium_id
     out[t + 0x192] = style
     if style:
@@ -653,15 +731,18 @@ def compile_files(main, templates, data, *, spares, has_kit, prefix="", one_pool
                                 appearance=data.appearance[key], main_photos=main_photos, missing_colleges=missing)
         if one_pool:
             raw = more._one_pool(raw, front.mapping_scheme("classic", key, team["abbreviation"], team["season"]))
+        tags = data.presentation[key].get("players", ())
+        raw = tag_players(raw, data.rosters[key], tags)       # b81-seamen: authored stars, tiers and move flags
         code = team["asset_code"]
         style, how = resolve_kit(data.presentation[key]["kit"], code, spares, has_kit)
         stadium_id = data.presentation[key].get("stadium_id", homes[code])
-        raw = finish_file(raw, team, identity=identity, stadium_id=stadium_id, style=style)
+        raw = finish_file(raw, team, identity=identity, stadium_id=stadium_id, style=style,
+                          announcer=data.presentation[key].get("announcer"))
         raw = finish_stadium(raw, data.presentation[key].get("stadium_info"))
         files.append((data.filename(key, prefix), raw))
         receipts[key] = dict(file=data.filename(key, prefix), identity=identity, style=style, kit=how,
                              stadium_id=stadium_id, template=team["template"], sha256=sha(raw),
-                             template_colleges=missing)
+                             template_colleges=missing, player_tags=[t["name"] for t in tags])
     return files, receipts
 
 

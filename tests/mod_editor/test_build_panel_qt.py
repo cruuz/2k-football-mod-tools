@@ -17,6 +17,7 @@ for entry in (ROOT, ROOT / "tests"):
 from PyQt5.QtWidgets import QApplication  # noqa: E402
 
 from mod_editor.core import mod_build  # noqa: E402
+from dataclasses import replace  # noqa: E402  b81 integration: the modern-numbers equivalence
 from mod_editor.core import nfl2k5_abilities_runtime as abilities_patch  # noqa: E402
 from mod_editor.gui.build_panel_qt import BuildPanel  # noqa: E402
 from nfl2k5_throw_tuning_test import _build_synthetic_xbe  # noqa: E402
@@ -263,6 +264,11 @@ class PresetPlanEqualsPresetTests(unittest.TestCase):
                         elif key == "xbe_space" and values.get("scorebug_runtime"):
                             # the GUI ticks the space with the scorebug runtime; _apply_all takes either flag the same way
                             self.assertIs(got, True)
+                        elif key == "modern_numbers":
+                            # b81 modern numbers: the box is ticked for True or "modern" and clear for None, False or
+                            # "retail"; the panel reads back True/False, which builds exactly what the preset builds
+                            self.assertEqual(mod_build._modern_numbers_level(plan),
+                                             mod_build._modern_numbers_level(replace(plan, modern_numbers=want)), name)
                         elif key == "indicator_names_folder" and values.get("indicator_names_style") == "retail":
                             # the folder is read only for a non-retail label style
                             self.assertEqual(plan.indicator_names_style, "retail")

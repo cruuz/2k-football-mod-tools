@@ -89,6 +89,31 @@ def tri_box(T, c, h):
     return ok
 
 
+def bounds(tris):
+    return tris.min(axis=1), tris.max(axis=1)
+
+
+def touches_box(tris, centre, half, limits):
+    # The three world-axis conditions of the same separating-axis test.
+    lo, hi = limits
+    candidates = ((lo - centre <= half) & (hi - centre >= -half)).all(axis=1)
+    return candidates.any() and tri_box(tris[candidates], centre, half).any()
+
+
+def overlapping_pairs(left_lo, left_hi, right_lo, right_hi):
+    # Sort billboards into spatially adjacent groups. A right-hand box that
+    # misses a group's enclosing box cannot meet any billboard in that group.
+    order = left_lo[:, 0].argsort()
+    for offset in range(0, len(order), 128):
+        left = order[offset:offset + 128]
+        lo, hi = left_lo[left], left_hi[left]
+        right = np.flatnonzero(((right_hi >= lo.min(axis=0)) & (right_lo <= hi.max(axis=0))).all(axis=1))
+        if right.size:
+            a, b = np.nonzero(((hi[:, None] >= right_lo[right]) & (lo[:, None] <= right_hi[right])).all(axis=2))
+            if a.size:
+                yield left[a], right[b]
+
+
 def to_world(local, anchor, yaw_bam=mm.CUTAWAY_YAW):
     th = math.radians(yaw_bam * 360.0 / 65536.0)
     x, y, z = local
@@ -108,7 +133,8 @@ class CutawayStandsClear(unittest.TestCase):
                 boxes = [to_world((x, y + ht / 2, z), anchor) for x, y, z in ENVELOPE["fans"]]
                 lo, hi = np.min(boxes, 0) - 2, np.max(boxes, 0) + 2
                 T = T[(T.max(1) >= lo).all(1) & (T.min(1) <= hi).all(1)]
-                clipped = [tuple(np.round(c, 2)) for c in boxes if tri_box(T, c, half).any()]
+                limits = bounds(T)
+                clipped = [tuple(np.round(c, 2)) for c in boxes if touches_box(T, c, half, limits)]
                 self.assertEqual(clipped, [], f"{name}: {len(clipped)} of {len(boxes)} cutaway fans stand in geometry "
                                               f"at the nosebleed {anchor}")
 
@@ -119,7 +145,8 @@ class CutawayStandsClear(unittest.TestCase):
                 model = built(name, venue)
                 anchor = getattr(model, "nosebleed", RETAIL_NOSEBLEED)
                 T = np.concatenate(list(triangles(model).values()))
-                bad = [c for c in ENVELOPE["cameras"] if tri_box(T, to_world(c, anchor), half).any()]
+                limits = bounds(T)
+                bad = [c for c in ENVELOPE["cameras"] if touches_box(T, to_world(c, anchor), half, limits)]
                 self.assertEqual(bad, [], f"{name}: cutscene cameras inside geometry")
 
     def test_the_cutaway_faces_the_field_from_the_plus_x_stands(self):
@@ -169,11 +196,8 @@ class CrowdBillboardsClear(unittest.TestCase):
                 s_lo, s_hi = S.min(1), S.max(1)
                 c_lo, c_hi = C.min(1), C.max(1)
                 worst = 0.0
-                for i in range(0, len(C), 256):
-                    a_lo, a_hi = c_lo[i:i + 256], c_hi[i:i + 256]
-                    ia, ib = np.nonzero((a_hi[:, None, :] >= s_lo[None]).all(2) & (a_lo[:, None, :] <= s_hi[None]).all(2))
-                    if len(ia):
-                        worst = max(worst, float(mm.triangle_cuts(C[i:i + 256][ia], S[ib]).max()))
+                for ia, ib in overlapping_pairs(c_lo, c_hi, s_lo, s_hi):
+                    worst = max(worst, float(mm.triangle_cuts(C[ia], S[ib]).max()))
                 self.assertLessEqual(worst, mm.CROWD_CUT_MIN, f"{name}: a crowd billboard cuts {worst:.2f} m into "
                                                               f"other geometry")
 

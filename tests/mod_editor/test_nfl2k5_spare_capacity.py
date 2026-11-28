@@ -52,7 +52,7 @@ class SpareCapacityTests(unittest.TestCase):
         self.assertEqual(len(after.by_pool('secondary')),68)
         self.assertEqual(sum(bool(p.record.get('player_type')&1) for p in after.by_pool('primary')),155)
         self.assertEqual(len(after.free_agents),377)
-        self.assertEqual([p.index for p in after.group_players('draft_class')],list(range(1944,2324)))
+        self.assertEqual([p.index for p in after.by_pool('primary') if p.group in ('draft_class', 'draft_slot')],list(range(1944,2324)))
         self.assertTrue(self.receipt['all_original_record_nonpointer_bytes_names_history_equal'])
         self.assertTrue(self.receipt['all_bytes_outside_explicit_reclaimed_and_new_name_scopes_recover_exactly_by_inverse'])
         for p in before.players:
@@ -156,7 +156,7 @@ class ImportFloorTests(unittest.TestCase):
         added=self.receipt['added_records']
         self.assertEqual(len(after.by_pool('primary')),2619+added)
         self.assertEqual(len(after.free_agents),len(before.free_agents))
-        self.assertEqual([p.index for p in after.group_players('draft_class')],list(range(1944,2324)))
+        self.assertEqual([p.index for p in after.by_pool('primary') if p.group in ('draft_class', 'draft_slot')],list(range(1944,2324)))
         for p in before.players:
             q=next(v for v in after.by_pool(p.pool) if v.index==p.index)
             self.assertEqual((p.first,p.last,p.college_index,p.teams),(q.first,q.last,q.college_index,q.teams))

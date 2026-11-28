@@ -116,17 +116,23 @@ def name_capacity(row: PlayerNameRow, field: str, value: str) -> NameCapacity:
     if field not in ("first", "last"):
         raise ValidationError(f"A name field must be 'first' or 'last', not {field!r}.")
     capacity = row.capacity_for(field)
-    used = len(value)
+    try:
+        used = len(value.encode("utf-16le")) // 2
+    except UnicodeEncodeError:
+        return NameCapacity(0, capacity, False, "The name contains an incomplete Unicode character.")
+    if "\0" in value:
+        return NameCapacity(used, capacity, False, "A name cannot contain a null character.")
+    unit = "characters" if used == len(value) else "UTF-16 units"
     if used > capacity:
         return NameCapacity(
             used,
             capacity,
             False,
-            f"That name is {used} characters; this slot holds {capacity}. "
+            f"That name is {used} {unit}; this slot holds {capacity}. "
             "PS2 saves are a fixed size, so a replacement has to fit the space "
             "the old name used.",
         )
-    return NameCapacity(used, capacity, True, f"{used} of {capacity} characters")
+    return NameCapacity(used, capacity, True, f"{used} of {capacity} {unit}")
 
 
 def filter_player_rows(
@@ -247,6 +253,7 @@ from PyQt5.QtWidgets import (  # noqa: E402
     QFrame,
     QHBoxLayout,
     QHeaderView,
+    QInputDialog,
     QLabel,
     QLineEdit,
     QMessageBox,
@@ -378,6 +385,7 @@ class Ps2SaveEditorDialog(QDialog):
         self.selected: PlayerNameRow | None = None
         self._all_rows: tuple[PlayerNameRow, ...] = ()
         self._busy = False
+        self._written_rows: tuple[PlayerNameRow, ...] | None = None
         # One write at a time, and _busy already refuses a second; the pool
         # exists to keep the write off the Qt thread, not to run writes in
         # parallel.  The task is held so it outlives run() and is not
@@ -650,11 +658,23 @@ class Ps2SaveEditorDialog(QDialog):
 
     def _open_path(self, path: Path) -> None:
         try:
-            summary = self.host.open(path)
+            directory = None
+            if path.is_file() and path.suffix.lower() == ".ps2":
+                choices = self.host.card_directories(path)
+                if len(choices) > 1:
+                    directory, chosen = QInputDialog.getItem(
+                        self, "Choose a save on the card", "Save directory", list(choices), 0, False)
+                    if not chosen:
+                        return
+            if not self._confirm_discard():
+                return
+            summary = self.host.open(path, directory)
         except Exception as exc:
             self._warn("That save could not be opened", exc)
             return
         self.selected = None
+        self._all_rows = ()
+        self._written_rows = None
         self._reload_rows()
         self._status(f"Opened {getattr(summary, 'headline', path.name)}")
 
@@ -796,6 +816,12 @@ class Ps2SaveEditorDialog(QDialog):
                 self._status(capacity.message)
                 return
         try:
+            for field, value in (("first", self.first_edit.text()), ("last", self.last_edit.text())):
+                if value != row.value_for(field):
+                    problem = self.host.validate_name(row.index, field, value)
+                    if problem:
+                        self._status(problem)
+                        return
             if self.first_edit.text() != row.first:
                 self.host.set_name(row.index, "first", self.first_edit.text())
             if self.last_edit.text() != row.last:
@@ -908,6 +934,7 @@ class Ps2SaveEditorDialog(QDialog):
             return
         detail = str(getattr(outcome, "detail", ""))
         if getattr(outcome, "verified", False):
+            self._written_rows = self._all_rows
             self.status_label.setStyleSheet(f"color: {_PASS_COLOUR};")
             self._status(detail)
             QMessageBox.information(self, "PS2 save written", f"{detail}\n\n{destination}")
@@ -916,8 +943,9 @@ class Ps2SaveEditorDialog(QDialog):
             self._status(detail)
             QMessageBox.warning(
                 self,
-                "PS2 save was written but did not verify",
-                f"{detail}\n\nYour original save was not changed.",
+                "PS2 save verification failed",
+                f"{detail}\n\nStudio discarded the unverified copy. Your edits are still open. "
+                "You can retry the same filename.",
             )
 
     # -- shared --------------------------------------------------------
@@ -934,7 +962,17 @@ class Ps2SaveEditorDialog(QDialog):
         if self._busy:
             self._status("A write is in progress. It will finish in a moment.")
             return
-        super().done(result)
+        if self._confirm_discard():
+            super().done(result)
+
+    def _confirm_discard(self) -> bool:
+        if not self.host.dirty or self._written_rows == self._all_rows:
+            return True
+        return QMessageBox.warning(
+            self, "Discard PS2 save edits?",
+            "These staged edits have not been written to a verified copy.",
+            QMessageBox.Discard | QMessageBox.Cancel, QMessageBox.Cancel
+        ) == QMessageBox.Discard
 
     def _status(self, message: str) -> None:
         self.status_label.setText(message)

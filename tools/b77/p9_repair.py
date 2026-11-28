@@ -113,7 +113,10 @@ def declared_ranges(xbe: bytes) -> tuple[list[tuple[int, int]], list[dict]]:
             owned_rows.append(row)
             ranges.append((row["raw"], row["raw"] + row["size"]))
             rows.append(dict(label=label, va=hex(row["va"]), file_offset=hex(row["raw"]), size=row["size"]))
-    for name, va, before, _after in md.sites(allocation["va"], "modern2"):
+    # b81f: the installed template's own sites (the fake-kick gate adds three: the native lottery block, the commit's fake
+    # flag and the two-point lottery operand).
+    variant = (md.read_settings(xbe) or {}).get("variant", "b778")
+    for name, va, before, _after in md.sites(allocation["va"], "modern2", variant=variant):
         at = rdata.offset_of(xbe, va)
         ranges.append((at, at + len(before)))
         rows.append(dict(label=f"site {name}", va=hex(va), file_offset=hex(at), size=len(before)))

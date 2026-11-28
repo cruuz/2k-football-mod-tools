@@ -68,13 +68,17 @@ RECOMMENDED_HELP = ("Applies the recommended 64 MB selection from the memory mod
 #: The badge of an option the 64 MB target turns off ("Off at 64 MB: <reason>").
 LOCK_PREFIX = "Off at 64 MB: "
 NEXT_STEPS_64 = (f"This is the 64 MB build for an original Xbox or the Android emulator hakuX: {STATUS_64}. To try it in "
-                 "xemu the way a console runs it, set System Memory to 64 MiB; for the full SOFTDRINK experience build the "
-                 "128 MB target and play it in xemu at 128 MiB.")
-SHARE_NOTE = ("The ready-made SOFTDRINK 2K28 pack is the full 128 MB build for xemu (System Memory 128 MiB). For the "
-              f"64 MB build (original Xbox, Android hakuX; {STATUS_64}): choose Customize SOFTDRINK 2K28 "
-              "with Build for: 64 MB, then make the disc on the Build tab, which starts from the recommended 64 MB set. That "
-              "route keeps the pack's art, the options that fit and the 2026 rosters, fitted to the original game's roster "
-              "size (free agents beyond the original game's count are left out).")
+                 "xemu the way a console runs it, set System Memory to 64 MiB.")
+PACK_DOWNLOAD_LINKS = (
+    '<a href="https://github.com/cruuz/softdrink-2k28/releases/tag/v0.10">v0.10 for 128 MiB</a> or the '
+    '<a href="https://github.com/cruuz/softdrink-2k28/releases/download/v0.9/'
+    'SOFTDRINK-2K28-v0.9-64MB.2k5patch">v0.9 experimental pack for 64 MiB</a>')
+SHARE_NOTE = ("Choose v0.10 for xemu at 128 MiB with Complex 4627. For a 64 MiB setup, use the "
+              f"published v0.9 64 MB pack ({STATUS_64}). Install either directly. Customize SOFTDRINK 2K28 lets you change "
+              "the build target and features. The 64 MB roster fits the original game's roster size.")
+#: b81 #43 (coordinator ruling 2; R56's wording): where a 64 MB player gets a ready-made disc.
+POINTER_64 = ("v0.10 is the 128 MiB release; for a ready-made 64 MiB disc use the published v0.9 64 MB pack, "
+              "SOFTDRINK-2K28-v0.9-64MB.2k5patch.")
 SHARE_CHOICE_CAPTION = "Build for"
 SHARE_CHOICE_HELP = ("Customize SOFTDRINK 2K28 loads the pack's sources into the Build tab. 64 MB sets the Build tab's "
                      "Console memory to the experimental 64 MB target and turns off what needs 128 MB.")
@@ -117,6 +121,7 @@ _CAPTIONS = {
     "k128_memory": "128 MB memory (K128, xemu set to 128 MB)",
     "k128_roster_heap": "Roster block in the extra memory",
     "k128_early": "Bigger graphics memory (K128 early form)",
+    "sim_qb_injuries": "Simulated injuries (all positions)",
     "guardian_overlay": "Guardian caps (experimental)",
     "reserves_16": "16 reserves (experimental)",
     "created_teams_extra": "Two extra created teams (experimental)",
@@ -374,6 +379,15 @@ def _predict(found, plan) -> dict[str, Any] | None:
             suggestions.append((str(key), int(size)))
         except (KeyError, TypeError, ValueError):
             continue
+    found_set = get("fitting_set", "absent")   # b81 #43 ruling 2: the model's checked set (None: nothing fits)
+    fitting = {}
+    if found_set is None:
+        fitting = {"fitting_set": None}
+    elif isinstance(found_set, (list, tuple)):
+        try:
+            fitting = {"fitting_set": [tuple(str(k) for k in group) for group in found_set]}
+        except TypeError:
+            fitting = {}
     primary = get("primary_uniforms", None)
     safety = get("safety_bytes", None)
     primary_fits, primary_spare, primary_where = None, 0, ""
@@ -384,7 +398,8 @@ def _predict(found, plan) -> dict[str, Any] | None:
     return {"fits": fits, "spare_bytes": max(spare, 0), "over_bytes": max(over, 0),
             "hardest": str(get("hardest", "") or ""), "suggestions": suggestions,
             "evidence": str(get("evidence", "MODELLED") or "MODELLED"),
-            "primary_fits": primary_fits, "primary_spare_bytes": primary_spare, "primary_hardest": primary_where}
+            "primary_fits": primary_fits, "primary_spare_bytes": primary_spare, "primary_hardest": primary_where,
+            **fitting}
 
 
 def alternate_kit_shortfall(prediction: Mapping[str, Any] | None) -> bool:
@@ -476,8 +491,19 @@ def budget_line(prediction: Mapping[str, Any] | None, labels=None) -> str:
         if not ALLOW_ALTERNATE_KIT_SHORTFALL:
             line = "Will not fit with every uniform. " + line
         return line + tail
-    examples = _examples(prediction, labels)
     line = f"Will not fit: remove {kb_up(int(prediction.get('over_bytes', 0))):,} KB (hardest stadium{where})"
+    if "fitting_set" in prediction:
+        # b81 #43 (coordinator ruling 2): the model's checked set, turned off together, not single guesses
+        found = prediction.get("fitting_set")
+        if found:
+            names = [label(group[0], labels) + (" (with " + ", ".join(label(k, labels) for k in group[1:]) + ")"
+                                                if len(group) > 1 else "") for group in found]
+            joined = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+            line += f"; turning off {joined} together makes it fit (the memory model checked this set)."
+        else:
+            line += "; no set of the options left on makes it fit."
+        return line + tail
+    examples = _examples(prediction, labels)
     line += ("; for example turn off " + ", ".join(examples) + ".") if examples else "."
     if not _covered(prediction):
         line += (" No single option frees the rest: several have to go together, which Use the recommended 64 MB set "
@@ -633,7 +659,8 @@ def problems(plan: object, labels=None, *, records: int | None = None, fit: bool
 def refusal(prediction: Mapping[str, Any], labels=None) -> str:
     """The refusal of a selection the model says will not fit, naming what to turn off."""
 
-    return "The 64 MB build will not fit: " + budget_line(prediction, labels).removeprefix("Will not fit: ")
+    return ("The 64 MB build will not fit: " + budget_line(prediction, labels).removeprefix("Will not fit: ")
+            + " " + POINTER_64)
 
 
 # ------------------------------------------------------------------------------------------------ the recommended set

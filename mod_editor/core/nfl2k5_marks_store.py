@@ -126,7 +126,10 @@ def try_register(pack):
 
 def after_install(pack, receipt):
     """A saved disc stays a success even if the separate logo save fails."""
-    receipt["memory_tip"] = memory_tip(pack)
+    from . import nfl2k5_console_memory
+    memory = nfl2k5_console_memory.of(pack.manifest.recipe)
+    receipt["console_memory"] = memory
+    receipt["memory_tip"] = memory_tip(pack) if memory == 128 else ""
     source, error = try_register(pack)
     if source:
         receipt["official_marks"] = source

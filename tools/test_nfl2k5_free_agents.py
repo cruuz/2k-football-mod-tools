@@ -183,7 +183,7 @@ class FreeAgentWriterTests(unittest.TestCase):
             if a != b:
                 self.assertTrue(any(start <= index < end for start, end in scope), hex(index))
         self.assertEqual(len(output), len(self.body))
-        self.assertEqual([p.index for p in after.players if p.group == "draft_class"], list(range(1944, 2324)))
+        self.assertEqual([p.index for p in after.players if p.group in ("draft_class", "draft_slot")], list(range(1944, 2324)))
         removed = {r["index"] for r in self.data["removed"]}
         self.assertFalse(removed & {after.by_offset[o].index for o in after.free_agents})
 

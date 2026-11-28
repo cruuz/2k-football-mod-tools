@@ -1923,7 +1923,7 @@
  "receipt": {
   "team": "NO",
   "offense_pack": "data/playbooks/softdrink_no_modern.2k5book",
-  "offense_pack_sha256": "88491a93b143c3f7e5a00dd953754651606800c0deef5d3f85340cb9befb92e0",
+  "offense_pack_sha256": "98803fb7d9b6b211c5ce2cbed17d9325ab7248e83ed4f21adb3f126d74c6fe03",
   "source_fingerprint": "4dc3862d132899e2c57a670918ae4681d3e6d4ea50cbfd1a81ec625fd83fa0fb",
   "replacement_sha256": "33d9fba09f1bec7e875bca025705578ece9ee47a639a35764eaf2ec4bfb0a764",
   "semantic_sha256": "0938c76762622f289d98e13ed1849b66749308d383ac94beafc0a59c54bb3c87",

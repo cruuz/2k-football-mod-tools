@@ -1,5 +1,6 @@
 """Portable, typed Build choices saved beside project edits, never game state."""
 from copy import deepcopy
+from decimal import Decimal
 import math
 
 FEATURE_KEYS = (
@@ -60,6 +61,9 @@ FEATURE_KEYS += ("modern_coaches",)  # b77-co1: the 2026 head coaches (sideline 
 FEATURE_KEYS += ("cpu_qb_zone_windows", "cpu_qb_recheck", "cpu_qb_tiers", "db_ball_play")  # b776-ai2: CPU AI late executable owners, off in every preset
 FEATURE_KEYS += ("db_dive_window",)  # b780-cv3: defenders leap only for balls they can reach, the last late executable owner
 FEATURE_KEYS += ("hair_styles",)  # b775-hs1: added hair models chosen per player (roster +0x0D), late executable owner
+FEATURE_KEYS += ("helmet_side_numbers",)  # b81 helmet-sides: route 5 = helmet number set E (both sides), Chargers 24H0/24A0
+FEATURE_KEYS += ("modern_numbers",)  # b81 modern numbers: None (follow season_2026), "modern" or "retail"
+FEATURE_KEYS += ("classic_crowd",)  # b81-seamen: the classic Seamen's own crowd (12 files + one fixed allocator page)
 FEATURE_KEYS += ("play_art_routes",)  # b776-pa2: play art routes at their real length, late executable owner
 FEATURE_KEYS += ("run_blocking",)  # b777-ol1: run blocking, the last late executable owner
 FEATURE_KEYS += ("pass_protection",)  # b778-pr1: pass protection, a late executable owner
@@ -72,6 +76,7 @@ FEATURE_KEYS += ("protection_calls",)  # b780 p1-slide: the user's slide call at
 FEATURE_KEYS += ("team_number_scale",)  # b776-ns1: per-kit jersey number size {kit: scale}, late executable owner
 FEATURE_KEYS += ("qb_accuracy",)  # b777-qb3: accurate short and on-the-run throws by Pass Accuracy, late executable owner
 FEATURE_KEYS += ("star_retention",)  # b778-fa1: CPU clubs keep their stars (veteran cap cut), late executable owner
+FEATURE_KEYS += ("team_building",)  # b81: CPU clubs draft and sign to their weakest starters (shared need rule)
 FEATURE_KEYS += ("practice_injuries",)  # b778-pi1: franchise practice keeps injuries, late executable owner
 FEATURE_KEYS += ("cpu_ball_carriers",)  # b778-ai5: CPU ball carriers stay in bounds / QBs slide past the sticks
 FEATURE_KEYS += ("cpu_runner_vision",)  # b780 cv2-runner: CPU ball carriers see where defenders go (needs cpu_ball_carriers)
@@ -82,6 +87,8 @@ FEATURE_KEYS += ("module_loader",)  # b778-xs1: on-demand Career Home (module lo
 FEATURE_KEYS += ("star_career",)  # b778-st2: rookie stars and stars earned/lost over a career, late executable owner
 FEATURE_KEYS += ("rookie_faces",)  # b778-rh1: new draft headshots matched to skin tone, build and name (image only)
 FEATURE_KEYS += ("alien_prospect",)  # b778-ee1: the once-in-a-century gray alien prospect (needs rookie faces)
+FEATURE_KEYS += ("backfield_cards",)
+FEATURE_KEYS += ("gadget_play",)  # beta 81 Q62: the SPECIAL GAD player on gadget plays
 FEATURE_KEYS += ("sportscenter_lineup",)  # b778-sc2: featured-player identity lookup, no allocation
 FEATURE_KEYS += ("franchise_draft_clock",)  # b778-dr1: broadcast-paced franchise draft, late executable owner
 FEATURE_KEYS += ("weekly_progression",)  # b778-pg1: franchise weekly progression, late executable owner
@@ -91,11 +98,17 @@ FEATURE_KEYS += ("franchise_history",)  # b780 j23: franchise history and record
 FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Contracts null-college crash guard, late executable owner
 FEATURE_KEYS += ("load_user_team_guard",)  # b780 mc1: Franchise load with no human club, in-place sites
 FEATURE_KEYS += ("save_list_type_guard",)  # b780 mc1: boot save list with a NULL save type, in-place sites
+FEATURE_KEYS += ("show_block_guard",)  # b81 ot-crash: the show and the replay share one block, in-place sites
+FEATURE_KEYS += ("edition_save_notes",)  # beta 81 review M1: 64 MB save messages for a 128 MB save, in-place text
 FEATURE_KEYS += ("coach_career_fix",)  # b780 c1 (wired at b780-int): coach Super Bowl trip counter fix, in-place site
 FEATURE_KEYS += ("history_pool",)  # b780 hist1: career history pool (no wrapped totals, chunked collection), in-place sites
 FEATURE_KEYS += ("sim_cb_tackles",)  # b778-cb1: cornerback tackle credit, late executable owner
 FEATURE_KEYS += ("sim_rb_injuries",)  # b779-sim2: weekly RB injury roll and simulated-game carry guard
 FEATURE_KEYS += ("sim_realism",)  # b779-sim2 r4: scheduled-sim season realism, late executable owner
+FEATURE_KEYS += ("sim_qb_injuries", "sim_qb_injury_rate")
+FEATURE_KEYS += ("sim_breakaway_stop",)  # b81 scoring: the simulated breakaway stop, yards to goal (default 68 since the combined calibration)
+FEATURE_KEYS += ("qb_room",)  # b81 qb34: None follows sim_qb_injuries (DESIGN_CHANGES C1)
+FEATURE_KEYS += ("cpu_trades",)  # b81 trades-all (R6): computer trades at every position; None follows the room
 FEATURE_KEYS += ("coach_carousel",)  # b780-c6: the coaching carousel, late executable owner + roster pool
 FEATURE_KEYS += ("standings_records",)  # b780-j1: Team Standings division / conference / home / road records, late executable owner
 FEATURE_KEYS += ("catch_snap_limit",)  # b780-cv4: CPU defenders cannot slide to the ball for a pick, late executable owner
@@ -124,6 +137,8 @@ FEATURE_KEYS += ("contract_college_guard",)  # b778-cr1: Player Contracts null-c
 FEATURE_KEYS += ("my_career_home",)  # ui1: MyCareer Career Home (default on with MyCareer)
 FEATURE_KEYS += ("super_bowl_user_art",)  # b773-sb2: Super Bowl logos folder; "" = the bundled real logos (sb3)
 FEATURE_KEYS += ("console_memory",)  # b780-m64b: 128 (default, absent in older projects) or 64 (experimental)
+PROJECT_KEYS = ("softdrink_project", "include_softdrink_project")
+FEATURE_KEYS += ("stock_age_policy",)
 MUSIC_KEYS = ("music_shuffle", "music_shuffle_selection")
 
 
@@ -132,21 +147,90 @@ def defaults():
     plan = BuildPlan("", "")
     return {key: deepcopy(getattr(plan, key)) for key in FEATURE_KEYS}
 
+def validate_sim_qb_injuries(mode, rate):
+    if mode not in (None, "retail", "realistic", "custom"):
+        raise ValueError("Choose Retail, Realistic or Custom for simulated quarterback injuries.")
+    if mode == "custom":
+        if type(rate) not in (float, int) or not 0 <= rate <= 100:
+            raise ValueError("Custom quarterback injury chance must be between 0.000 and 100.000 percent.")
+        thousandths = Decimal(str(rate)) * 1000
+        if thousandths != thousandths.to_integral_value():
+            raise ValueError("Use increments of 0.001 percentage points for the custom quarterback injury chance.")
+
+
+def validate_sim_breakaway_stop(value):
+    if type(value) is not int or not 20 <= value <= 99:
+        raise ValueError("The simulated breakaway stop is a whole number of yards to goal from 20 to 99.")
+QB_ROOM_LEVELS = (None, "retail", "realistic")
+
+
+def validate_qb_room(level):
+    """b81 qb34: the quarterback room has no Custom level."""
+    if level not in QB_ROOM_LEVELS:
+        raise ValueError("Choose Retail or Realistic for the quarterback room rules.")
+
+
+def qb_room_level(qb_room, sim_qb_injuries):
+    """b81 qb34 (DESIGN_CHANGES C1): an explicit Retail or Realistic wins; otherwise the room follows the simulated
+    quarterback injury option (Realistic or Custom -> Realistic, Retail -> Retail, keep the source -> keep). A followed
+    Realistic is installed only where the room's needs are met (see qb_room_needs_met and mod_build)."""
+    validate_qb_room(qb_room)
+    if qb_room is not None:
+        return qb_room
+    return {"realistic": "realistic", "custom": "realistic", "retail": "retail"}.get(sim_qb_injuries)
+
+
+CPU_TRADES_LEVELS = (None, "retail", "realistic")
+
+
+def validate_cpu_trades(level):
+    """b81 trades-all (R6): computer trades at every position have Retail and Realistic only; None follows the
+    quarterback option (mod_build._cpu_trades_plan)."""
+    if level not in CPU_TRADES_LEVELS or type(level) not in (str, type(None)):
+        raise ValueError("Choose Retail or Realistic for computer trades.")
+
+
+def cpu_trades_needs_met(get):
+    """b81 trades-all: a plan (``get(field)``) that installs what computer trades need: the 128 MB standard target with
+    K128, the 2026 season (its NFL week 9 trade deadline), the franchise economy, reserve save compatibility (the
+    practice squad) and modern injured reserve (with its ownership safeguards), as for the quarterback trades of stage
+    4b. A missing console_memory is 128. An executable is judged by nfl2k5_cpu_trades.requirements instead."""
+    return (get("console_memory") in (None, 128) and all(bool(get(name)) for name in (
+        "k128_memory", "season_2026", "franchise_economy", "practice_squad", "modern_injured_reserve")))
+
+
+def qb_room_needs_met(get):
+    """b81 qb34: a plan (``get(field)``) that installs the room's needs: the 128 MB standard target with K128, depth
+    chart locks and the SPECIAL depth chart rows (which carry the lineup roles). A missing console_memory is 128."""
+    return (get("console_memory") in (None, 128) and bool(get("k128_memory")) and bool(get("depth_locks"))
+            and bool(get("depth_chart_rows")))
+
 
 def build_settings(value):
     from . import nfl2k5_music_playlist as music, nfl2k5_throw_tuning as tt
     from . import nfl2k5_senior_bowl as bowl, nfl2k5_hires_pack as hires
-    tt._require(type(value) is dict and set(value) <= set(FEATURE_KEYS + MUSIC_KEYS),
+    tt._require(type(value) is dict and set(value) <= set(FEATURE_KEYS + MUSIC_KEYS + PROJECT_KEYS),
                 "Unsupported Build settings")
     result = music.build_settings({key: value[key] for key in MUSIC_KEYS if key in value})
-    choices = {**defaults(), **deepcopy({key: value[key] for key in FEATURE_KEYS if key in value})}
+    for key, expected_type in zip(PROJECT_KEYS, (str, bool)):
+        if key in value:
+            tt._require(type(value[key]) is expected_type, f"Invalid league artwork setting: {key}")
+            result[key] = value[key]
+    expected = defaults()
+    choices = {**expected, **deepcopy({key: value[key] for key in FEATURE_KEYS if key in value})}
+    if choices["sim_qb_injuries"] != "custom":
+        choices["sim_qb_injury_rate"] = expected["sim_qb_injury_rate"]
+    validate_sim_qb_injuries(choices["sim_qb_injuries"], choices["sim_qb_injury_rate"])
+    validate_sim_breakaway_stop(choices["sim_breakaway_stop"])
+    validate_qb_room(choices["qb_room"])
+    validate_cpu_trades(choices["cpu_trades"])
     tt._require(choices["helmet_finish"] in ("glossy", "matte"), "Helmet finish must be glossy or matte")
     from . import nfl2k5_modern_color as colour
     colour.normalize_settings(choices["modern_color_settings"])
     from . import nfl2k5_team_number_scale as number_scale
     choices["team_number_scale"] = number_scale.normalize(choices["team_number_scale"])
     tt._require(choices["scorebug_watermark"] in ("auto", "mnf", "off"), "ESPN watermark must be auto, mnf or off")
-    expected = defaults()
+    tt._require(choices["stock_age_policy"] in ("preserve_age", "keep_birthdates"), "Unknown stock roster age policy")
     for key in FEATURE_KEYS:
         item, default = choices[key], expected[key]
         if type(default) is bool:
@@ -206,6 +290,8 @@ def to_plan(state, source, target):
     """Reconstruct choices in a new build; never inherit overwrite permission."""
     from .mod_build import BuildPlan, CommentarySwap
     values = build_settings(state)
+    for key in PROJECT_KEYS:
+        values.pop(key, None)
     values["commentary"] = [CommentarySwap(**row) for row in values.get("commentary", [])]
     return BuildPlan(source, target, **values)
 
@@ -232,6 +318,7 @@ REQUIRES = {
 # b780 m64prof: values that mean something only with another option on; the build refuses them otherwise
 # (nfl2k5_momentum._settings: "a collision level requires momentum_collisions", "contact requires a nonzero momentum level").
 VALUE_REQUIRES = {
+    "sim_qb_injuries": ("sim_realism", "k128_memory"),
     "momentum_collision_level": ("momentum_collisions",),
     "momentum_contact": ("momentum",),
 }

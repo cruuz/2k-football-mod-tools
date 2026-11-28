@@ -59,6 +59,20 @@ class _Page(unittest.TestCase):
 
 
 class Selector(_Page):
+    def test_switching_back_to_standard_clears_the_compact_save_warning(self):
+        panel = self.page()
+        for via_widget in (False, True):
+            with self.subTest(via_widget=via_widget):
+                panel.set_console_memory(64)
+                panel._boxes()["edition_save_notes"].setChecked(True)
+                self.assertTrue(panel.plan().edition_save_notes)
+                if via_widget:
+                    panel.console_memory_combo.setCurrentIndex(panel.console_memory_combo.findData(128))
+                else:
+                    panel.set_console_memory(128)
+                self.assertEqual(panel.plan().console_memory, 128)
+                self.assertFalse(panel.plan().edition_save_notes)
+
     def test_the_selector_offers_both_targets_and_defaults_to_128(self):
         with without_model():
             panel = self.page()
@@ -309,7 +323,7 @@ class Budget(_Page):
             self.assertIn("cannot predict whether this selection fits in 64 MB", panel.memory_budget_label.text())
 
     def test_the_recommended_set_applies_the_model_profile(self):
-        model = fake_model(profile={"hair_styles": False, "modern_coaches": False, "throw": True})
+        model = fake_model(profile={"hair_styles": False, "modern_coaches": False, "throw": True, "my_career_home": False})
         with with_model(model):
             panel = self.page()
             self.softdrink(panel)
@@ -319,6 +333,7 @@ class Budget(_Page):
             self.assertEqual(plan.console_memory, 64)
             self.assertFalse(plan.hair_styles)
             self.assertFalse(plan.modern_coaches)
+            self.assertFalse(plan.my_career_home)
             self.assertTrue(plan.throw)
             for key in FORCED:
                 self.assertFalse(getattr(plan, key), key)
@@ -390,6 +405,23 @@ class WithTheModel(_Page):
 
 
 class SavedAndShared(_Page):
+    def test_career_home_choice_survives_save_restore_and_old_presets(self):
+        panel = self.page()
+        for choice in (False, True):
+            with self.subTest(career_home=choice):
+                panel.restore_project_build_settings({"my_career": True, "my_career_home": choice})
+                self.assertIs(panel.plan().my_career_home, choice)
+                self.assertIs(panel.project_build_settings()["my_career_home"], choice)
+        panel.restore_project_build_settings({"my_career_home": False})
+        panel.restore_project_build_settings({})
+        self.assertTrue(panel.plan().my_career_home)
+        panel.restore_project_build_settings({"my_career_home": False})
+        panel.apply_preset("softdrink_experimental")
+        self.assertTrue(panel.plan().my_career_home)
+        panel.restore_project_build_settings({"my_career_home": False})
+        panel.apply_state({**panel._state, "path": str(Path(self.tmp.name) / "other.iso")})
+        self.assertTrue(panel.plan().my_career_home)
+
     def test_project_settings_round_trip_and_old_projects_read_128(self):
         with without_model():
             panel = self.page()
@@ -424,16 +456,16 @@ class SavedAndShared(_Page):
             panel.load_softdrink_sources(recipe)            # no choice: the full 128 MB build
             self.assertEqual(panel.console_memory(), 128)
 
-    def test_share_offers_the_choice_and_says_the_pack_is_128(self):
+    def test_share_follows_the_pack_by_default_and_offers_both_overrides(self):
         from mod_editor.gui.share_panel_qt import SharePanel
         share = SharePanel()
         self.addCleanup(share.deleteLater)
         combo = share.customize_memory_combo
-        self.assertEqual([combo.itemData(i) for i in range(combo.count())], [128, 64])
+        self.assertEqual([combo.itemData(i) for i in range(combo.count())], [None, 128, 64])
         self.assertEqual(share.customize_memory(), 128)
         self.assertEqual(share.customize_memory_caption.text(), "Build for")
-        self.assertIn("full 128 MB build for xemu", share.memory_note.text())
-        self.assertIn("the 2026 rosters, fitted to the original game's roster size", share.memory_note.text())
+        self.assertIn("xemu at 128 MiB", share.memory_note.text())
+        self.assertIn("64 MB roster fits the original game's roster size", share.memory_note.text())
         combo.setCurrentIndex(combo.findData(64))
         self.assertEqual(share.customize_memory(), 64)
 

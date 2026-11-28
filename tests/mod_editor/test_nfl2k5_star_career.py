@@ -227,7 +227,13 @@ class Tables(unittest.TestCase):
     def test_constants_in_the_code_tables(self):
         code, _ = patch.code_for(self.payload, 0x3000000, 0x3008000)
         self.assertEqual(struct.unpack_from("<4i", code, patch.K_CONST), (90, 85, 97, 93))
-        self.assertEqual(struct.unpack_from("<4i", code, patch.K_CONST2), (8, 33, 160, 70))
+        # b81 league-aging (review M2, coordinator 11/26): the gem threshold is ranked from the table (GEM_ROWS rows
+        # qualify, ties included): 65 on the retail curves; the b780 revision's fixed 70 reads "previous"
+        self.assertEqual(struct.unpack_from("<4i", code, patch.K_CONST2), (8, 33, 160, 65))
+        self.assertEqual(patch.gem_threshold(self.payload), 65)
+        old, _ = patch.code_for(self.payload, 0x3000000, 0x3008000, revision="previous")
+        self.assertEqual(struct.unpack_from("<4i", old, patch.K_CONST2), (8, 33, 160, 70))
+        self.assertEqual(old[:patch.K_CONST2 + 12], code[:patch.K_CONST2 + 12])
         self.assertEqual(struct.unpack_from("<i", code, patch.K_CONST3)[0], 75)
         self.assertEqual(list(code[patch.K_LIMITS:patch.K_LIMITS + 4]), [0, 2, 4, 7])
         self.assertEqual(struct.unpack_from("<f", code, patch.K_HUNDRED)[0], 100.0)

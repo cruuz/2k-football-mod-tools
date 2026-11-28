@@ -12,7 +12,9 @@ class Machine(BinderMachine):
         self.hooks = {}
         self.events = []
         self.uc.mem_map(self.ARENA, 0x100000)
-        self.uc.mem_map(self.OUT, 0x100000)
+        # An expanded franchise with its native history footer exceeds one MiB.
+        self.uc.mem_map(self.SAVE + 0x100000, 0x100000)
+        self.uc.mem_map(self.OUT, 0x200000)
         self.uc.mem_map(0x2A00000, 0x200000)
         self.heap_next = 0x2A00000
         self.put(0xB72804, self.ARENA)
@@ -42,6 +44,20 @@ class Machine(BinderMachine):
     #: 0xB0000, v0.8 on 0xCA000), whose capacity word is the arena size (the installed bridge checks it).
     GROWN_ARENAS = (0xB0000, 0xCA000)
 
+    #: Game options the fixture seeds (b81 queue, Q79; MC1's 11/04 audit). The 0x2E0-byte options block at 0xE5FF80
+    #: is BSS: the game fills it at boot (FUN_00077D20 -> FUN_00077C50) or copies it from a save, and this fixture
+    #: does neither, so Quarter Length 0xE6000C and Sim. Quarter Length 0xE60010 read 0. The week sim reads both
+    #: about 1,100 times a week (0x10B315 takes 0xE60010 for a fresh simulation), so with 0 every simulated stat line,
+    #: the history built from them and the halftime time-of-possession split (idiv at 0xCD47B) are wrong or fault,
+    #: while results and standings still look right. 15 / 15 is what every real-derived save carries (the in-game
+    #: menus clamp 1..15 and 3..15, so a player can never reach 0).
+    OPTION_SEED = ((0xE6000C, 15), (0xE60010, 15))
+
+    def seed_game_options(self):
+        """Write the game options a real profile or franchise save always carries (see OPTION_SEED)."""
+        for va, value in self.OPTION_SEED:
+            self.put(va, value)
+
     def frontend(self, roster):
         """Native menu stack and retail (or grown-arena) ROST, with layout/hardware seams.
 
@@ -59,6 +75,7 @@ class Machine(BinderMachine):
         self.put(0xB72808, self.capacity)
         self.root = self.ARENA
         self.put(0xE576A0, 0)
+        self.seed_game_options()
         self.put(0xB7280C, len(roster) - 64)
         self.uc.mem_write(self.ARENA, roster[64:])
         self.call(0xC0500, ecx=self.ARENA, budget=1000000)
@@ -264,13 +281,16 @@ class Machine(BinderMachine):
         import hashlib
         from mod_editor.core import nfl2k5_save_writer as writer
         from tests.nfl2k5_my_career_fixture import XBE
+        scratch = self.OUT + 0x1E0000
+        if len(body) > scratch - self.OUT:
+            raise ValueError("the test's signing input exceeds its bounded buffer")
         self.uc.mem_write(self.OUT, body)
         key = writer.derive_sig_key(XBE.read_bytes())
-        self.uc.mem_write(self.OUT + 0xE0000, key)
-        self.put(0x4E3C8C, self.OUT + 0xE0000)
-        self.put(0x10118, self.OUT + 0xE0500)
-        self.put(self.OUT + 0xE0508, 0x53450030)
-        self.replace_stub(0x1F52E, lambda: self.ret(self.OUT + 0xE0100, pop=8))
+        self.uc.mem_write(scratch, key)
+        self.put(0x4E3C8C, scratch)
+        self.put(0x10118, scratch + 0x500)
+        self.put(scratch + 0x508, 0x53450030)
+        self.replace_stub(0x1F52E, lambda: self.ret(scratch + 0x100, pop=8))
         self.replace_stub(0x1F5CE, lambda: self.ret(pop=8))
         sha, writes = {}, []
         def arg(index):
@@ -286,7 +306,7 @@ class Machine(BinderMachine):
             self.ret(pop=8)
         for va, action in ((0x20A6A, begin), (0x20A64, update), (0x20A5E, end)):
             self.replace_stub(va, action)
-        obj = self.OUT + 0xE0200
+        obj = scratch + 0x200
         self.uc.mem_write(obj, bytes(0xC0))
         self.put(obj + 8, 2)
         self.put(obj + 12, self.BODIES)
@@ -304,8 +324,8 @@ class Machine(BinderMachine):
             self.put(arg(4), 0 if fail_write else arg(3))
             self.ret(int(not fail_write), pop=20)
         self.replace_stub(0x1D9BF, write)
-        self.put(self.BODIES + 0x1AC, self.OUT + 0xE0300)
-        self.uc.mem_write(self.OUT + 0xE0300, b"U:\\\x00")
+        self.put(self.BODIES + 0x1AC, scratch + 0x300)
+        self.uc.mem_write(scratch + 0x300, b"U:\\\x00")
         ok = self.call(0x4C880, esi=obj)
         self.events.append(("native_extra_write", ok, len(body)))
         return writes[-1] if writes else None

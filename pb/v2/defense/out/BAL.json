@@ -1852,7 +1852,7 @@
  "receipt": {
   "team": "BAL",
   "offense_pack": "data/playbooks/softdrink_bal_modern.2k5book",
-  "offense_pack_sha256": "f287405737f6ff8d48037a6a5209ced84af19249fef9eee39a8f04452925c70f",
+  "offense_pack_sha256": "991285fd19f14cc84e777e850b8c45afab63b52c872ab64deed6de69cd8faee1",
   "source_fingerprint": "3bc53933f3687fd312aaf95d13ac5f6d63ff8a10d240e8a384d2b61e7c4bc9c1",
   "replacement_sha256": "98beed15ffc26f617181d09a48212b5bb29a56d50919427feb835fffda16dee4",
   "semantic_sha256": "04469ed7b7a80e8e38f0906caa4aad87472b895804735715e333eb7106bcfa24",

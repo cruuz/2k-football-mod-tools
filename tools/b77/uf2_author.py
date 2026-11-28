@@ -1280,6 +1280,11 @@ VERDICTS = {
                                               "disc; uf1 gave 18H7 an48-an57 the outlined chest digits",
     "uw2-NYG-away-7-shoulder-number-outline": "FIXED by uf1 (already on the input disc), as NYG home 7",
 }
+# b81-retail-free-art (coordinator's ruling, 2026-11-21): the rows that fixed these never write in a beta 81 build and
+# were deleted; the 2026 helmet art of the beta 81 league import and the b81 helmet pass carry these helmets
+for _finding in ['uw2-BUF-away-8-helmet-graphic', 'uw2-BUF-home-8-helmet-graphic', 'uw2-DEN-away-5-white-helmet-logo', 'uw2-DEN-home-5-white-helmet-logo', 'uw2-JAX-away-6-helmet-head', 'uw2-JAX-home-6-helmet-head', 'uw2-SEA-away-4-helmet-crown-panel', 'uw2-SEA-home-4-helmet-crown-panel']:
+    VERDICTS[_finding] = ("DELETED (beta 81): the row never wrote in a beta 81 build (its input is not the league "
+                          "import's helmet) and carried shape data; the b81 helmet pass and the league import own it")
 for _side in ("home", "away"):
     VERDICTS["uw2-TEN-%s-7-numeral-stroke-design" % _side] = (
         "NOT DONE: the MusicCity digits are hollow outlines whose interior texels are transparent; broad blue strokes "
@@ -1336,7 +1341,11 @@ def entries():
             m["note"] = m["note"] + "; " + row["note"]
         else:
             merged[key] = dict(row, defects=sorted(set(row["defects"])))
-    return [merged[k] for k in sorted(merged)]
+    return [merged[k] for k in sorted(merged) if k not in DELETED_B81]
+
+
+# b81-retail-free-art (coordinator's ruling, 2026-11-21, fix 3): rows that never write in a beta 81 build (the step finds another input than their before pin and skips them) and carry shape data are deleted
+DELETED_B81 = {(sel, 12) for sel in ("03A8", "03H8", "08A5", "08H5", "12A6", "12H6", "26A0", "26A4", "26H0", "26H4")}
 
 
 def palette_preview(rgba, mapping):

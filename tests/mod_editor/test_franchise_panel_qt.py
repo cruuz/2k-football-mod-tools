@@ -148,7 +148,7 @@ class TabVisibilityTests(_PanelCase):
 
     def test_the_tabs_are_finns_screens_in_our_words(self) -> None:
         titles = [self.page.tabs.tabText(i) for i in range(self.page.tabs.count())]
-        self.assertEqual(titles, ["Overview", "Schedule", "Coaches", "Injured Reserve", "Checks"])
+        self.assertEqual(titles, ["Overview", "Schedule", "Coaches", "Injured Reserve", "Checks", "Team Stats"])
         self.assertEqual(money(88_113), "$88.1M")
         self.assertEqual([name for name, _caption in COACH_STATS][:3], ["wins", "losses", "ties"])
 
@@ -160,6 +160,8 @@ class OverviewTests(_PanelCase):
         self.load(self.payload)
 
     def test_long_season_indices_and_opaque_neighbor_survive_copy_reload(self) -> None:
+        self.assertIn("roster birth-year shift in Build", self.page.season_cap_label.text())
+        self.assertNotIn("calendar patch", self.page.season_cap_label.text())
         payload = bytearray(synthetic_franchise_with_coach(year_field=30))
         payload[0x91327] = 0xA5
         self.load(bytes(payload), name="long")
@@ -296,8 +298,9 @@ class ScheduleTests(_PanelCase):
         page.week_combo.setCurrentIndex(0)
         self.assertEqual(page.schedule_table.rowCount(), 2)
         self.assertEqual(page.schedule_table.item(0, 5).text(), "yes")
-        self.assertEqual(page.schedule_table.item(0, 6).text(), "17 – 17")
-        self.assertIn("HYPOTHESIS", page.schedule_table.item(0, 6).toolTip())
+        self.assertEqual(page.schedule_table.item(0, 6).text(), "17-17")
+        # b81 R41: the first five quarter bytes are the home side's (FACTS; the standings getters read them so)
+        self.assertIn("IND 0-7-7-3-0 = 17, ATL 7-0-3-7-0 = 17", page.schedule_table.item(0, 6).toolTip())
         self.assertEqual(page.schedule_table.item(1, 5).text(), "")
         self.assertEqual(page.week_label.text(), "2 games, 1 played")
         # the played cell: refused with the reason
@@ -358,7 +361,7 @@ class CoachTests(_PanelCase):
         page = self.page
         page.tabs.setCurrentIndex(2)
         self.assertEqual(page.coach_list.count(), 1)
-        self.assertEqual(page.coach_list.item(0).text(), "Bill Belichick — IND")
+        self.assertEqual(page.coach_list.item(0).text(), "Bill Belichick: IND")
         self.assertEqual(page.coach_name_label.text(), "Bill Belichick")
         self.assertIn("One of the winningest coaches / in football history", page.coach_info_label.text())
         self.assertIn("read-only", page.coach_teams_label.text())
@@ -547,7 +550,7 @@ class ChecksTests(_PanelCase):
         self.assertIn("1. Salary cap $80.5M (80,500) → $90.0M (90,000)", text)
         self.assertIn("2. Season year 2011 → 2012 (season 9 = index 8)", text)
         self.assertIn("2 ranges, 3 bytes", text)
-        self.assertIn("0x09ACCC..0x09ACCE (2 B) — salary cap $1000 (DAT_00e3c278) [PROVED]", text)
+        self.assertIn("0x09ACCC..0x09ACCE (2 B), salary cap $1000 (DAT_00e3c278) [PROVED]", text)
         self.assertIn("year field (DAT_00e576b8), display = build starting year + index [PROVED]", text)
         self.assertEqual(page.checks_text_for(), text)
         page.checks_refresh_button.click()
@@ -637,7 +640,9 @@ class RealFranchise1PanelTests(_PanelCase):
         expected.set_user_control(19, True)
         expected.set_game(0, 0, day=6, allow_played=True)
         game = expected.game(0, 1)
-        expected.set_game(0, 1, home=game.away, away=game.home, allow_played=True)
+        # b81 R41: swapping a played game's sides moves its score halves with them (each club keeps its points)
+        from mod_editor.core import nfl2k5_team_stats as ts
+        ts.swap_played_sides(expected, 0, 1)
         expected.set_coach_field(coach.index, "wins", wins + 1)
         expected.set_coach_field(coach.index, "motivation", 77)
         expected.place_on_injured_reserve(18, first)

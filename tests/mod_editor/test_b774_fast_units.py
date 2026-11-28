@@ -553,6 +553,19 @@ class Book:
 
 
 class PlaybookStepMemoTests(unittest.TestCase):
+    def test_each_playbook_pool_reads_current_memory(self):
+        from mod_editor.core import nfl2k5_late_steps as late
+        from mod_editor.core import nfl2k5_playbook_pack as books
+
+        mib = 1024 ** 2
+        with patch.dict(os.environ, NFL2K5_BUILD_WORKERS="", NFL2K5_SERIAL_LATE_STEPS="0"), \
+                patch.object(os, "cpu_count", return_value=128), \
+                patch.object(os, "sched_getaffinity", return_value=set(range(128)), create=True), \
+                patch.object(late, "_available_memory", side_effect=[1536 * mib, 550 * mib]) as available:
+            self.assertEqual(books._warm_worker_count(64), 2)
+            self.assertEqual(books._warm_worker_count(64), 1)
+            self.assertEqual(available.call_count, 2)
+
     def test_identical_install_steps_compile_once_and_return_independent_copies(self):
         from mod_editor.core import nfl2k5_playbook_pack as packs
         calls = []

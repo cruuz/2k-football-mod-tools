@@ -4,7 +4,6 @@ The pinned USA retail default.xbe and the signed f0 franchise are read from the 
 native tests skip when they are absent.  One native game per Sim. Quarter Length runs the retail simulator
 initializer, the real step callbacks and the terminal finalizer in Unicorn; no game boot is claimed.
 """
-import hashlib
 import os
 from pathlib import Path
 import struct
@@ -66,13 +65,58 @@ class BytesTests(unittest.TestCase):
         site = XbeImage(retail).offset(ss.SITE, ss.SITE_SIZE)
         section = _section_for_offset(_sections(patched), site)
         digest = range(section.header_offset + 36, section.header_offset + 56)
+        image = XbeImage(retail)
+        opening = image.offset(ss.OPENING_SITE, len(ss.RETAIL_OPENING))
+        merge = image.offset(ss.MERGE_SITE, 5)
         for offset in changed:
-            self.assertTrue(site <= offset < site + ss.SITE_SIZE or offset in digest, hex(offset))
+            self.assertTrue(site <= offset < site + ss.SITE_SIZE or opening <= offset < opening + len(ss.RETAIL_OPENING)
+                            or merge <= offset < merge + 5 or offset in digest, hex(offset))
         self.assertEqual(section_digest(patched, section), section.stored_digest)
         again, replay = ss.apply(patched)
         self.assertEqual(again, patched)
         self.assertTrue(replay["already_applied"])
         self.assertEqual(replay["changed_bytes"], 0)
+
+    def test_pace_only_upgrade_rollback_and_mixed_regions(self):
+        # Reuse the public 22-section USA-shaped fixture. Its first three four-byte sections have enough raw
+        # padding to receive each complete stock recognition region without any commercial game data.
+        from tests.mod_editor.test_nfl2k5_xbe_space import synthetic, repin
+        fixture = bytearray(synthetic())
+        image = XbeImage(fixture)
+        for section, address, region in zip(image.sections[:3], (ss.OPENING_SITE, ss.REGION, ss.MERGE_REGION),
+                                            (ss.RETAIL_OPENING, ss.RETAIL_REGION, ss.RETAIL_MERGE_REGION)):
+            struct.pack_into("<IIII", fixture, section.header + 4, address, len(region), section.raw, len(region))
+            fixture[section.raw:section.raw + len(region)] = region
+        retail = repin(fixture)
+        self.assertEqual(ss.status(retail), "retail")
+        image = XbeImage(retail)
+        pace_offset = image.offset(ss.SITE, ss.SITE_SIZE)
+        old = bytearray(retail)
+        old[pace_offset:pace_offset + ss.SITE_SIZE] = ss.APPLIED_SITE
+        old = repin(old)
+        self.assertEqual(ss.status(old), "previous")
+        upgraded, receipt = ss.apply(old)
+        self.assertEqual([e["label"] for e in receipt["edits"]],
+                         ["simulator_appearance_registration", "games_played_history_add"])
+        self.assertEqual(ss.apply(retail)[0], upgraded)
+        self.assertEqual(ss.restore_pace_only(upgraded), old)
+        self.assertEqual(ss.restore_pace_only(old), old)
+        self.assertEqual(ss.apply(upgraded)[0], upgraded)
+        for address in (ss.OPENING_SITE, ss.MERGE_SITE, ss.MERGE_REGION):
+            with self.subTest(address=address):
+                bad = bytearray(upgraded)
+                bad[image.offset(address)] ^= 1
+                self.assertEqual(ss.status(bad), "foreign")
+                with self.assertRaises(ss.SimStatsError):
+                    ss.apply(bad)
+                with self.assertRaises(ss.SimStatsError):
+                    ss.restore_pace_only(bad)
+        for address, region in [(ss.MERGE_SITE, ss.RETAIL_MERGE_CALL), (ss.OPENING_SITE, ss.RETAIL_OPENING)]:
+            with self.subTest(mixed_region=address):
+                bad = bytearray(upgraded)
+                at = image.offset(address, len(region))
+                bad[at:at + len(region)] = region
+                self.assertEqual(ss.status(bad), "foreign")
 
     def test_released_v061_simulator_region_is_retail(self):
         path = Path(os.environ.get("NFL2K5_V061_XBE", "/nonexistent"))
@@ -109,6 +153,66 @@ class BytesTests(unittest.TestCase):
             self.assertIs(preset["sim_stats"], name in ("softdrink_advanced", "softdrink_experimental"), name)
         self.assertIn("sim_stats", settings.FEATURE_KEYS)
         self.assertIs(mod_build.availability()["sim_stats"], True)
+
+
+@unittest.skipUnless(HAVE_UNICORN, "unicorn is not installed")
+class AppearanceHistoryTests(unittest.TestCase):
+    def test_calling_convention_and_appearance_boundaries(self):
+        # Run the emitted instructions, then inspect the arguments received by the unmodified history writer.
+        from unicorn import Uc, UC_ARCH_X86, UC_MODE_32
+        from unicorn import x86_const as x86
+        uc = Uc(UC_ARCH_X86, UC_MODE_32)
+        player, bank, career_row, stack = 0x300000, 0x301000, 0x302000, 0x303000
+
+        def write(address, value):
+            uc.mem_write(address, struct.pack("<I", value))
+
+        for page in (ss.OPENING_SITE & ~0xfff, ss.MERGE_SITE & ~0xfff, 0x14f000, 0xe5f000, 0xe57000,
+                     player, bank, career_row, stack):
+            uc.mem_map(page, 0x1000)
+        uc.mem_write(ss.OPENING_SITE, ss.APPLIED_OPENING)
+        uc.mem_write(ss.MERGE_SITE, ss.APPLIED_MERGE_CALL)
+
+        def decision(categories=(), *, mode=4, stage=8, field=0, original=0, missing=0):
+            uc.mem_write(bank, bytes(108))
+            for category, weight in categories:
+                uc.mem_write(bank + category * 8 + 4, struct.pack("<f", weight))
+            write(0xe5ff80, mode)
+            write(0xe576a4, stage)
+            write(player + 0x30, 0 if missing == 1 else player + 0x200)
+            write(player + 0x200, 0 if missing == 2 else bank)
+            write(stack + 0x400, original)
+            uc.reg_write(x86.UC_X86_REG_ESP, stack + 0x400)
+            uc.reg_write(x86.UC_X86_REG_EBP, player)
+            uc.reg_write(x86.UC_X86_REG_ECX, career_row)
+            uc.reg_write(x86.UC_X86_REG_EDX, field)
+            uc.reg_write(x86.UC_X86_REG_EAX, original)
+            uc.emu_start(ss.MERGE_SITE, 0x14f450, count=160)
+            self.assertEqual(uc.reg_read(x86.UC_X86_REG_EIP), 0x14f450)
+            self.assertEqual(uc.reg_read(x86.UC_X86_REG_ECX), career_row)
+            self.assertEqual(uc.reg_read(x86.UC_X86_REG_EDX), field)
+            self.assertEqual(uc.reg_read(x86.UC_X86_REG_EAX), original)
+            self.assertEqual(uc.reg_read(x86.UC_X86_REG_EBP), player)
+            self.assertEqual(uc.reg_read(x86.UC_X86_REG_ESP), stack + 0x3fc)
+            self.assertEqual(struct.unpack("<I", uc.mem_read(stack + 0x3fc, 4))[0], ss.MERGE_SITE + 5)
+            return struct.unpack("<I", uc.mem_read(stack + 0x400, 4))[0]
+
+        self.assertEqual(decision(), 0)
+        self.assertEqual(decision([(12, 1.0)]), 0)
+        for category in range(12):
+            with self.subTest(category=category):
+                self.assertEqual(decision([(category, 1.0)]), 1)
+        activity = [(1, 59.0), (4, 1.0), (12, 1.0)]
+        self.assertEqual(decision(activity), 1)
+        for mode in (0, 3, 5, 6, 7):
+            self.assertEqual(decision(activity, mode=mode), 0)
+        for stage in (0, 6, 7, 9, 10):
+            self.assertEqual(decision(activity, stage=stage), 0)
+        for field in (1, 6, 12, 18, 50):
+            self.assertEqual(decision(activity, field=field), 0)
+        for value in (1, 2):
+            self.assertEqual(decision(activity, missing=value), 0)
+            self.assertEqual(decision(activity, original=value), value)
 
 
 @unittest.skipUnless(HAVE_UNICORN, "unicorn is not installed")

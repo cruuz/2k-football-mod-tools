@@ -127,9 +127,15 @@ class ManifestModelWiringTests(unittest.TestCase):
         import ast
         import inspect
         from mod_editor.core import nfl2k5_cave_manifest as model
+        from mod_editor.core import nfl2k5_historic_teams_quick_game as historic_quick_game
+        from mod_editor.core import nfl2k5_xbe_space as space
         source = inspect.getsource(model.build_manifest)
         self.assertIn("from . import nfl2k5_historic_teams_quick_game as historic_quick_game", source)
-        self.assertIn("+ historic_quick_game.REQUESTS", source)                  # in the complete allocation union
+        # in the complete allocation union: since f2338d527 the generator allocates space.dormant_union(), the one
+        # request list it shares with the default allocator proof
+        self.assertIn("all_requests = space.dormant_union()", source)
+        self.assertIn("+ historic_quick_game.REQUESTS", inspect.getsource(space.dormant_union))
+        self.assertTrue(set(historic_quick_game.REQUESTS) <= set(space.dormant_union()))
         self.assertIn("final, _ = historic_quick_game.apply(final)", source)     # observed on the probe image
         self.assertIn("historic_teams_quick_game=False", source)                 # never twice: off in the probe build
         wrapped, owners = [], []

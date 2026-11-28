@@ -16,6 +16,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from contextlib import contextmanager
+import hashlib
 import struct
 from typing import Mapping
 
@@ -304,6 +306,9 @@ class SaveRost:
                 raise SaveRostError(str(exc)) from exc
         player.record.values.clear()
         player.record.values.update(trial.values)
+        if _SHARED:
+            for key in [key for key, value in _SHARED.items() if value is self]:
+                del _SHARED[key]
 
     def to_bytes(self) -> bytes:
         out = bytearray(self.original)
@@ -331,6 +336,26 @@ class SaveRost:
                 'history_used': self.pool_used, 'history_capacity': self.pool_capacity}
 
 
+_SHARED: dict[tuple, SaveRost] | None = None
+
+
+@contextmanager
+def shared_decodes():
+    """b81 wave 3: inside this block, decoding the same bytes again returns the first result. One composed franchise edit
+    (Place on IR, a promotion) validated the same two payloads seven times, 0.3 s each on a 4,096-player arena; every
+    caller on that path only reads the result. ``edit_player`` on a shared result drops it from the block's table."""
+
+    global _SHARED
+    outer = _SHARED
+    if outer is None:
+        _SHARED = {}
+    try:
+        yield
+    finally:
+        if outer is None:
+            _SHARED = None
+
+
 def decode(payload: bytes | bytearray, *, preamble: int | None = None,
            reference_year: int | None = None, base_year: int = 2004) -> SaveRost:
     """Find exactly one supported framed ROST, or use an explicit preamble.
@@ -340,6 +365,20 @@ def decode(payload: bytes | bytearray, *, preamble: int | None = None,
     Candidate headers that fail structural validation do not become records.
     """
     data = bytes(payload)
+    shared = _SHARED
+    if shared is not None:
+        digest = (hashlib.sha1(data).digest(), len(data))
+        found = shared.get(digest + (preamble, reference_year, base_year))
+        if found is not None:
+            return found
+        result = _decode(data, preamble=preamble, reference_year=reference_year, base_year=base_year)
+        shared[digest + (preamble, reference_year, base_year)] = result
+        shared[digest + (result.layout.preamble, reference_year, base_year)] = result
+        return result
+    return _decode(data, preamble=preamble, reference_year=reference_year, base_year=base_year)
+
+
+def _decode(data: bytes, *, preamble: int | None, reference_year: int | None, base_year: int) -> SaveRost:
     _require(len(data) <= 32 * 1024 * 1024, 'payload exceeds 32 MiB codec limit')
     candidates = []
     failures = []

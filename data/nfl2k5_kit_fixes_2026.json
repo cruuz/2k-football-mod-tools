@@ -7613,56 +7613,6 @@
    ]
   },
   {
-   "selector": "26A0",
-   "chunk": 12,
-   "texture": "helmet02",
-   "kind": "txtr",
-   "size": [
-    256,
-    256,
-    6
-   ],
-   "resource_size": 1521392,
-   "offset": 404480,
-   "length": 37392,
-   "before_sha256": "52209d0e05c9698ff7324dda2f645301fd548330b35d0aafd10b79009c60b5d7",
-   "after_sha256": "96047e4d5bdcd4fe4ad2db2c728f92a0f28195f27c7744e18c486f749b3b084e",
-   "defects": [
-    "uw2-SEA-away-0-helmet-crown"
-   ],
-   "note": "crown carbon pattern lifted to the 2026 gray",
-   "ops": [
-    {
-     "op": "recolor",
-     "box": [
-      138,
-      18,
-      192,
-      182
-     ],
-     "from": [
-      "#405361"
-     ],
-     "color": "#9AA2A8",
-     "tolerance": 14
-    },
-    {
-     "op": "recolor",
-     "box": [
-      138,
-      18,
-      192,
-      182
-     ],
-     "from": [
-      "#203B58"
-     ],
-     "color": "#56616C",
-     "tolerance": 10
-    }
-   ]
-  },
-  {
    "selector": "26H0",
    "chunk": 1,
    "texture": "jersey00",
@@ -9275,56 +9225,6 @@
        242.2
       ]
      ]
-    }
-   ]
-  },
-  {
-   "selector": "26H0",
-   "chunk": 12,
-   "texture": "helmet02",
-   "kind": "txtr",
-   "size": [
-    256,
-    256,
-    6
-   ],
-   "resource_size": 1524800,
-   "offset": 405664,
-   "length": 37392,
-   "before_sha256": "52209d0e05c9698ff7324dda2f645301fd548330b35d0aafd10b79009c60b5d7",
-   "after_sha256": "96047e4d5bdcd4fe4ad2db2c728f92a0f28195f27c7744e18c486f749b3b084e",
-   "defects": [
-    "uw2-SEA-home-0-helmet-crown"
-   ],
-   "note": "crown carbon pattern lifted to the 2026 gray",
-   "ops": [
-    {
-     "op": "recolor",
-     "box": [
-      138,
-      18,
-      192,
-      182
-     ],
-     "from": [
-      "#405361"
-     ],
-     "color": "#9AA2A8",
-     "tolerance": 14
-    },
-    {
-     "op": "recolor",
-     "box": [
-      138,
-      18,
-      192,
-      182
-     ],
-     "from": [
-      "#203B58"
-     ],
-     "color": "#56616C",
-     "tolerance": 10
     }
    ]
   },

@@ -90,6 +90,23 @@ class ApplyTests(unittest.TestCase):
         with self.assertRaises(prs.PassRushStatsError):
             prs.apply(bytes(buf))
 
+    def test_a_beta80_install_is_recognized_and_a_mixed_install_is_foreign(self):
+        from mod_editor.core import nfl2k5_pass_rush_stats_b780 as old, nfl2k5_rdata_sites as rdata
+        from mod_editor.core import nfl2k5_xbe_space as space
+        payload, _ = space.apply(self.retail, old.REQUESTS, scaleout=True)
+        alloc = old.allocations(payload)
+        cv, rv, dv = [alloc[k]["va"] for k in ("code", "read_only", "data")]
+        ro = old.read_only_bytes(XbeImage(payload), cv, rv, old.source_lists(payload))
+        payload, _ = space.install_read_only(payload, old.OWNER, ro)
+        payload, _ = space.install_code(payload, old.OWNER, old.code_for(cv, dv, rv))
+        payload, _ = rdata.apply(payload, old.sites(cv) + old.data_edits(cv, rv), old.OWNER)
+        self.assertEqual(prs.status(payload), "previous")
+        with self.assertRaisesRegex(ValueError, "retail game"):
+            prs.apply(payload)
+        damaged = bytearray(payload)
+        damaged[XbeImage(payload).offset(cv)+256] ^= 1
+        self.assertEqual(prs.status(bytes(damaged)), "foreign")
+
     def test_changed_dependency_is_refused(self):
         image = XbeImage(self.retail)
         buf = bytearray(self.retail)
@@ -510,7 +527,8 @@ class LeadersTests(unittest.TestCase):
             self.assertEqual(struct.unpack_from("<I", d, 0x08)[0], prs.labels(prs.allocations(self.data)["code"]["va"])["prs_leader_value"])
             self.assertEqual(struct.unpack_from("<I", d, 0xA0)[0], field)
             self.assertEqual(image.read(struct.unpack_from("<I", d, 0x70)[0], 2 * len(abbr)).decode("utf-16-le"), abbr)
-            same = [i for i in range(0, 0xB0, 4) if i not in (0x08, 0x70, 0x88, 0xA0)]
+            changed = {0x08, 0x70, 0x88, 0xA0} | ({0x20, 0x38} if key == "sa" else set())
+            same = [i for i in range(0, 0xB0, 4) if i not in changed]
             self.assertEqual([d[i:i + 4] for i in same], [fbk[i:i + 4] for i in same])
 
     def test_getter_reads_season_years_ago_and_career(self):
@@ -553,9 +571,9 @@ class LeaderRankingTests(unittest.TestCase):
 
     def test_the_league_leaders_builder_uses_the_hooked_getters(self):
         image = XbeImage(self.data)
-        self.assertEqual(image.read(0x321DE6, 5), b"\xe8" + struct.pack("<i", 0x3216C0 - 0x321DEB))   # sort value
-        self.assertEqual(image.read(0x321CEC, 5), b"\xe8" + struct.pack("<i", 0x3216A0 - 0x321CF1))   # row filter
         at = prs.labels(prs.allocations(self.data)["code"]["va"])
+        for va, fn in ((0x321DE6, "prs_shortlist_value"), (0x321CEC, "prs_shortlist_eligible")):
+            self.assertEqual(image.read(va, 5), b"\xe8" + struct.pack("<i", at[fn] - (va + 5)))
         for va, entry in ((0x3216A0, "prs_leader_a"), (0x3216C0, "prs_leader_c")):
             raw = image.read(va, 6)
             self.assertEqual(raw[0], 0xE9)
@@ -601,6 +619,156 @@ class LeaderRankingTests(unittest.TestCase):
         self.assertEqual(self._value(m, 0x3216A0, p, 0xEA + 50, 11), 0.0)   # 0x3216A0 still answers 0 above 0xE9
         self.assertEqual(len(native), count)
 
+    def test_native_shortlist_keeps_the_lowest_40_for_each_selected_blocking_stat(self):
+        from tests.mod_editor.test_nfl2k5_honors import Machine, word
+        m = Machine(self.data)
+        values = [(i, (i * 17) % 80, 79 - i) for i in range(80)] + [(0, 0, 0)] * 2
+        players = m.roster([(3, [word(0, 3, int(i != 80)), *(word(108 + k, 3, v) for k, v in enumerate(vals))])
+                            for i, vals in enumerate(values)])
+        for i, p in enumerate(players):
+            m.put8(p + 0x35, 12 + i % 3 if i != 81 else 16)
+        teams = (m.TEAMS, m.TEAMS + 0x200)
+        for i, batch in enumerate((players[:41], players[41:])):
+            for j, player in enumerate(batch):
+                m.put(teams[i] + 4 * j, player)
+            m.put8(teams[i] + 0x11C, len(batch))
+        m.hook(0xC7D40, lambda mm: len(teams))
+        m.hook(0xC4C50, lambda mm: teams[mm.reg("ECX")])
+        obj, ids = m.HEAP + 0x70000, m.HEAP + 0x71000
+        m.uc.mem_write(ids, struct.pack("<6I", 0, 0, 0, 108, 109, 110))
+        for off, value in ((0, 3), (0x44, ids), (0x60, 11), (0x64, 6), (0xA0, 6)):
+            m.put(obj + off, value)
+        for k in range(3):
+            with self.subTest(field=108+k):
+                m.put(obj + 0xC0, 3 + k)
+                m.call(0x321D40, stack=(obj,))
+                rows = [m.get(0xC902DC + 4 * r) for r in range(m.get(0xC902D8))]
+                expected = sorted(range(80), key=lambda i: values[i][k])[:40]
+                self.assertEqual(set(rows), {players[i] for i in expected})
+                getter = prs.labels(prs.allocations(self.data)["code"]["va"])["prs_leader_value"]
+                self.assertEqual(sorted(self._value(m, getter, p, 108+k, 11) for p in rows), list(range(40)))
+
+    def test_qualifying_linemen_need_half_of_their_clubs_games(self):
+        """Full-season starters and one-game fill-ins at weeks 1, 9 and 18 and in the playoffs. The save keeps games
+        played (field 0) as a lineman's only opportunity count; the floor is half his club's completed games."""
+        from tests.mod_editor.test_nfl2k5_honors import Machine, word
+        GRID, WEEKS_BYTE, CLASS = 0xE57C40, 0x5151C4, 0xBD7F98
+
+        def grid(m, regular, playoffs):
+            cells = bytearray(22 * 17 * 8)
+            for club, games in enumerate(regular):            # club 0 against club 1, then against club 2
+                for row in range(games):
+                    cell = (row * 17 + 1 + club) * 8
+                    cells[cell:cell + 3] = bytes((3, club, 2 + club))
+            for club, games in enumerate(playoffs):
+                for row in range(games):
+                    cell = ((18 + row) * 17 + 1 + club) * 8
+                    cells[cell:cell + 3] = bytes((3, club, 2 + club))
+            m.uc.mem_write(GRID, bytes(cells))
+
+        scenarios = (("week 1", (1, 1), (0, 0), False, {0: 1, 1: 1}),
+                     ("week 9", (9, 8), (0, 0), False, {0: 5, 1: 4}),
+                     ("week 18", (17, 17), (0, 0), False, {0: 9, 1: 9}),
+                     ("playoffs", (17, 17), (3, 1), True, {0: 2, 1: 1}))
+        for label, regular, playoffs, post, floor in scenarios:
+            with self.subTest(label):
+                m = Machine(self.data)
+                m.put8(WEEKS_BYTE, 18)
+                m.put(CLASS, int(post))
+                grid(m, regular, playoffs)
+                specs = []                                   # (club, games, sacks allowed, role)
+                for club in (0, 1):
+                    full = (playoffs if post else regular)[club]
+                    specs += [(club, full, 1 + i, "starter") for i in range(5)]
+                    specs += [(club, 1, 0, "fill-in") for _ in range(3)]
+                    specs += [(club, floor[club], 2, "at the floor"), (club, floor[club] - 1, 0, "below the floor")]
+                players = m.roster([(3, [word(0, 3, g, post=post), word(110, 3, sa, post=post)])
+                                    for _club, g, sa, _role in specs])
+                teams = (m.TEAMS, m.TEAMS + 0x1F4)
+                for club in (0, 1):
+                    mine = [p for p, spec in zip(players, specs) if spec[0] == club]
+                    for j, p in enumerate(mine):
+                        m.put(teams[club] + 4 * j, p)
+                        m.put8(p + 0x35, 12 + j % 3)
+                    m.put8(teams[club] + 0x11C, len(mine))
+                m.hook(0xC7D40, lambda mm: 2)
+                m.hook(0xC4C50, lambda mm: teams[mm.reg("ECX")] if mm.reg("ECX") < 2 else 0)
+                obj, ids = m.HEAP + 0x70000, m.HEAP + 0x71000
+                m.uc.mem_write(ids, struct.pack("<6I", 0, 0, 0, 108, 109, 110))
+                for off, value in ((0, 3), (0x44, ids), (0x60, 11), (0x64, 6), (0xA0, 6), (0xC0, 5)):
+                    m.put(obj + off, value)
+                m.call(0x321D40, stack=(obj,))
+                rows = {m.get(0xC902DC + 4 * r) for r in range(m.get(0xC902D8))}
+                expected = {p for p, (club, games, _sa, _role) in zip(players, specs)
+                            if games >= 1 and games >= floor[club]}
+                self.assertEqual(rows, expected)
+                roles = {role for p, (_c, _g, _s, role) in zip(players, specs) if p in rows}
+                self.assertIn("starter", roles)
+                self.assertEqual("fill-in" in roles, label == "week 1" or post)
+                if label == "week 18":
+                    # the career view: half the games of the busiest lineman (17), the same linemen qualify
+                    m.put(obj + 0x60, 9)
+                    m.call(0x321D40, stack=(obj,))
+                    self.assertEqual({m.get(0xC902DC + 4 * r) for r in range(m.get(0xC902D8))}, expected)
+
+    def test_native_sort_shows_fewest_first_when_selecting_an_allowed_column_and_toggles(self):
+        from tests.mod_editor.test_nfl2k5_honors import Machine
+        m = Machine(self.data)
+        obj, row_ptrs, row_ids, cells = (m.HEAP+n for n in (0x70000, 0x71000, 0x72000, 0x73000))
+        for off, value in ((0x3C, row_ptrs), (0x40, row_ids), (0xA0, 6), (0xA4, 3), (0xC0, 5), (0xD4, 3)):
+            m.put(obj + off, value)
+        for i, value in enumerate((7.0, 0.0, 3.0)):
+            row = cells + 0x200*i
+            m.put(row_ptrs + 4*i, row)
+            m.put(row_ids + 4*i, i)
+            cell = row + 5*0x2C
+            m.put(cell + 0x24, 0x16F850)                 # retail numeric column comparator installed at 0x173ACC
+            m.uc.mem_write(cell+0xC, struct.pack("<f", value))
+        event = m.get(self.lay["ld_sa"] + 0x20)
+        for expected in ([1, 2, 0], [0, 2, 1], [1, 2, 0]):
+            m.call(event, ecx=obj)
+            self.assertEqual([m.get(row_ids + 4*i) for i in range(3)], expected)
+        for tab in ("tab_ol", "tab_player_ol", "tab_rookie_ol"):
+            self.assertEqual(m.get(self.lay[tab] + prs.TAB_SORT_DIRECTION), 0)
+
+    def test_player_stats_and_rookie_watch_use_their_native_team_and_rookie_filters(self):
+        from tests.mod_editor.test_nfl2k5_honors import Machine, word
+        m = Machine(self.data)
+        # Played rookie with zero allowed, played veteran, unplayed rookie, played rookie defender,
+        # and a veteran with only imported games before this franchise.
+        seasons = [1, 3, 1, 1, 4]
+        players = m.roster([(n, [word(0, n if i != 4 else 1, int(i != 2)), word(110, n, int(i == 1))])
+                            for i, n in enumerate(seasons)])
+        for i, p in enumerate(players):
+            m.put8(p + 0x35, 16 if i == 3 else 14)
+            m.put(m.TEAMS + 4 * i, p)
+        m.put8(m.TEAMS + 0x11C, len(players))
+        m.put(0xE576B8, 1)
+        m.hook(0xC7D40, lambda mm: 1)                       # the league: this one club (the qualifier walks it)
+        m.hook(0xC4C50, lambda mm: m.TEAMS if mm.reg("ECX") == 0 else 0)
+        obj, ids = m.HEAP + 0x70000, m.HEAP + 0x71000
+        m.put(obj + 0x44, ids)
+        m.put(obj + 0x68, m.TEAMS)
+        image = XbeImage(self.data)
+        for key, tabs, _template in prs.OL_STATS_TABS:
+            with self.subTest(view=key):
+                tab = struct.unpack("<I", image.read(tabs + 28, 4))[0]
+                self.assertEqual(tab, self.lay["tab_" + key + "_ol"])
+                self.assertEqual(image.read(tabs + 32, 4), bytes(4))
+                self.assertEqual(m.wide(m.get(tab + prs.TAB_TITLE_OFF)), "Offensive Line")
+                cols = struct.unpack("<6I", image.read(tab + prs.TAB_HEADER, 24))
+                self.assertEqual(cols, (prs.JERSEY, prs.NAME_COLUMN, self.lay["ld_pa"], self.lay["ld_ha"],
+                                        self.lay["ld_sa"], 0))
+                stat_ids = [m.get(col + 0xA0) for col in cols[:-1]]
+                m.uc.mem_write(ids, struct.pack("<5I", *stat_ids))
+                m.put(obj + 0xA0, len(stat_ids))
+                count, get = m.get(tab + 0x30), m.get(tab + 0x48)
+                expected = players[:2] if key == "player" else players[:1]
+                for bank in (11, 9):
+                    self.assertEqual(m.call(count, ecx=obj, edx=bank), len(expected))
+                    self.assertEqual([m.call(get, ecx=obj, edx=i, stack=(bank,)) for i in range(len(expected))], expected)
+                self.assertEqual(m.call(count, ecx=obj, edx=14), 0)
+
     def test_league_leaders_gets_a_defense_copy_and_an_offensive_line_tab(self):
         before, after = XbeImage(self.retail), XbeImage(self.data)
         lay = self.lay
@@ -619,7 +787,7 @@ class LeaderRankingTests(unittest.TestCase):
         header = bytearray(before.read(prs.SPECIAL_TEAMS_TAB, prs.TAB_HEADER))
         self.assertEqual(struct.unpack_from("<I", header, prs.TAB_FILTER_OFF)[0], 6)   # any player with a value
         struct.pack_into("<I", header, prs.TAB_TITLE_OFF, lay["t_ol"])
-        struct.pack_into("<I", header, prs.TAB_SORT_OFF, lay["sort_ol"])
+        struct.pack_into("<II", header, prs.TAB_SORT_OFF, lay["sort_ol"], 0)
         self.assertEqual(o[:prs.TAB_HEADER], bytes(header))
         self.assertEqual(struct.unpack("<7I", o[prs.TAB_HEADER:]),
                          (prs.JERSEY, prs.NAME_COLUMN, prs.TEAM_NAME, lay["ld_pa"], lay["ld_ha"], lay["ld_sa"], 0))
@@ -632,7 +800,10 @@ class LeaderRankingTests(unittest.TestCase):
             self.assertEqual(struct.unpack_from("<I", col, 0x08)[0], getter)
             self.assertEqual(struct.unpack_from("<I", col, 0xA0)[0], field)
             self.assertEqual(after.read(struct.unpack_from("<I", col, 0x70)[0], 2 * len(abbr)).decode("utf-16-le"), abbr)
-            same = [i for i in range(0, 0xB0, 4) if i not in (0x08, 0x70, 0x88, 0xA0)]
+            for event in (0x20, 0x38):
+                self.assertEqual(struct.unpack_from("<I", col, event)[0],
+                                 prs.labels(prs.allocations(self.data)["code"]["va"])["prs_sort_allowed"])
+            same = [i for i in range(0, 0xB0, 4) if i not in (0x08, 0x20, 0x38, 0x70, 0x88, 0xA0)]
             self.assertEqual([col[i:i + 4] for i in same], [fbk[i:i + 4] for i in same])
 
 

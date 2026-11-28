@@ -149,10 +149,12 @@ in-game save/load observation. No save format or serializer changes are made.
   with a remaining term + the IR charge (`FUN_00246f20`).  PROVED.
 * **Team record ring** `team+0x19C..+0x1A8` (7 × u16): `FUN_0013ed30(team, slot)` adds a value to a slot,
   `FUN_0013ed70` shifts the ring down at rollover.  Location PROVED, slot meaning HYPOTHESIS.
-* **Team season stats** `team+0x1AA..+0x1E8` (u16 each), `+0x1DC` games played (`FUN_00134dd0`); the stat id
-  merged into each field is in `TEAM_STAT_FIELDS`; ids `0x4C` passing yards, `0x50` rushing yards,
-  `0x62` total yards, `0x42` turnovers are named from the per-game descriptor table (`.data 0xAE59C0`).
-  PROVED (ids), labels for the other 27 ids still to be read off the runtime string table.
+* **Team season stats** occupy the 16-bit words at `team+0x1AA..+0x1E8`. The game increments games played at
+  `+0x1DC` and merges the other counters through `FUN_00134dd0`. `TEAM_STAT_FIELDS` lists their stat IDs.
+  The retail box-score table at `0xAED668` identifies passing yards (`0x4C`), rushing yards (`0x50`),
+  penalty yards (`0x62`) and turnovers (`0x42`). Total offense (`0xD0`) adds rushing and passing yards.
+  The descriptor at `0xA8BB58` names both operands and the addition routine at `0xCA6D6` combines them.
+  The native season readers sign-extend their 16-bit counters, so a negative passing or rushing total stays negative.
 * **Season template** root `+0x28/+0x2C` → 256 games at `0x72A94` (type 0), the schedule the game copies
   into the grid at season start (`FRANCHISE_2026_SCHEDULE`).  PROVED.
 

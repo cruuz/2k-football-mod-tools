@@ -1934,7 +1934,7 @@
  "receipt": {
   "team": "ATL",
   "offense_pack": "data/playbooks/softdrink_atl_modern.2k5book",
-  "offense_pack_sha256": "483f4df1609b45309208ff3f9354871ffa5bc9c9521693e8254accb00e8ff203",
+  "offense_pack_sha256": "afc2402f9242f8a14f46d0e20419ab4a9a712c96fc0dc19ed9c48b2c17e07946",
   "source_fingerprint": "25ee90398944ebfe1d6039a21fc794472e1e3e4d92c030a5a022a4b804453579",
   "replacement_sha256": "0a5bb3c4792c20a7073172dee6a532763259cc15e71681fb1652040fbddbce0c",
   "semantic_sha256": "ebed333bc545b10ba4a7c3e3cd990e1cbf8df557ca9fd370e389d278ff151418",

@@ -968,6 +968,10 @@ _SAVE_PROLOGUE_COMPANIONS = (
     (0x0016E540, "nfl2k5_my_career_mode"),
 )
 
+# The shipped v0.6.1 image predates Player Progress. Its Auto Save load hook chains
+# with older Practice and MyCareer revisions. A current install still needs current save prerequisites.
+_V061_XBE_SHA256 = "9465382bfd617b6d1aeadc5653fefef256678c12a65a5f828705495291e40610"
+
 
 def _save_prerequisites_ok(image: XbeImage) -> bool:
     for va, expected in FOOTER_ENTRY_BYTES:
@@ -1173,7 +1177,7 @@ def _displaced_targets(image: XbeImage) -> tuple[int, int, int]:
             _call_target(image, SITE_LOAD_END[0], SITE_LOAD_END[1]))
 
 
-def _recognize(payload: bytes) -> str:
+def _recognize(payload: bytes, *, inspect_historical_release: bool = False) -> str:
     _require(space.status(payload) != "foreign", "foreign XBE geometry")
     found = allocation(payload)
     image = XbeImage(payload)
@@ -1181,7 +1185,9 @@ def _recognize(payload: bytes) -> str:
         sites = _sites(0x0014DA000)
         _require(_site_states(image, sites) == {"retail"}, "mixed Player Progress sites without an allocation")
         _require(_guards_ok(image, sites), "foreign Player Progress prerequisite")
-        _require(_save_prerequisites_ok(image), "foreign franchise save routine")
+        _require(_save_prerequisites_ok(image)
+                 or (inspect_historical_release and hashlib.sha256(payload).hexdigest() == _V061_XBE_SHA256),
+                 "foreign franchise save routine")
         return "retail"
     code_va, data_va = found[0]["va"], found[1]["va"]
     trailer = _trailer_at(image, code_va)
@@ -1245,7 +1251,7 @@ def _recognize(payload: bytes) -> str:
 
 def status(payload: bytes) -> str:
     try:
-        return _recognize(payload)
+        return _recognize(payload, inspect_historical_release=True)
     except _ERRORS:
         return "foreign"
 

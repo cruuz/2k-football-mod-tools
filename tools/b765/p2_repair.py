@@ -16,10 +16,13 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from tools.b765 import p1_repair
+from mod_editor.core import nfl2k5_practice_squad as ps
 from mod_editor.core import nfl2k5_practice_squad_screen as screen
 
 
 def repair(payload: bytes, *, expected_input_sha256: str | None = None):
+    if expected_input_sha256 is None and p1_repair.digest(payload) == ps.V04_CUTS_RETIRED_SHA256:
+        expected_input_sha256 = ps.V04_CUTS_RETIRED_SHA256
     result, receipt = p1_repair.repair(payload, expected_input_sha256=expected_input_sha256)
     # A caller-supplied hash admits sibling work, never altered PS code/tables.
     studio, _ = screen.apply(payload)

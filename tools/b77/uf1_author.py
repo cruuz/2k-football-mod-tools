@@ -377,7 +377,11 @@ def entries():
             name, kind, size = SIZES[chunk]
             rows.append({"selector": selector, "chunk": chunk, "texture": name, "kind": kind, "size": size,
                          "defects": defects, "note": note, "ops": ops})
-    return rows
+    return [r for r in rows if (r["selector"], r["chunk"]) not in DELETED_B81]
+
+
+# b81-retail-free-art (coordinator's ruling, 2026-11-21, fix 3): rows that never write in a beta 81 build (the step finds another input than their before pin and skips them) and carry shape data are deleted
+DELETED_B81 = {("26A0", 12), ("26H0", 12)}
 
 
 # -- commands --------------------------------------------------------------------------------------------------------

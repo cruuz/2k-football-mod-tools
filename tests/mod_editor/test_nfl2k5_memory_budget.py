@@ -58,6 +58,14 @@ class EngineAndMeasurementTests(unittest.TestCase):
         rc = mb.rc_plan()
         self.assertEqual(mb.xbe_resident(rc, 128), 15_896_576)                 # the RC's boot-loaded pages
         room, game = mb.room(rc, 128, "anchor")
+        # b81 helmet-sides: today's hair styles growth carries helmet number set E, 4,736 B more than the RC disc's
+        set_e = mb.RESOURCE_BYTES["hair_styles"] - mb.ANCHOR_RESOURCE_BYTES["hair_styles"]
+        self.assertEqual(set_e, 4_736)
+        room += set_e
+        # b81-seamen: today's sprite scorebug appendix carries the Seamen panel sbSEh0, 5,376 B more than the RC's
+        panel = mb.RESOURCE_BYTES["scorebug_runtime"] - mb.ANCHOR_RESOURCE_BYTES["scorebug_runtime"]
+        self.assertEqual(panel, 5_376)
+        room += panel
         self.assertEqual((room, game["delta"]), (1_495_936, 0))
         got = mb.heaps(room, 14_176, capped=True)
         self.assertEqual((got["block"], got["left"], got["heap_a"] - 128, got["heap_b"]),
@@ -74,6 +82,8 @@ class EngineAndMeasurementTests(unittest.TestCase):
         v08 = off(mb.rc_plan(), *V08_ONLY_OFF)
         self.assertEqual(mb.xbe_resident(v08, 128), 15_835_136)                # 15 pages fewer, as measured
         room, _ = mb.room(v08, 128, "anchor")
+        room += mb.RESOURCE_BYTES["hair_styles"] - mb.ANCHOR_RESOURCE_BYTES["hair_styles"]   # b81: set E (see above)
+        room += mb.RESOURCE_BYTES["scorebug_runtime"] - mb.ANCHOR_RESOURCE_BYTES["scorebug_runtime"]   # b81-seamen: sbSEh0
         self.assertEqual(room - 1_555_456, 1_920)                               # MEM1's 1,920 B of other main-heap use
         got = mb.heaps(1_555_456, 13_856, capped=True)
         self.assertEqual((got["block"], got["heap_b"]), (1_424_384, 66_304))
@@ -182,7 +192,8 @@ class TargetTests(unittest.TestCase):
         got = mb.predict(None, 64)
         self.assertEqual(got["forced_off"], ["k128_memory", "k128_roster_heap", "roster_capacity"])
         self.assertFalse(got["fits"])
-        self.assertEqual((got["room"], got["over_bytes"]), (736_384, 892_992))
+        # b81 helmet-sides: set E, 4,736 B; b81-seamen review M2: the Seamen scorebug panel, 5,376 B
+        self.assertEqual((got["room"], got["over_bytes"]), (727_552 - 5_376, 901_824 + 5_376))
         self.assertEqual(got["hardest"], "NRG Stadium (s37)")
         self.assertEqual((got["matchup"]["home_kit"], got["matchup"]["away_kit"], got["matchup"]["delta"]),
                          ("37h0", "02a1", 177_792))
@@ -226,14 +237,17 @@ class ApiTests(unittest.TestCase):
                           ("suggestions", list), ("forced_off", list), ("notes", list)):
             self.assertIsInstance(got[key], kind, key)
         self.assertTrue(all(isinstance(f, str) and isinstance(n, int) for f, n in got["suggestions"]))
-        self.assertEqual(got["suggestions"][0], ("scorebug", 404_224))        # the sprite scorebug and its fonts
+        # b81-seamen review M2: + the Seamen panel sbSEh0 in the sprite appendix (5,376 B of heap)
+        self.assertEqual(got["suggestions"][0], ("scorebug", 408_320 + 5_376))  # the sprite scorebug and its fonts
         self.assertIn(("scorebug_runtime", 0), got["suggestions"])           # rides with it
 
     def test_option_costs(self):
         costs = mb.option_costs()
         self.assertTrue(all(isinstance(k, str) and type(v) is int and v > 0 for k, v in costs.items()))
+        # hair_styles' marginal cost is page-rounded: beta 81's larger pass rush code (4,096 bytes) moves a boundary
         self.assertEqual((costs["scorebug"], costs["hair_styles"], costs["depth_chart_rows"]),
-                         (404_224, 84_736, 81_920))
+                         (408_320 + 5_376, 89_472, 81_920))   # b81 helmet-sides: the hair growth carries set E;
+        # b81-seamen review M2: the scorebug's cost carries the Seamen panel (sprite.appendix: 337,920 B, was 332,544)
         self.assertEqual(list(costs), sorted(costs, key=lambda k: -costs[k]))
 
     def test_plan_forms(self):

@@ -29,7 +29,13 @@ V06_SHA256 = "f67e6fc1cb76c9ea1f1ad504e4a6491ff126483d66a9da8ddb92950bbaf740ba"
 # 19,247 changed bytes, all 70 other reservations unchanged, seals and directory intact, idempotent.
 # b780-int re-pin 2 (after mc1 290936cd1 / a4b2f2d13, the MyCareer fixes and the MyPlayer star setting): the same
 # derivation, 69 spans, 19,342 changed bytes, every postcondition holding.
-REPAIRED_SHA256 = "2b22a68bb8c6173f50276c67800fc0f4dc8ae34a22aa6b1688e74d10a0414da8"
+# The integrated beta 81 Settings footer leaves 31 padding bytes. The exact outputs
+# of the earlier beta 80 and beta 81 tools can also upgrade from their recognized templates.
+PREVIOUS_V06_REPAIRS = frozenset((
+    "2b22a68bb8c6173f50276c67800fc0f4dc8ae34a22aa6b1688e74d10a0414da8",
+    "3271e27fd949b940b277646a1889929598b67824023aeb3da27ab1a4e2979546",
+))
+REPAIRED_SHA256 = "c06b264e2b1a08bfa468e219e2657bed4c836b4e73c156cb870d3dbc0754ca4d"
 
 
 def repair(payload: bytes, *, reference: bytes | None = None) -> tuple[bytes, dict]:
@@ -46,10 +52,10 @@ def repair(payload: bytes, *, reference: bytes | None = None) -> tuple[bytes, di
         private += [(ref_image.offset(va, len(after)), len(after))
                     for _name, va, _before, after in mode.sites(
                         ref_code["va"], ref_state["va"], season_birth_dates=True)]
-        if not any(all(payload[at:at + size] == candidate[at:at + size]
+        if digest not in PREVIOUS_V06_REPAIRS and not any(all(payload[at:at + size] == candidate[at:at + size]
                        for at, size in private) for candidate in (reference, canonical)):
             raise ValueError("mixed or foreign MyCareer code or hooks in stacked input")
-    elif digest not in (V06_SHA256, REPAIRED_SHA256):
+    elif digest not in (V06_SHA256, REPAIRED_SHA256) and digest not in PREVIOUS_V06_REPAIRS:
         raise ValueError(f"unrecognized v0.6 executable: {digest}")
     if space.status(payload) != "applied":
         raise ValueError("invalid allocator seals")

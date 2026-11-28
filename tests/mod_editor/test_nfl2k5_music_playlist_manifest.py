@@ -38,8 +38,11 @@ class ManifestTests(unittest.TestCase):
         calls = [n for n in ast.walk(function) if isinstance(n, ast.Call)]
         self.assertTrue(any(isinstance(n.func, ast.Attribute) and isinstance(n.func.value, ast.Name)
                             and n.func.value.id == 'playlist' and n.func.attr == 'apply' for n in calls))
-        self.assertTrue(any(isinstance(n, ast.Attribute) and isinstance(n.value, ast.Name)
-                            and n.value.id == 'playlist' and n.attr == 'REQUESTS' for n in ast.walk(function)))
+        # Since f2338d527 the generator allocates space.dormant_union(), the one request list it shares with the
+        # default allocator proof; the owner's requests must be in it.
+        from mod_editor.core import nfl2k5_xbe_space as space
+        self.assertIn("all_requests = space.dormant_union()", ast.get_source_segment(source, function))
+        self.assertTrue(set(playlist.REQUESTS) <= set(space.dormant_union()))
 
 
 if __name__ == '__main__':

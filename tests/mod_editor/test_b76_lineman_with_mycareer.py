@@ -422,7 +422,8 @@ class ManifestModelWiringTests(unittest.TestCase):
         source, wrapped, owners = self._model_lists()
         self.assertIn("from . import nfl2k5_music_policy as music_policy", source)
         self.assertIn("music_policy", wrapped)
-        self.assertEqual(owners[-3:], [self._owner_entry(name) for name in ("lineman", "elbow", "music_policy")])
+        recipe_owners = [self._owner_entry(name) for name in ("lineman", "elbow", "music_policy")]
+        self.assertEqual([owner for owner in owners if owner in recipe_owners], recipe_owners)
         calls = [node for node in ast.walk(ast.parse(source))
                  if isinstance(node, ast.Call) and ast.unparse(node.func) == "music_policy.apply"]
         self.assertEqual(len(calls), 1)

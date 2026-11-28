@@ -1922,7 +1922,7 @@
  "receipt": {
   "team": "STL",
   "offense_pack": "data/playbooks/softdrink_stl_modern.2k5book",
-  "offense_pack_sha256": "9e31f8fbfb650f00ec0bdabb62bef37fcb536c535cf2a09041c4c13ee0483c27",
+  "offense_pack_sha256": "f62dd18e2cf836cd89994da69f52222caa663c623a33cd47fe54db0bb04f39a3",
   "source_fingerprint": "31c55826f303ee3f32962672fb94b76004ff3de091aefe37dc0cc3d6a043fab2",
   "replacement_sha256": "2855e17e269659db87added6e7b8b40b6c14e6320312bc5bf5fa041f5a5f9b89",
   "semantic_sha256": "9f6fe346d437848d764779af139dff1d7295dca14345f9eeddd78ef95eecf153",

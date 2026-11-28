@@ -305,7 +305,7 @@ class ApfActiveProjectWindowTests(unittest.TestCase):
             self.window._mark_document_changed()
             self.assertEqual(
                 self.window.windowTitle(),
-                "Untitled* — APF 2K8 Mod Studio",
+                "Untitled* - APF 2K8 Mod Studio",
             )
             self.assertTrue(self.window.save_project_button.isEnabled())
             save_action = self.window._save_project_action
@@ -337,7 +337,7 @@ class ApfActiveProjectWindowTests(unittest.TestCase):
             self.assertFalse(self.window._document_dirty)
             self.assertEqual(
                 self.window.windowTitle(),
-                "My Active Mod.apf2k8mod — APF 2K8 Mod Studio",
+                "My Active Mod.apf2k8mod - APF 2K8 Mod Studio",
             )
             self.assertFalse(self.window.save_project_button.isEnabled())
 
@@ -345,7 +345,7 @@ class ApfActiveProjectWindowTests(unittest.TestCase):
             self.window._mark_document_changed()
             self.assertEqual(
                 self.window.windowTitle(),
-                "My Active Mod.apf2k8mod* — APF 2K8 Mod Studio",
+                "My Active Mod.apf2k8mod* - APF 2K8 Mod Studio",
             )
             with mock.patch(
                 "mod_editor.apf_studio.gui.QFileDialog.getSaveFileName"

@@ -1,0 +1,2021 @@
+{
+ "kits": [
+  {
+   "after_sha256": "af145fa664b8dea906e5d68c0f1334caa4168426ea22735becc85a8ec0776015",
+   "before_sha256": "935b541967aef9594a2611ce1afb4783c22d8638036ce99393d800bb5e486b43",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "cbca84734e40bd9873d55b12078585e4fc199bf7a3d7a76cbbf3289abbb9ba4a"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "00A0"
+  },
+  {
+   "after_sha256": "2303aa072d3193b5a0be43cc85ebd67ed8827cc524b566d64f060ebb34784bd1",
+   "before_sha256": "3e67ac325592012d717d390e8816a2b02d24cc58e3fcb2318b1397efb3986b09",
+   "compose": {
+    "sleeve": {}
+   },
+   "field": {
+    "sleeve": [
+     233,
+     223,
+     201
+    ]
+   },
+   "field_sha256": {
+    "sleeve": "edd241ebbe07495626d18e32e4871c107abd44b54fe447cfa31848b8c081104a"
+   },
+   "parts": [
+    "sleeve"
+   ],
+   "selector": "00A7"
+  },
+  {
+   "after_sha256": "2303aa072d3193b5a0be43cc85ebd67ed8827cc524b566d64f060ebb34784bd1",
+   "before_sha256": "3e67ac325592012d717d390e8816a2b02d24cc58e3fcb2318b1397efb3986b09",
+   "compose": {
+    "sleeve": {}
+   },
+   "field": {
+    "sleeve": [
+     233,
+     223,
+     201
+    ]
+   },
+   "field_sha256": {
+    "sleeve": "edd241ebbe07495626d18e32e4871c107abd44b54fe447cfa31848b8c081104a"
+   },
+   "parts": [
+    "sleeve"
+   ],
+   "selector": "00H7"
+  },
+  {
+   "after_sha256": "4ea4129aefdc77f9d6149489096ed22e585ecf05150c74fd22ae5a34c69e7bc7",
+   "before_sha256": "8928084a39142475f44a57fe200721ba11b3e337cf5ae7a78be77478a79913d0",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     245,
+     245,
+     245
+    ]
+   },
+   "field_sha256": {
+    "pants": "0ef6b68182c5a106f3717e1438d6f4dd55e59f155c747defba309806baae7744"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "01A9"
+  },
+  {
+   "after_sha256": "f6afb59a6c6a3114481e100c6a472b0d9cd09ad5af7b189b4e0a9fd52cdc0f97",
+   "before_sha256": "93fd63002d2df6af8f1fbd789baf0bfe2f9e0844e7e3be9346a01953572a8cda",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "013890fb6b31d767423521dcfba9e4a13b301936c1487588f71e8d130e1ed95c"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "01H0"
+  },
+  {
+   "after_sha256": "4ee5cdf288a3157a39d276ff5240972bc4eaed19421e799b910b93d86f1aa807",
+   "before_sha256": "620c270093c5ad116bbe6f24bf1a3f3dd7d071fafb3474aca4152cf39e2d69e3",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     245,
+     245,
+     245
+    ]
+   },
+   "field_sha256": {
+    "pants": "0ef6b68182c5a106f3717e1438d6f4dd55e59f155c747defba309806baae7744"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "01H9"
+  },
+  {
+   "after_sha256": "4b77e3ba29e1ea6a38c9b1f4456e1df0bbb99d906f8c56e8129e1b6aa80cd7ba",
+   "before_sha256": "125d482705b17e7f02a5bc91b1656c55682d511b2978319ab8ac45e7678ec1ad",
+   "compose": {
+    "pants": {}
+   },
+   "field": {
+    "pants": [
+     0,
+     0,
+     0
+    ]
+   },
+   "field_sha256": {
+    "pants": "1bced8e0bdfccc8e00b51fcba5f44fd3b0a2bd6d9c7d70de975154efc55a19f4"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "02A0"
+  },
+  {
+   "after_sha256": "1fbcd675fedd59d69eb0731a186ab1a19d7d992e07abc53ef1a180019d0bafc7",
+   "before_sha256": "3714af44f9c5095d7ec01b162aadd79438daef692c1d9efae52ccb82481269d6",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     14,
+     14,
+     16
+    ]
+   },
+   "field_sha256": {
+    "pants": "7cb13cbd693cd0e9b79ae1a433537ece43c19df95565508b50e4ffa8ddd43545"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "02A3"
+  },
+  {
+   "after_sha256": "d9f568bc45692874bb6c17672e0cef3474cc6c584985bc24fef43619f4b6fdbd",
+   "before_sha256": "a2938b473df5d54c3e5aae38c6c8f95205ba6bb537b8189c6deb492df4bbaef0",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "785ff0b88d172763421d7db0fa9e44dc7a779b591bcbaeb64c041198f2d8071a"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "02H0"
+  },
+  {
+   "after_sha256": "024cd56651e65020ffa48b2f1dc501595e23eefc9e47be60b598b94e64cc9bee",
+   "before_sha256": "f2e12da100578794cc9b09d39b780e60e64e07bd8d4a73e258f2933bea8ae079",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     14,
+     14,
+     16
+    ]
+   },
+   "field_sha256": {
+    "pants": "7cb13cbd693cd0e9b79ae1a433537ece43c19df95565508b50e4ffa8ddd43545"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "02H3"
+  },
+  {
+   "after_sha256": "e91caec7553d0b12c604d14d674852ba991fe75710be4ab2b435c08b1fe2ecc1",
+   "before_sha256": "457f8d5cab84f815f12127797e3cabc0f8daa45abe8f17a7367830103ebbdc6f",
+   "compose": {
+    "sleeve": {}
+   },
+   "field": {
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "sleeve": "0ae6c84c8ba016a6f884b27c71ae4a29fe5db0f958d1e0ac17becf4dade64be5"
+   },
+   "parts": [
+    "sleeve"
+   ],
+   "selector": "03A0"
+  },
+  {
+   "after_sha256": "9ada19c8ec454832186d6b2c9aad0bda47914bcda70206780551ad24d2571c71",
+   "before_sha256": "2ec2d3b61f5e40ecc9ec590ec78831fdfc6e2fadebd36f514e773d8285438176",
+   "compose": {
+    "sleeve": {}
+   },
+   "field": {
+    "sleeve": [
+     11,
+     58,
+     158
+    ]
+   },
+   "field_sha256": {
+    "sleeve": "eaaa263da7ed907aab334546ad7433b7dda90d2418f50ee9af5ad223c4650039"
+   },
+   "parts": [
+    "sleeve"
+   ],
+   "selector": "03H0"
+  },
+  {
+   "after_sha256": "5561994b5525002e2fdf118763f7de689e17a30fb22942ff090f99d464b9917a",
+   "before_sha256": "f2478f281fc36d8ea6d37c2bd8eba6c54f377031be06c8fb6cc3902bff561513",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     14,
+     14,
+     16
+    ]
+   },
+   "field_sha256": {
+    "pants": "9290b07fc84dfb1a12511a880b9f07208528f8d212f58264be88dfc401c7ae82"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "04A2"
+  },
+  {
+   "after_sha256": "5561994b5525002e2fdf118763f7de689e17a30fb22942ff090f99d464b9917a",
+   "before_sha256": "f2478f281fc36d8ea6d37c2bd8eba6c54f377031be06c8fb6cc3902bff561513",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     14,
+     14,
+     16
+    ]
+   },
+   "field_sha256": {
+    "pants": "9290b07fc84dfb1a12511a880b9f07208528f8d212f58264be88dfc401c7ae82"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "04H2"
+  },
+  {
+   "after_sha256": "4ec903858bcf33696d113f17eab534266de030bce811d2bbc289efe1ea9b596c",
+   "before_sha256": "6e2a1ac1f1f893ced370c3d365bb9b7b51ee844f3c62337d335e996eecbd130f",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ],
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "8020956f2f808094c682d04596a3b3329284031c04ebd581d6d8d56109b70d04",
+    "sleeve": "76d33a60e7635728b50afa113ea1d32a3691e6bb98516b1f85c4e15409240df4"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "06A0"
+  },
+  {
+   "after_sha256": "b22b54d021e72c6de7ac699deec81a647b4d8bab75d60d8c34374bc9e6decf8b",
+   "before_sha256": "0cb6813b62e3850195eff7fd27192d2e78c223234142debd3c874ca4a75ecc9f",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ],
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "c171f75e4cd0a9f40936ae6057fc7b6a9597129cfbdebcbcfc972dbadda43140",
+    "sleeve": "8daeeeb9329c05ed04e21a57d8fba09f5bf41c662eed3a2d3be837292043c99f"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "06A5"
+  },
+  {
+   "after_sha256": "88ce567cb6eba362d174b555e6b7a60836a9abd59760121b0d1961c28bc4817b",
+   "before_sha256": "6efec5b9a4c28fb868716f6d59c8c0701235d2041864a5a1b63e8e2e87222fc4",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ],
+    "sleeve": [
+     250,
+     80,
+     20
+    ]
+   },
+   "field_sha256": {
+    "pants": "0f3589bd282721509d27103e31e7799ab85a3c8c34ad267e583274c13c98ee95",
+    "sleeve": "4dac9484f68d6b298824ffb21ff849f12660d49bf1f0650f74afc306f855b185"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "06A6"
+  },
+  {
+   "after_sha256": "4a05f565f0ed2600417a12218d0e6698623a9cb9b928fed061902b2885402e87",
+   "before_sha256": "de453fc689fd0851bd96983fc75060689a8ab0eca67c4568d68801a4712bad63",
+   "compose": {
+    "pants": {}
+   },
+   "field": {
+    "pants": [
+     0,
+     0,
+     0
+    ]
+   },
+   "field_sha256": {
+    "pants": "5e443fb301246e3066d336dc016688e65822cd866d60364db7b4d607107e5e54"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "06H0"
+  },
+  {
+   "after_sha256": "49ddc2d5fc4822ce62c6b0fbc12759b90fac41db904f0692b5901325e0c6de05",
+   "before_sha256": "f3a2d8a435e1bb6904fdcf38ef1ba047187ca8a30b1b421a61ca8df9ed58bd17",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ],
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "d0b89269434421268e47664bdeae2589be67087bf06205552018bed4308b5afd",
+    "sleeve": "8daeeeb9329c05ed04e21a57d8fba09f5bf41c662eed3a2d3be837292043c99f"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "06H5"
+  },
+  {
+   "after_sha256": "88ce567cb6eba362d174b555e6b7a60836a9abd59760121b0d1961c28bc4817b",
+   "before_sha256": "6efec5b9a4c28fb868716f6d59c8c0701235d2041864a5a1b63e8e2e87222fc4",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ],
+    "sleeve": [
+     250,
+     80,
+     20
+    ]
+   },
+   "field_sha256": {
+    "pants": "0f3589bd282721509d27103e31e7799ab85a3c8c34ad267e583274c13c98ee95",
+    "sleeve": "4dac9484f68d6b298824ffb21ff849f12660d49bf1f0650f74afc306f855b185"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "06H6"
+  },
+  {
+   "after_sha256": "001c82938b5e043f6e6df33ef10f20a3153566cce25787d92c08a4fdd5cbc4e6",
+   "before_sha256": "0411921c70df813cb348f9e53c42ac9f45c1116c350600a228500f5853137d9f",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     157,
+     185,
+     193
+    ],
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "7b703713c875e7fb0b0ff45889564b437d96e07d504fbb5119860b631557a39f",
+    "sleeve": "fe046c46d60814f297e66277f7e6fd1ef9fe432ddad09095108bcd2a6e0c1a2c"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "07A0"
+  },
+  {
+   "after_sha256": "c66b5813de611e9aecf64f5beb9774fbf87b93e2a93c1393d3064290617fa7b3",
+   "before_sha256": "f77bcf459e411cada941aa34bb0278647fd90d0c4e2e4b9e03981040b63989f4",
+   "compose": {
+    "sleeve": {}
+   },
+   "field": {
+    "sleeve": [
+     0,
+     34,
+     68
+    ]
+   },
+   "field_sha256": {
+    "sleeve": "8c5c82fae3005d20d69c7116e65f328367aff2b0db8dea80254a54b8a35c1a36"
+   },
+   "parts": [
+    "sleeve"
+   ],
+   "selector": "07A7"
+  },
+  {
+   "after_sha256": "fef49e511a40051e9aa5df1a09c51fa0f206cf71a5b83f42589585e0dd4d9020",
+   "before_sha256": "1c41e195f00ebd75f1be22ff9b58b218164b3ecaf936de7dfa1f3f895bafee4f",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     184,
+     188,
+     191
+    ],
+    "sleeve": [
+     0,
+     34,
+     68
+    ]
+   },
+   "field_sha256": {
+    "pants": "645fc173abdaa0b88e0ed3973e7e5440f2f726c9c9e7bd2581b457f5a26e34d6",
+    "sleeve": "1a63465ec5f3792f782d5c84bc83ac834c9842d972b2fec0747f000b1281275c"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "07H0"
+  },
+  {
+   "after_sha256": "587882813590bbe3c08af4d88e0d0df4d04a22a2d5120a3f0c23b51a95f5d1cc",
+   "before_sha256": "14eb7c45633afd0da15706a82b3e0f50919a83c126bfe34e975f93f3a5f3fc63",
+   "compose": {
+    "sleeve": {}
+   },
+   "field": {
+    "sleeve": [
+     0,
+     34,
+     68
+    ]
+   },
+   "field_sha256": {
+    "sleeve": "8c5c82fae3005d20d69c7116e65f328367aff2b0db8dea80254a54b8a35c1a36"
+   },
+   "parts": [
+    "sleeve"
+   ],
+   "selector": "07H7"
+  },
+  {
+   "after_sha256": "e2dc6bdb9a172e12438bee2488b24daaa58bb2f4cb57ecda35b1bb84a46b27e9",
+   "before_sha256": "74b456ef20383c3506189d826c7b9f7d7fd26086a7af36d73fd98bb4e301e50c",
+   "compose": {
+    "sleeve": {}
+   },
+   "field": {
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "sleeve": "b5c4756529cb0bfd9df9357e1fca35d4d7d2eabb1542718718ffb7a67dd48553"
+   },
+   "parts": [
+    "sleeve"
+   ],
+   "selector": "08A0"
+  },
+  {
+   "after_sha256": "bab6b254fbe5aa30164644e3b087bea8b454336609da47f097f7b5507f1d3e0a",
+   "before_sha256": "e812508aa3c4baef71570da299d48c6c67a5adaab160cbd0b8fa3e69448f392f",
+   "compose": {
+    "sleeve": {}
+   },
+   "field": {
+    "sleeve": [
+     252,
+     76,
+     2
+    ]
+   },
+   "field_sha256": {
+    "sleeve": "0e40d1b7e86f2dead0a529b3689089850d25e09479a1faba1debb91b1985e901"
+   },
+   "parts": [
+    "sleeve"
+   ],
+   "selector": "08H0"
+  },
+  {
+   "after_sha256": "563f5a5b66930e900562209153c8fb92ad69235c96c8096a36eddf99450ad773",
+   "before_sha256": "1f7bc078198aaea6ff077175a401e92187bdcd67fe500ce4227d97444bdd55b2",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "d891f0168dab2991f1d5e0ba65a382f8eb6f2f164084f02fb04a42bf0139e1dc"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "09A0"
+  },
+  {
+   "after_sha256": "f1d7ae222229aa928bc1e08b51d5db5c0b8727bd8346e8b6f0fbba50b4b14e70",
+   "before_sha256": "6704b70ccd11bfbd683dbd5ba9ea0d077e275830bbd0a12298175a85dcee36d8",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     191,
+     192,
+     194
+    ],
+    "sleeve": [
+     188,
+     188,
+     188
+    ]
+   },
+   "field_sha256": {
+    "pants": "ff825ecb043a7de6dc50ff6a60ba552e5788da65dc4a258c492dedadc063c230",
+    "sleeve": "f0cc353d16a6316a24788d30aec4eb81e514f44ce5fd8019553890cceaaef3fb"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "09A9"
+  },
+  {
+   "after_sha256": "3c3bb954090b477a540da980c092a0c2461a93a44f873982836b22e7086576f0",
+   "before_sha256": "d47a94b9d7eff9a0bb306afbfc1866dcba3455510f969cae537417f23f98fcaf",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     191,
+     192,
+     194
+    ],
+    "sleeve": [
+     188,
+     188,
+     188
+    ]
+   },
+   "field_sha256": {
+    "pants": "ff825ecb043a7de6dc50ff6a60ba552e5788da65dc4a258c492dedadc063c230",
+    "sleeve": "f0cc353d16a6316a24788d30aec4eb81e514f44ce5fd8019553890cceaaef3fb"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "09H9"
+  },
+  {
+   "after_sha256": "5194ca7279ca506531442420e92a50c67a2811b47efe4c389263543ea3bc6586",
+   "before_sha256": "f05927b51efbcea3f0834da0105fc8e19b8b77a7aaa6a9889197fd391a106ce5",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "4ace9f61b7f2cc68eabae7d96c1325a9782572f45ecbba72e2663c812b6615f4"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "12H0"
+  },
+  {
+   "after_sha256": "5fc64a4e56fe0a6fe09f8a448d1e09b959033d089103ae7bedace17f77c7223f",
+   "before_sha256": "e6506cba83ba1078de9ee2fb60666bf9a960e393c7b30f6aef8d02c8beec33a7",
+   "compose": {
+    "sleeve": {}
+   },
+   "field": {
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "sleeve": "27a0469281710b3e2375d2cc9afa85b1687ef4508195d80b571ca224f959f6f0"
+   },
+   "parts": [
+    "sleeve"
+   ],
+   "selector": "13A0"
+  },
+  {
+   "after_sha256": "b3f33e403c8e3b462334df5c123e493062ac78f4c88e119a43c4251fd9687e53",
+   "before_sha256": "832e07adbab1878a3283b48955df29088d92c7e4e247835ba9c819615d5c9541",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     0,
+     146,
+     155
+    ],
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "4bc7113c4a7ef722870a00c10163053ae258b123816e8c44b4413b4c00a1cc0f",
+    "sleeve": "9a91ec6e7e5c469490c7f75de9a3d08f68195ad7538cba71baf33935cfe70997"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "14A0"
+  },
+  {
+   "after_sha256": "b3e6d67a6219badb5e754be10a878a82ba13fe1fc3219114205ceaebb754e5e8",
+   "before_sha256": "e72581953cf29841bdff8ddd086259dd923dd1b7b612c26dee30df8d996e992d",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ],
+    "sleeve": [
+     0,
+     146,
+     155
+    ]
+   },
+   "field_sha256": {
+    "pants": "b7bb85bd598e2280028913b27e7c7019d2f7edc16abcab653c6eec41fc7ab019",
+    "sleeve": "f770c699da61eb5ce895055dce09b9e70b53f5bbd50659d6c5fe844c81cf04ec"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "14H0"
+  },
+  {
+   "after_sha256": "67783454d654940a15e2e7c2a6d3805f842f50d3143ad4c2fdf8bc4dfdf46846",
+   "before_sha256": "be0899ebe23acfdb32a18824a821cc732ae99314e52a111954819e21e6c5d9d0",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     79,
+     38,
+     131
+    ],
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "9479d9cc9a091f5e3a0c610204460d7e83ec5e64f3a7ac014ffd1017a5be8214",
+    "sleeve": "f2595966323c7c51a29687019ba53656b8efdb7f4dae5a9d3b267df810fcc622"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "15A0"
+  },
+  {
+   "after_sha256": "580a0309fc3421d7bacd7a295047434c445482c84050e701b36952bff5233ca2",
+   "before_sha256": "df359f9a2e0dd7ae3460278587bfa1db26bed8bdf7d60cac2c6315f99b6c892a",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ],
+    "sleeve": [
+     79,
+     38,
+     131
+    ]
+   },
+   "field_sha256": {
+    "pants": "6bec8edf7be84ed3b7e3a2fcc171d04b5f0450350aa8dc30663409e38e19dfe7",
+    "sleeve": "94fde8f4bc9779611e9ca25a993df0a383ccbfc5e890ceacca0fbb46b2188d02"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "15H0"
+  },
+  {
+   "after_sha256": "e0eafe7db91acf4f26c54a41618fca3432b015567a724051ea0701cb6877e24e",
+   "before_sha256": "cf718ca2e7fa1dbf24cfb6fb5e3049882ba1b72c165552edf4b16c5a0064c7c8",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     9,
+     9,
+     9
+    ],
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "8ebc9ad22626e82057651978048ab5f9f95de24243a1f70e4513ae92b82adc4a",
+    "sleeve": "30df1f3e7213c1600b20545d90c47b98ed544a379caa6dcd035567439c2902eb"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "17A0"
+  },
+  {
+   "after_sha256": "5236bd795c0e566c7e54a8034db83242d1ea520180726e50ddae4ede6c677272",
+   "before_sha256": "8438a32d9866a3cf242aa0fc4e822f4d2af82481f1609abd8a5c5bda1bcc67b0",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     211,
+     188,
+     141
+    ],
+    "sleeve": [
+     211,
+     188,
+     141
+    ]
+   },
+   "field_sha256": {
+    "pants": "f40b9f2549850a4a281163121f3dab1261a46d635ccecbf7e355495fe904eea3",
+    "sleeve": "bdf12ef8e72497efe9b3346e83501b60ff044e6b358a0692e6295c2002c31732"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "17A8"
+  },
+  {
+   "after_sha256": "874247404065fd51223052689b9e8b567a6cf8f7a0cd1d94180597fcb38f63b1",
+   "before_sha256": "52736ae2655f37fb43bc98e93455b43c7505debf57ca7fa79804ba1939997ea5",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     9,
+     9,
+     9
+    ],
+    "sleeve": [
+     10,
+     10,
+     10
+    ]
+   },
+   "field_sha256": {
+    "pants": "8ebc9ad22626e82057651978048ab5f9f95de24243a1f70e4513ae92b82adc4a",
+    "sleeve": "cb5a9704e5040fc168221c4ec402ca4b177011c943e8b52a0c8c45185c367cad"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "17H0"
+  },
+  {
+   "after_sha256": "8309f01eeef4b84c229a9215e221f17071e7950241a7202322da96388ce6cc48",
+   "before_sha256": "bc03f0687e08a424456e50c925a6ef01cae62478b168084670d31c390b9352a2",
+   "compose": {
+    "sleeve": {}
+   },
+   "field": {
+    "sleeve": [
+     10,
+     10,
+     10
+    ]
+   },
+   "field_sha256": {
+    "sleeve": "24cb36e4dc82185c3b9a9b49e49725dfecea277ee388aa70470ed6e1051e283f"
+   },
+   "parts": [
+    "sleeve"
+   ],
+   "selector": "17H3"
+  },
+  {
+   "after_sha256": "5236bd795c0e566c7e54a8034db83242d1ea520180726e50ddae4ede6c677272",
+   "before_sha256": "8438a32d9866a3cf242aa0fc4e822f4d2af82481f1609abd8a5c5bda1bcc67b0",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     211,
+     188,
+     141
+    ],
+    "sleeve": [
+     211,
+     188,
+     141
+    ]
+   },
+   "field_sha256": {
+    "pants": "f40b9f2549850a4a281163121f3dab1261a46d635ccecbf7e355495fe904eea3",
+    "sleeve": "bdf12ef8e72497efe9b3346e83501b60ff044e6b358a0692e6295c2002c31732"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "17H8"
+  },
+  {
+   "after_sha256": "73bb5401e74a93e7c6a83686b1efbbbf23e18ace0d9b40929b4c105ab6148e63",
+   "before_sha256": "03a0e036cded567050728b3194cf98500e22cabd37e0cf748dd7504994a10e45",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "16e4c01ca8e81d5a6f953c4b38d24f986c4d82fb8ac78ee5742271acf2d82d7a"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "18A0"
+  },
+  {
+   "after_sha256": "280cb9669f8658ca2ff6f9e2b977e6e42734f562623f9854af5afef871c7350b",
+   "before_sha256": "75500df830164ad6f3d72f257b9e5003cbe62d3de354a2a5acc874d5cce68826",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "6e87eee62f4291ef16599a3d362475712ca020fd29510dc0dd440bff5e491ea9"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "18H0"
+  },
+  {
+   "after_sha256": "82820718ca51b54d76ce5bd55bdb56a205efe9ab1eebe373d673be58046f5efe",
+   "before_sha256": "05951734af2c6c8b88f5563815357f5889223f9b0d596568672b05194c31048b",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     20,
+     95,
+     71
+    ]
+   },
+   "field_sha256": {
+    "pants": "9eb4a35a01c20aa7bcf08da066513190c8f849de5aec1b5ed4b5be823d614b93"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "19A0"
+  },
+  {
+   "after_sha256": "1675f45fd559c80abdac741ba4b5a32201ea95ad1dbbc2cdaad2fc525fd08ae4",
+   "before_sha256": "9abe1ae365a9ae5915ed8a86f8860db2f61828af48542217ca753e2a0327e61a",
+   "compose": {
+    "pants": {}
+   },
+   "field": {
+    "pants": [
+     20,
+     20,
+     20
+    ]
+   },
+   "field_sha256": {
+    "pants": "52dc95531a93e391f82ba158f8b67c733bbcb37b9d15cf6c28ae34f64c27b044"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "19A2"
+  },
+  {
+   "after_sha256": "6a29a445bae2367c7c8e5d4ae111adcdb57b371aa99a827a2789bfba761bbb66",
+   "before_sha256": "116f10a99a3563889c823c76aa9258d33448d33905737a82c2c19cd5d713fe7f",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "66e2cadaad13aaf06b8c855c334d77b1f072a64c94bf5f19c20df1e64938b66a"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "19H0"
+  },
+  {
+   "after_sha256": "eeaa5d99e768c46f57bd638ddb44fb8926767185a67020b773cbda241db798a9",
+   "before_sha256": "6cbd7d10b2c51b87084df7a7f839129263efc30760d78ed7d87eeb4f19426eda",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     20,
+     20,
+     20
+    ]
+   },
+   "field_sha256": {
+    "pants": "6284fddfe312620cfd9d64531824baa19f99fdaa2a4620c8cb3fe7613d9c9cf5"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "19H2"
+  },
+  {
+   "after_sha256": "194112fc39929b8c5a798bdcba795b6dd53226757e2916af4bfb8a2367b5a455",
+   "before_sha256": "4c387cfa4873a6810a4187b2326f17836c4546c48148788f95980f1e4aeb6141",
+   "compose": {
+    "sleeve": {}
+   },
+   "field": {
+    "sleeve": [
+     0,
+     140,
+     72
+    ]
+   },
+   "field_sha256": {
+    "sleeve": "f9d039d5df8144217af24c8f5632ee21e8dc346af344f5b83c446c65bb425185"
+   },
+   "parts": [
+    "sleeve"
+   ],
+   "selector": "21A4"
+  },
+  {
+   "after_sha256": "0b54be2a664baeb8de13e12cdbb9e94734839c766be14c08da8f834c84f45eb2",
+   "before_sha256": "1dd9609b7d09ad2a2a19ac5b5a559a6959ac7fb815fe14cd2f863b050664e1a6",
+   "compose": {
+    "sleeve": {}
+   },
+   "field": {
+    "sleeve": [
+     0,
+     140,
+     72
+    ]
+   },
+   "field_sha256": {
+    "sleeve": "02d9fd48962173d86ae4aea2c2a45f2b03a61323143791a49a7389c20feb1678"
+   },
+   "parts": [
+    "sleeve"
+   ],
+   "selector": "21H4"
+  },
+  {
+   "after_sha256": "7fd9d5ded79281f54a13202581d044746113791471c92304197783099f2cea2e",
+   "before_sha256": "9f7172fa76f4145739cc4b489802526393c142144d5b0a15bc5b3d523483fe7f",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     0,
+     53,
+     148
+    ],
+    "sleeve": [
+     255,
+     209,
+     0
+    ]
+   },
+   "field_sha256": {
+    "pants": "0fa1a481b7200301b307618b739f13b8196ced5161f4ca4ba9ff754306f63373",
+    "sleeve": "f5afab6d6d18c88f587463f650cd2c1856783ee41b0319e872628d01002c0009"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "23A0"
+  },
+  {
+   "after_sha256": "881b2a5cc565668c7693652bac96ff5da08831f1b308f57da9897bf602e8ab71",
+   "before_sha256": "c4be5607bfaa265675d546340be4e0699531472e42a515ad123de33311a6e521",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     255,
+     209,
+     0
+    ],
+    "sleeve": [
+     10,
+     63,
+     166
+    ]
+   },
+   "field_sha256": {
+    "pants": "19e57847f89b35e20c16ea2088252f852c06a85e5e7808a8b0b56dd6cda7ef0e",
+    "sleeve": "356837d65c9ee3add212275be090764d7bbcda4eb1485e7b3b229a780d974cab"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "23H0"
+  },
+  {
+   "after_sha256": "c4e68ddce36de2fad2b8d83e603329d6f037701b6ddbfbeffb5daa3b23e450b6",
+   "before_sha256": "ea7cc1e9b16ecb2110583504978ae67214b87e8f6af4b2164fa2379eb8525044",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ],
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "66fe1ef383a7b2133e47d53acb79cee202a3946d16eb82e59e617a6bfbfb0c81",
+    "sleeve": "cc5df59d1d06ca189c811a9f07de0f54f0834c14a3584f8ce675f5443602690f"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "24A0"
+  },
+  {
+   "after_sha256": "85124a88a4556a56484224753550abc9070f91811a8c58d4b0e01045c8365bb2",
+   "before_sha256": "9cdcc36eddbc5ed2ee62bdb82504be67344ed060fc8787a3f0d4d38b10ca3e59",
+   "compose": {
+    "sleeve": {}
+   },
+   "field": {
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "sleeve": "512a3b985053fc045edca49741466df9355fafa47b767a95cb0d52621108a5b1"
+   },
+   "parts": [
+    "sleeve"
+   ],
+   "selector": "24A10"
+  },
+  {
+   "after_sha256": "ee9d2a917c3c9c7e66d49aef144166537bd91bcddc7f5030c6a9e1dd31be0f64",
+   "before_sha256": "9da7cc4e1ba2c5c20d3411929efba982113051fa20410410b23c83fd85ec0cf1",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     255,
+     194,
+     14
+    ],
+    "sleeve": [
+     0,
+     128,
+     198
+    ]
+   },
+   "field_sha256": {
+    "pants": "54e4f627acff441175ddeeb1b42151c6e2acee12efbaa454e45790a7b460d1d0",
+    "sleeve": "e96c34efc7800d5e77555b9fa96c20d2b002d539e13bc07a6b65f03830696854"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "24H0"
+  },
+  {
+   "after_sha256": "3a737df7d7449d76ad34789059763602304dfd3659904fb5be39fedefca81940",
+   "before_sha256": "dda8e9b6e0916abc03d6935ca786269a54cdaf4e97eed1be5b14c40ff643c19f",
+   "compose": {
+    "sleeve": {}
+   },
+   "field": {
+    "sleeve": [
+     0,
+     128,
+     198
+    ]
+   },
+   "field_sha256": {
+    "sleeve": "5c790cbf309aaa081d7d58564e9da0d816a540728a69cd427a1b45f18c3f8f3d"
+   },
+   "parts": [
+    "sleeve"
+   ],
+   "selector": "24H10"
+  },
+  {
+   "after_sha256": "9b40d1d91024822f178769682be5a177a04cdaba0d88889fb785728533d52ae1",
+   "before_sha256": "8f50de3c3940b34cad9be4e18c6b15463391d912d95a5469e631ee955682bf07",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     184,
+     156,
+     98
+    ]
+   },
+   "field_sha256": {
+    "pants": "60e0496d2913f13dd8c02939c70ed93ea2ad3c45629557a3496177f4cc68b9ca"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "25A0"
+  },
+  {
+   "after_sha256": "340e8442f210d78895481caa9b63733c3e4a1a4890805ba0da2fbea1d56fa904",
+   "before_sha256": "3200d042f07ef7fc322ca96fba9dd8d2ee07d30ef2c04c8aa7888aa2337063da",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     184,
+     156,
+     98
+    ]
+   },
+   "field_sha256": {
+    "pants": "8eb0f394a57f64afe19a560a824a804a46abfeca5fc0f80b48c5fcb7df8d1b8f"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "25H0"
+  },
+  {
+   "after_sha256": "d9c48035ec35c3d3dedd2fe5d6f96b2ecfd36cfa2a3ed9609268007fec2c4706",
+   "before_sha256": "78ea51dae9d7775ca45d1f7d6caa0b09d96e103ae24482ac79dbaa6a2f726989",
+   "compose": {
+    "pants": {},
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ],
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "592cc60de94b891fc671ca73d07b16b026e44fb86befe4542ed286b4dd962869",
+    "sleeve": "7ec1050ffd33e0bb7881ad490f3cb88fe4a0f057300693d92955c98efa1809de"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "26A0"
+  },
+  {
+   "after_sha256": "8bc60c040e7a6281e7c5c8753dcb9a23d793deeb46a3564bb75a94bf7a8eb2ff",
+   "before_sha256": "ced536e8c7a517e11459d4649b7f9dee00680ce23718c1ace566dfcb45c294b2",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ],
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "e4c5da2bb2b8ad9b499cb02a785f0aab5b28260fc88e1a20c3fa65beecf05304",
+    "sleeve": "1c7330e81742f0b8673029ef5869e3c53d0e0a17c3e1d195171b5124fa2accef"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "26A4"
+  },
+  {
+   "after_sha256": "d260c7ac9a8eb119761bd646f567ef9f0d18cc5d7c9e6c07032a32228fa84ca4",
+   "before_sha256": "db8c0ac931115141c304482befed2745ce8e844aa928acc40d58a66edd87434e",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     12,
+     42,
+     76
+    ],
+    "sleeve": [
+     10,
+     42,
+     78
+    ]
+   },
+   "field_sha256": {
+    "pants": "1d223fad4b2794abf2c4e2e6729aa82390b8f5607e0a0c861c8e8c9b042b040c",
+    "sleeve": "de3ec83fc4e8b14b7b0f204e17f94b22a238be4dac9397f4fc65be09ac317bfc"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "26H0"
+  },
+  {
+   "after_sha256": "d4989ff905a4e3e333e698d962f8f0d854be812a4636d44a2dd39aafce490d8b",
+   "before_sha256": "89dbd1d5059fc8acd0f3497205222911b371ea2d3c9cdcc425f0070589c61659",
+   "compose": {
+    "sleeve": {}
+   },
+   "field": {
+    "sleeve": [
+     10,
+     42,
+     78
+    ]
+   },
+   "field_sha256": {
+    "sleeve": "d1b71d3e3996fef62074dd9bbe9b5ebe3e16abd4deb5bdaf3d7a19a918d0b233"
+   },
+   "parts": [
+    "sleeve"
+   ],
+   "selector": "26H4"
+  },
+  {
+   "after_sha256": "53cc4abc7c5f85f7ec70c08b7734b38a5965534cde612ca0ec641f0164c4947d",
+   "before_sha256": "007ab2f24b1baa7e9c16e87e54f32f222a83a7ccfebc42fce8d6dd4d94f81323",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     75,
+     70,
+     65
+    ]
+   },
+   "field_sha256": {
+    "pants": "26bae86ba204218e2b076c37d4d8bdb4284c9937f18b4cb09d028f7f7c5308e1"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "27A0"
+  },
+  {
+   "after_sha256": "2c3eeefe62f7a4315336ab1d076e7efd50405ac1cf26c4e5f75c75f7e4fc6635",
+   "before_sha256": "f909c2283eb67374cb39c26c5996937d4fc39b16d95681356f8f29de0c0ae2a8",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "e477f248fe00746f3165fc57f896e3220210bc8cadf8498fbdfd843ec2f8c774"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "27H0"
+  },
+  {
+   "after_sha256": "1a573e672fe81a3c0394d989704ecb390efc43a65138446d3282ca84cf3f002e",
+   "before_sha256": "56327018e543b6567352bceee341ebb719ee4ff9633bea799a9b3a7bb11d83df",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     68,
+     149,
+     210
+    ]
+   },
+   "field_sha256": {
+    "pants": "d252b82f5f5ea8d44e174b4e16e1e004de12815494df556fce0fec84308344a9"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "28A0"
+  },
+  {
+   "after_sha256": "22611fcf4ff9d8cd963588cad27703bf9ff11e14ef63f994045272a58ba7e98c",
+   "before_sha256": "4201203520f3d2e152be193fccd5aaf7c9e707563724cd658efbdb6a03741c83",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "135d21504bbafcd94db1ffc37f696edb769e3b8cbb80d6cc2a16d6f05c169759"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "29A0"
+  },
+  {
+   "after_sha256": "f81a6535c707268ae14ee2d56f8760b80061d93175ffc315dbd47d94e263c0f1",
+   "before_sha256": "06d454d10c60a0d27f828796059b39ed313ce2dec73de0de022a222092cf6d34",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "0fa8b7cc4e0924f4538ec63e8405bc5379828b902d035e1743b3b4b494e8e8f1"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "29H0"
+  },
+  {
+   "after_sha256": "6a795c4154ac6f628da74d0327cb84d209f8db12b7aaaa13f927d8b60d80462f",
+   "before_sha256": "3194f6e738ff5f8932a60286994100866cfa88d114a99aa0848a08a1ece215ec",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ],
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "bd3baea96a2bfcb2f6700fcb6f2fe9eeb34401242a5aef1318e101f0aee20046",
+    "sleeve": "ace74ba0b166c29562555f131ca01fa378f70f49d4784002fc22d7314cff5131"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "30A0"
+  },
+  {
+   "after_sha256": "576e062238db7805e0b1165fe5fa7de2a2c83d9ee0e3e33cec2564b747c45136",
+   "before_sha256": "db545d577b81beda16218edee2849de08ba43029c7832bc5893779a05e1a25e0",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     255,
+     60,
+     0
+    ],
+    "sleeve": [
+     58,
+     34,
+     8
+    ]
+   },
+   "field_sha256": {
+    "pants": "a2adc67864397dc33b7ee0b5392e661dfc25fbe340684bbe4f6b95e280215d49",
+    "sleeve": "266b973883a50bd6b32df32587406b3ce81cae15cf70b81125ae0955f190a929"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "30H0"
+  },
+  {
+   "after_sha256": "73b0335b0904df6d1880a066de477595196f65e7d9f0c1820cafb38b91118bdc",
+   "before_sha256": "adb88ea4d5eab3e2e78d57d1ccd41e0ac56d404748ab61c7c6e5021e69d31b17",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    },
+    "sleeve": {}
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ],
+    "sleeve": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "8308befa40e5553786884c3ccd60b3488df84451212820c969a54c35f98cc448",
+    "sleeve": "12553a333f61d66587cfff9b000959567de1851069a3d145bd45c0b61e9753d2"
+   },
+   "parts": [
+    "pants",
+    "sleeve"
+   ],
+   "selector": "37A0"
+  },
+  {
+   "after_sha256": "d6bc4b2fa61ddd7e60dfeb5c8906dcc7cd1203ee72674a629271be253fdfc1bc",
+   "before_sha256": "2b70547f2ece7c7b43a96f0de0be0642e9dd9cfcc03a1a29de73a3bd7678651f",
+   "compose": {
+    "pants": {
+     "crop": [
+      23,
+      0,
+      297,
+      230
+     ]
+    }
+   },
+   "field": {
+    "pants": [
+     255,
+     255,
+     255
+    ]
+   },
+   "field_sha256": {
+    "pants": "c70335edfbd35a3be0d8a626ad4dff09aa958092764dfa0d21c8e24e846d4c23"
+   },
+   "parts": [
+    "pants"
+   ],
+   "selector": "37H0"
+  }
+ ],
+ "note": "b81-uniforms R54 (beta 81): the far-player atlas pants and sleeves of every kit whose pants or sleeve texture the 2026 uniform pass changed, composed at build time from the kit's own finished field texture by the sideline step's compose (rules and pins only; no atlas texel is stored)",
+ "schema": "nfl2k5_sideline_2026/v1"
+}

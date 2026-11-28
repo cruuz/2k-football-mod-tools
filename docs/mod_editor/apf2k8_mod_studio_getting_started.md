@@ -1,10 +1,10 @@
-# APF 2K8 Mod Studio — Getting Started
+# APF 2K8 Mod Studio: Getting Started
 
 APF 2K8 Mod Studio works from your own legally dumped USA copy of *All-Pro
 Football 2K8* for Xbox 360. The app ships no game images, textures, audio,
 screenshots, extracted archives, or other retail game data.
 
-This guide is for **0.1.0-alpha.111, beta 80**. On Windows, install from the release
+This guide is for **0.1.0-alpha.112, beta 81**. On Windows, install from the release
 Setup.exe. The studio reads your original game and writes a separate modded folder.
 Share the project, which contains your edits; keep game files and private caches local.
 
@@ -15,20 +15,9 @@ Windows Setup includes its own Python 3.12.10 and NumPy 1.26.4 with the other
 Studio packages. Update now installs the complete new Windows runtime too.
 If a bundled package is missing, reinstall the latest Setup.
 
-The Linux tarball contains application files and no Python runtime. Use Python
-3.11 or 3.12 with `packaging/requirements-studio.txt`, which pins NumPy 1.26.4 to
-the same version as CI. From the extracted application folder:
+For a portable archive, install Python 3.11, 3.12 or 3.13. On Linux, run `./APF-2K8-Mod-Studio.sh --setup` from the extracted folder, then `./APF-2K8-Mod-Studio.sh`. On macOS, right-click `APF-2K8-Mod-Studio.command` in Finder and choose **Open**. The launcher prepares its dependencies on first use. On Windows, double-click `APF-2K8-Mod-Studio.bat` in the extracted folder.
 
-```sh
-python3 -m venv .venv
-.venv/bin/python3 -m pip install -r packaging/requirements-studio.txt
-```
-
-The launcher selects this `.venv`, or the interpreter set by `MOD_STUDIO_PYTHON`.
-Install packages into that same interpreter. A missing NumPy package leaves the
-studio usable; actions requiring it explain the package and install command.
-Portable updates retain the selected local runtime and all its site-packages,
-including NumPy. An external interpreter remains your responsibility.
+The private runtime installs the full pinned set in `packaging/requirements-studio.txt`. Python 3.11 and 3.12 use NumPy 1.26.4. Python 3.13 uses NumPy 2.3.5. For an existing runtime, set `MOD_STUDIO_PYTHON` to its Python executable. Portable updates retain the selected runtime.
 
 ## First game: load, edit, build, play
 
@@ -66,36 +55,20 @@ including NumPy. An external interpreter remains your responsibility.
 
 ## Install or run portable on Linux
 
-After extracting the release, open a terminal in its top-level folder and run:
+For a portable copy, open a terminal in the extracted folder and run:
 
 ```bash
-./install.sh
-```
-
-Do not use `sudo`. The installer first runs the retail-free release audit, then
-copies only the exact declared program files into your user data directory. It
-creates an absolute-path app-menu shortcut and a command at
-`~/.local/bin/apf2k8-mod-studio`. Installation and updates are staged before
-publication, so an interrupted update cannot publish half an application.
-
-To keep the release portable instead, leave its folder together and run:
-
-```bash
+./APF-2K8-Mod-Studio.sh --setup
 ./APF-2K8-Mod-Studio.sh
 ```
 
-The portable launcher resolves the application from its own location; it does
-not depend on the terminal's working directory. Linux Mint/Ubuntu users can
-install the system dependencies with:
-
-```bash
-sudo apt install python3 python3-pyqt5 python3-pil
-```
-
-The Mod Studio installer itself remains per-user and never invokes that
-administrator command. If a dependency is absent, the launcher names the
-missing package and keeps a private diagnostic log under
+Setup only needs to run once. The launcher keeps a diagnostic log under
 `${XDG_STATE_HOME:-$HOME/.local/state}/apf2k8-mod-studio`.
+
+For an application-menu shortcut on a machine where the system Python already
+has the pinned Studio packages, run `./install.sh` from a freshly extracted
+release. The installer checks the release, installs under your user account
+and creates `~/.local/bin/apf2k8-mod-studio`.
 
 Run `./uninstall.sh` from either the extracted release or installed application
 folder to remove it. Uninstall authenticates every owned path and preserves
@@ -107,7 +80,7 @@ shortcut changed outside the installer is reported and preserved, not erased.
 - A clean USA APF 2K8 ISO, or its complete extracted game folder.
 - Enough free space for a private extraction and a separate modded game folder.
   A complete extracted build is roughly 4 GB; keep additional working space for
-  previews and exports. **Build writes into the folder you pick** — choose the
+  previews and exports. **Build writes into the folder you pick**: choose the
   directory Xenia already loads and confirm replace. The studio no longer
   creates an `APF2K8-Mod-TIMESTAMP` child inside an empty folder.
 - Python 3.11 or 3.12 and the packages in `packaging/requirements-studio.txt`,
@@ -135,13 +108,13 @@ error and no source file is changed.
    thumbnails, originals, and temporary exports live in your own cache, not in
    the installed application.
 4. Browse or search the asset list. Status badges mean:
-   - **Editable** — Replace/Revert and the transactional build path are wired;
-   - **Export-only** — local export works, but safe replacement does not yet;
-   - **Preview** — a decoded structure can be inspected without an authoring
+   - **Editable**: Replace/Revert and the transactional build path are wired;
+   - **Export-only**: local export works, but safe replacement does not yet;
+   - **Preview**: a decoded structure can be inspected without an authoring
      writer;
-   - **Proof boundary** — a reviewed technical witness is available but is not
+   - **Proof boundary**: a reviewed technical witness is available but is not
      itself an editor; and
-   - **Research boundary** — the finding stays visible without fabricating a
+   - **Research boundary**: the finding stays visible without fabricating a
      write contract.
    Universal-browser rows add the exact export level: editable PNG, PNG when a
    codec is decoded, raw-parts ZIP only, or raw outer record only.
@@ -162,7 +135,7 @@ error and no source file is changed.
 8. Choose **Build Game Folder** and pick the folder Xenia already loads. Confirm
    replace; the studio writes into that folder and does not create an
    `APF2K8-Mod-TIMESTAMP` child. A copied or studio-built `0A` cannot be
-   opened as source — load the retail extract and rebuild into the last
+   opened as source: load the retail extract and rebuild into the last
    folder.
 9. Choose **Title Update 1.1…** if you have not already, then **Launch in
    Xenia**. The 1.1 LIVE package is required on Xbox/Xenia and never shipped
@@ -251,7 +224,7 @@ The first editable uniform surface contains 96 physical assets:
 
 Every uniform slot is a **fixed allocation**: the game reads that entry from a
 fixed span, so the rebuilt entry cannot grow. Matching the required PNG
-dimensions is not enough — what has to fit is the *compressed* result, and a
+dimensions is not enough: what has to fit is the *compressed* result, and a
 slot's budget is retail's own compressed payload plus a small sector slack, with
 the payload as the dominant term. A slot whose retail artwork is nearly flat has
 a small payload and therefore a small budget, however much free space it appears
@@ -263,11 +236,11 @@ The detail line under a selected jersey or shoulder slot names its budget and
 its rank in that family, so a slot can be chosen before a build is spent on it.
 Jersey uses the same compressed-budget model as shoulder. If a build
 does refuse, the message names the slot, its outer entry, its allocation, and
-its budget — and if several targets are over, it reports all of them at once.
+its budget: and if several targets are over, it reports all of them at once.
 
 These are region masks, so the fix is almost always the same: snap colours to
 the retail palette and remove anti-aliasing. An anti-aliased edge emits invalid
-region IDs rather than a soft edge, and it inflates the payload — one measured
+region IDs rather than a soft edge, and it inflates the payload: one measured
 cleanup (800 colours → 3) cut a file's overflow by 56%.
 
 The Uniforms page starts with two texture workspaces. **Editable Materials (96)** is the
@@ -288,7 +261,7 @@ exact. Visors stay in **Save Players** as the proved per-player None/Clear/Dark
 choice because APF has no verified per-uniform visor-tint field.
 
 **Custom Team Appearance** is a separate bounded workspace for user-team slots
-32–39. Pick a slot, edit the ten HOME and ten AWAY ARGB swatches, and inspect or
+32-39. Pick a slot, edit the ten HOME and ten AWAY ARGB swatches, and inspect or
 author the exact eight-byte helmet and crest selectors. Only helmet asset byte
 0, helmet shell-palette byte 1, and crest catalog byte 0 have proved names; the
 remaining selector fields are intentionally labeled opaque. **Apply 2017
@@ -302,7 +275,7 @@ independently reparses the result.
 
 The same panel now has a separate **Raw Roster Save · runtime user team**
 source. Use this only after a custom team has been accepted and saved: the
-game's user-facing team IDs 24–31 are the save's ROST slots 32–39. Choose a raw
+game's user-facing team IDs 24-31 are the save's ROST slots 32-39. Choose a raw
 `Roster.ROS`, select the occupied team, apply the Eagles preset or exact values,
 then choose **Write verified raw save…**. The source is opened read-only; the
 editor exclusively creates a separate raw payload and JSON receipt, SHA-binds
@@ -334,7 +307,7 @@ edits you have not staged yet.
    **Raw Roster Save**.
 2. Open the new action and choose the destination raw `Roster.ROS`, Xbox 360
    STFS package, or decrypted PS3 `USERDATA` / roster ZIP. Check the destination
-   team names: user teams 24–31 correspond to ROST slots 32–39. Slots match by
+   team names: user teams 24-31 correspond to ROST slots 32-39. Slots match by
    number, not by name. **Also apply other staged user-team appearances** is
    optional and off initially.
 3. Leave **New raw Xbox Roster.ROS** selected for a raw output. A supported STFS
@@ -444,11 +417,11 @@ square crest into it. This is a static storage/path statement, not proof that a
 changed cache image was consumed during a running Team Select screen.
 
 1. Select a slot. Retail coverage keeps its existing exact/contain resize flow.
-   For Full-shell, choose **Normal logo — convert to APF regions (recommended)**
-   for ordinary painted art, or **APF region mask — exact channels (advanced)**
+   For Full-shell, choose **Normal logo: convert to APF regions (recommended)**
+   for ordinary painted art, or **APF region mask: exact channels (advanced)**
    only for an authored mask already on the Xenos four-bit lattice.
 2. Choose **Retail side decal** to preserve stock geometry, or choose
-   **Full-shell crest wrap — entire helmet shell (affects every team)** for the
+   **Full-shell crest wrap: entire helmet shell (affects every team)** for the
    fixed `front_crown_to_rear_v1` stock-shell atlas route.
 3. Normal-logo import contains the whole source at 512×512, suggests three
    colours only when the artwork itself has a stable colour triangle, and
@@ -520,8 +493,8 @@ gameplay consumption and the scorebug dynamic sampler's package-versus-cache
 resolver, plus Xbox 360 hardware parity, remain unproved.
 
 Since that static gate, one bounded runtime witness exists. On 2026-08-03 the
-accepted user team's raw save — the Manage Team flow, not the Create Team
-scratch editor — combined with the catalog-30 crest package/cache and the
+accepted user team's raw save: the Manage Team flow, not the Create Team
+scratch editor: combined with the catalog-30 crest package/cache and the
 retired global crest-box emulator patch, rendered midnight-green Eagles
 helmet previews on **Main Menu → Teams → Manage Team → Edit Team → Logo
 Selection**, and strict visual review passed both HOME and AWAY. The witness
@@ -593,12 +566,12 @@ visibility is not claimed.
 ## Give every team its own uniform textures (Team Independence)
 
 APF's forty teams draw helmets from only six textures, jerseys from nine,
-numbers from seven, and socks from six — painting art on a shared helmet puts
+numbers from seven, and socks from six: painting art on a shared helmet puts
 it on every team that wears it. The **Team Independence** tab on Uniforms &
 Equipment writes a new `0A` in which each built-in team points at its own
 packages: helmets 6→24, jerseys 9→24, numbers 7→24, socks 6→24, pants 11→24,
 shoulders 14→24, fonts 7→11 (95 selector assignments). The game already ships
-24 complete helmet packages with only six referenced, so nothing is added —
+24 complete helmet packages with only six referenced, so nothing is added
 teams are simply pointed at slots that were already there. The tab lists every
 helmet with the teams currently sharing it and marks unused packages free to
 take over. Only selector bytes change, uniforms look identical until you edit
@@ -606,7 +579,7 @@ them, and the loaded volume stays read-only while the new one is written.
 In-game visibility of the repointed selectors is not yet proved; treat the
 output volume as the authoring precondition for per-team art.
 
-## Roster and true 0–99 ratings editing
+## Roster and true 0-99 ratings editing
 
 Open **Rosters & Players** to search the live roster by player, team, stadium,
 or membership. Player rows identify **First name** and **Last name** fields;
@@ -648,7 +621,7 @@ the loaded source stayed unchanged.
 Isolated visual QA also passed after the layout fix. **Identity & Names** is
 visible by default, **Base Ratings (28)** sits beside it, and a 23-owner shared
 name shows **Replace Player Name**, **Revert Player Name**, and **View 23
-affected fields…** together with the exact `4/4` limit—without clipping or a scroll trap.
+affected fields…** together with the exact `4/4` limit: without clipping or a scroll trap.
 The owner dialog uses high-contrast text and displays all 23 semantic owner rows
 at once. These checks ran on an isolated desktop and did not touch the user's
 mouse.
@@ -661,7 +634,7 @@ runtime result is positive:
 | Edit | Runtime result |
 | --- | --- |
 | Team display name `Americans` → `CODEXTEAM` | Booted through first-run team construction; authored text appeared in Logo Selection, Team Summary, and Team Select. |
-| Player last name `Marino` → `CODEX` | Booted without the old roster crash; **Dan CODEX #13 QB** appeared in player selection and **QB #13 DAN CODEX — GOLD STAR** appeared on the Star Card. |
+| Player last name `Marino` → `CODEX` | Booted without the old roster crash; **Dan CODEX #13 QB** appeared in player selection and **QB #13 DAN CODEX: GOLD STAR** appeared on the Star Card. |
 | Dan Marino `Speed` 40 → 99 | Booted; the edited player record loaded and rendered on the live player card without the former startup crash. |
 
 Full evidence is in the positive
@@ -680,17 +653,17 @@ Alpha.23 adds a separate **53-player roster planner** inside
 **Rosters & Players**. Choose one of the 32 populated source team records to see
 53 rows:
 
-- slots 1–42 show the source memberships APF currently recognizes in-game;
-- slots 43–53 accept eleven authored **project-only reserve** choices; and
+- slots 1-42 show the source memberships APF currently recognizes in-game;
+- slots 43-53 accept eleven authored **project-only reserve** choices; and
 - **Save reserve plan…** writes a retail-free `.apf2k8roster` containing only
   those reserve player indices. It never copies the 42 source memberships,
   player records, names, ROST bytes, preimages, or executable bytes.
 
 **Build Game Folder does not apply these reserves.** The planner is useful for
 building complete league concepts and validating that no reserve duplicates an
-active or another reserve assignment. True runtime slots 43–53 require a
+active or another reserve assignment. True runtime slots 43-53 require a
 version-pinned XEX accessor/direct-consumer patch plus owned side-table storage.
-Teams 25–32 are populated online-placeholder records with real 42-player source
+Teams 25-32 are populated online-placeholder records with real 42-player source
 rosters, but their offline Team Select ownership is still unproved.
 
 Selecting a player opens **Base Ratings**. The 31 rows are independent stored
@@ -729,7 +702,7 @@ preimages, or retail game bytes.
 
 The engine can read a native value of 100. If the source contains one, the app
 displays 100 exactly instead of clipping it, but new edits are intentionally
-limited to the familiar 0–99 scale. Overall is calculated separately by
+limited to the familiar 0-99 scale. Overall is calculated separately by
 position. A position edit is explicit and separate; rating edits never infer or
 change it. The on-disc rating and position editors do not infer or change
 abilities, Gold/Silver/Bronze tier, equipment, membership, depth charts, or
@@ -822,7 +795,7 @@ Open **Rosters & Players → Save Players**, then choose a raw `Roster.ROS` or a
 `Roster.ROS` is extracted read-only; the editor never labels its output as a
 signed container.
 
-1. Choose player index 0–2253. The panel shows the source identity and exposes
+1. Choose player index 0-2253. The panel shows the source identity and exposes
    all 149 exact packed/numeric fields in one searchable category-labeled list.
 2. Stage any base rating, ability, style, tier, number, mirrored position,
    depth, appearance/equipment, or exact ID/metadata change. Choice-backed
@@ -886,7 +859,7 @@ tags inside one record.
 Open **Playbooks & Plays → Who lines up** to edit that package map. Role 8 is
 TE and role 9 is WR. The other nine roles stay numbered. The project stores
 the 11 role bytes per formation; Build writes them into the copied MASTER
-PLAY. Runtime look is unproved — check the formation in Xenia after Build.
+PLAY. Runtime look is unproved: check the formation in Xenia after Build.
 This is not a 3rd-and-long director patch. The old raw WR3↔TE `.bin` export
 is still gone: it was not a playable mod.
 
@@ -904,10 +877,10 @@ anything. Technical addresses remain under **Research pins**.
   record. It does not change who lines up.
 - **Save Project keeps these edits.** Before alpha.71 the panel was the only
   place they lived, so a saved project reopened with the playbook apparently
-  untouched. The project now stores each staged change as a selector — outer
-  entry, record, play indices — and never a byte of your `SPLB` resource.
+  untouched. The project now stores each staged change as a selector: outer
+  entry, record, play indices: and never a byte of your `SPLB` resource.
   Reopening a project keeps every staged book. Switching books no longer
-  discards the others — a project can hold all fifteen stock books and Build
+  discards the others: a project can hold all fifteen stock books and Build
   writes them all into one copied 0A. The writer still compiles one book per
   call; the session groups by outer.
 - **Empty this formation… changes what the CPU does, in a way this project
@@ -916,8 +889,8 @@ anything. Technical addresses remain under **Research pins**.
   does not contain (00, 10, 01, 12, 11) and one the game does not ship at all
   (02), running plays that are not in the book. It happened whenever the
   director selected an emptied formation; the books he had not touched behaved
-  normally. Plays are not bound to formations — he moved an offensive play into
-  a defensive book and it ran — so a formation that stores nothing does not
+  normally. Plays are not bound to formations: he moved an offensive play into
+  a defensive book and it ran: so a formation that stores nothing does not
   make the director skip it, it makes the director call something the book
   never listed. The static side is unchanged and was never a safety proof:
   `min(4, 0)` is 0, the record trailer still names the formation, and the
@@ -969,11 +942,11 @@ anything. Technical addresses remain under **Research pins**.
   instruction directory at `+0x20`. NFL `0x000dca40` is a bitset/float
   lookup, not an instruction indexer. `dir_ingame.iff` (outer 153) has
   1015 instruction records; 1014 begin `0B 00 01 00` then a token at +4
-  — bytecode, not a C++ vtable. The relocator rewrites only the inline
+ : bytecode, not a C++ vtable. The relocator rewrites only the inline
   directory words; it does not follow those pointers into record bodies.
   Packed `lhz +6` getter `0x84ab2010` has 0 `bl` and 0 inbound pointers.
   DRCT vtable[2] `0x8466ba30` unlinks a list. Byte-stream `0x8466bd38`
-  compares 94/96/97 and 275–330, not instruction tokens. `0x84bcd760`
+  compares 94/96/97 and 275-330, not instruction tokens. `0x84bcd760`
   is a string classifier (0 `bl`). 0 `addi 32`/`lwzx`/`lbz 0(record)`
   consumer. `dir_wrapup.iff` (outer 265) has 96 records, all `0B 00`.
   Groups are tagged fields (`0B 00` + u16 field + u8), not a VM opcode
@@ -992,7 +965,7 @@ anything. Technical addresses remain under **Research pins**.
   (4×lbz, not lwbrx).
   0 lis/addi of `0x84EE65C0`. `0x84671838` is C++ vt[2] on r4+0x20,
   not a property registrar. 0B groups are tag + u8 variant + BE u16
-  field + u8 (variant 0 is 3589/3621; variants 1–5 use field `0x0200`),
+  field + u8 (variant 0 is 3589/3621; variants 1-5 use field `0x0200`),
   not a 2-byte `0B00` tag. `0x84842f48` is RTTI class 3/4/5/6/7/11/12
   via +0x14/+4. `0x8476ca80` counts 10×5-byte slots at object +0x13D9.
   `0x8492bb24` sums 5-byte windows then uses floats.
@@ -1003,7 +976,7 @@ anything. Technical addresses remain under **Research pins**.
   `0x84abb590` copies 5 bytes with no tag check. `0x84a9d7a0` copies
   stride-32 floats at +0x1C, not NFL table `0xB73BD0`.
   NFL `dir_ingame` (outer 4) has 1310 instruction records, all starting
-  `0B`; prefixes `0B 00 01 00` / `01 01` / `01 02` — same
+  `0B`; prefixes `0B 00 01 00` / `01 01` / `01 02`: same
   tag+variant+u16 encoding as APF. `0x84be2b48` is an ASCII/scanf
   0..11 jump, not leftover leads. `0x848777cc` loads one float from
   `0x84F1A150+0x1C`, not a stride-32 bitset table. `0x84b93b10` reads
@@ -1059,7 +1032,7 @@ anything. Technical addresses remain under **Research pins**.
   `0x84911750` / `0x849ecd48` switch object fields, not leftover tags.
   `0x847d7590` / `0x8480189c` compare playcall `0x851A2780+0x3C` to 3/6,
   not down. Every TEXT `lis`/`addi` of leftover cursor `0x84F1779C` /
-  `0x84F177AC` sits in expr-VM `0x8466c778`–`0x8466d888`; the VM entry
+  `0x84F177AC` sits in expr-VM `0x8466c778`-`0x8466d888`; the VM entry
   stores r5 to cursor+8 (`0x8466c8dc`). No TEXT site loads situation +0x254
   and +0x25C together and yields D&D index 4; lookalikes `0x8499e420` /
   `0x849a3b58` compare script node +0x10/+0x14. Packed get_ytg `0x84b68cd8`
@@ -1229,7 +1202,7 @@ not offered.
 
 You cannot find a team's endzone by searching. The nicknames are not on the
 disc: a name like `Redcoats` appears zero times in `0A`, `0B`, `1A`, `1B` and
-`default.xex` across ASCII, UTF-16BE and UTF-16LE — it lives only in
+`default.xex` across ASCII, UTF-16BE and UTF-16LE: it lives only in
 `Roster.ROS`. Use **Export endzone contact sheet…** in the Field Art header. It
 renders all 118 packages into labelled sheets so you can identify a package by
 its artwork; 31 are already named and show their team on the tile. Note the
@@ -1237,8 +1210,8 @@ package number and open it under **All Textures**.
 
 Endzone layers are **region masks, not artwork**: pure red / green / blue region
 selectors over black, 2048×512 DXT1, with alpha uniformly opaque. The colours
-you see in game are shader-driven. Author them like the uniform masks — flat
-colours, hard edges, no anti-aliasing — because an intermediate value is an
+you see in game are shader-driven. Author them like the uniform masks: flat
+colours, hard edges, no anti-aliasing: because an intermediate value is an
 invalid region ID rather than a blend.
 
 Use **Export decoded rows** in any specialized inspector to save all rows
@@ -1251,7 +1224,7 @@ the public application or a shareable `.apf2k8mod` project.
 ## Editing menu and mode text
 
 Open **Menus & Text**. The upper browser begins with **Localization Pool
-String** and **String Bank Pool String** rows—the underlying shared TXT/STRG
+String** and **String Bank Pool String** rows: the underlying shared TXT/STRG
 allocations the game actually stores. TXT reference rows remain available for
 text-ID ownership/context, but they are not edited independently. STRG rows
 show the exact aggregate consumer count without inventing a menu label for an
@@ -1357,8 +1330,8 @@ selector exposes the 15 `jukebox22` mono companions while keeping the same
 track number selected. **Back to all audio** restores the prior search, kind,
 role, source/bank, page, and selection. The album appears only when the exact
 15-by-15 source pair, indices, channel/rate layouts, export identities, and
-matching durations are present. “Track 01” is an owned index label—not a song
-title—and artist/title remain **Unknown** rather than guessed.
+matching durations are present. “Track 01” is an owned index label: not a song
+title: and artist/title remain **Unknown** rather than guessed.
 
 Every playable audio row carries an exact export identity:
 
@@ -1382,10 +1355,10 @@ Every playable audio row carries an exact export identity:
   publishes only after the local decoder verifies the complete result. If a
   sound does not decode, export its exact `.xma` instead.
 - **Export complete bank** is available for a complete AUSB bank containing
-  1–256 sounds, including both 15-track soundtrack banks. Original XMA1 is the
+  1-256 sounds, including both 15-track soundtrack banks. Original XMA1 is the
   safe default. Verified-WAV mode is all-or-nothing: one failed decode leaves no
   partial ZIP at the chosen destination.
-- **Export matching sounds** packages the 1–256 playable rows matching the
+- **Export matching sounds** packages the 1-256 playable rows matching the
   current search, kind, role, and source/bank filters. Selecting
   `jukeboxmusic` immediately produces an exact 15-track full-stereo selection;
   `jukebox22` produces its 15 mono companions. This is also the practical route for a
@@ -1442,7 +1415,7 @@ that playlist in a compatible media
 player to hear the exported sounds in the same order shown or arranged in Mod
 Studio. The manifest records the playlist name and exact entry count; durations
 are included when the bank metadata owns them. A playlist points only to files
-inside that local ZIP—it is not stored in an `.apf2k8mod` project. Original
+inside that local ZIP: it is not stored in an `.apf2k8mod` project. Original
 XMA1 playback still depends on player support; choose verified WAV for the
 broadest compatibility. Raw physical banks and AUSB index rows never enter a
 playlist because neither is one addressed sound.
@@ -1531,7 +1504,7 @@ row:
    Leave every target you do not want to change absent. A v2 template may list
    more, but one import accepts at most 256 supplied WAVs. For a ZIP, keep
    `replacement-pack.json`, `README.md`, and the generated payload folder at
-   its root—do not add a wrapper folder. Do not rename listed files, mix the two
+   its root: do not add a wrapper folder. Do not rename listed files, mix the two
    payload types, or add an unlisted payload. Folder import refuses entry 257
    before opening or hashing any WAV byte; ZIP import applies the same ceiling
    before extracting payload members.
@@ -1574,7 +1547,7 @@ source-owned sound names, descriptors, physical pack offsets, or rollback
 bytes. It does contain the loaded-source SHA-256 and bounded semantic metadata
 needed to prevent applying it to the wrong revision or overwriting a newer edit
 to the same sound. The baseline records only original/modified state, typed
-writer kind, and the hash of a user-authored replacement—never private paths or
+writer kind, and the hash of a user-authored replacement: never private paths or
 replacement bytes. Once you add authored files, those XMA1 or PCM16 WAV files
 are the only audio payloads in the folder or ZIP. Folder mode is easiest to
 fill; ZIP mode is easiest to move or hand off. ZIP import accepts normal stored
@@ -1615,8 +1588,8 @@ For AUSB, the writer preserves every descriptor byte and replaces only the
 selected existing packet allocation. Exactly one physical range has two owners:
 both `cwdloop` rows disclose the shared effect. Editing either changes both;
 byte-identical edits through both aliases deduplicate, while different edits to
-the same bytes are rejected. Exactly one allocation—stereo Soundtrack Track
-03—crosses from the end of `0A` into `0B`; Build splits it into two independently
+the same bytes are rejected. Exactly one allocation: stereo Soundtrack Track
+03: crosses from the end of `0A` into `0B`; Build splits it into two independently
 source-guarded spans and publishes the complete game folder atomically. The
 other 45,512 physical ranges occupy one pack span each.
 
@@ -1630,7 +1603,7 @@ Mod Studio ships no encoder and real-tool compatibility remains unproved.
 Selected-sound FLAC/MP3/OGG/M4A input is conformed through FFmpeg; those formats
 remain unsupported in the bounded folder/ZIP batch route.
 
-The private Alpha.23 candidate booted, selected **Track 12 — Bury Me Standing
+The private Alpha.23 candidate booted, selected **Track 12: Bury Me Standing
 Remix**, and visibly remained in playback for 25 seconds without crashing.
 The completed objective capture experiment was negative/inconclusive: its final
 sustained segment matched neither the mutated candidate nor stock Track 12, with
@@ -1655,7 +1628,7 @@ writer; alpha.13 renders locked actions unambiguously gray.
 
 Projects behave like ordinary named documents:
 
-- `Untitled* — APF 2K8 Mod Studio` means the current edits have never been
+- `Untitled* - APF 2K8 Mod Studio` means the current edits have never been
   given a project filename.
 - An asterisk after a named `.apf2k8mod` file means the document differs from
   its last successful save or load. A clean named title has no asterisk.
@@ -1693,10 +1666,10 @@ original pixels, original audio, preimages, or extracted retail resources.
 
 After an interrupted session, startup offers:
 
-- **Recover Edits** — load the matching source, validate the recovery, and open
+- **Recover Edits**: load the matching source, validate the recovery, and open
   it as an unnamed dirty document. Use Save Project to choose a shareable name.
-- **Not Now** — leave the recovery untouched for a later launch.
-- **Discard Recovery** — remove only that private recovery snapshot.
+- **Not Now**: leave the recovery untouched for a later launch.
+- **Discard Recovery**: remove only that private recovery snapshot.
 
 If the original source moved, choose **Recover Unsaved Edits** after putting the
 same legally dumped ISO or extracted folder back at the path shown by the app.
@@ -1708,8 +1681,8 @@ not overwritten.
 A `.apf2k8mod` project contains only:
 
 - a small JSON manifest;
-- the user's replacement PNGs, canonical text/rating JSON, and—only for a
-  current-source standalone AUDO or addressed AUSB exact-slot edit—canonical
+- the user's replacement PNGs, canonical text/rating JSON, and: only for a
+  current-source standalone AUDO or addressed AUSB exact-slot edit: canonical
   user-supplied XMA1 packet payload; and
 - stable target IDs, dimensions, and hashes needed to apply those replacements.
 
@@ -1750,29 +1723,29 @@ automation to the user's active display merely to index or build a project.
 
 ## If something is rejected
 
-- **Wrong revision or incomplete game** — reload the untouched USA dump with
+- **Wrong revision or incomplete game**: reload the untouched USA dump with
   all six extracted boot files present. Do not select a previously modded `0A`.
-- **Wrong PNG dimensions or mode** — export the original template again, keep
+- **Wrong PNG dimensions or mode**: export the original template again, keep
   it RGBA, and do not resize the canvas.
-- **Pants alpha error** — flatten to fully opaque alpha.
-- **Helmet channel error** — clear blue to 0 and set alpha to 255 everywhere.
-- **digital_font RGB error** — make RGB solid white and author only alpha.
-- **Direct XMA1 replacement rejected** — confirm the selected row is a
+- **Pants alpha error**: flatten to fully opaque alpha.
+- **Helmet channel error**: clear blue to 0 and set alpha to 255 everywhere.
+- **digital_font RGB error**: make RGB solid white and author only alpha.
+- **Direct XMA1 replacement rejected**: confirm the selected row is a
   standalone `AUDO` or individual `AUSB substream`, use a one-stream RIFF XMA1
   file rather than WAV/FLAC/WMA/XMA2, and match the exact channels, sample rate,
   encoded-byte count, and decoded duration shown by the app. A source-derived
   exact payload or packet is intentionally refused even when its format fits.
   For exact-shape PCM16 WAV, use **Replace from PCM WAV…** and the separately
   configured encoder route.
-- **PCM16 replacement pack rejected** — configure the external encoder, keep
+- **PCM16 replacement pack rejected**: configure the external encoder, keep
   each WAV at its listed `pcm16/` path and exact channel/rate/frame shape, and
   split an authored set larger than 256 supplied WAVs into multiple fresh
   imports. Do not put XMA1, FLAC, MP3, or unlisted files in a v2 pack.
-- **Destination exists** — choose a new folder. Existing builds are never
+- **Destination exists**: choose a new folder. Existing builds are never
   overwritten automatically.
-- **Atomic publication unavailable** — build to a normal local Linux filesystem
+- **Atomic publication unavailable**: build to a normal local Linux filesystem
   that supports atomic no-replace directory publication.
-- **An export has no PNG preview** — use its raw local export. The texture codec
+- **An export has no PNG preview**: use its raw local export. The texture codec
   is inventoried but not yet decoded for preview.
 
 ## Privacy and distribution rule

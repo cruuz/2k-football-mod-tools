@@ -27,6 +27,11 @@ SPEC = importlib.util.spec_from_file_location(
 runner = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = runner
 SPEC.loader.exec_module(runner)
+HOSTED_SPEC = importlib.util.spec_from_file_location(
+    "hosted_test_suite_tested", ROOT / "packaging/windows/hosted_test_suite.py")
+hosted = importlib.util.module_from_spec(HOSTED_SPEC)
+with patch.dict(sys.modules, {"local_windows_ci": runner}):
+    HOSTED_SPEC.loader.exec_module(hosted)
 
 
 class PlanTests(unittest.TestCase):
@@ -70,12 +75,63 @@ class PlanTests(unittest.TestCase):
             with self.subTest(argv=argv), contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
                 runner.argument_parser().parse_args(argv)
 
+    def test_hosted_shards_cover_each_file_once_when_the_count_changes(self):
+        for size in (2, 3, 6, 7, 1351):
+            files = [Path(f"test_{i:04}.py") for i in range(size)]
+            first = hosted.select_shard(files, 1)
+            second = hosted.select_shard(files, 2)
+            with self.subTest(size=size):
+                self.assertEqual(sorted(first + second), files)
+                self.assertFalse(set(first) & set(second))
+                self.assertLessEqual(abs(len(first) - len(second)), 1)
+                self.assertNotEqual(hosted.inventory_digest(first), hosted.inventory_digest(second))
+        for value in (0, 3):
+            with self.assertRaises(ValueError):
+                hosted.select_shard(files, value)
+
+    def test_windows_result_requires_both_matching_job_outputs(self):
+        files = runner.plan(self.repo, [])
+        for index, path in enumerate(files, 1):
+            path.write_text(f"print('Ran {index} tests in 0.01s')")
+        version = f"{sys.version_info.major}.{sys.version_info.minor}"
+        sha = "b" * 40
+        report = self.repo / "outputs.txt"
+        with patch.dict(os.environ, GITHUB_OUTPUT=str(report)), patch.object(hosted, "checkout_sha", return_value=sha):
+            for part in (1, 2):
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(hosted.run_suite(self.repo, "", shard=part), 0)
+        outputs = dict(line.split("=", 1) for line in report.read_text().splitlines())
+        receipts = [json.loads(outputs[f"win_{version.replace('.', '_')}_{part}"]) for part in (1, 2)]
+        counts = hosted.verify_shards(files, sha, version, receipts)
+        self.assertEqual(counts["files"], len(files))
+        self.assertEqual(counts["executed_cases"], sum(range(1, len(files) + 1)))
+        for modified in (receipts[:1], receipts[::-1], [receipts[0], receipts[0]],
+                         [dict(receipts[0], revision="a"*40), receipts[1]],
+                         [dict(receipts[0], python="0.0"), receipts[1]],
+                         [dict(receipts[0], subset=receipts[1]["subset"]), receipts[1]],
+                         [dict(receipts[0], counts=dict(receipts[0]["counts"], failed=1)), receipts[1]],
+                         [dict(receipts[0], counts=dict(receipts[0]["counts"], skipped=1)), receipts[1]],
+                         [dict(receipts[0], counts=dict(receipts[0]["counts"], tests=0)), receipts[1]]):
+            with self.subTest(modified=modified), self.assertRaises(ValueError):
+                hosted.verify_shards(files, sha, version, modified)
+
     def test_ci_skip_list_and_isolated_rule_stay_in_parity(self):
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
-        case = workflow.split('case "$name" in', 1)[1].split('skipped=$((skipped + 1))', 1)[0]
-        self.assertEqual(runner.LEAN_SKIPS, set(re.findall(r"test_[\w]+\.py", case)))
-        self.assertIn(f'isolated="{runner.ISOLATED}"', workflow)
-        self.assertIn(runner.EVIDENCE, workflow)
+        self.assertIn('python packaging/windows/hosted_test_suite.py "$timer"', workflow)
+        self.assertIs(hosted.skip_reason, runner.skip_reason)
+        self.assertIs(hosted.test_count, runner.test_count)
+        self.assertEqual((hosted.EVIDENCE, hosted.ISOLATED), (runner.EVIDENCE, runner.ISOLATED))
+        (self.tests / "test_alpha.py").write_text(
+            "import os, pathlib\nassert pathlib.Path(os.environ['PYTHONPATH']).samefile(pathlib.Path.cwd())\n"
+            "assert os.environ['QT_QPA_PLATFORM'] == 'offscreen'\nprint('Ran 2 tests in 0.1s')\n")
+        (self.tests / "test_beta.py").write_text("print('3 passed, 1 skipped, 5 subtests passed in 0.1s')\n")
+        (self.tests / "test_gamma.py").rename(self.tests / runner.ISOLATED)
+        (self.tests / runner.ISOLATED).write_text(
+            "import os\nassert 'PYTHONPATH' not in os.environ\nprint('Ran 1 test in 0.1s')\n")
+        (self.tests / sorted(runner.LEAN_SKIPS)[0]).write_text("raise AssertionError('missing evidence')\n")
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(hosted.run_suite(self.repo, ""), 0, output.getvalue())
+        self.assertIn("SUMMARY: files=4 passed=3 failed=0 skipped=1 tests=7", output.getvalue())
         self.assertEqual(runner.argument_parser().parse_args([]).timeout, 420)
 
     def test_evidence_controls_skips_even_when_explicitly_selected(self):
@@ -106,6 +162,36 @@ class PlanTests(unittest.TestCase):
 
 
 class OutputTests(unittest.TestCase):
+    def test_pytest_terminal_summary_counts_cases_once(self):
+        self.assertEqual(runner.test_count("=== 3 passed, 2 skipped, 1 xfailed, 8 subtests passed in 0.12s ==="), 6)
+        self.assertEqual(runner.test_count("2 passed in 1.2s\r\n"), 2)
+        self.assertEqual(runner.test_count("Ran 0 tests in 0.012s\nOK (skipped=1)"), 0)
+        self.assertIsNone(runner.test_count("module imported"))
+
+    def test_empty_direct_entry_point_is_a_failure(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            work = Path(temporary)
+            def no_tests(*args):
+                args[3].write_text("", encoding="utf-8")
+                return 0
+            with patch.object(runner, "run_process", side_effect=no_tests):
+                result = runner.run_file(work / "test_silent.py", work, r"Z:\repo", work, {}, work, 420, r"Z:\logs", True)
+            self.assertEqual(result.rc, 1)
+            self.assertIn("No test runner summary", result.output)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = Path(temporary)
+            tests = repo / "tests/mod_editor"
+            tests.mkdir(parents=True)
+            (tests / "test_broken.py").write_text("raise SystemExit(23)")
+            (tests / "test_silent.py").write_text("pass")
+            (tests / "test_tail.py").write_text("print('Ran 4 tests in 0.1s')")
+            with contextlib.redirect_stdout(io.StringIO()) as output:
+                self.assertEqual(hosted.run_suite(repo, ""), 1)
+            self.assertIn("No test runner summary", output.getvalue())
+            self.assertIn("FAIL  test_broken.py  (rc=23)", output.getvalue())
+            self.assertIn("SUMMARY: files=3 passed=1 failed=2 skipped=0 tests=4", output.getvalue())
+
     def test_last_unittest_count_like_ci(self):
         self.assertEqual(runner.test_count("Ran 90 tests\nchild\nRan 1 test in 0.1s\nOK"), 1)
         self.assertIsNone(runner.test_count("no unittest report"))
@@ -121,10 +207,136 @@ class OutputTests(unittest.TestCase):
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
             runner.report_result(runner.Result("bad.py", 1, "first line\n" + "tail\n" * 40))
-            runner.report_result(runner.Result("good.py"))
+            runner.report_result(runner.Result("good.py", output="Ran 1 test\nOK"))
+            with self.assertRaisesRegex(ValueError, "no positive test count"):
+                runner.report_result(runner.Result("invalid.py"))
         self.assertNotIn("first line", output.getvalue())
         self.assertIn("FAIL  bad.py  (rc=1)", output.getvalue())
-        self.assertIn("PASS  good.py  (? tests)", output.getvalue())
+        self.assertIn("PASS  good.py  (1 tests)", output.getvalue())
+
+
+class HostedCoverageTests(unittest.TestCase):
+    name = "test_nfl2k5_cpu_clock2_unicorn.py"
+    private_class = """class ClockReplays(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        raise unittest.SkipTest('pinned USA retail default.xbe is absent')
+    def test_private_replay(self):
+        self.fail('unavailable fixture')
+"""
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        self.tests = self.root / "tests/mod_editor"
+        self.tests.mkdir(parents=True)
+        self.report = self.root / "github-summary.md"
+
+    def write(self, name, classes):
+        (self.tests / name).write_text("import unittest\n" + classes + "\nunittest.main()\n", encoding="utf-8")
+
+    def exercise(self):
+        self.report.unlink(missing_ok=True)
+        with patch.dict(os.environ, GITHUB_STEP_SUMMARY=str(self.report)), contextlib.redirect_stdout(io.StringIO()) as log:
+            rc = hosted.run_suite(self.root, "")
+        return rc, log.getvalue(), self.report.read_text(encoding="utf-8")
+
+    def test_private_zero_requires_the_registered_filename_class_and_absence_reason(self):
+        self.write(self.name, self.private_class)
+        rc, log, report = self.exercise()
+        self.assertEqual(rc, 0, log)
+        self.assertIn("files=1 passed=0 failed=0 skipped=1 tests=0 executed_cases=0", report)
+        self.assertEqual(log.splitlines()[-1], "SUITE COMPLETE  passed=0  skipped=1  failed=0")
+        self.assertIn("Zero-case files requiring private inputs (1)", report)
+        self.assertIn(f"`{self.name}` — User-owned NFL 2K5 USA default.xbe", report)
+        for changed in ("", self.private_class.replace("is absent", "hash differs"),
+                        self.private_class.replace("pinned USA retail default.xbe is absent", "Unicorn is missing"),
+                        self.private_class.replace("ClockReplays", "UnreviewedClass")):
+            with self.subTest(changed=changed):
+                self.write(self.name, changed)
+                rc, log, report = self.exercise()
+                self.assertEqual(rc, 1, log)
+                self.assertIn("Unexpected zero or missing test runner summary (1)", report)
+        (self.tests / self.name).unlink()
+        self.write("test_unlisted.py", self.private_class)
+        rc, log, report = self.exercise()
+        self.assertEqual(rc, 1, log)
+        self.assertIn("`test_unlisted.py`", report)
+
+    def test_local_windows_runner_uses_the_same_skip_rules(self):
+        def execute(command, environment, cwd, log, timeout, pidfile):
+            with log.open("wb") as stream:
+                return subprocess.run([sys.executable, str(self.tests / log.name.removesuffix(".log")), "-v"],
+                                      stdout=stream, stderr=subprocess.STDOUT).returncode
+
+        skipped_case = """class Optional(unittest.TestCase):
+    @unittest.skip('no optional feature')
+    def test_optional(self):
+        self.fail()
+"""
+        self.write(self.name, self.private_class)
+        self.write("test_unlisted.py", self.private_class)
+        self.write("test_optional.py", skipped_case)
+        self.write("test_mixed.py", skipped_case + """
+class Public(unittest.TestCase):
+    def test_public(self):
+        self.assertTrue(True)
+""")
+        with patch.object(runner, "run_process", side_effect=execute):
+            results = [runner.run_file(path, self.root, "Z:", self.root, {}, self.root, 30, "Z:", False)
+                       for path in sorted(self.tests.glob("test_*.py"))]
+        by_name = {result.name: result for result in results}
+        self.assertIn("private input required", by_name[self.name].skipped)
+        self.assertEqual(by_name["test_optional.py"].skipped, "all 1 collected cases skipped: no optional feature")
+        self.assertEqual(by_name["test_unlisted.py"].rc, 1)
+        self.assertIn("Zero tests ran", by_name["test_unlisted.py"].output)
+        self.assertIsNone(by_name["test_mixed.py"].skipped)
+        self.assertEqual(runner.summary(results), "SUMMARY: files=4 passed=1 failed=1 skipped=2 tests=3")
+
+    @unittest.skipUnless(sys.platform == "linux", "the Wine runner starts on Linux")
+    def test_empty_changed_selection_reports_zero_passes(self):
+        self.write("test_other.py", self.private_class)
+        with patch.object(runner, "changed_paths", return_value=set()), contextlib.redirect_stdout(io.StringIO()) as log:
+            self.assertEqual(runner.main(["--repo", str(self.root), "--changed"]), 0)
+        self.assertEqual(log.getvalue().splitlines()[-1], "SUMMARY: files=0 passed=0 failed=0 skipped=0 tests=0")
+
+    def test_collected_case_skips_are_distinct_from_zero_and_from_executed_cases(self):
+        self.write(self.name, self.private_class + """
+class Public(unittest.TestCase):
+    def test_public(self):
+        with self.subTest():
+            self.skipTest('one scenario is unavailable')
+        self.assertEqual(2 + 2, 4)
+    @unittest.skip('unavailable feature')
+    def test_unavailable(self): pass
+""")
+        self.write("test_platform.py", """@unittest.skip('only runs on the other platform')
+class Platform(unittest.TestCase):
+    def test_platform(self): pass
+""")
+        self.write("test_tail.py", "class Tail(unittest.TestCase):\n    def test_tail(self): self.assertTrue(True)")
+        rc, log, report = self.exercise()
+        self.assertEqual(rc, 0, log)
+        self.assertIn("files=3 passed=2 failed=0 skipped=1 tests=4 executed_cases=2 skipped_cases=2", report)
+        self.assertIn("Zero-case files requiring private inputs (0)", report)
+        self.assertIn("Files with every collected case explicitly skipped (1)", report)
+        self.assertIn("`test_platform.py` — only runs on the other platform", report)
+        self.assertIn("setUpClass (__main__.ClockReplays) skipped", log)
+        self.assertEqual(hosted.skip_details("2 passed, 1 skipped, 3 subtests passed in 0.10s")[0], 1)
+
+    def test_manifest_contains_only_existing_named_test_files_and_requirements(self):
+        manifest = hosted.PRIVATE_INPUTS
+        used = set()
+        for filename, classes in manifest["files"].items():
+            self.assertEqual(Path(filename).name, filename)
+            self.assertTrue((ROOT / "tests/mod_editor" / filename).is_file(), filename)
+            self.assertTrue(classes, filename)
+            used.update(classes.values())
+        self.assertEqual(used, set(manifest["requirements"]))
+        for item in manifest["requirements"].values():
+            self.assertTrue(item["description"])
+            self.assertTrue(all(message.strip("*") for message in item["messages"]))
 
 
 class ClassificationTests(unittest.TestCase):
@@ -542,7 +754,7 @@ class PathTests(unittest.TestCase):
         for option in ("--hydrate-from", "--hydrate-release"):
             for present_after in (False, True):
                 with self.subTest(option=option, present_after=present_after), tempfile.TemporaryDirectory() as temp:
-                    root = Path(temp)
+                    root = Path(temp).resolve()
                     repo = root / "selected"
                     tests = repo / "tests/mod_editor"
                     tests.mkdir(parents=True)
@@ -762,7 +974,7 @@ class ProcessTests(unittest.TestCase):
         # Native CPython also implements ._pth. Exercise the actual site hook
         # and a child interpreter without pretending these are Windows tests.
         with tempfile.TemporaryDirectory(prefix="winci pth ") as temp:
-            root = Path(temp)
+            root = Path(temp).resolve()
             python = root / "python"
             shutil.copy2(sys.executable, python)
             (root / "python._pth").write_text("\n".join([
@@ -807,8 +1019,8 @@ class ProcessTests(unittest.TestCase):
             while status.exists():
                 try:
                     state = status.read_text().split(") ", 1)[1].split()[0]
-                except FileNotFoundError:
-                    break
+                except (FileNotFoundError, ProcessLookupError):
+                    break  # reaped between the exists() check and the read: the descendant is gone
                 if state == "Z":
                     break
                 self.assertLess(time.monotonic(), deadline, "timed-out descendant is still running")

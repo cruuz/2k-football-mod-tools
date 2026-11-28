@@ -1,4 +1,4 @@
-"""CPU-only opening-toss deferral. EXPERIMENTAL / UNWITNESSED.
+"""CPU-only opening-toss deferral.
 
 The CPU winner defers at a nominal 240/272 (15/17, 88.2353%) probability,
 the 2023 regular-season count published by jpmSportsStats. This dated measured
@@ -12,9 +12,15 @@ seasons) that crossed halftime gave the second-half kickoff by the previous game
 match reset's call 0x55F61 (FUN_00055dd0 runs once per game before any toss; call 0xAF400, the clock record reset),
 clears it first. It is not one of HOOKS: the era rules wrap those four, and the reset must run in every mode.
 Revision-1 installs read "previous" and upgrade in place (the code, then the new hook).
+
+Revision 3 (beta 81) recognizes the opening toss before period 1 begins. A CPU
+deferral starts the loser's menu on Receive even when the loser's VIP prefers
+Kick. The loser can still move the cursor to Kick. Existing era-wrapped entry
+points retain their addresses.
 """
 from __future__ import annotations
 import sys
+from types import SimpleNamespace
 from . import nfl2k5_rules_patch as patch
 from . import nfl2k5_coin_defer_code as assembly
 from . import nfl2k5_coin_defer_code_b779 as assembly_b779
@@ -26,11 +32,10 @@ NOTICE = "CPU deferred. Choose for the first half."
 RATE_NUMERATOR, RATE_DENOMINATOR = 15, 17
 RATE_SOURCE = "https://www.reddit.com/r/nfl/comments/198fkwh/2023_regular_season_coin_toss_data/"
 BUILD_CAPTION = "Coin toss: CPU defer (modern, experimental; CPU winners only)"
-HELP_TEXT = ("EXPERIMENTAL / UNWITNESSED. Off in every preset. CPU winners defer "
-             "at the published 2023 rate of 240/272 (88.24%). The loser chooses "
-             "kick or receive for the first half and the deferring CPU receives "
-             "in the second half. Human winners keep the retail menu; a human "
-             "Defer choice is not available. Overtime keeps retail toss choices.")
+HELP_TEXT = ("CPU winners can defer at the 2023 regular-season rate of 240/272 (88.24%). "
+             "After a deferral, press A on Receive to take the opening kick. You can also "
+             "choose Kick. The deferring CPU receives after halftime. Human winners and "
+             "overtime keep the original Kick and Receive choices.")
 HOOKS = (("choose", 0x25E7B5, bytes.fromhex("8bd8a18c91c300"), b"\xe9"),
          ("menu", 0x25E81F, bytes.fromhex("e89cf8ffff"), b"\xe8"),
          ("halftime", 0x15864C, bytes.fromhex("e80f0ef9ff"), b"\xe8"),
@@ -82,8 +87,11 @@ def sites(places):
 
 
 def previous(places):
-    """Revision 1 (beta-69 .. the v0.9 RC): its code and its four hooks."""
-    return [(code_for(places, assembly_b779), patch.hook_sites(HOOKS, assembly_b779, places))]
+    """Recognize the original four-hook install and the five-hook beta 80 install."""
+    beta80 = SimpleNamespace(CODE=assembly.CODE_BETA80, RELOCATIONS=assembly.RELOCATIONS_BETA80,
+                             LABELS=assembly.LABELS_BETA80)
+    return [(code_for(places, assembly_b779), patch.hook_sites(HOOKS, assembly_b779, places)),
+            (code_for(places, beta80), patch.hook_sites(HOOKS + (INIT_HOOK,), beta80, places))]
 
 
 def status(payload):

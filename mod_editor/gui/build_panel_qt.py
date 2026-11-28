@@ -20,6 +20,7 @@ from PyQt5.QtWidgets import (
     QApplication,
     QCheckBox,
     QComboBox,
+    QDoubleSpinBox,
     QFileDialog,
     QGridLayout,
     QGroupBox,
@@ -292,8 +293,11 @@ from mod_editor.core import nfl2k5_catch_snap_limit as _catch_snap_limit  # noqa
 # b780-cv7: receivers block for a scrambling QB (off in every preset: a feel test for Noah).
 from mod_editor.core import nfl2k5_scramble_blocking as _scramble_blocking  # noqa: E402
 from mod_editor.core import nfl2k5_star_retention as _star_retention  # noqa: E402
+from mod_editor.core import nfl2k5_team_building as _team_building  # noqa: E402  b81 team building
 from mod_editor.core import nfl2k5_alien_prospect as _alien_prospect  # noqa: E402
 from mod_editor.core import nfl2k5_star_career as _star_career  # noqa: E402  b778-st2
+from mod_editor.core import nfl2k5_backfield_cards as _backfield_cards  # noqa: E402
+from mod_editor.core import nfl2k5_gadget_play as _gadget_play  # noqa: E402  beta 81 Q62
 from mod_editor.core import nfl2k5_sportscenter_lineup as _sportscenter_lineup  # noqa: E402
 from mod_editor.core import nfl2k5_inbox_standings as _inbox_standings  # noqa: E402  b778-pc3
 # b778-dr1: the broadcast-paced franchise draft (on in the Advanced and Experimental presets).
@@ -305,11 +309,16 @@ from mod_editor.core import nfl2k5_franchise_footer as _franchise_footer  # noqa
 from mod_editor.core import nfl2k5_contract_college_guard as _contract_guard  # noqa: E402
 from mod_editor.core import nfl2k5_load_user_team_guard as _load_guard  # noqa: E402  b780 mc1
 from mod_editor.core import nfl2k5_save_list_type_guard as _save_list_guard  # noqa: E402  b780 mc1
+from mod_editor.core import nfl2k5_show_block_guard as _show_block_guard  # noqa: E402  b81 ot-crash
+from mod_editor.core import nfl2k5_edition_save_notes as _edition_notes  # noqa: E402  beta 81 review M1
 from mod_editor.core import nfl2k5_coach_career_fix as _coach_career_fix  # noqa: E402  b780 c1 (wired at b780-int)
 from mod_editor.core import nfl2k5_history_pool as _history_pool  # noqa: E402  b780 hist1
+from mod_editor.core import nfl2k5_modern_numbers as _modern_numbers  # noqa: E402  b81 modern numbers
 from mod_editor.core import nfl2k5_sim_cb_tackles as _sim_cb_tackles  # noqa: E402
 from mod_editor.core import nfl2k5_sim_rb_injuries as _sim_rb_injuries  # noqa: E402  b779-sim2
 from mod_editor.core import nfl2k5_sim_realism as _sim_realism  # noqa: E402  b779-sim2 r4
+from mod_editor.core import nfl2k5_sim_outcomes as _sim_outcomes  # noqa: E402  b81 game outcomes (same option)
+from mod_editor.core import nfl2k5_sim_qb_injuries as _sim_qb_injuries  # noqa: E402  b81 slice 2: installed revision
 from mod_editor.core import nfl2k5_coach_carousel as _coach_carousel  # noqa: E402  b780-c6
 from mod_editor.core import nfl2k5_standings_records as _standings_records  # noqa: E402  b780-j1
 from mod_editor.core import nfl2k5_audible_legend as _audible_legend  # noqa: E402  b780-p3
@@ -344,6 +353,7 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("rookie_faces", _rookie_faces.BUILD_CAPTION, _rookie_faces.HELP_TEXT),  # b778-rh1
                  ("alien_prospect", _alien_prospect.BUILD_CAPTION, _alien_prospect.HELP_TEXT),  # b778-ee1
                  ("star_retention", _star_retention.BUILD_CAPTION, _star_retention.HELP_TEXT),  # b778-fa1
+                 ("team_building", _team_building.BUILD_CAPTION, _team_building.HELP_TEXT),  # b81 team building
                  ("practice_injuries", _practice_injuries.BUILD_CAPTION, _practice_injuries.HELP_TEXT),  # b778-pi1
                  # b778 ci2: the tab caption stays short; the full wording is the module help.
                  ("cpu_ball_carriers", "CPU carriers in bounds; QBs slide past sticks (experimental)",
@@ -354,6 +364,8 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("catch_snap_limit", _catch_snap_limit.BUILD_CAPTION, _catch_snap_limit.HELP_TEXT),  # b780-cv4
                  ("scramble_blocking", _scramble_blocking.BUILD_CAPTION, _scramble_blocking.HELP_TEXT),  # b780-cv7
                  ("star_career", _star_career.BUILD_CAPTION, _star_career.HELP_TEXT),  # b778-st2
+                 ("backfield_cards", _backfield_cards.BUILD_CAPTION, _backfield_cards.HELP_TEXT),
+                 ("gadget_play", _gadget_play.BUILD_CAPTION, _gadget_play.HELP_TEXT),  # beta 81 Q62
                  ("sportscenter_lineup", _sportscenter_lineup.BUILD_CAPTION, _sportscenter_lineup.HELP_TEXT),  # b778-sc2
                  ("inbox_standings", _inbox_standings.BUILD_CAPTION, _inbox_standings.HELP_TEXT),  # b778-pc3
                  # b778 ci2: the tab caption stays short; the full wording is the module help.
@@ -367,11 +379,14 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("contract_college_guard", _contract_guard.BUILD_CAPTION, _contract_guard.HELP_TEXT),  # b778-cr1
                  ("load_user_team_guard", _load_guard.BUILD_CAPTION, _load_guard.HELP_TEXT),  # b780 mc1
                  ("save_list_type_guard", _save_list_guard.BUILD_CAPTION, _save_list_guard.HELP_TEXT),  # b780 mc1
+                 ("show_block_guard", _show_block_guard.BUILD_CAPTION, _show_block_guard.HELP_TEXT),  # b81 ot-crash
+                 ("edition_save_notes", _edition_notes.BUILD_CAPTION, _edition_notes.HELP_TEXT),  # beta 81 review M1
                  ("coach_career_fix", _coach_career_fix.BUILD_CAPTION, _coach_career_fix.HELP_TEXT),  # b780 c1
                  ("history_pool", _history_pool.BUILD_CAPTION, _history_pool.HELP_TEXT),  # b780 hist1
+                 ("modern_numbers", _modern_numbers.BUILD_CAPTION, _modern_numbers.HELP_TEXT),  # b81 modern numbers
                  ("sim_cb_tackles", _sim_cb_tackles.BUILD_CAPTION, _sim_cb_tackles.HELP_TEXT),  # b778-cb1
                  ("sim_rb_injuries", _sim_rb_injuries.BUILD_CAPTION, _sim_rb_injuries.HELP_TEXT),  # b779-sim2
-                 ("sim_realism", _sim_realism.BUILD_CAPTION, _sim_realism.HELP_TEXT),  # b779-sim2 r4
+                 ("sim_realism", _sim_realism.BUILD_CAPTION, _sim_realism.HELP_TEXT + " " + _sim_outcomes.HELP_TEXT),  # b779-sim2 r4; b81 game outcomes
                  ("coach_carousel", _coach_carousel.BUILD_CAPTION, _coach_carousel.HELP_TEXT),  # b780-c6
                  ("standings_records", _standings_records.BUILD_CAPTION, _standings_records.HELP_TEXT),  # b780-j1
                  ("audible_legend", _audible_legend.BUILD_CAPTION, _audible_legend.HELP_TEXT),  # b780-p3
@@ -383,21 +398,35 @@ BUILD_OPTIONS = (*r62_ui.OPTIONS, *ANNIVERSARY_OPTIONS,
                  ("modern_clock_led", _clock_led.BUILD_CAPTION, _clock_led.HELP_TEXT))  # b778-sd4
 BUILD_KEYS = tuple(row[0] for row in BUILD_OPTIONS)
 # b780 n6: options whose beta-79 install reads "previous" in inspect(); the build upgrades it in place
-PREVIOUS_UPGRADE_KEYS = {"honors_page": "honors page", "camera": "camera", "k128_memory": "128 MB memory",
+PREVIOUS_UPGRADE_KEYS = {"punter_holder": "saved field-goal holders", "modern_injured_reserve": "modern injured reserve", "honors_page": "honors page", "camera": "camera", "k128_memory": "128 MB memory",
+                         "coin_defer": "opening coin toss", "decided_clock": "late-game clock",
+                         "load_user_team_guard": "franchise load guard", "save_list_type_guard": "boot save list",
+                         "historic_teams_quick_game": "historic teams in Quick Game",
                          # b780 rev1: these two read "previous" on a v0.8 disc too, and the build upgrades them in
                          # place (catch_slider_patch.apply, nfl2k5_sim_cb_tackles.apply); their boxes were greyed out
                          "catch_slider": "catching slider", "sim_cb_tackles": "cornerback tackle credit",
                          # b780 db2: the beta-79 RB injury guard (no fullback rule) is upgraded in place as well
                          "sim_rb_injuries": "simulated RB injuries",
                          # b780 hunt6: revision 1 of the franchise record fixes (the v0.9 release candidates)
-                         "coach_career_fix": "coach record fix"}
+                         "coach_career_fix": "coach record fix",
+                         # b81 history-pool: the v0.9 (beta 80) career history pool, upgraded in place
+                         "history_pool": "career history pool",
+                         # b81 ot-crash review D2: the beta-79 .. v0.9 overtime owner (only ot_expiry's tail differs)
+                         # reads "previous"; the owner loop upgrades it in place (nfl2k5_overtime.apply)
+                         "overtime": "modern overtime rules"}
+PREVIOUS_UPGRADE_KEYS["modern_numbers"] = "modern jersey numbers"  # b81: an earlier page revision is updated in place
 # b780 studio1: older revisions that read "legacy" and that the build upgrades in place (progression.apply and
 # franchise_economy.apply both accept "retail" or "legacy"). A v0.8 disc reads legacy for both; the boxes were greyed out
 # with no badge and no line in the disc summary, so retirement by age and the economy revision could not be added.
 # "returner_fix" is dormant until b780 st1 (the KR/PR getter's slot check) is merged: only then does a beta-79 or older disc
 # read "legacy" for it, and nfl2k5_returner_fix.apply accepts "retail" or "legacy" the same way.
 LEGACY_UPGRADE_KEYS = {"progression": "player growth, decline and retirement", "franchise_economy": "2026 franchise economy",
-                       "returner_fix": "CPU kick and punt returner fix"}
+                       "returner_fix": "CPU kick and punt returner fix",
+                       # beta 81: the beta 80 (v0.9) simulated season realism reads "legacy"; sim_realism.apply updates it
+                       "sim_realism": "simulated season realism",
+                       # beta 81 combined calibration: the v0.8 / v0.9 / beta 80 pass protection (its simulated
+                       # pass-pressure centre read a retail float) reads "legacy"; pass_protection.apply updates it
+                       "pass_protection": "pass protection"}
 
 
 def rebuild_only_reason(state: Mapping[str, object]) -> str:
@@ -412,20 +441,27 @@ def rebuild_only_reason(state: Mapping[str, object]) -> str:
     "128 MB memory options differ", the installed heap, early and 128 MB settings not being the page's plan). The page used to
     offer Needs update boxes on such a disc and then let the engine refuse. Both Build and Game Fixes ask this one function."""
 
+    if state.get("v09_standard_update"):
+        return ("On this v0.9 standard disc you can select the boot save-list repair, modern injured reserve, starting backfield cards, the gadget player on gadget plays or simulated injuries. "
+                "Choose the changes you want. Use your retail disc for other changes or a league project.")
     if state.get("modern_practice_field_team_logo") == "applied" and state.get("modern_practice_field") not in ("applied", "retail"):
+        # b81 relrev M1: this is also every SOFTDRINK standard disc this release builds (the facility is composed with the
+        # disc's colour grade and art, so it never matches the one stored reading), not only a disc an older build made.
         what = "disc" if state.get("container") == "xiso" else "executable"
-        return (f"This {what} already has the practice field's team logo at midfield, put there by an older build. This release "
-                f"can neither keep it nor update it in place, so it cannot build on top of this {what}. To change it, build "
-                f"again from a dump of your own retail disc.")
+        return (f"This {what} already has the practice field's team logo at midfield, and this release does not recognise "
+                f"its practice field, so it can neither keep the logo nor take it off and cannot build on top of this {what}. "
+                f"To change other options, build again from a dump of your own retail disc.")
     return ""
 # b780 n6: beta-79 installs this release reads ("previous") but cannot update in place (they grew, or MyCareer and its
 # companions are linked together); the option stays off and says to rebuild from the retail game
-PREVIOUS_REBUILD_KEYS = {"my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",
+PREVIOUS_MULTIPLE_RELEASES = {"pass_rush_stats", "history_screen"}
+PREVIOUS_REBUILD_KEYS = {"history_screen": "Franchise History", "my_career": "MyCareer", "my_career_home": "Career Home", "player_progress": "Player Progress",
                          "pass_rush_stats": "pass rush stats", "scorebug_runtime": "scorebug effects",
                          "sim_realism": "simulated season realism",
-                         # b780 studio1: the released v0.8 disc reads "previous" for these two as well. Rookie faces cannot
-                         # be written over the beta-79 generator bytes (xbe_apply wants retail or this release's), and the
-                         # Player Progress row belongs to the screen above; both were greyed out with a generic badge.
+                         # b780 studio1: the released v0.8 disc reads "previous" for these two as well. A Build cannot
+                         # put rookie faces over an earlier release's generator bytes (it starts from retail; b81: only the
+                         # in-place v0.9 update and edits upgrade the v0.9 revision), and the Player Progress row belongs
+                         # to the screen above; both were greyed out with a generic badge.
                          "rookie_faces": "rookie faces and first names", "player_progress_visible": "Player Progress row"}
 # b780 studio1: the plan fields behind the installed runtime options the build will not drop (the modules listed in
 # nfl2k5_throw_tuning._check_installed_runtime_settings, and the plan fields their derived switches read:
@@ -436,6 +472,7 @@ KEPT_WHEN_INSTALLED = ("coin_defer", "decided_clock", "historic_teams_quick_game
                        "modern_practice_field", "modern_practice_field_team_logo", "k128_memory", "letter_grades", "honors_page",
                        "coach_ai")
 KEPT_NEEDS = {"modern_practice_field_team_logo": "modern_practice_field"}
+KEPT_PREVIOUS = frozenset(KEPT_WHEN_INSTALLED).intersection(PREVIOUS_UPGRADE_KEYS)
 VENUE_BUILD_KEYS = (
     "modern_sofi", "modern_highmark", "modern_att", "modern_levis", "modern_allegiant",
     "modern_mercedes_benz", "modern_usbank", "modern_lucas_oil", "modern_state_farm",
@@ -531,6 +568,13 @@ class BuildPanel(QWidget):
         self._heartbeat_timer.timeout.connect(self._heartbeat)
 
         self._state: dict[str, object] | None = None
+        self._v09_source_choices = None
+        # b81 relrev M2: a saved project's build settings restored on this disc. A project always needs a full build. A
+        # click is judged by value instead, wherever the disc cannot take a full build (see _in_place_explicit).
+        self._project_settings_restored = False
+        self._sim_qb_source_choices = None
+        self._sim_qb_other_choice = False
+        self._sim_qb_authored = False
         self._preset_applying = False         # fx1: apply_preset holds the child-ticks-parent cascade
         self._keep_selection_on_state = False # recovering a vanished build copy keeps the user's ticks
         self._available = mod_build.availability() if available is None else available
@@ -555,6 +599,8 @@ class BuildPanel(QWidget):
         self.playbook_packs: list[str] = []
         self._music_shuffle_selection = None  # the Music page's playlist document (schema 1), set by the shell
         self._senior_bowl_options = {}
+        self._team_number_scale = {}
+        self._my_career_home = mod_build.BuildPlan.my_career_home
         self._guardian_players = None
         self._hires_budget_identity = None
         self._hires_budget_receipt = None
@@ -726,7 +772,7 @@ class BuildPanel(QWidget):
         self.console_memory_combo.setAccessibleName("Console memory")
         self.console_memory_combo.setToolTip(console_memory.HELP_TEXT)
         self.console_memory_combo.setAccessibleDescription(console_memory.HELP_TEXT)
-        self.console_memory_combo.currentIndexChanged.connect(lambda _index: self._refresh())
+        self.console_memory_combo.currentIndexChanged.connect(self._console_target_changed)
         self.console_memory_caption.setBuddy(self.console_memory_combo)
         memory_row.addWidget(self.console_memory_combo, 1)
         mk.addLayout(memory_row)
@@ -846,6 +892,7 @@ class BuildPanel(QWidget):
         # tested in-game / New franchises only / Not available in this release.  The long
         # technical story sits under Details so the labels never push the page wide.
         self._helpers: dict[str, QLabel] = {}
+        self._helper_bases: dict[str, str] = {}   # b81 relrev M3: a helper's own text under a one-line note
         self._badges: dict[str, QLabel] = {}
         self._static_badges: dict[str, str] = {}
         self._needs_image: set[str] = set()
@@ -1026,6 +1073,10 @@ class BuildPanel(QWidget):
         for key, caption, help_text in BUILD_OPTIONS:
             setattr(self, key + "_check", self._option(g, key, caption, help_text,
                     badge="EXPERIMENTAL / UNWITNESSED", needs_image=True))
+            if key == "sim_realism":
+                self._add_sim_qb_injuries(g)
+        for parent in (self.sim_realism_check, self.k128_memory_check):
+            parent.clicked.connect(self._sim_qb_injury_dependency_changed)
         self.speed_threshold_spin = speed_threshold_ui.add_control(g, self._refresh)  # b780-cv5
         self.cpu_money_downs_level = QComboBox()
         for caption, value in r62_ui.LEVELS["cpu_money_downs"]:
@@ -1098,9 +1149,11 @@ class BuildPanel(QWidget):
                                              "Kickoff: 35 · touchback: 35 · PAT snap: 15.",
                                              details="These describe the shipped patch, not a newly verified NFL ruleset. Two-point tries stay at the 2; "
                                                      "the kick meter and kicker curves are re-spaced so a 99 leg reaches 65-69 yards; onside and safety "
-                                                     "kicks are untouched; the CPU keeps its original field-goal range for fourth-down decisions.")
+                                                     "kicks are untouched; the CPU keeps its original field-goal range for fourth-down decisions. "
+                                                     "CPU kickers aim with two thirds of their original error (your own kicks are unchanged).")
         self.kick_power_check = self._option(g, "kick_power", "More kicking power; keep 2004 kick spots",
-                                             "The Basic preset's kicking fix: ~70-yard legs for elite kickers, original kick spots.")
+                                             "The Basic preset's kicking fix: ~70-yard legs for elite kickers, original kick spots. "
+                                             "CPU kickers also aim with two thirds of their original error.")
         self.kickoff_alignment_check = self._option(g, "kickoff_alignment", "Dynamic kickoff alignment",
                                                     "Coverage on the receiving 40, return setup zone 35-30, two returners deep.",
                                                     badge=NOT_TESTED, needs_image=True)
@@ -1144,9 +1197,10 @@ class BuildPanel(QWidget):
                                                     "On/Off toggle really works (switch it On in Penalty Settings). Rates are ESTIMATED pending a playtest.")
         self.kick_laces_check = self._option(g, "kick_laces", "Laces face the posts on kicks",
                                              "On field goals and PATs the held ball is turned so the laces face the posts.", badge=NOT_TESTED)
-        self.punter_holder_check = self._option(g, "punter_holder", "Punter holds on field goals and PATs",
-                                                "The depth chart's first punter holds the ball, as in the modern NFL; the old holder rule only if a team has no punter.",
-                                                badge=NOT_TESTED)
+        self.punter_holder_check = self._option(
+            g, "punter_holder", "Use the punter as the default holder",
+            "Sets P1 in the disc roster for clubs with an empty or inherited holder. The player you choose in "
+            "Special Teams holds the ball on field goals and extra points. The build summary lists preserved choices.")
         self.uniform_choice_check = self._option(
             g, "uniform_choice", r62_ui.uniform_choice_caption(""),
             r62_ui.UNIFORM_CHOICE_HELP, badge=NOT_TESTED)
@@ -1218,6 +1272,12 @@ class BuildPanel(QWidget):
                                                       "first three seasons move up or down on their passing efficiency; a veteran QB never "
                                                       "loses ratings for a down year. Retirement ages follow NFL career lengths. Draft-day "
                                                       "ratings are unchanged.")
+        self.stock_age_combo = QComboBox()
+        self.stock_age_combo.addItem("2026 stock ages: preserve playing ages", "preserve_age")
+        self.stock_age_combo.addItem("2026 stock ages: keep historical birthdays", "keep_birthdates")
+        self.stock_age_combo.setToolTip("Applies to original roster players when the 2026 season and player growth are both selected.")
+        self.stock_age_combo.setAccessibleName("Stock player ages for 2026 progression")
+        f.addWidget(self.stock_age_combo)
         self.franchise_economy_check = self._option(
             f, "franchise_economy", tt.franchise_economy_patch.BUILD_CAPTION,
             "New franchises with the matching contract roster. Money displays in real dollars; contracts are fitted.",
@@ -1340,6 +1400,13 @@ class BuildPanel(QWidget):
                                                          "Use Studio's save tools to promote or demote an existing reserve. Final cuts use native "
                                                          "free agency instead of creating new reserves. Modern practice-squad eligibility and CPU "
                                                          "signings are unavailable. Only use reserve saves with this compatibility patch.")
+        # b81 qb34 (coordinator's rule): unticking what the quarterback floor needs while injuries are above zero turns
+        # the injuries to Retail and says why.
+        self._qb_floor_message = ""
+        for key in ("modern_injured_reserve", "franchise_economy", "practice_squad"):
+            box = getattr(self, key + "_check", None)
+            if box is not None:
+                box.clicked.connect(self._qb_floor_need_changed)
         self.depth_locks_check = self._option(f, "depth_locks", "Depth chart locks (LT/RT, LG/RG, KR/PR)",
                                               "Your depth chart moves and returner picks stay put through the weekly auto-depth.",
                                               badge=NOT_TESTED,
@@ -1437,6 +1504,11 @@ class BuildPanel(QWidget):
         self.classic_teams_check = self._option(
             r, "classic_teams", classic_teams.UI_LABEL, classic_teams.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_classic_crowd as classic_crowd  # b81-seamen
+        self.classic_crowd_check = self._option(
+            r, "classic_crowd", classic_crowd.UI_LABEL, classic_crowd.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        self.classic_teams_check.toggled.connect(lambda _on: self._sync_classic_crowd())   # review N4
         self._espn25_plan_cache: tuple[tuple[str, int, int] | None, str] = (None, "")
         from mod_editor.core import nfl2k5_weather as weather
         from mod_editor.core import nfl2k5_weather_haze as haze
@@ -1667,6 +1739,10 @@ class BuildPanel(QWidget):
         self.hair_styles_check = self._option(
             r, "hair_styles", hair_styles.BUILD_CAPTION, hair_styles.HELP_TEXT,
             badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
+        from mod_editor.core import nfl2k5_helmet_side_numbers as helmet_sides  # b81 helmet-sides
+        self.helmet_side_numbers_check = self._option(
+            r, "helmet_side_numbers", helmet_sides.BUILD_CAPTION, helmet_sides.HELP_TEXT,
+            badge="EXPERIMENTAL / UNWITNESSED", needs_image=True)
         from mod_editor.core import nfl2k5_modern_fans as fans  # b77-fr1
         self.modern_fans_check = self._option(
             r, "modern_fans", fans.BUILD_CAPTION, fans.HELP_TEXT,
@@ -1829,7 +1905,7 @@ class BuildPanel(QWidget):
         history_row = QHBoxLayout()
         history_row.addWidget(QLabel("Team history CSV (optional)"))
         self.team_history_field = QLineEdit()
-        self.team_history_field.setPlaceholderText("last_name,first_name,birth_date,season,team — replaces the built-in data")
+        self.team_history_field.setPlaceholderText("last_name,first_name,birth_date,season,team: replaces the built-in data")
         history_row.addWidget(self.team_history_field, 1)
         self.team_history_button = QPushButton("Choose…")
         self.team_history_button.clicked.connect(self._choose_team_history)
@@ -1838,7 +1914,7 @@ class BuildPanel(QWidget):
         names_row = QHBoxLayout()
         names_row.addWidget(QLabel("Prospect names CSV (optional)"))
         self.prospect_names_field = QLineEdit()
-        self.prospect_names_field.setPlaceholderText("first,last (485 rows) — replaces the built-in list")
+        self.prospect_names_field.setPlaceholderText("first,last (485 rows): replaces the built-in list")
         names_row.addWidget(self.prospect_names_field, 1)
         self.prospect_names_button = QPushButton("Choose…")
         self.prospect_names_button.clicked.connect(self._choose_prospect_names)
@@ -1847,7 +1923,7 @@ class BuildPanel(QWidget):
         honors_row = QHBoxLayout()
         honors_row.addWidget(QLabel("Award history JSON or CSV (optional)"))
         self.honors_history_field = QLineEdit()
-        self.honors_history_field.setPlaceholderText("pool,index,first,last,birth_date,season,honor,source — replaces the built-in data")
+        self.honors_history_field.setPlaceholderText("pool,index,first,last,birth_date,season,honor,source: replaces the built-in data")
         honors_row.addWidget(self.honors_history_field, 1)
         self.honors_history_button = QPushButton("Choose…")
         self.honors_history_button.clicked.connect(self._choose_honors_history)
@@ -1990,6 +2066,8 @@ class BuildPanel(QWidget):
         self.roster_edits_check.toggled.connect(lambda on: self.roster_edits_status.setVisible(on and bool(self.roster_edits_status.text())))
         r62_ui.connect_requirements(self._requirement_box, self._requirement_child_toggled, self._requirement_parent_toggled,
                                    self._requirement_parent_clicked)
+        self.depth_chart_rows_check.clicked.connect(self._special_rows_clicked)   # b81 relrev M3
+        self.gadget_play_check.clicked.connect(self._gadget_play_clicked)
         self.historic_stock_books_check.toggled.connect(
             lambda on: self._exclusive_books("historic_stock_books", "playbook_pair", on))
         self.playbook_pair_check.toggled.connect(
@@ -2012,13 +2090,172 @@ class BuildPanel(QWidget):
         for combo in self.findChildren(QComboBox):
             if combo.minimumWidth() == 0 and combo.minimumSizeHint().width() > COMBO_FLOOR_WIDTH:
                 combo.setMinimumWidth(COMBO_FLOOR_WIDTH)
+        update_boxes = {self._boxes()[key] for key in mod_build.V09_UPDATE_CHOICES}
         for box in self.findChildren(QCheckBox):
             box.toggled.connect(lambda _c: self._refresh())
+            if box not in update_boxes:
+                box.clicked.connect(self._v09_other_selected)
+            box.clicked.connect(self._other_sim_qb_choice)
+        for combo in self.findChildren(QComboBox):
+            if combo is not self.qb_injury_mode and combo is not self.cpu_trades_mode:  # b81 trades-all: rides with it
+                combo.activated.connect(self._v09_other_selected)
+                combo.activated.connect(self._other_sim_qb_choice)
+        for spin in (*self.findChildren(QSpinBox), *self.findChildren(QDoubleSpinBox)):
+            if spin is not self.qb_injury_rate:
+                spin.valueChanged.connect(self._v09_spin_edited)
+                spin.valueChanged.connect(self._edited_sim_qb_neighbor_spin)
+        for field in self.findChildren(QLineEdit):
+            if (field not in (self.source_field, self.target_field, self.name_field, self.author_field)
+                    and not self.qb_injury_rate.isAncestorOf(field)):
+                field.textEdited.connect(self._v09_other_selected)
+                field.textEdited.connect(self._other_sim_qb_choice)
         self.ceiling_spin.valueChanged.connect(lambda _v: self._refresh())
         for field in (self.team_history_field, self.career_stats_field, self.prospect_names_field, self.roster_edits_field,
                       self.espn25_plan_field, self.honors_history_field):
             field.textChanged.connect(lambda _t: self._refresh())
         self._refresh()
+
+    def _add_sim_qb_injuries(self, layout):
+        # b81 slices 2 and 3 (pos2/DESIGN.md 3.5, pos3/DESIGN.md 3): one option for every position but the kickers.
+        help_text = ("Realistic adds the injuries simulated franchise games were missing, for every position except "
+                     "kickers and punters: quarterbacks, running backs, fullbacks, receivers, tight ends, the offensive "
+                     "line, the defensive line, linebackers, cornerbacks and safeties. Each simulated play has a small "
+                     "chance that depends on the player's "
+                     "Durability and the Injury slider. Nothing is scripted: some seasons are healthy and some are not. "
+                     "From a franchise's third season on, the chances follow the league's Durability ratings as they "
+                     "change, so injuries neither creep up nor die out over a long franchise; a more durable player is "
+                     "still hurt less often than a less durable one. "
+                     "While it is on, the weekly running back roll is replaced by the per-carry chance, and your own club "
+                     "is treated like every other club in the games you simulate. Simulated games also get modern NFL "
+                     "field goal accuracy by distance, CPU clubs try 50-yard field goals about as often as NFL teams, and a "
+                     "catch-and-run breakaway that starts inside the offense's own 28 is tackled at the 10 instead of always "
+                     "scoring. Injuries in games you play are not changed, nor is their kicking or scoring. "
+                     "Realistic and Custom require 128 MB and Simulated season realism. "
+                     "Realistic and Custom above 0 percent also add modern injured reserve, the franchise economy and "
+                     "reserve save compatibility, so a club is never left without a quarterback.")  # b81 qb34: the floor
+        if mod_build._piece3_bits():  # b81 qb34: said only once piece 3's rules are handed over to the Studio
+            help_text += (" The rules for who starts at quarterback ride with Realistic and Custom when depth chart "
+                          "locks and SPECIAL rows are on, and Retail removes them.")
+        caption = QLabel("Simulated injuries (all positions)")
+        self.qb_injury_mode = QComboBox()
+        caption.setBuddy(self.qb_injury_mode)
+        for name, value in (("Keep the source setting", None), ("Retail (original 2K5 simulation)", "retail"),
+                            ("Realistic", "realistic"), ("Custom (realistic passing, your injury rate)", "custom")):
+            self.qb_injury_mode.addItem(name, value)
+        self.qb_injury_mode.setAccessibleName(caption.text())
+        self.qb_injury_mode.setToolTip(help_text)
+        self.qb_injury_mode.setAccessibleDescription(help_text)
+        row = QHBoxLayout()
+        row.addWidget(caption)
+        row.addWidget(self.qb_injury_mode)
+        layout.addLayout(row)
+        self.qb_injury_help = WrappedLabel(help_text)
+        layout.addWidget(self.qb_injury_help)
+        self.qb_injury_rate_label = QLabel("Base chance per eligible simulated play")
+        self.qb_injury_rate = QDoubleSpinBox()
+        self.qb_injury_rate.setDecimals(3)
+        self.qb_injury_rate.setRange(0.0, 100.0)
+        self.qb_injury_rate.setSingleStep(0.001)
+        self.qb_injury_rate.setSuffix(" %")
+        self.qb_injury_rate.setValue(mod_build.BuildPlan.sim_qb_injury_rate)
+        self.qb_injury_rate_label.setBuddy(self.qb_injury_rate)
+        self.qb_injury_rate.setAccessibleName(self.qb_injury_rate_label.text())
+        rate_help = ("Realistic uses 0.310%. Durability, the Injury slider and the type of play change each chance. "
+                     "Custom 0% keeps the original injury roll and the updated simulated passing model, and needs "
+                     "no injured reserve or economy changes.")
+        self.qb_injury_rate.setToolTip(rate_help)
+        self.qb_injury_rate.setAccessibleDescription(rate_help)
+        self.qb_injury_rate_help = WrappedLabel(rate_help)
+        rate = QHBoxLayout()
+        rate.addWidget(self.qb_injury_rate_label)
+        rate.addWidget(self.qb_injury_rate)
+        layout.addLayout(rate)
+        layout.addWidget(self.qb_injury_rate_help)
+        # b81 trades-all (ruling R6): computer trades at every position have their own control beside the quarterback
+        # option; "Same as the quarterback option" leaves the plan unnamed, so they follow it.
+        trades_help = ("Computer clubs trade players for draft picks when one club has a hole and another has a spare "
+                       "man: about 16 trades up to the Week 9 deadline and about 13 to 15 in each preseason after the "
+                       "first (a new franchise's first preseason has none). Clubs you control are never part of a "
+                       "computer trade. Retail keeps the original game's few player swaps.")
+        trades_caption = QLabel("Computer trades")
+        self.cpu_trades_mode = QComboBox()
+        trades_caption.setBuddy(self.cpu_trades_mode)
+        for name, value in (("Same as the quarterback option", None), ("Realistic", "realistic"), ("Retail", "retail")):
+            self.cpu_trades_mode.addItem(name, value)
+        self.cpu_trades_mode.setAccessibleName(trades_caption.text())
+        self.cpu_trades_mode.setToolTip(trades_help)
+        self.cpu_trades_mode.setAccessibleDescription(trades_help)
+        trades_row = QHBoxLayout()
+        trades_row.addWidget(trades_caption)
+        trades_row.addWidget(self.cpu_trades_mode)
+        layout.addLayout(trades_row)
+        self.cpu_trades_help = WrappedLabel(trades_help)
+        layout.addWidget(self.cpu_trades_help)
+        self.cpu_trades_mode.currentIndexChanged.connect(lambda _index: self._refresh())
+        self.qb_injury_mode.currentIndexChanged.connect(self._sim_qb_injury_mode_changed)
+        self.qb_injury_rate.valueChanged.connect(lambda _value: (self._qb_floor_ticks(), self._refresh()))
+
+    def _sim_qb_injury_mode_changed(self):
+        needs_simulator = self.qb_injury_mode.currentData() in ("realistic", "custom")
+        if needs_simulator and self.console_memory() == 128 and self.qb_injury_mode.isEnabled():
+            for key in ("sim_realism", "k128_memory"):
+                parent = getattr(self, key + "_check")
+                if parent.isEnabled():
+                    fresh = not parent.isChecked()
+                    parent.setChecked(True)
+                    if fresh:  # b81 relrev M4: 128 MB memory brings its early form, as a click on the box does
+                        r62_ui.tick_default_children(key, self._requirement_box)
+        self._qb_floor_message = ""
+        self._qb_floor_ticks()
+        self._refresh()
+
+    def _qb_injuries_above_zero(self):
+        mode = self.qb_injury_mode.currentData() if self.qb_injury_mode.isEnabled() else None
+        return mode == "realistic" or (mode == "custom" and self.qb_injury_rate.value() > 0)
+
+    def _qb_floor_ticks(self):
+        """b81 qb34 (coordinator's rule): injuries above zero tick what the quarterback floor needs."""
+        if not self._qb_injuries_above_zero() or self.console_memory() != 128:
+            return
+        for key in ("modern_injured_reserve", "franchise_economy", "practice_squad"):
+            box = getattr(self, key + "_check", None)
+            if box is not None and box.isEnabled() and not box.isChecked() and not self._installed(key):
+                box.setChecked(True)
+
+    def _qb_floor_need_changed(self, value):
+        if value or self._preset_applying or not self._qb_injuries_above_zero() or self.console_memory() != 128:
+            return
+        self.qb_injury_mode.setCurrentIndex(self.qb_injury_mode.findData("retail"))
+        self._qb_floor_message = ("Simulated injuries changed to Retail: injuries above 0 percent need modern "
+                                  "injured reserve, the franchise economy and reserve save compatibility so a club is "
+                                  "never left without a quarterback.")
+        self._refresh()
+
+    def _sim_qb_injury_dependency_changed(self, value):
+        if (not value and not self._preset_applying and self.qb_injury_mode.currentData() in ("realistic", "custom")
+                and self.console_memory() == 128):
+            self.qb_injury_mode.setCurrentIndex(0)
+            # b81 relrev m2: said, as the floor needs are (the mode change above cleared the message)
+            self._qb_floor_message = ("Simulated injuries changed to Keep the source setting: Realistic and Custom need "
+                                      "Simulated season realism and 128 MB memory (K128).")
+            self._refresh()
+
+    def _other_sim_qb_choice(self, *_):
+        # An explicit choice still belongs to a full build when its value equals the default.
+        self._sim_qb_other_choice = True
+
+    def _edited_sim_qb_neighbor_spin(self, _value):
+        if self.sender().hasFocus():
+            self._other_sim_qb_choice()
+
+    @staticmethod
+    def _sim_qb_companion_choices(plan):
+        values = plan.to_recipe()
+        for name in ("sim_qb_injuries", "sim_qb_injury_rate", "qb_room", "cpu_trades", "sim_realism", "k128_memory", "name",
+                     "author", "notes", "modern_injured_reserve", "franchise_economy",
+                     "practice_squad"):  # b81 qb34: floor needs; b81 trades-all: the computer trades control
+            values.pop(name, None)
+        return values
 
     def _option(self, layout: QVBoxLayout, key: str, label: str, helper: str = "", *, badge: str = "",
                 needs_image: bool = False, details: str = "") -> QCheckBox:
@@ -2051,7 +2288,7 @@ class BuildPanel(QWidget):
         # b779-ui3: the qualifier badge sat beside the check box, so a long check box label plus a long
         # badge set the row's minimum width (a 425 px label + a 200 px badge at 100%, nearly 1,000 px on
         # Windows). It now gets its own line and wraps; the badge still names every qualifier at a glance.
-        badge_label = QLabel(badge)
+        badge_label = QLabel(badge, row)
         badge_label.setObjectName("optionBadge")
         badge_label.setWordWrap(True)
         badge_label.setContentsMargins(30, 0, 0, 0)
@@ -2061,7 +2298,7 @@ class BuildPanel(QWidget):
         badge_row.addWidget(badge_label)
         badge_row.addStretch(1)
         rl.addLayout(badge_row)
-        helper_label = WrappedLabel(helper)
+        helper_label = WrappedLabel(helper, row)
         helper_label.setObjectName("throwMuted")
         helper_label.setWordWrap(True)
         helper_label.setIndent(30)
@@ -2244,6 +2481,13 @@ class BuildPanel(QWidget):
                      and platform_compat.paths_alias(previous_path, incoming_path))
         keep_selection = ((self._reading and (self._state is None or same_disc))
                           or self._keep_selection_on_state)
+        if previous_path and not same_disc:
+            self._v09_source_choices = None
+            self._sim_qb_source_choices = None
+            if not keep_selection:
+                self._project_settings_restored = False
+                self._sim_qb_other_choice = False
+                self._sim_qb_authored = False
         softdrink_choices = self._softdrink_build_settings() if self.softdrink_project_field.text().strip() else None
         combo = self.screen_timing_combo
         if combo is not None and state.get("container") == "xiso" and (
@@ -2251,6 +2495,7 @@ class BuildPanel(QWidget):
             details = mod_build.inspect_screen_timing(state["path"], combo.currentText())
             state = {**state, "screen_timing": details["status"], "screen_timing_details": details}
         self._state = state
+        self._set_helper_note("depth_chart_rows", "")
         # Source inspection starts a new selection; installed choices are
         # projected from this disc, then saved project choices can be restored.
         # Every feature toggle is cleared here explicitly: throw used not to be
@@ -2260,9 +2505,21 @@ class BuildPanel(QWidget):
             box.setChecked(False)
         if not keep_selection:
             self._memory_ticks.clear()  # b780-m64b: a new disc starts clean at 128 MB too
+            self._my_career_home = mod_build.BuildPlan.my_career_home
         self.speed_threshold_spin.blockSignals(True)  # b780-cv5: a new disc starts at 0, like the check boxes
         self.speed_threshold_spin.setValue(0)
         self.speed_threshold_spin.blockSignals(False)
+        if not keep_selection:
+            blocked = self.qb_injury_mode.blockSignals(True)
+            self.qb_injury_mode.setCurrentIndex(0)
+            self.qb_injury_mode.blockSignals(blocked)
+            installed_qb = state.get("sim_qb_injury_settings") or {}
+            blocked = self.qb_injury_rate.blockSignals(True)
+            self.qb_injury_rate.setValue(installed_qb.get("custom_rate", mod_build.BuildPlan.sim_qb_injury_rate))
+            self.qb_injury_rate.blockSignals(blocked)
+            blocked = self.cpu_trades_mode.blockSignals(True)  # b81 trades-all: unnamed (it follows) on a new disc
+            self.cpu_trades_mode.setCurrentIndex(0)
+            self.cpu_trades_mode.blockSignals(blocked)
         # The two throw sub-options are not feature toggles; a new disc starts at their defaults.
         self.realistic_check.setChecked(True)
         self.arc_by_distance_check.setChecked(False)
@@ -2282,7 +2539,7 @@ class BuildPanel(QWidget):
             bits.append(f"throw ceiling {settings.max_deep_yards:g} yd" + (", realistic flight" if settings.realistic_flight else "") + (", arc by distance" if getattr(settings, 'arc_by_distance', False) else ""))
         for key, label in (("catch_slider", "catch/INT sliders"), ("accel_ramp", "acceleration ramp"),
                            ("draft_ai", "draft AI"), ("returner_fix", "returner fix"), ("progression", "progression"), ("franchise_economy", "2026 franchise economy"), ("team_column", "TEAM column"), ("team_history", "team history"), ("career_stats", "career stats"), ("prospect_names", "prospect names"),
-                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("loader_wakeup_fix", "disc loader wake-up fix"), ("rb_rename", "RB rename"), ("name_keyboard", "player-name keyboard"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("team_sleeves", "team-coloured sleeves"), ("kick_laces", "kick laces"), ("punter_holder", "punter holds"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
+                           ("kick_rules", "kick rules"), ("kick_power", "kick power"), ("kickoff_alignment", "kickoff line-up"), ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"), ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"), ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("loader_wakeup_fix", "disc loader wake-up fix"), ("rb_rename", "RB rename"), ("name_keyboard", "player-name keyboard"), ("penalties", "penalties"), ("uniform_choice", "jersey choice"), ("team_sleeves", "team-coloured sleeves"), ("kick_laces", "kick laces"), ("punter_holder", "default holder"), ("franchise_practice", "Franchise practice"), ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"),
                            ("player_star", "star decal"), ("player_tags", "star tags"), ("roster_edits", "roster edits"), ("espn25_plan", "Anniversary edits"), ("espn25_rosters", "historic rosters"),
                            ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"), ("position_pools", "one-pool positions"), ("depth_roles", "depth roles"), ("depth_chart_rows", "depth-chart rows"),
                            ("camera", "camera"), ("widescreen", "widescreen"),
@@ -2304,7 +2561,7 @@ class BuildPanel(QWidget):
             ("dynamic_kickoff", "dynamic kickoff"), ("overtime", "overtime"), ("season_2026", "2026 season"), ("season_cap", "128-season franchise"), ("music_shuffle", "music shuffle"), ("practice_squad_screen", "Practice Squad screen"), ("abilities", "player abilities"), ("qb_spy", "QB spy"), ("guardian_cap", "guardian caps"), ("screen_timing", "screen timing"), ("xbe_space", "extra patch space"), ("kickoff_relocated", "kickoff in extra space"),
             ("position_row", "Position row"), ("probowl_order", "Pro Bowl order"),
             ("elbow_options", "elbow pad options"), ("the1wam_lineman_rating", "lineman rating adjustment"), ("xemu_display_list_fix", "xemu display-list fix"), ("resource_load_guard", "presentation allocation guard"), ("loader_wakeup_fix", "disc loader wake-up fix"), ("rb_rename", "RB rename"), ("name_keyboard", "player-name keyboard"), ("penalties", "penalties"),
-            ("uniform_choice", "jersey choice"), ("team_sleeves", "team-coloured sleeves"), ("kick_laces", "kick laces"), ("punter_holder", "punter holds"), ("franchise_practice", "Franchise practice"),
+            ("uniform_choice", "jersey choice"), ("team_sleeves", "team-coloured sleeves"), ("kick_laces", "kick laces"), ("punter_holder", "default holder"), ("franchise_practice", "Franchise practice"),
             ("practice_squad", "practice squads"), ("practice_reserves", "practice reserves"), ("depth_locks", "depth locks"), ("seven_on_seven", "7-on-7 practice"), ("player_star", "star decal"),
             ("player_tags", "star tags"),
             ("roster_edits", "roster edits"), ("edge_rename", "EDGE rename"), ("scheme_labels", "scheme labels"),
@@ -2325,7 +2582,8 @@ class BuildPanel(QWidget):
                 applied.append(f"{name}: older revision ({needs})")
         for key, name in PREVIOUS_REBUILD_KEYS.items():  # b780 n6: beta-79 installs a rebuild from retail updates
             if state.get(key) == "previous":
-                applied.append(f"{name}: beta 79 revision (rebuild from retail to update)")
+                version = "earlier" if key in PREVIOUS_MULTIPLE_RELEASES else "beta 79"
+                applied.append(f"{name}: {version} revision (rebuild from retail to update)")
         foreign = [key.replace("_", " ") for key in mod_build.BuildPlan.__dataclass_fields__
                    if state.get(key) == "foreign"]
         settings = state.get("throw")
@@ -2354,7 +2612,8 @@ class BuildPanel(QWidget):
             legacy_upgrade = key in LEGACY_UPGRADE_KEYS and value == "legacy"  # b780 studio1
             # b780 studio1 (Q69): on a disc this release cannot build on, an in-place update is not an offer
             update_only = upgrade or locks_upgrade or draft_upgrade or previous_upgrade or legacy_upgrade
-            declined = bool(rebuild_only) and update_only
+            v09_update = key in mod_build.V09_UPDATE_CHOICES and state.get("v09_standard_update")
+            declined = bool(rebuild_only) and update_only and not v09_update
             box.setEnabled(available and (value == "retail" or (update_only and not declined))
                            and (is_image or not needs_image))
             box.setChecked(False)
@@ -2374,7 +2633,7 @@ class BuildPanel(QWidget):
                                "position mixes.")
                 self._set_badge(key, "Needs update")
             elif previous_upgrade:
-                older = "a v0.9 test build" if key == "coach_career_fix" else "an older build (beta 79)"  # b780 hunt6
+                older = "a v0.9 test build" if key == "coach_career_fix" else "an older build"  # b780 hunt6
                 box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from {older} is installed. Select to "
                                "update it to this release's revision (in place).")
                 self._set_badge(key, "Needs update")
@@ -2389,9 +2648,10 @@ class BuildPanel(QWidget):
                 box.setToolTip("Already installed on this source.")
                 self._set_badge(key, "Already installed")
             elif key in PREVIOUS_REBUILD_KEYS and value == "previous":
-                box.setToolTip(f"The beta 79 {PREVIOUS_REBUILD_KEYS[key]} is installed on this source. This release cannot "
+                version = "Earlier" if key in PREVIOUS_MULTIPLE_RELEASES else "Beta 79"
+                box.setToolTip(f"The {version.lower()} {PREVIOUS_REBUILD_KEYS[key]} is installed on this source. This release cannot "
                                "update it in place; build from your retail game to get this release's version.")
-                self._set_badge(key, "Beta 79 version: rebuild from retail")
+                self._set_badge(key, version + " version: rebuild from retail")
             elif value == "foreign":
                 box.setToolTip("Not recognised: the bytes at this change's sites are neither retail nor this patch "
                                "(changed by another tool), so it can't be added here.")
@@ -2740,6 +3000,15 @@ class BuildPanel(QWidget):
         self._set_badge("hair_styles", "EXPERIMENTAL / UNWITNESSED" if hair_ok else
                         "Already in this source (Off cannot restore it)" if hair_done else
                         "Needs a supported USA disc image with the retail player models")
+        # b81 helmet-sides: the Chargers' side numbers (needs the hair styles growth)
+        sides_state = state.get("helmet_side_numbers")
+        sides_ok = bool(self._available.get("helmet_side_numbers", False) and is_image and sides_state == "retail")
+        sides_done = bool(self._available.get("helmet_side_numbers", False) and is_image and sides_state == "applied")
+        self.helmet_side_numbers_check.setEnabled(sides_ok)
+        self.helmet_side_numbers_check.setChecked(sides_done)
+        self._set_badge("helmet_side_numbers", "EXPERIMENTAL / UNWITNESSED (needs Hair styles)" if sides_ok else
+                        "Already in this source (Off cannot restore it)" if sides_done else
+                        "Needs a supported USA disc image")
         # b77-fr1: 2026 fans
         fan_state = state.get("modern_fans")
         fan_ok = bool(self._available.get("modern_fans", False) and is_image and fan_state in ("retail", "mixed"))
@@ -2830,6 +3099,8 @@ class BuildPanel(QWidget):
         gate(self.espn25_rosters_check, "espn25_rosters", needs_image=True)
         gate(self.historic_rosters_2026_check, "historic_rosters_2026", needs_image=True)
         gate(self.classic_teams_check, "classic_teams", needs_image=True)  # b775-ct1
+        gate(self.classic_crowd_check, "classic_crowd", needs_image=True)  # b81-seamen
+        self._sync_classic_crowd()
         self._sync_keep_olb(self.position_pools_check.isChecked())
         gate(self.depth_roles_check, "depth_roles", needs_image=True)
         gate(self.depth_chart_rows_check, "depth_chart_rows", needs_image=True)
@@ -2877,7 +3148,13 @@ class BuildPanel(QWidget):
                     dropped.append(key)
         self.suggest_target()
         self._official_marks_pack_changed()
+        if state.get("v09_standard_update") and self._v09_source_choices is None:
+            self._v09_source_choices = self._v09_companion_choices(self.plan())
         self._refresh()
+        if keep_selection and self.qb_injury_mode.currentData() in ("realistic", "custom"):
+            self._sim_qb_injury_mode_changed()
+        if not self._sim_qb_other_choice and self._sim_qb_source_choices is None:
+            self._sim_qb_source_choices = self._sim_qb_companion_choices(self.plan())
         pending, self.pending_preset = self.pending_preset, None
         if pending:
             self.apply_preset_if_fresh(pending)
@@ -2899,7 +3176,8 @@ class BuildPanel(QWidget):
         if self._state is None:
             self.pending_preset = name
             return False
-        if any(box.isChecked() for box in self._toggle_boxes()) or self.speed_threshold_spin.value():
+        if (any(box.isChecked() for box in self._toggle_boxes()) or self.speed_threshold_spin.value()
+                or self.qb_injury_mode.currentData() is not None or self.cpu_trades_mode.currentData() is not None):
             self.preset_note.setText("Your current choices were kept; press a preset button to replace them.")
             return False
         self.apply_preset(name)
@@ -2927,6 +3205,8 @@ class BuildPanel(QWidget):
     def apply_preset(self, name: str) -> dict[str, list[str]]:
         """Tick the preset's toggles (only those the source can still take); returns what was skipped."""
 
+        self._sim_qb_authored = True
+        self._set_helper_note("depth_chart_rows", "")
         self._momentum_legacy_disabled = False
         self._momentum_last_positive = 50
         self.momentum_level.blockSignals(True)
@@ -2936,6 +3216,7 @@ class BuildPanel(QWidget):
         self.abilities_week.setCurrentIndex(0)
         self.abilities_week.blockSignals(False)
         values = dict(mod_build.PRESETS[name])
+        self._my_career_home = values.get("my_career_home", mod_build.BuildPlan.my_career_home)
         values["modern_naming"] = tt.modern_naming_patch.preset_enabled(name.removeprefix("softdrink_"))
         if name == "softdrink_experimental" and not values["modern_naming"]:
             self._helpers["modern_naming"].setText("Modern naming is unavailable: at least one configured label does not fit.")
@@ -2972,6 +3253,13 @@ class BuildPanel(QWidget):
         if not self._abilities_lock_sync:   # fx1: the Rosters page's lock boxes follow the preset (once, after the loop)
             self.abilities_locks_changed.emit(self.abilities_lock_settings())
         self._apply_abilities_access(values.get("abilities_star_access", tt.abilities_patch.DEFAULT_STAR_ACCESS))
+        self._team_number_scale = dict(values.get("team_number_scale") or {})
+        qb_mode = values.get("sim_qb_injuries") if self.console_memory() == 128 and self.qb_injury_mode.isEnabled() else None
+        self.qb_injury_mode.setCurrentIndex(self.qb_injury_mode.findData(qb_mode))
+        self.qb_injury_rate.setValue(mod_build.BuildPlan.sim_qb_injury_rate)
+        trades_level = values.get("cpu_trades")  # b81 trades-all: None in every preset (it follows the quarterback option)
+        self.cpu_trades_mode.setCurrentIndex(0 if trades_level is None else self.cpu_trades_mode.findData(trades_level))
+        self.stock_age_combo.setCurrentIndex(self.stock_age_combo.findData(values.get("stock_age_policy", "preserve_age")))
         boxes = self._boxes()
         applied, skipped = [], []
         self._memory_ticks.clear()  # b780-m64b: the preset replaces the selection
@@ -2979,6 +3267,7 @@ class BuildPanel(QWidget):
             self.ceiling_spin.setValue(int(round(float(values["max_deep_yards"]))))
         def wanted(key):
             return (values[key] == "matte" if key == "helmet_finish" else
+                    values[key] in (True, "modern") if key == "modern_numbers" else  # b81: None, False, "retail" clear
                     values[key] != "retail" if key in ("music_policy", *r62_ui.LEVELS) else
                     bool(values[key]))
         # fx1: the build is exactly the preset. A dependency child whose parent the preset leaves off stays off (it would
@@ -3042,7 +3331,7 @@ class BuildPanel(QWidget):
         if key == "speed_threshold":  # b780-cv5: a number row, not a check box
             return speed_threshold_ui.CAPTION
         box = self._boxes().get(key)
-        return box.text().replace("&&", "&") if box is not None else key
+        return box.text().replace("&&", "&") if box is not None else PREVIOUS_REBUILD_KEYS.get(key, key)
 
     def _skip_reason(self, key: str) -> str:
         state = str((self._state or {}).get(key))
@@ -3056,7 +3345,8 @@ class BuildPanel(QWidget):
         if state == "foreign":
             return "unrecognized source data"
         if state == "previous":                 # b780 studio1: it said "full disc required" about a full disc
-            return "the beta 79 version is installed; rebuild from retail to update it"
+            version = "earlier" if key in PREVIOUS_MULTIPLE_RELEASES else "beta 79"
+            return f"the {version} version is installed; rebuild from retail to update it"
         return "full disc required"
 
     def _boxes(self) -> dict[str, QCheckBox]:
@@ -3124,6 +3414,7 @@ class BuildPanel(QWidget):
             "modern_goalposts": self.modern_goalposts_check,  # b77-v1
             "modern_coaches": self.modern_coaches_check,  # b77-co1
             "hair_styles": self.hair_styles_check,  # b775-hs1
+            "helmet_side_numbers": self.helmet_side_numbers_check,  # b81 helmet-sides
             "modern_fans": self.modern_fans_check,  # b77-fr1
             "modern_officials": self.modern_officials_check,  # b77-rf1
             "trim_intro_videos": self.trim_intro_videos_check,
@@ -3131,6 +3422,7 @@ class BuildPanel(QWidget):
             "espn25_plan": self.espn25_plan_check, "espn25_rosters": self.espn25_rosters_check,
             "historic_rosters_2026": self.historic_rosters_2026_check,
             "classic_teams": self.classic_teams_check,  # b775-ct1
+            "classic_crowd": self.classic_crowd_check,  # b81-seamen
             "realistic_flight": self.realistic_check, "arc_by_distance": self.arc_by_distance_check,
         }
 
@@ -3157,6 +3449,18 @@ class BuildPanel(QWidget):
                 text += " Player tags are selected, but the star display is off."
         self.star_players_label.setText(text)
 
+    def _sync_classic_crowd(self) -> None:
+        """b81-seamen review N4: the Seamen's crowd is built only with the classic teams; say so on its row."""
+        crowd = getattr(self, "classic_crowd_check", None)
+        if crowd is None or not crowd.isEnabled():
+            return
+        if self.classic_teams_check.isChecked():
+            crowd.setToolTip("")
+            self._set_badge("classic_crowd", "EXPERIMENTAL / UNWITNESSED")
+        else:
+            crowd.setToolTip("Built only with Classic teams in Quick Game: without them this option is skipped.")
+            self._set_badge("classic_crowd", "Needs Classic teams (skipped without them)")
+
     def _sync_keep_olb(self, pools_on: bool) -> None:
         # Beta 65: the EDGE-only pools build always certifies the rosters, so the
         # "Keep Outside Linebackers" compatibility profile is retired. The check box
@@ -3174,6 +3478,7 @@ class BuildPanel(QWidget):
     def plan(self) -> mod_build.BuildPlan:
         plan = mod_build.BuildPlan(
             source=self.source_field.text(), target=self.target_field.text(),
+            my_career_home=self._my_career_home,
             overwrite=self._target_exists(),
             throw=self.throw_check.isChecked(), max_deep_yards=float(self.ceiling_spin.value()),
             arc=float(self.arc_spin.value()) / 100.0,
@@ -3191,6 +3496,8 @@ class BuildPanel(QWidget):
             **{key: box.isChecked() for key, box in self.abilities_lock_checks.items()},
             **{key: box.isChecked() for key, box in self.abilities_star_checks.items()},
             abilities_star_access=self.abilities_star_access(),
+            team_number_scale=dict(self._team_number_scale),
+            stock_age_policy=self.stock_age_combo.currentData(),
             qb_spy=self.qb_spy_check.isChecked(),
             calendar_engine=self.season_cap_check.isChecked(),
             coverage_slider=self.coverage_slider_check.isChecked(),
@@ -3210,6 +3517,7 @@ class BuildPanel(QWidget):
             espn25_rosters=self.espn25_rosters_check.isChecked(),
             historic_rosters_2026=self.historic_rosters_2026_check.isChecked(),
             classic_teams=self.classic_teams_check.isChecked(),  # b775-ct1
+            classic_crowd=self.classic_crowd_check.isChecked(),  # b81-seamen
             depth_roles=self.depth_roles_check.isChecked(),
             depth_chart_rows=self.depth_chart_rows_check.isChecked(),
             kickoff_alignment=self.kickoff_alignment_check.isChecked(),
@@ -3261,6 +3569,7 @@ class BuildPanel(QWidget):
             modern_goalposts=self._modern_goalposts_changed(),  # b77-v1
             modern_coaches=self._modern_coaches_changed(),  # b77-co1
             hair_styles=self._hair_styles_changed(),  # b775-hs1
+            helmet_side_numbers=self._helmet_side_numbers_changed(),  # b81 helmet-sides
             modern_fans=self._modern_fans_changed(),  # b77-fr1
             modern_officials=self._modern_officials_changed(),  # b77-rf1
             trim_intro_videos=self.trim_intro_videos_check.isChecked(),
@@ -3290,6 +3599,18 @@ class BuildPanel(QWidget):
             plan.depth_roles = plan.depth_roles or state.get("depth_roles") != "applied"
         for key in BUILD_KEYS:
             setattr(plan, key, getattr(self, key + "_check").isChecked())
+        if self.qb_injury_mode.isEnabled():
+            plan.sim_qb_injuries = self.qb_injury_mode.currentData()
+            # b81 qb34: this control also sets the quarterback room rules: the plan leaves them unnamed, so they follow
+            # this choice (Realistic and Custom where depth chart locks and SPECIAL rows are on, Retail off).
+            plan.qb_room = None
+            # b81 trades-all (R6): computer trades at every position, named or (Same as the quarterback option) unnamed.
+            plan.cpu_trades = self.cpu_trades_mode.currentData() if self.cpu_trades_mode.isEnabled() else None
+            if plan.sim_qb_injuries == "custom":
+                plan.sim_qb_injury_rate = self.qb_injury_rate.value()
+            if plan.sim_qb_injuries in ("realistic", "custom"):
+                plan.sim_realism |= self._installed("sim_realism")
+                plan.k128_memory |= self._installed("k128_memory")
         for key in VENUE_BUILD_KEYS:
             box = getattr(self, key + "_check")
             setattr(plan, key, box.isChecked() and box.isEnabled())
@@ -3352,6 +3673,20 @@ class BuildPanel(QWidget):
         Studio, including the released v0.8 disc, every build was refused at its first check (era rules without their
         bases, widescreen menus, the kickoff gate ...). An installed option is replayed as already applied."""
         plan = self.plan()
+        if self._v09_selected(plan):
+            return mod_build.v09_disc_update(plan.source, plan.target, save_list_type_guard=plan.save_list_type_guard,
+                                             modern_injured_reserve=plan.modern_injured_reserve,
+                                             backfield_cards=plan.backfield_cards, gadget_play=plan.gadget_play,
+                                             team_building=plan.team_building,
+                                             sim_qb_injuries=plan.sim_qb_injuries,
+                                             custom_rate=plan.sim_qb_injury_rate, qb_room=plan.qb_room,
+                                             cpu_trades=plan.cpu_trades, overwrite=plan.overwrite,
+                                             name=plan.name, author=plan.author, notes=plan.notes)
+        if self._sim_qb_only_selected(plan):
+            return mod_build.sim_qb_disc_edit(plan.source, plan.target, plan.sim_qb_injuries,
+                                              custom_rate=plan.sim_qb_injury_rate, qb_room=plan.qb_room,
+                                              cpu_trades=plan.cpu_trades, overwrite=plan.overwrite,
+                                              name=plan.name, author=plan.author, notes=plan.notes)
         for name in KEPT_WHEN_INSTALLED:
             if getattr(plan, name, True) is False and self._installed(name):
                 # a sub-option is kept only with its parent in the plan (the build refuses the logo without the facility)
@@ -3363,9 +3698,111 @@ class BuildPanel(QWidget):
         for child, parents in ANNIVERSARY_DEPENDENCIES.items():
             if getattr(plan, child, False):
                 for parent in parents:
-                    if not getattr(plan, parent, False) and self._installed(parent):
+                    # b81 ot-crash review D2: a base installed in its earlier revision ("previous", e.g. the overtime owner
+                    # on the released v0.8 and v0.9 discs) is met too; the build upgrades it in place
+                    previous = parent in PREVIOUS_UPGRADE_KEYS and (self._state or {}).get(parent) == "previous"
+                    if not getattr(plan, parent, False) and (self._installed(parent) or previous):
                         setattr(plan, parent, True)
         return plan
+
+    def _v09_other_selected(self, *_):
+        # b81 relrev M2: the v0.9 disc takes no full build, so a neighbour counts by its value (_v09_selected compares the
+        # plan with the disc as read): one ticked and unticked again, or Console memory chosen again, changes nothing.
+        if (self._state or {}).get("v09_standard_update"):
+            self._refresh()
+
+    def _v09_spin_edited(self, _value):
+        if self.sender().hasFocus():
+            self._v09_other_selected()
+
+    @staticmethod
+    def _v09_companion_choices(plan):
+        values = plan.to_recipe()
+        for key in (*mod_build.V09_UPDATE_CHOICES, "sim_qb_injuries", "sim_qb_injury_rate", "qb_room", "cpu_trades",
+                    "sim_realism", "k128_memory", "name", "author", "notes"):
+            values.pop(key, None)
+        return values
+
+    def _v09_selected(self, plan=None):
+        if (not (self._state or {}).get("v09_standard_update") or self._project_settings_restored
+                or self.softdrink_project_field.text().strip() or self._include_session_project()):
+            return False
+        boxes = self._boxes()
+        return ((any(boxes[key].isChecked() for key in mod_build.V09_UPDATE_CHOICES) or bool(self._sim_qb_injury_change()))
+                and self._v09_companion_choices(plan or self.plan()) == self._v09_source_choices)
+
+    def _sim_qb_in_place_possible(self) -> bool:
+        """The disc can take the single-setting Simulated injuries copy (a standard 128 MB disc with the simulator)."""
+        state = self._state or {}
+        return (not state.get("v09_standard_update") and self.qb_injury_mode.isEnabled()
+                and state.get("sim_realism") in ("applied", "legacy")
+                and (state.get("k128_settings") or {}).get("require_128") is True)
+
+    def _sim_qb_only_selected(self, plan=None) -> bool:
+        """Make my disc runs the single-setting Simulated injuries copy (mod_build.sim_qb_disc_edit).
+
+        Where a full build is possible, an explicit neighbour (even at its default) or a preset keeps the full build. b81
+        relrev M1/M2: where this disc cannot take a full build (rebuild_only_reason, every SOFTDRINK standard disc with the
+        practice field's team logo), a full build is no alternative, so only values count: the copy runs while every other
+        choice is as the disc was read, and a box ticked and unticked again does not lose it. A restored project still
+        needs a full build."""
+        if not self._sim_qb_injury_change() or not self._sim_qb_in_place_possible():
+            return False
+        if self.softdrink_project_field.text().strip():
+            return False
+        if rebuild_only_reason(self._state or {}):
+            if self._project_settings_restored:
+                return False
+        elif self._sim_qb_other_choice or self._sim_qb_authored:
+            return False
+        return self._sim_qb_source_choices == self._sim_qb_companion_choices(plan or self.plan())
+
+    _CHOICE_NAMES = {"max_deep_yards": "Throw ceiling", "arc": "Throw arc", "console_memory": "Console memory",
+                     "helmet_finish": "Helmet finish", "cpu_scrambles": "CPU QB scrambles", "hires_folder": "Hi-res artwork folder",
+                     "stock_age_policy": "Stock player ages", "speed_threshold": speed_threshold_ui.CAPTION}
+
+    def _choice_name(self, key: str) -> str:
+        if key in self._boxes():
+            return self._short_label(key)
+        return self._CHOICE_NAMES.get(key) or key.replace("_", " ").capitalize()
+
+    def _in_place_blocker(self, reason: str) -> str:
+        """b81 relrev M1/M2: ``reason`` (rebuild_only_reason) says why this disc takes no full build. When the disc has an
+        in-place route (the v0.9 update, or the Simulated injuries copy), say what still works, or name what stands in the
+        way of it, so a player who looked around is never left with a sentence that does not say why."""
+        state = self._state or {}
+        if state.get("v09_standard_update"):
+            route = "the v0.9 update"
+            chosen = (any(self._boxes()[key].isChecked() for key in mod_build.V09_UPDATE_CHOICES)
+                      or bool(self._sim_qb_injury_change()))
+            before, now = self._v09_source_choices, self._v09_companion_choices(self.plan())
+        elif self._sim_qb_in_place_possible():
+            route = "the Simulated injuries copy"
+            chosen = bool(self._sim_qb_injury_change())
+            before, now = self._sim_qb_source_choices, self._sim_qb_companion_choices(self.plan())
+        else:
+            return reason
+        if chosen and self.softdrink_project_field.text().strip():
+            return (reason + f" Include SOFTDRINK league artwork is on, and a league project needs a full build. Turn it "
+                    f"off to use {route}.")
+        if chosen and state.get("v09_standard_update") and self._include_session_project():
+            return (reason + f" The open project's edits are included, and they need a full build. Save them and use a "
+                    f"clean session to use {route}.")
+        if chosen and self._project_settings_restored:
+            return (reason + f" A saved project's build settings are loaded, and a project needs a full build, so "
+                    f"{route} is not available with it.")
+        changed = ([] if before is None else
+                   [self._choice_name(key) for key in dict.fromkeys((*now, *before)) if now.get(key) != before.get(key)])
+        if changed:
+            shown = ", ".join(changed[:4]) + (f" and {len(changed) - 4} more" if len(changed) > 4 else "")
+            one = len(changed) == 1
+            goal = "use the update" if state.get("v09_standard_update") else "make that copy"
+            return (reason + f" {shown} {'is' if one else 'are'} not part of {route}. Set {'it' if one else 'them'} back "
+                    f"as {'it was' if one else 'they were'} to {goal}.")
+        if not chosen and not state.get("v09_standard_update"):
+            return (reason + " You can still change only Simulated injuries: choose the mode and leave every other option "
+                    "as it is.")
+        return reason
 
     # ------------------------------------------------------------- b780-m64b: console memory
     def console_memory(self) -> int:
@@ -3374,6 +3811,12 @@ class BuildPanel(QWidget):
         value = combo.currentData() if combo is not None else None
         return value if value in console_memory.CHOICES else console_memory.DEFAULT
 
+    def _console_target_changed(self, _index: int, *, refresh: bool = True) -> None:
+        if self.console_memory() == 128:
+            self._boxes()["edition_save_notes"].setChecked(False)
+        if refresh:
+            self._refresh()
+
     def set_console_memory(self, value, *, keep_ticks: bool = True, refresh: bool = True) -> None:
         """Choose the target. ``keep_ticks=False`` (a project or recipe restore) forgets the ticks 64 MB took away, so
         going back to 128 MB keeps exactly what was restored."""
@@ -3381,10 +3824,13 @@ class BuildPanel(QWidget):
         if not keep_ticks:
             self._memory_ticks.clear()
         combo = self.console_memory_combo
+        changed = combo.currentData() != value
         blocked = combo.blockSignals(True)
         combo.setCurrentIndex(combo.findData(value))
         combo.blockSignals(blocked)
-        if refresh:
+        if keep_ticks and changed:
+            self._console_target_changed(combo.currentIndex(), refresh=refresh)
+        elif refresh:
             self._refresh()
 
     def _memory_label(self, key: str) -> str:
@@ -3624,6 +4070,9 @@ class BuildPanel(QWidget):
         self.set_console_memory(64)   # the target's own rules first: they remember what they turn off for 128 MB
         boxes = self._boxes()
         changed_off, changed_on, skipped = [], [], []
+        if "my_career_home" in profile and profile["my_career_home"] != self._my_career_home:
+            self._my_career_home = profile["my_career_home"]
+            (changed_on if self._my_career_home else changed_off).append("my_career_home")
         # plan fields this page sets from a box of another name
         aliases = {"calendar_engine": "season_cap"}
 
@@ -3687,6 +4136,8 @@ class BuildPanel(QWidget):
 
     def has_work(self) -> bool:
         p = self.plan()
+        if self._sim_qb_injury_change():
+            return True
         if any(getattr(p, key) for key in VENUE_BUILD_KEYS):
             return True
         if p.custom_intro:  # b76-i1
@@ -3717,6 +4168,73 @@ class BuildPanel(QWidget):
                     or bool(self._speed_separation_chosen())
                     # standalone steps of mod_build the list above never named: ticked alone, each was refused as "nothing is selected"
                     or p.espn25_rosters or bool(p.honors_history) or p.trophy_room)
+
+    def _qb_room_needs_on(self):
+        """b81 qb34: depth chart locks and SPECIAL rows ticked or already on the disc (the room's plan needs)."""
+        return all(getattr(self, key + "_check").isChecked() or self._installed(key)
+                   for key in ("depth_locks", "depth_chart_rows"))
+
+    def _qb_trades_needs_on(self):
+        """b81 qb34 (the trades review's F1): 4b's needs ticked or already on the disc: the 2026 season (its NFL week 9
+        trade deadline), the franchise economy, reserve save compatibility and modern injured reserve."""
+        season = self.season_check.isChecked() or (self._state or {}).get("trade_deadline") == "applied"
+        boxes = {key: getattr(self, key + "_check", None) for key in ("franchise_economy", "practice_squad",
+                                                                        "modern_injured_reserve")}
+        return season and all((box is not None and box.isChecked()) or self._installed(key) for key, box in boxes.items())
+
+    def _sim_qb_injury_change(self):
+        if not self.qb_injury_mode.isEnabled():
+            return ""
+        mode = self.qb_injury_mode.currentData()
+        if mode is None:
+            return ""
+        installed = (self._state or {}).get("sim_qb_injury_settings") or {}
+        # b81 qb34: the control also sets the quarterback room rules, so a disc whose rules differ is a change too.
+        room_status = ((self._state or {}).get("qb_room_settings") or {}).get("status")
+        # An earlier revision's page ("previous") is always a change: the edit upgrades or removes it.
+        room_now = {"applied": "realistic", "previous": "previous"}.get(room_status, "retail")
+        room_wanted = "realistic" if mode in ("realistic", "custom") and self._qb_room_needs_on() else "retail"
+        if room_now == "realistic" and room_wanted == "realistic":
+            # b81 qb34 (D3/D4 hand-over): a disc whose rules carry another stage set (an earlier Studio's Realistic, 67)
+            # is a change too: the edit rewrites the set the Studio installs now.
+            room = mod_build._core_module("nfl2k5_qb_room")
+            above_zero = mode == "realistic" or (mode == "custom" and self.qb_injury_rate.value() > 0)
+            stages_now = ((self._state or {}).get("qb_room_settings") or {}).get("stages")
+            trades = above_zero and self._qb_trades_needs_on()           # 383 where 4b's needs are on, else 367
+            wanted = room.studio_stages(above_zero, True, trades) if trades else room.studio_stages(above_zero, True)
+            if room is not None and stages_now != wanted:
+                room_now = "previous"
+        # An earlier revision (slice 1, quarterbacks only) at the same mode is still a change: Build upgrades it.
+        current = mode == "retail" or installed.get("revision") == _sim_qb_injuries.REVISION
+        if mode == installed.get("mode", "retail") and current and room_now == room_wanted and (
+                mode != "custom" or self.qb_injury_rate.value() == installed.get("custom_rate")):
+            return self._cpu_trades_change(mode)  # b81 trades-all: the copy may still change the computer trades
+        detail = mode.title()
+        if mode == "custom":
+            detail += f", {self.qb_injury_rate.value():.3f}%"
+        return f"Simulated injuries ({detail})"
+
+    def _cpu_trades_wanted(self, mode):
+        """b81 trades-all (R6): what the copy does to computer trades at every position with this quarterback mode:
+        "realistic", "retail" or None (kept, or left out because their needs are off). Unnamed, they follow the
+        quarterback option as mod_build._cpu_trades_plan does: Realistic where the room's who-starts rules ride with
+        injuries above zero, Retail otherwise."""
+        named = self.cpu_trades_mode.currentData() if self.cpu_trades_mode.isEnabled() else None
+        if named is None:
+            if mode is None:
+                return None
+            above_zero = mode == "realistic" or (mode == "custom" and self.qb_injury_rate.value() > 0)
+            room_rules = self._qb_room_needs_on() or not mod_build._piece3_bits()
+            named = "realistic" if above_zero and room_rules else "retail"
+        if named == "realistic" and not self._qb_trades_needs_on():
+            return None  # the build leaves them out with the owner's note
+        return named
+
+    def _cpu_trades_change(self, mode):
+        wanted = self._cpu_trades_wanted(mode)
+        installed = (self._state or {}).get("cpu_trades_settings") or {}
+        now = "realistic" if installed.get("status") == "applied" else "retail"
+        return "" if wanted is None or wanted == now else f"Computer trades ({wanted.title()})"
 
     def _speed_separation_chosen(self) -> int:
         """The Speed separation strength the player set (0 = off).
@@ -3760,6 +4278,14 @@ class BuildPanel(QWidget):
     def selected_labels(self) -> list[str]:
         """The short names of every ticked change, in page order."""
 
+        if self._v09_selected():
+            labels = [self._short_label(k) for k in mod_build.V09_UPDATE_CHOICES if self._boxes()[k].isChecked()]
+            medical = self._sim_qb_injury_change()
+            return labels + [medical] if medical else labels
+        if self._sim_qb_only_selected():
+            # b81 relrev M1: the single-setting copy changes the injury option only; the ticked boxes beside it are the
+            # options the disc already carries, which Make my disc? used to list as changes
+            return [self._sim_qb_injury_change()]
         labels = []
         for key, box in self._boxes().items():
             if key in ("realistic_flight", "arc_by_distance"):
@@ -3804,6 +4330,8 @@ class BuildPanel(QWidget):
                     continue
                 if key == "hair_styles" and not self._hair_styles_changed():  # b775-hs1
                     continue
+                if key == "helmet_side_numbers" and not self._helmet_side_numbers_changed():  # b81 helmet-sides
+                    continue
                 if key == "modern_fans" and not self._modern_fans_changed():  # b77-fr1
                     continue
                 if key == "modern_officials" and not self._modern_officials_changed():  # b77-rf1
@@ -3818,6 +4346,9 @@ class BuildPanel(QWidget):
         if self._modern_color_changed() and not self.modern_color_check.isChecked():
             labels.append("Retail colour & lighting (choose the original retail source)")
         strength = self._speed_separation_chosen()
+        qb_label = self._sim_qb_injury_change()
+        if qb_label:
+            labels.append(qb_label)
         if strength:
             labels.append(f"{speed_threshold_ui.CAPTION} ({strength})")
         if self.cpu_scrambles_level.currentData() == "modern":
@@ -3855,8 +4386,8 @@ class BuildPanel(QWidget):
         if self._reading:
             return "Reading disc…"
         reason = rebuild_only_reason(self._state or {})
-        if reason:      # b780 studio1 (Q69): said before Make my disc, not by the engine's first check after it
-            return reason
+        if reason and not self._v09_selected() and not self._sim_qb_only_selected():
+            return self._in_place_blocker(reason)   # b81 relrev M1: the injuries copy is exempt as the v0.9 update is
         if self.softdrink_project_check.isChecked():
             if not self.softdrink_project_field.text().strip() or not platform_compat.io_path(self.softdrink_project_field.text()).is_file():
                 return "Choose an existing SOFTDRINK league project, or turn off Include SOFTDRINK league artwork."
@@ -3869,9 +4400,15 @@ class BuildPanel(QWidget):
             # kickoff, defensive try and overtime boxes unticked as installed) Make my disc was blocked for every choice.
             if child_box.isChecked() and child_box.isEnabled():
                 missing = [getattr(self, key + "_check").text() for key in parents
-                           if not getattr(self, key + "_check").isChecked() and not self._installed(key)]
+                           if not getattr(self, key + "_check").isChecked() and not self._installed(key)
+                           and not (key in PREVIOUS_UPGRADE_KEYS and (self._state or {}).get(key) == "previous")]
                 if missing:
                     return child_box.text() + " requires: " + ", ".join(missing) + "."
+        gadget = self.gadget_play_check   # b81 relrev M3: said here, never by the build after Make my disc?
+        if (gadget.isChecked() and gadget.isEnabled() and not (self._state or {}).get("v09_standard_update")
+                and not self.depth_chart_rows_check.isChecked() and not self._installed("depth_chart_rows")):
+            return ("The gadget player on gadget plays needs SPECIAL: 13 rows (its GAD row). Tick SPECIAL: 13 rows, or "
+                    "untick the gadget player.")
         if self.historic_stock_books_check.isChecked() and self.playbook_pair_check.isChecked():
             return "Choose stock historic books or separate offensive and defensive playbooks."
         if self._include_session_project():
@@ -3978,6 +4515,48 @@ class BuildPanel(QWidget):
         self._refresh()
 
     def _refresh(self) -> None:
+        if hasattr(self, "qb_injury_mode"):
+            state = self._state or {}
+            reason = ""
+            if self.console_memory() != 128:
+                reason = "The 64 MB profile uses the original quarterback simulation."
+            elif state.get("container") not in (None, "xiso"):
+                reason = "Open a full Xbox disc image to configure simulated injuries."
+            elif state.get("sim_qb_injuries") == "foreign":
+                reason = "This executable has unrecognized quarterback data. Open a verified source disc."
+            elif state.get("qb_room") == "foreign":  # b81 qb34
+                reason = "This executable has unrecognized quarterback room data. Open a verified source disc."
+            elif state.get("cpu_trades") == "foreign":  # b81 trades-all
+                reason = "This executable has unrecognized computer trades data. Open a verified source disc."
+            elif (state.get("k128_memory") == "applied"
+                  and (state.get("k128_settings") or {}).get("require_128") is False):
+                reason = ("This disc allows a 64 MB boot. Build from your retail disc to select the 128 MB "
+                          "memory requirement for simulated injuries.")
+            elif state.get("sim_realism") in ("foreign", "previous") or state.get("k128_memory") == "foreign":
+                reason = "This disc's simulator or 128 MB memory settings cannot be updated. Open a verified source disc."
+            elif not all(self._available.get(key, True) and state.get(key) != "unavailable"
+                         for key in ("sim_realism", "k128_memory")):
+                reason = "Simulated season realism and the 128 MB memory option must be available in this Studio installation."
+            elif not self._available.get("sim_qb_injuries", True) or state.get("sim_qb_injuries") == "unavailable":
+                reason = "The quarterback simulator option is unavailable in this Studio installation."
+            available = not reason
+            self.qb_injury_mode.setEnabled(available)
+            self.cpu_trades_mode.setEnabled(available)  # b81 trades-all: rides with the quarterback option
+            help_text = reason or getattr(self, "_qb_floor_message", "") or self.qb_injury_mode.toolTip()
+            if self.qb_injury_help.text() != help_text:
+                self.qb_injury_help.setText(help_text)
+            selected = (state.get("sim_qb_injury_settings") or {}).get("mode")
+            label = "Keep the source setting"
+            if selected in ("retail", "realistic", "custom"):
+                rate = state["sim_qb_injury_settings"].get("custom_rate")
+                label += f" (Custom, {rate:.3f}%)" if selected == "custom" and rate is not None else f" ({selected.title()})"
+            if self.qb_injury_mode.itemText(0) != label:
+                self.qb_injury_mode.setItemText(0, label)
+            custom = available and self.qb_injury_mode.currentData() == "custom"
+            for control in (self.qb_injury_rate_label, self.qb_injury_rate, self.qb_injury_rate_help):
+                control.setVisible(custom)
+        if hasattr(self, "stock_age_combo") and hasattr(self, "season_check"):
+            self.stock_age_combo.setVisible(self.progression_check.isChecked() and self.season_check.isChecked())
         if hasattr(self, "uniform_choice_mode"):
             uniform_state = (self._state or {}).get("uniform_choice")
             if uniform_state == "applied":
@@ -4081,20 +4660,20 @@ class BuildPanel(QWidget):
                 if (self._state or {}).get(key) == "previous":
                     # gate() worded this as a box to select; a locked, ticked box needs no selecting (b780 studio1)
                     reason = rebuild_only_reason(self._state or {})      # b780 studio1 (Q69): no in-place update on such a disc
-                    box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build (beta 79) is installed. "
+                    box.setToolTip(f"The {PREVIOUS_UPGRADE_KEYS[key]} from an older build is installed. "
                                    + (reason or "This build brings it up to this release's revision in place, so it stays ticked."))
         state = self._state or {}
         installed = state.get("decided_clock_settings") or {}
         cutoff = installed.get("settings") or {}
         for widget, key in ((self.decided_clock_margin, "margin"),
                             (self.decided_clock_seconds, "seconds")):
-            if installed.get("status") == "applied":
+            if installed.get("status") in ("applied", "previous"):
                 widget.blockSignals(True)
                 widget.setCurrentIndex(widget.findData(cutoff[key]))
                 widget.blockSignals(False)
             widget.setEnabled(self.decided_clock_check.isEnabled()
                               and self.decided_clock_check.isChecked()
-                              and installed.get("status") != "applied")
+                              and installed.get("status") not in ("applied", "previous"))
         mode = state.get("cpu_scrambles", "unknown")
         if mode == "applied":
             self.cpu_scrambles_level.blockSignals(True)
@@ -4135,7 +4714,7 @@ class BuildPanel(QWidget):
         labels = self.selected_labels()
         if labels:
             shown = ", ".join(labels[:6]) + (f" … (+{len(labels) - 6} more)" if len(labels) > 6 else "")
-            self.summary_label.setText(f"Selected: {len(labels)} change{'s' if len(labels) != 1 else ''} — {shown}.")
+            self.summary_label.setText(f"Selected: {len(labels)} change{'s' if len(labels) != 1 else ''}, {shown}.")
         else:
             self.summary_label.setText("Selected: nothing yet.")
         advice = self.synced_folder_advice()
@@ -4190,6 +4769,33 @@ class BuildPanel(QWidget):
         if not on:
             r62_ui.untick_children(parent, self._requirement_box)
         self._refresh()
+
+    def _set_helper_note(self, key, note):
+        """One plain sentence in front of an option's helper line ("" puts the helper back as it was)."""
+        label = self._helpers.get(key)
+        if label is None:
+            return
+        base = self._helper_bases.setdefault(key, label.text())
+        label.setText(f"{note} {base}" if note else base)
+        label.setVisible(bool(note or base))
+
+    def _special_rows_clicked(self, on):
+        """b81 relrev M3: the gadget player is a SPECIAL depth chart row (its GAD row), so a full build needs the rows.
+        REQUIRES cannot hold the rule (the v0.9 update takes the gadget on a disc that already has the rows, 9e378c717), so
+        the page keeps it: unticking the rows unticks the gadget player and says so, instead of a refusal after Make my disc?."""
+        gadget = self.gadget_play_check
+        note = ""
+        if not on and gadget.isChecked() and gadget.isEnabled():
+            gadget.setChecked(False)
+            note = "This also turned off the gadget player on gadget plays, which needs these rows (its GAD row)."
+        self._set_helper_note("depth_chart_rows", note)
+
+    def _gadget_play_clicked(self, on):
+        """b81 relrev M3: ticking the gadget player ticks the SPECIAL rows it needs, as a REQUIRES child ticks its parent."""
+        rows = self.depth_chart_rows_check
+        if on and rows.isEnabled() and not rows.isChecked() and not self._installed("depth_chart_rows"):
+            rows.setChecked(True)
+            self._set_helper_note("depth_chart_rows", "")
 
     def _requirement_parent_clicked(self, parent, on):
         """b780-mem1: a parent the user ticked brings its default children along."""
@@ -4590,6 +5196,12 @@ class BuildPanel(QWidget):
         return bool(self.modern_coaches_check.isEnabled() and state in ("retail", "mixed")
                     and self.modern_coaches_check.isChecked())
 
+    def _helmet_side_numbers_changed(self):  # b81 helmet-sides
+        """Only turning the option on counts: Off leaves a source that has the side numbers as it is."""
+        state = (self._state or {}).get("helmet_side_numbers")
+        return bool(self.helmet_side_numbers_check.isEnabled() and state == "retail"
+                    and self.helmet_side_numbers_check.isChecked())
+
     def _hair_styles_changed(self):  # b775-hs1
         """Only turning the option on counts: Off leaves an already-styled source as it is."""
         state = (self._state or {}).get("hair_styles")
@@ -4818,13 +5430,18 @@ class BuildPanel(QWidget):
         self.softdrink_project_check.show()
         self.softdrink_project_field.show()
         self.softdrink_art_button.show()
-        # b780-m64b: Share > Customize SOFTDRINK 2K28 says which console memory to build for (128 when it says nothing).
-        # Building the pack for 64 MB starts from the recommended 64 MB set; the page lists what it turned off.
         memory = console_memory.of(recipe)
         self.set_console_memory(memory, refresh=False)
         self._refresh()
-        if memory == 64:
+        # Older callers put their conversion request on the envelope, outside the original plan's overrides.
+        if memory == 64 and console_memory.of(plan) != 64:
             self.apply_recommended_64()
+
+    def portrait_build_choices(self) -> tuple[Path | None, bool]:
+        """The league artwork and portrait bank this Build page currently selects."""
+        selected = self.softdrink_project_field.text().strip() if self.softdrink_project_check.isChecked() else ""
+        faces = self.rookie_faces_check.isChecked() or (self._state or {}).get("rookie_faces") in ("applied", "previous")
+        return (Path(selected) if selected else None), faces
 
     def _softdrink_build_settings(self):
         choices = self.project_build_settings()
@@ -4859,22 +5476,21 @@ class BuildPanel(QWidget):
                 dialog.deleteLater()
 
     def restore_project_build_settings(self, state):
+        self._project_settings_restored = bool(state)
         from .gameplay_project_ui import restore
         from mod_editor.core import nfl2k5_build_settings as saved
-        self.official_marks_pack_field.setText(saved.build_settings(state).get("official_marks_pack") or "")
-        self.super_bowl_user_art_field.setText(saved.build_settings(state).get("super_bowl_user_art") or "")
+        choices = saved.build_settings(state)
+        self._sim_qb_authored = bool(state)
+        self._my_career_home = choices.get("my_career_home", mod_build.BuildPlan.my_career_home)
+        self.official_marks_pack_field.setText(choices.get("official_marks_pack") or "")
+        self.super_bowl_user_art_field.setText(choices.get("super_bowl_user_art") or "")
         restore(self, state)
-        # b76-i1: the custom intro movie path is not one of the shared path fields
-        from mod_editor.core import nfl2k5_build_settings as saved
-        movie = saved.build_settings(state).get("custom_intro") or ""
-        if movie:
-            self.custom_intro_field.setText(movie)
-            self.custom_intro_check.setChecked(self.custom_intro_check.isEnabled())
-        # b76-u4: the 2026 venue art folder is not one of the shared path fields either
-        venue_art = saved.build_settings(state).get("modern_venues_2026") or ""
-        if venue_art:
-            self.modern_venues_field.setText(venue_art)
-            self.modern_venues_check.setChecked(self.modern_venues_check.isEnabled())
+        self._sim_qb_injury_mode_changed()
+        for key, field, box in (("custom_intro", self.custom_intro_field, self.custom_intro_check),
+                                ("modern_venues_2026", self.modern_venues_field, self.modern_venues_check)):
+            path = choices.get(key) or ""
+            field.setText(path)
+            box.setChecked(bool(path))
 
     def music_build_settings(self):
         document = tt.music_playlist_patch.copy_options(self._music_shuffle_selection)
@@ -5419,12 +6035,15 @@ class BuildPanel(QWidget):
         plan = self._plan_for_build()
         include_session = self._include_session_project()
         facade = self._facade
+        artwork = self.softdrink_project_field.text().strip() if self.softdrink_project_check.isChecked() else ""
         labels = {key: box.text().replace("&&", "&") for key, box in self._boxes().items()}
 
         def operation(progress):
             from mod_editor.core import nfl2k5_project_check as project_check
-            project, document, fit_rows, index = None, None, None, None
-            if include_session:
+            project, index = None, None
+            if artwork:
+                project = Path(artwork)
+            elif include_session:
                 from mod_editor.core.equipment_staging import cached_equipment_fit_rows
                 with facade._lock:
                     session = facade._session

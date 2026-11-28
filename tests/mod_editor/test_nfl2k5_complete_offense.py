@@ -130,6 +130,9 @@ class PipelineTests(unittest.TestCase):
         def apply(target,paths,**kwargs):
             events.append([packs.load_pack(p).schema for p in paths])
             return {'status':'applied','packs':[]}
+        def offset_pitch(payload):
+            events.append('offset_toss_flip')
+            return payload, {'already_applied': False, 'synthetic_ordering_fixture': True}
         def menus(*args):
             events.append('menus')
             return {'books':37,'problems':0}
@@ -148,6 +151,10 @@ class PipelineTests(unittest.TestCase):
                  patch.object(mod_build,'inspect',side_effect=inspect_real), \
                  patch.object(packs,'apply_packs_to_image',side_effect=apply), \
                  patch.object(mod_build,'check_playbook_pack_fit',return_value=None), \
+                 patch.object(mod_build,'_xbe_bytes',side_effect=lambda path: Path(path).read_bytes()), \
+                 patch.object(mod_build,'_write_xbe_bytes',side_effect=lambda path, data: Path(path).write_bytes(data)), \
+                 patch('mod_editor.core.nfl2k5_offset_toss.apply',side_effect=offset_pitch), \
+                 patch('mod_editor.core.nfl2k5_offset_toss.status',return_value='applied'), \
                  patch.object(mod_build,'_check_playbook_menus',side_effect=menus), \
                  patch.object(mod_build,'_check_playbook_scoring',side_effect=scoring), \
                  patch('mod_editor.core.nfl2k5_unc_bowl_uniforms.apply_to_image',
@@ -162,7 +169,7 @@ class PipelineTests(unittest.TestCase):
     def test_complete_offense_runs_first_and_reaches_final_menu_gate(self):
         events=[]
         receipt=self.run_build([ROOT/'data/playbooks/modern_gun_core.2k5book',PACK],events)
-        self.assertEqual(events,['forward_pass_ruling',[packs.OFFENSE_SCHEMA],[packs.SCHEMA],'menus','scoring'])
+        self.assertEqual(events,['forward_pass_ruling',[packs.OFFENSE_SCHEMA],[packs.SCHEMA],'menus','offset_toss_flip','scoring'])
         self.assertTrue(receipt['steps'][0]['forward_pass_ruling_patch']['synthetic_ordering_fixture'])
         self.assertEqual(receipt['playbook_menus'],{'books':37,'problems':0})
         self.assertEqual(receipt['playbook_scoring']['status'],'applied')

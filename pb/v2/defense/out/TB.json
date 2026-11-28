@@ -2147,7 +2147,7 @@
  "receipt": {
   "team": "TB",
   "offense_pack": "data/playbooks/softdrink_tb_modern.2k5book",
-  "offense_pack_sha256": "4ec44c12a7000d9d632f36ed433b2b59fc00b5a70867eafb6b0ea66b13c8074c",
+  "offense_pack_sha256": "4baec84172f105d603edfe9eb2ef80f659e82d88dca41a8a851c81df92c90777",
   "source_fingerprint": "e090b313690055014b80459c53f6102777c2d91cc7a2f3cd405af61ede79b40e",
   "replacement_sha256": "81c57df1d46cc74b3b89b265e31c9b91fb26fccb4af0c7888e4cfb9812dcd5f6",
   "semantic_sha256": "7caa5c1bd55e6c33c2e4e013e13be61c4089efbd5c4cd1ea51adbf8404313860",

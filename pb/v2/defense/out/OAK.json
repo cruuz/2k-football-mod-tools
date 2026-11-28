@@ -1719,7 +1719,7 @@
  "receipt": {
   "team": "OAK",
   "offense_pack": "data/playbooks/softdrink_oak_modern.2k5book",
-  "offense_pack_sha256": "5d9734db906aaceb9da8f31461f8d1a9bafffd37ce357d39646bd37461a3e8b8",
+  "offense_pack_sha256": "3e103735f159f8e7cf1048dd4761d7ea0af5df0348cebacefd598c05e4accbf5",
   "source_fingerprint": "2cc9813733a3108e3d1968c06559bcc31a6619fac781fa3aa973f2faf963c607",
   "replacement_sha256": "56cc7e15066be17d5b6e9bce4ef98fd6e0b0404f98b8b85969b369f543967d8f",
   "semantic_sha256": "698366604b564f6f710e1c78beb57260e2318a00cc7ac853511a0f579f72f86a",

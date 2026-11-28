@@ -4952,6 +4952,79 @@ def _renameat2_noreplace(
     raise OSError(value, os.strerror(value), os.fspath(destination))
 
 
+def _link_file_state(name: str, dir_fd: int | None) -> tuple[int, ...] | None:
+    try:
+        info = os.stat(name, dir_fd=dir_fd, follow_symlinks=False)
+    except FileNotFoundError:
+        return None
+    return info.st_dev, info.st_ino, stat.S_IFMT(info.st_mode), info.st_size, info.st_mtime_ns
+
+
+def _undo_failed_link(staging, destination, dir_fd, installed, cause) -> bool:
+    """Withdraw the link safely. Return True if the staging name was in fact already consumed."""
+    spare = os.path.join(os.path.dirname(destination), ".2k5-link-recovery-" + uuid4().hex)
+    captured = os.path.join(spare, "entry")
+    have_spare = False
+    retained = False
+    problem = None
+    try:
+        output_state = _link_file_state(destination, dir_fd)
+        source_state = _link_file_state(staging, dir_fd)
+        if installed is not None and output_state == installed and source_state is None:
+            return True
+        if source_state != installed or (output_state is not None and output_state != installed):
+            raise OSError(errno.EIO, "a pathname changed before the link could be withdrawn")
+        if output_state is None:
+            return False
+        os.mkdir(spare, mode=0o700, dir_fd=dir_fd)
+        have_spare = True
+        # A name can change even after lstat. Capture it first and inspect that actual entry.
+        os.rename(destination, captured, src_dir_fd=dir_fd, dst_dir_fd=dir_fd)
+        captured_state = _link_file_state(captured, dir_fd)
+        if captured_state == installed and _link_file_state(staging, dir_fd) == installed:
+            os.unlink(captured, dir_fd=dir_fd)
+        else:
+            if captured_state is None:
+                raise OSError(errno.EIO, "the captured entry disappeared")
+            if stat.S_ISDIR(captured_state[2]):
+                publish_no_replace(captured, destination, dir_fd=dir_fd, is_directory=True)
+            else:
+                # Return the other entry only to a vacant name. Avoid re-entering this recovery.
+                if stat.S_ISLNK(captured_state[2]) and not _LINK_SUPPORTS_FOLLOW_SYMLINKS:
+                    raise OSError(errno.EIO, "the replacement symlink cannot be returned with a no-follow link")
+                options = {"follow_symlinks": False} if _LINK_SUPPORTS_FOLLOW_SYMLINKS else {}
+                os.link(captured, destination, src_dir_fd=dir_fd, dst_dir_fd=dir_fd, **options)
+                if _link_file_state(destination, dir_fd) != captured_state:
+                    raise OSError(errno.EIO, "the restored name no longer identifies the captured entry")
+                os.unlink(captured, dir_fd=dir_fd)
+            raise OSError(errno.EIO, "the captured entry changed and was returned to its name")
+    except (OSError, NoReplacePublishUnavailable) as exc:
+        problem = exc
+    finally:
+        if have_spare:
+            try:
+                os.rmdir(spare, dir_fd=dir_fd)
+            except OSError as exc:
+                retained = True
+                problem = problem or exc
+    if problem is not None:
+        def describe(name):
+            try:
+                state = _link_file_state(name, dir_fd)
+            except OSError as error:
+                return f"unreadable ({error})"
+            if state is None:
+                return "absent"
+            return "the original linked file" if state == installed else "a different entry"
+
+        detail = (f"Could not remove the staging name {staging!r}. {cause}. {problem}. "
+                  f"The staging entry is {describe(staging)}. The destination {destination!r} is {describe(destination)}.")
+        if retained:
+            detail += f" The recovery directory is {spare!r}. Its entry {captured!r} is {describe(captured)}."
+        raise OSError(errno.EIO, detail) from problem
+    return False
+
+
 def _publish_file_via_link(
     staging: str,
     destination: str,
@@ -4983,13 +5056,19 @@ def _publish_file_via_link(
     # abstraction the consumers will; the borrowed handle issues the identical
     # dir_fd= link+unlink on POSIX, so Linux/macOS behaviour is byte-for-byte
     # unchanged.
+    installed = _link_file_state(staging, dir_fd)
     if dir_fd is not None:
         handle = DirHandle._borrow_posix_fd(dir_fd)
         handle.link(staging, destination)
-        handle.unlink(staging)
+        unlink = handle.unlink
     else:
         os.link(staging, destination)
-        os.unlink(staging)
+        unlink = os.unlink
+    try:
+        unlink(staging)
+    except OSError as exc:
+        if not _undo_failed_link(staging, destination, dir_fd, installed, exc):
+            raise
     return NoReplacePublication(
         mechanism=PUBLISH_POSIX_LINK,
         kind="file",

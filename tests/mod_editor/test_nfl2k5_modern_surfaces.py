@@ -719,8 +719,15 @@ class StatusTests(unittest.TestCase):
 
     def test_the_build_publishes_the_receipt_with_the_disc(self):
         import tempfile
+        # Beta 81 (E04) publishes the disc and its Studio receipts together from the staging folder
+        # (image_use.publish_image_with_receipts over xdvdfs_compact.STUDIO_RECEIPTS), so the surfaces receipt
+        # travels with the disc through that list instead of a separate save_receipt call.
+        from mod_editor.core.xdvdfs_compact import STUDIO_RECEIPTS
         source = (ROOT / "mod_editor" / "core" / "mod_build.py").read_text(encoding="utf-8")
-        self.assertIn("surfaces.save_receipt(target, surfaces_receipt)", source)
+        self.assertIn("publish_image_with_receipts(staged, target, previous_target, previous_receipts)", source)
+        self.assertIn("receipt_states(target, STUDIO_RECEIPTS)", source)
+        suffix = str(ms.receipt_path(Path("disc.iso")))[len("disc.iso"):]
+        self.assertIn(suffix, STUDIO_RECEIPTS)
         with tempfile.TemporaryDirectory() as tmp:
             disc = Path(tmp) / "disc.iso"
             disc.write_bytes(b"")

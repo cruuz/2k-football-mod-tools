@@ -42,7 +42,7 @@ def answer(dialog_class, callback):
 
 def select_coach_row(page, name: str) -> None:
     for row in range(page.coach_list.count()):
-        if page.coach_list.item(row).text().startswith(name + " "):
+        if page.coach_list.item(row).text().startswith((name + " ", name + ":")):
             page.coach_list.setCurrentRow(row)
             return
     raise AssertionError(f"{name} is not in the coach list: {[page.coach_list.item(i).text() for i in range(page.coach_list.count())]}")
@@ -58,7 +58,7 @@ class StaffMoveTests(_PanelCase):
     def test_the_coach_list_names_every_record_and_the_buttons_follow_the_selection(self) -> None:
         page = self.page
         texts = [page.coach_list.item(i).text() for i in range(page.coach_list.count())]
-        self.assertEqual(texts[:4], ["Bill Belichick — IND", "Andy Reid — ATL", "Kyle Shanahan — SF", "Mike Holmgren — no team"])
+        self.assertEqual(texts[:4], ["Bill Belichick: IND", "Andy Reid: ATL", "Kyle Shanahan: SF", "Mike Holmgren: no team"])
         self.assertEqual(len(texts), 6)
         select_coach_row(page, "Bill Belichick")
         self.assertEqual([b.isEnabled() for b in (page.coach_swap_button, page.coach_fire_button, page.coach_hire_button)],
@@ -96,14 +96,14 @@ class StaffMoveTests(_PanelCase):
         self.assertEqual(page.dirty_label.text(), "● 1 franchise edit (not yet written)")
         # the list follows the move and keeps the selected coach selected
         texts = [page.coach_list.item(i).text() for i in range(page.coach_list.count())]
-        self.assertEqual(texts[:3], ["Kyle Shanahan — IND", "Andy Reid — ATL", "Bill Belichick — SF"])
+        self.assertEqual(texts[:3], ["Kyle Shanahan: IND", "Andy Reid: ATL", "Bill Belichick: SF"])
         self.assertEqual(page.coach_name_label.text(), "Bill Belichick")
         self.assertIn("SF", page.coach_teams_label.text())
         # one undo puts the bytes back, redo repeats it
         self.assertEqual(self.panel.undo(), label)
         assert page.save is not None
         self.assertEqual(page.save.to_bytes(), self.payload)
-        self.assertEqual(page.coach_list.item(0).text(), "Bill Belichick — IND")
+        self.assertEqual(page.coach_list.item(0).text(), "Bill Belichick: IND")
         self.assertEqual(self.panel.redo(), label)
         assert page.save is not None
         self.assertEqual(page.save.head_coaches(), {0: 2, 1: 1, 2: 0})
@@ -118,7 +118,7 @@ class StaffMoveTests(_PanelCase):
         assert back is not None
         self.assertEqual(back.coach_for_team(0).name, "Kyle Shanahan")
         self.assertEqual(back.coach_for_team(2).name, "Bill Belichick")
-        self.assertEqual(self.page.coach_list.item(0).text(), "Kyle Shanahan — IND")
+        self.assertEqual(self.page.coach_list.item(0).text(), "Kyle Shanahan: IND")
 
     def test_swap_options_reach_the_save(self) -> None:
         page = self.page

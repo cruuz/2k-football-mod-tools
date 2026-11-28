@@ -68,7 +68,8 @@ class NativeRepairTests(unittest.TestCase):
         result, receipt = repair.repair_xbe(self.before)
         self.assertEqual(repair.sha(result), repair.COMBINED_SHA256)
         self.assertEqual(receipt["changed_bytes"], 333)
-        self.assertEqual(books.status(result), "applied")
+        # Studio recognizes the finished v0.4 resolver as a supported upgrade to its later weighted format.
+        self.assertEqual(books.status(result), "needs_fix")
         self.assertEqual(repair.repair_xbe(result)[0], result)
         allowed = set()
         for row in receipt["scopes"]:
@@ -77,7 +78,7 @@ class NativeRepairTests(unittest.TestCase):
         differences = {i for i, (a, b) in enumerate(zip(self.before, result)) if a != b}
         self.assertFalse(differences - allowed)
         owner = books.allocation(self.before)
-        start, end = owner["raw"] + books.TABLE, owner["raw"] + owner["size"]
+        start, end = owner["raw"] + books.LEGACY_TABLE, owner["raw"] + owner["size"]
         self.assertEqual(self.before[start:end], result[start:end])
 
     def test_installed_book_prefix_is_read_only_code_with_no_absolute_writes(self):
@@ -89,7 +90,7 @@ class NativeRepairTests(unittest.TestCase):
         section = XbeImage(result).section(owner["va"], books.CODE_SIZE)
         self.assertTrue(section.executable)
         self.assertFalse(section.writable)
-        writes = absolute_writes(result, [(owner["va"], owner["va"] + books.TABLE)])
+        writes = absolute_writes(result, [(owner["va"], owner["va"] + books.LEGACY_TABLE)])
         # Existing bounded UTF-16 alias copy targets the caller's EDI buffer.
         # Unknown decoding or any additional/global store must fail this check.
         self.assertEqual(len(writes), 1)
@@ -99,13 +100,15 @@ class NativeRepairTests(unittest.TestCase):
 
     def test_combined_fix_commutes_with_each_owner_and_independent_distance(self):
         result, _ = repair.repair_xbe(self.before)
-        books_first, _ = books.apply(self.before)
+        books_first, _ = repair.restore_anniversary_books(self.before)
         self.assertEqual(repair.restore_base_moves(books_first)[0], result)
         self.assertEqual(repair.repair_xbe(self.after)[0], result)
         curves = tuning.curves_for(tuning.TuningSettings(85))
         curves.pop("lobspeed")
         staged, _ = tuning.plan_patch(self.before, curves)
         self.assertEqual(repair.repair_xbe(staged)[0], tuning.plan_patch(result, curves)[0])
+        modern, _ = books.apply(self.before)
+        self.assertEqual(books.apply(result)[0], repair.restore_base_moves(modern)[0])
 
     def test_cli_unknown_whole_hash_refuses_before_output(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -18,11 +18,14 @@ b779 rc1 fixed this inside franchise economy revision 4, which is off in every p
 class half on its own:
 - the allocator (0x2BD3C0) and the retirement pass's free count (0x2BDCAE) skip create vacancies, so Create
   Player, MyCareer and moment/historic imports keep their records and the top-up frees enough other records;
-- prospect k of a class takes slot (k - 1) x 151 mod 450 of a fixed position mix (0x2BE91D): QB 21, K 9, P 9,
-  WR 37, CB 44, FS 18, SS 14, HB 25, FB 9, TE 25, OLB 18, ILB 18, C 30, G 28, T 44, DT 49, DE 52 per 450, with
+- prospect k of a class takes slot (k - 1) x 151 mod 450 of a fixed position mix (0x2BE91D): QB 21, K 4, P 4,
+  WR 39, CB 46, FS 18, SS 14, HB 25, FB 9, TE 25, OLB 18, ILB 18, C 30, G 28, T 46, DT 51, DE 54 per 450, with
   OLB slots as LB when no rostered player carries OLB (the one-pool scheme). A 380-player class (the retail size,
-  every class without the economy) visits slots 0..379 of that walk: QB 21, K 9, P 9, WR 37, CB 31, FS 12, SS 10,
-  HB 25, FB 9, TE 25, OLB 18, ILB 12, C 20, G 20, T 44, DT 43, DE 35 (the 70 unvisited slots fall in three bands).
+  every class without the economy) visits slots 0..379 of that walk: QB 21, K 4, P 4, WR 39, CB 35, FS 12, SS 9,
+  HB 24, FB 9, TE 25, OLB 18, ILB 14, C 20, G 19, T 45, DT 46, DE 36 (the 70 unvisited slots fall in three bands).
+  b81 economy revision 10 (coordinator ruling 6, 11/25): K and P were 9 each per 450 until then; every class added
+  18 specialists nobody drafted (the free-agent pool grew by about 8 kickers and 8 punters a season). An image with
+  that window reads "legacy" here and apply() writes the current one (nfl2k5_franchise_economy.PREVIOUS_CLASS_WINDOW).
 
 The code is the economy's own window "roster_f" (0x382200..0x3822BF, an unreferenced retail library function,
 tools/franchise_economy/dead_code.py) and the three call sites, byte for byte. With the economy on, the economy
@@ -69,8 +72,12 @@ def _state(image: XbeImage, site: economy.Site) -> str:
 
 
 def status(payload: bytes) -> str:
-    """retail | applied | foreign. No other owner shares these sites (the economy writes the same bytes)."""
+    """retail | applied | legacy | foreign. No other owner shares these sites (the economy writes the same bytes).
+    legacy: every site applied but the class window, which carries the 9/9 mix of revisions 4 to 9 (it upgrades)."""
     try:
+        swapped = economy.with_current_class_window(payload)
+        if swapped is not None:
+            return "legacy" if status(swapped) == "applied" else "foreign"
         image = XbeImage(payload)
         states = {_state(image, site) for site in sites()}
     except (ValueError, struct.error, IndexError, StopIteration):
@@ -82,7 +89,7 @@ def apply(payload: bytes) -> tuple[bytes, dict]:
     state = status(payload)
     if state == "applied":
         return payload, {"already_applied": True, "changed_bytes": 0}
-    if state != "retail":
+    if state not in ("retail", "legacy"):
         raise DraftClassError(f"draft class sites are {state}; refusing to patch")
     image, out = XbeImage(payload), bytearray(payload)
     sections, touched, edits = _sections(payload), set(), []
@@ -96,7 +103,8 @@ def apply(payload: bytes) -> tuple[bytes, dict]:
             at = section.header_offset + 36
             out[at:at + 20] = section_digest(bytes(out), section)
     result = bytes(out)
-    if status(result) != "applied" or economy.status(result) != economy.status(payload):
+    before = economy.with_current_class_window(payload) if state == "legacy" else payload
+    if status(result) != "applied" or economy.status(result) != economy.status(before):
         raise DraftClassError("draft class post-apply verification failed")
     return result, {"evidence": "PROVED OFFLINE", "changed_bytes": sum(a != b for a, b in zip(payload, result)),
                     "edits": edits, "sections_repinned": sorted(touched), "mix_per_450": mix(),

@@ -1,5 +1,5 @@
 {
- "schema": "nfl2k5_sofi_model_pins/v1",
+ "schema": "nfl2k5_sofi_model_pins/v2",
  "label": "EXPERIMENTAL / UNWITNESSED",
  "bundles": [
   {
@@ -120,7 +120,13 @@
    "system": 787072,
    "video": 709760,
    "scratch": 16,
-   "shapes": 46
+   "shapes": 46,
+   "reflection": {
+    "offset": 1493232,
+    "length": 51200,
+    "retail_sha256": "9c2143de55a4dc2e5ea26836b18499839ee067d100e35ac15c01fcfe0953c0ad",
+    "model_sha256": "9b2381b55fe78814a2932bc3b5dc40449964e97296f9d01620ef0b8ab5d090af"
+   }
   },
   {
    "name": "s24dr.iff",
@@ -132,7 +138,13 @@
    "system": 787072,
    "video": 709760,
    "scratch": 16,
-   "shapes": 46
+   "shapes": 46,
+   "reflection": {
+    "offset": 1527152,
+    "length": 51888,
+    "retail_sha256": "4f5e1d2d8ad564711ee8eed42475d4d7ac5362f2a2b13a897cc95a7b4f227c77",
+    "model_sha256": "f0e0be88ec6c171f43978c3968c33f705ee3333d62f298cfb61e93f4ada39869"
+   }
   },
   {
    "name": "s24ds.iff",
@@ -144,7 +156,13 @@
    "system": 787072,
    "video": 709760,
    "scratch": 16,
-   "shapes": 46
+   "shapes": 46,
+   "reflection": {
+    "offset": 1500400,
+    "length": 54736,
+    "retail_sha256": "f0ce9edbb1d3a10da17d62057591b11a39fad7cd20a61ae9e6265e7fdbc545dd",
+    "model_sha256": "a90c76c7b8dd43b451e53ca215b135b156f201f9e5b5f676f8cac36fb0419b3e"
+   }
   },
   {
    "name": "s24ad.iff",
@@ -156,7 +174,13 @@
    "system": 785024,
    "video": 709760,
    "scratch": 16,
-   "shapes": 46
+   "shapes": 46,
+   "reflection": {
+    "offset": 1487824,
+    "length": 38288,
+    "retail_sha256": "78b3a7b0c71512a2fc9ffbed60053f4498b2b3a1847838ad19b638598da22668",
+    "model_sha256": "c6177f85af850148371486024303b705dae6cc49ef0212f819486f0cfcc1cec3"
+   }
   },
   {
    "name": "s24ar.iff",
@@ -168,7 +192,13 @@
    "system": 785024,
    "video": 709760,
    "scratch": 16,
-   "shapes": 46
+   "shapes": 46,
+   "reflection": {
+    "offset": 1528128,
+    "length": 35296,
+    "retail_sha256": "fa2f6d30307b241a00f1527c1c500d93567569c9a24936db705debad5146157b",
+    "model_sha256": "01b51bf59b2ca9340ad93f756a59c9ad32fdaefe8eeacdb85d3db5072a2b109c"
+   }
   },
   {
    "name": "s24as.iff",
@@ -180,7 +210,13 @@
    "system": 785024,
    "video": 709760,
    "scratch": 16,
-   "shapes": 46
+   "shapes": 46,
+   "reflection": {
+    "offset": 1503024,
+    "length": 39552,
+    "retail_sha256": "f14c348fa4da436a1930f61a4849a06d47508a734c4903af006629ffcb1efdc8",
+    "model_sha256": "03009acdabc849b01964bfd66a1b571f85ee97cb08fba8fca1855bb669c493fa"
+   }
   },
   {
    "name": "s24nd.iff",
@@ -192,7 +228,13 @@
    "system": 784640,
    "video": 709760,
    "scratch": 16,
-   "shapes": 46
+   "shapes": 46,
+   "reflection": {
+    "offset": 1470960,
+    "length": 33216,
+    "retail_sha256": "53196de1d3f18ec4bf9779ea1cf1ba57d4a6a620d0450156ffda50bdbb7a3eaf",
+    "model_sha256": "d38d1ad2f81deadb8bc0d9f3e0ca56848aea44d8ba166a43707c50e6039137b1"
+   }
   },
   {
    "name": "s24nr.iff",
@@ -204,7 +246,13 @@
    "system": 784640,
    "video": 709760,
    "scratch": 16,
-   "shapes": 46
+   "shapes": 46,
+   "reflection": {
+    "offset": 1493568,
+    "length": 30992,
+    "retail_sha256": "94c370157592dfa51fb14f64207ee741a6912d3bf1bc9fb95da908780150caf3",
+    "model_sha256": "e40a9c82312af58b68cfa5adef431f37846c9fdf5a3aa27a49125d84c2431d87"
+   }
   },
   {
    "name": "s24ns.iff",
@@ -216,7 +264,13 @@
    "system": 784640,
    "video": 709760,
    "scratch": 16,
-   "shapes": 46
+   "shapes": 46,
+   "reflection": {
+    "offset": 1467456,
+    "length": 37808,
+    "retail_sha256": "9c3cbd76052a7bd535846cdbf59a7cdf212fe93a10662ea59965012c9fce2d7d",
+    "model_sha256": "66a6094b11422253d57b5005e85f4a3c1f70a9c3c438da4e3cd223e3c47a1e9c"
+   }
   },
   {
    "name": "s40dd.iff",

@@ -23,6 +23,22 @@ policy reads only the sign of the native direction value, as native 209CA0 does:
 there (+/-5486.4 cm), and the beta-77.1 test that accepted only +/-1.0 sent every real fourth down back to the retail
 chart (seen in the emulator, b778 ai4). The beta-77.1 templates (pre-VIP and VIP-aware) stay recognizable and
 upgrade in place.
+
+Beta 81 (variant b81s): the own-half and midfield part of the fourth-down table is FOURTH_DOWN_GO_LIMITS, one table that
+rises at most one yard per yard line from the own 20 to the opponent 41, plus FOURTH_DOWN_SHIFT_CHANGES, the few
+score-and-clock cells that would otherwise drop it by two or more yards at the own 40 in a one-score game. Both are Noah's
+to tune. The first beta 81 cap (b81) and the beta 78 to beta 80 template (b778) upgrade in place.
+
+Beta 81 fake kicks (variant b81f_late; a player report via Noah 2026-11-21: "teams running fake field goal plays when it
+isn't 4th down in a field goal situation... CPU should rarely run those, like play calling should be tuned to also match
+irl percentages"). Cause: ``policy`` called the late-trailing helper before its own fourth-down, CPU and VIP checks, so in
+the last two minutes of the fourth quarter a CPU offense trailing by 1 to 3 inside the kicker's range minus 5 yards got
+"field goal" on downs 1 to 3; the commit-time field-goal test (native early-down branch) said no and the game's fake
+flag ran FG Pass / FG Sweep / Fake FG End Zone. b81f calls the helper only after those checks (the 2,048-byte template is
+now full), and moves the fake decision to one gate (``tools/nfl2k5_cpu_money_downs_fakes.S``) written over the native
+fake lottery of the dispatcher, which this owner already guards: downs 1 to 3 never fake; fourth down fakes only with 2
+yards or less to go, at the league's rates for that kick (FAKE_RATES); two-point tries come from the kick formation at the
+league's rate instead of retail's 5%. The b81s, b81 and b778 late templates stay recognizable and upgrade in place.
 """
 from __future__ import annotations
 
@@ -85,7 +101,61 @@ HOOKS2 = {
 # applied only above 15 seconds. The estimate (20A4D0) is non-zero only inside about 55 to 65 yards of the goal.
 HOOKS3 = {"timeout_window": (0x207202, bytes.fromhex("74694e00"))}
 HOOK3_AFTER = {"timeout_window": bytes.fromhex("80414e00")}
-M2_VARIANTS = ("b778_late", "b778", "v061", "p9")  # ai6 late rule, ai4 no late owner, beta-77.1, b77 p9
+# b81s (beta 81 review) is installed now. b81 (the first beta 81 cap), b778 (beta 78 to beta 80), v061 (beta 77.1) and p9
+# stay recognizable so their installs upgrade in place.
+LATE_VARIANTS = ("b81f_late", "b81s_late", "b81_late", "b778_late")
+M2_VARIANTS = (*LATE_VARIANTS, "b81s", "b81", "b778", "v061", "p9")  # ai6 late rule, ai4 no late owner, beta-77.1, b77 p9
+CURRENT_LATE, CURRENT_NO_LATE = "b81f_late", "b81s"
+FAKE_VARIANTS = ("b81f_late",)
+
+# ---- Fake kicks (b81f). Real NFL rates, nflverse play-by-play, regular season, counted by
+# the beta 81 fake-kick lane's nflverse_fakes.py (project evidence, not shipped; formation-based, as nflverse writes it:
+# a run or pass whose description says "Punt formation" / "Field Goal formation", "Kick formation" on a two-point try).
+# 2021-2025, 2,718 team-games: 102 fake punts (0.0375 per team-game, 0.96% of 10,622 punt-formation snaps), 12 fake field
+# goals (0.0044 per team-game, 0.22% of 5,364). By distance on fourth down, fake punts: 4th and 1 18 of 563 (3.2%), 4th
+# and 2 27 of 647 (4.2%), 3 to 5 1.0%, 6 to 9 0.7%, 10+ 0.3%. One fake field goal before fourth down in five seasons.
+# Two-point tries 2020-2025: 14 of 794 from the kick formation (1.76%; retail used 5%).
+# The CPU fakes only on fourth and 1 or 2 (the brief: "only in short yardage"), at that distance's rate.
+FAKE_RATES = {"punt": 0.037, "field_goal": 0.0022, "two_point": 0.0176, "short_yards": 2}
+FAKE_BLOCK, FAKE_BLOCK_SIZE = 0x20B258, 98      # the dispatcher's native fake lottery, up to its FG return at 0x20B2BA
+HOOKS4 = {
+    # The native lottery block, rewritten in place: its entry answers the ordinary category, the gate follows.
+    "fake_block": (FAKE_BLOCK, bytes.fromhex(
+        "8b158002e6008bcae8ebacffffd95c2404e812adffffd85c2404dfe0f6c4417553d9442400d81d28964e00dfe0f6c4417542833db402e6"
+        "000374398b0dec02e60083790404752d8bcae87afef7ffd95c2404e8c180ffffd85c2404dfe0f6c4417a09")),
+    # The commit's fake flag "esi = (re-test == 0)" becomes "call fake_gate".
+    "fake_flag": (0x20B6F2, bytes.fromhex("8bf0f7de1bf646")),
+    # The try lottery's 0.95 operand (0x20A01E fcomp) reads the two-point threshold in the block instead.
+    "two_point_fake": (0x20A020, bytes.fromhex("28964e00")),
+}
+
+# ---- Fourth-down go limits. NOAH'S TO TUNE. ---------------------------------------------------------------------------
+# The longest fourth down a CPU offense goes for in a neutral game, by its own yard line from its own 20 to the opponent
+# 41 (own 59). The game then adds its score-and-clock shift (``shift`` in the code, per region: own side of its 40, its
+# own 40 to the opponent 41, the opponent 40 and in). The limit never goes down and rises at most one yard per yard line,
+# so the CPU never punts closer to midfield where it went for it one yard further back. Inside the opponent 40 the
+# published chart and the field-goal logic are unchanged. Edit these numbers to tune; the shape test
+# (tests/mod_editor/test_b81_rev_game_fourth_down_shape.py) checks every one-score game state in quarters 1 to 3.
+FOURTH_DOWN_GO_LIMITS = (
+    # (first own yard, last own yard, longest yards to go)
+    (20, 34, 1), (35, 39, 2), (40, 44, 3), (45, 49, 4),
+    (50, 51, 5), (52, 53, 6), (54, 55, 7), (56, 57, 8), (58, 58, 9), (59, 59, 10),
+)
+# Score-and-clock shift cells that otherwise drop the limit by two or more yards at the own 40 in a one-score game.
+# Clock classes: 0 more than 30:00 of game time left, 1 15:00-30:00, 2 10:00-15:00, 3 5:00-10:00, 4 2:00-5:00, 5 less.
+# Margin classes: 0 down 9+, 1 down 4-8, 2 down 1-3, 3 tied, 4 up 1-3, 5 up 4-8, 6 up 9+. Region 0 = own side of the 40,
+# 1 = own 40 to opponent 41. Each change keeps the published order (a trailing team never less aggressive than a tied
+# one, a leading team never more) and never removes a 4th-and-1 attempt. NOAH'S TO TUNE together with the table above.
+FOURTH_DOWN_SHIFT_CHANGES = {
+    # (clock class, margin class, region): yards   # published value
+    (2, 5, 1): -2,   # 10:00-15:00 left, up 4-8, own 40 and beyond          (-4)
+    (3, 2, 0): 4,    # 5:00-10:00 left, down 1-3, own side of the 40        (6)
+    (3, 4, 1): -1,   # 5:00-10:00 left, up 1-3, own 40 and beyond           (-2)
+    (3, 5, 1): -2,   # 5:00-10:00 left, up 4-8, own 40 and beyond           (-4)
+    (4, 2, 0): 5,    # 2:00-5:00 left, down 1-3, own side of the 40         (6)
+    (4, 4, 1): -1,   # 2:00-5:00 left, up 1-3, own 40 and beyond            (-2)
+    (4, 5, 1): -2,   # 2:00-5:00 left, up 4-8, own 40 and beyond            (-4)
+}
 HOOK2_LABEL = {"fourth": "fourth", "play": "play", "target": "target", "two_point": "two_point",
                "fg_dispatch": "fg_guard", "fg_commit": "fg_guard"}
 EXPONENT_AFTER = b"\x02"
@@ -130,14 +200,33 @@ def _m2(variant="b778"):
     """(code, relocations, labels) of a Modern 2 template variant."""
     if variant not in M2_VARIANTS:
         raise ValueError(f"Unknown Modern 2 variant {variant!r}")
-    suffix = {"b778_late": "2_LATE", "b778": "2", "v061": "2_V061", "p9": "2_LEGACY"}[variant]
-    return (getattr(assembly, "CODE" + suffix), getattr(assembly, "RELOCATIONS" + suffix),
-            getattr(assembly, "LABELS" + suffix))
+    suffix = {"b81f_late": "2_GATED", "b81s": "2", "b81s_late": "2_LATE", "b81": "2", "b81_late": "2_LATE",
+              "b778_late": "2_LATE", "b778": "2", "v061": "2_V061", "p9": "2_LEGACY"}[variant]
+    code, labels = getattr(assembly, "CODE" + suffix), getattr(assembly, "LABELS" + suffix)
+    if variant in ("b81s", "b81s_late", "b81f_late"):
+        code = bytearray(code)
+        for first, last, limit in FOURTH_DOWN_GO_LIMITS:
+            for own_yard in range(first, last + 1):
+                code[labels["limit_x"] + 100 - own_yard] = limit
+        for (clock, margin, region), value in FOURTH_DOWN_SHIFT_CHANGES.items():
+            code[labels["shift"] + (clock * 7 + margin) * 3 + region] = value & 0xFF
+        code = bytes(code)
+    elif variant in ("b81", "b81_late"):
+        # The first beta 81 cap, kept only to recognize and upgrade its installs.
+        # A neutral CPU decision in its own territory should risk shorter distances.
+        # Keep opponent territory, time/score adjustments, and the late possession rules.
+        code = bytearray(code)
+        for own_yard in range(20, 50):
+            offset = labels["limit_x"] + 100 - own_yard
+            maximum = 1 if own_yard < 35 else 2 if own_yard < 45 else 3
+            code[offset] = min(code[offset], maximum)
+        code = bytes(code)
+    return code, getattr(assembly, "RELOCATIONS" + suffix), labels
 
 
-def m2_tables():
+def m2_tables(variant=CURRENT_LATE):
     """(limit_x[81], shift[126], thr10[33]) exactly as the Modern 2 machine code reads them."""
-    code, _, labels = _m2()
+    code, _, labels = _m2(variant)
     limit = tuple(code[labels["limit_x"]:labels["limit_x"] + 81])
     shift = tuple(b - 256 if b > 127 else b for b in code[labels["shift"]:labels["shift"] + 126])
     thr = tuple(code[labels["thr"]:labels["thr"] + 33])
@@ -172,7 +261,14 @@ def _decision_modern2(down, own_yard, distance, score_margin, quarter, seconds, 
 def _decision_modern2_core(down, own_yard, distance, score_margin, quarter, seconds, quarter_seconds, ot_bits, home,
                            kick_range, native_fg, timeouts=0, defense_points=None, punt_roll=None):
     limit_x, shift, _ = m2_tables()
-    xi = math.floor(_f32(_f32(100 - own_yard) + _f32(.0001)))
+    # The native selector subtracts the separately rounded line-of-scrimmage
+    # and first-down marker in centimeters before it compares yards to go.
+    spot = _f32((own_yard - 50) * 91.44)
+    marker = _f32((own_yard - 50 + distance) * 91.44)
+    yard = _f32(91.44)
+    distance = _f32(abs(marker - spot) / yard)
+    yards_to_goal = _f32(50 - spot / yard)
+    xi = math.floor(_f32(yards_to_goal + _f32(.0001)))
     region = 0 if xi > 60 else 1 if xi > 40 else 2
     base = limit_x[xi] if xi <= 80 else 0
     if quarter >= 5:
@@ -315,6 +411,13 @@ def mapping(level="modern"):
                        "with native VIP optional rolls. Automatic coach profiles (flag clear) use Modern 2 (b778)",
             timeout_window="First half: a CPU offense with time left on the native estimate calls its timeouts below 15 s "
                            "too (207050 operand 15.0 -> 0.0, b778)",
+            fake_kicks={"downs_1_to_3": "never (the late-trailing rule is fourth down only; the commit never fakes a kick "
+                                        "before fourth down)",
+                        "fourth_down": f"only with {FAKE_RATES['short_yards']} yards or less to go: fake punt "
+                                       f"{FAKE_RATES['punt']:.1%}, fake field goal {FAKE_RATES['field_goal']:.2%} of those kicks",
+                        "two_point_from_kick_formation": f"{FAKE_RATES['two_point']:.2%} of two-point tries (retail 5%)",
+                        "native_lottery": "off (retail: 5% of fourth downs the game went for, with time to spare)",
+                        "source": "nflverse play-by-play, regular season 2021-2025 (two-point 2020-2025)"},
             sources=SOURCES_FILE)
     return out
 
@@ -327,6 +430,30 @@ def _resolve(code, relocations, va, symbols):
             target -= va + offset
         struct.pack_into("<I", code, offset, target & 0xFFFFFFFF)
     return code
+
+
+def fake_block():
+    """The b81f fake-kick block, resolved for its fixed address (0x20B258) and padded to the native span it replaces."""
+    symbols = {"code": FAKE_BLOCK, "native_category": 0x209FE0, "rng_uniform": 0x48B90}
+    code = _resolve(assembly.CODE_FAKES, assembly.RELOCATIONS_FAKES, FAKE_BLOCK, symbols)
+    if len(code) > FAKE_BLOCK_SIZE:
+        raise ValueError("fake-kick gate exceeds the native lottery block")
+    labels = assembly.LABELS_FAKES
+    rates = struct.unpack_from("<3f", code, labels["p_punt"])
+    threshold = struct.unpack_from("<f", code, labels["two_point_threshold"])[0]
+    if (abs(rates[0] - FAKE_RATES["punt"]) > 1e-6 or abs(rates[1] - FAKE_RATES["field_goal"]) > 1e-6
+            or abs(1 - threshold - FAKE_RATES["two_point"]) > 1e-6
+            or abs(struct.unpack_from("<f", code, labels["short_cm"])[0] - FAKE_RATES["short_yards"] * 91.44) > .02):
+        raise ValueError("fake-kick constants disagree with FAKE_RATES")
+    return bytes(code).ljust(FAKE_BLOCK_SIZE, b"\xcc")
+
+
+def _fake_sites():
+    gate = FAKE_BLOCK + assembly.LABELS_FAKES["fake_gate"]
+    after = {"fake_block": fake_block(),
+             "fake_flag": b"\xe8" + struct.pack("<i", gate - HOOKS4["fake_flag"][0] - 5) + b"\x90\x90",
+             "two_point_fake": struct.pack("<I", FAKE_BLOCK + assembly.LABELS_FAKES["two_point_threshold"])}
+    return [(name, hook, before, after[name]) for name, (hook, before) in HOOKS4.items()]
 
 
 def late_code_for(va, state_va):
@@ -347,7 +474,7 @@ def code_for(va, level="modern", *, variant="b778", late_va=None, state_va=None)
                "native_fg": 0x20AF80, "kicker_range": 0x18B120, "margin_fn": 0x205F40, "hail_mary": 0x206DD0,
                "native_vip": 0xF71E0, "two_point_tail": 0x206E75}
     if level == "modern2":
-        if variant == "b778_late":
+        if variant in LATE_VARIANTS:
             if late_va is None or state_va is None:
                 raise ValueError("the late fourth-down template needs the late owner allocations")
             symbols["late_decision"] = late_va
@@ -374,8 +501,10 @@ def sites(va, level="modern", *, variant="b778"):
             else:
                 after = EXPONENT_AFTER
             rows.append((name, hook, before, after))
-        if variant in ("b778", "b778_late"):
+        if variant in ("b81s", "b81", "b778", *LATE_VARIANTS):
             rows += [(name, hook, before, HOOK3_AFTER[name]) for name, (hook, before) in HOOKS3.items()]
+        if variant in FAKE_VARIANTS:
+            rows += _fake_sites()
         return rows
     return [(name, hook, before,
              b"\xe9" + struct.pack("<i", va + assembly.LABELS[name] - hook - 5) +
@@ -451,6 +580,12 @@ def _main_row(payload):
     return _rows(payload, OWNER)
 
 
+def _late_verified(payload, late, state):
+    image = XbeImage(payload)
+    return (image.read(late["va"], LATE_CODE_SIZE) == late_code_for(late["va"], state["va"])
+            and image.read(state["va"], LATE_STATE_SIZE) == bytes(LATE_STATE_SIZE))
+
+
 def read_settings(payload):
     """Installed level. Modern 2 also names its template: ``vip_policy`` (a user VIP delegates), ``clock_policy``
     (b778: automatic coach profiles use Modern 2, end-of-half timeout window) and ``late_policy`` (ai6: the
@@ -461,14 +596,16 @@ def read_settings(payload):
             return {"level": level, "vip_policy": False, "clock_policy": False, "late_policy": False,
                     "experimental": True, "runtime_witnessed": False}
     late, state = _late_row(payload), _late_state_row(payload)
-    if late is not None and state is not None and lever.status(
-            payload, _adapter("modern2", variant="b778_late", late_va=late["va"],
-                              state_va=state["va"])) == "applied":
-        return {"level": "modern2", "vip_policy": True, "clock_policy": True, "late_policy": True,
-                "variant": "b778_late", "experimental": True, "runtime_witnessed": False}
-    if lever.status(payload, _adapter("modern2", variant="b778")) == "applied":
-        return {"level": "modern2", "vip_policy": True, "clock_policy": True, "late_policy": False,
-                "variant": "b778", "experimental": True, "runtime_witnessed": False}
+    if late is not None and state is not None and _late_verified(payload, late, state):
+        for variant in LATE_VARIANTS:
+            if lever.status(payload, _adapter("modern2", variant=variant, late_va=late["va"],
+                                             state_va=state["va"])) == "applied":
+                return {"level": "modern2", "vip_policy": True, "clock_policy": True, "late_policy": True,
+                        "variant": variant, "experimental": True, "runtime_witnessed": False}
+    for variant in ("b81s", "b81", "b778"):
+        if lever.status(payload, _adapter("modern2", variant=variant)) == "applied":
+            return {"level": "modern2", "vip_policy": True, "clock_policy": True, "late_policy": False,
+                    "variant": variant, "experimental": True, "runtime_witnessed": False}
     for variant, vip in (("v061", True), ("p9", False)):
         if lever.status(payload, _adapter("modern2", variant=variant)) == "applied":
             return {"level": "modern2", "vip_policy": vip, "clock_policy": False, "late_policy": False,
@@ -484,11 +621,12 @@ def status(payload):
         state = lever.status(payload, _adapter(level))
         if state != "foreign":
             return state
-    if late is not None and late_state is not None and lever.status(
-            payload, _adapter("modern2", variant="b778_late", late_va=late["va"],
-                              state_va=late_state["va"])) != "foreign":
-        return "applied"
-    for variant in ("b778", "v061", "p9"):
+    if late is not None and late_state is not None and _late_verified(payload, late, late_state):
+        for variant in LATE_VARIANTS:
+            if lever.status(payload, _adapter("modern2", variant=variant, late_va=late["va"],
+                                             state_va=late_state["va"])) == "applied":
+                return "applied"
+    for variant in ("b81s", "b81", "b778", "v061", "p9"):
         state = lever.status(payload, _adapter("modern2", variant=variant))
         if state != "foreign":
             return state
@@ -507,11 +645,11 @@ def _install_modern2(payload, *, allocation=None, allow_no_late=False):
     if (late is None or late_state is None) and not allow_no_late:
         space._require(False, "CPU money downs needs its companion allocations "
                               "(nfl2k5_cpu_money_downs_late and _late_state)")
-    variant = "b778_late" if late is not None and late_state is not None else "b778"
-    late_va = late["va"] if variant == "b778_late" else None
-    state_va = late_state["va"] if variant == "b778_late" else None
+    variant = CURRENT_LATE if late is not None and late_state is not None else CURRENT_NO_LATE
+    late_va = late["va"] if variant in LATE_VARIANTS else None
+    state_va = late_state["va"] if variant in LATE_VARIANTS else None
     installed = payload
-    if variant == "b778_late":
+    if variant in LATE_VARIANTS:
         space._require(XbeImage(installed).read(state_va, LATE_STATE_SIZE) == bytes(LATE_STATE_SIZE),
                        "late fourth-down state must be zero at install")
         installed, _ = space.install_code(installed, LATE_OWNER, late_code_for(late_va, state_va))
@@ -523,7 +661,7 @@ def _install_modern2(payload, *, allocation=None, allow_no_late=False):
     edits = [{"label": label, "va": hex(va), "file_offset": hex(rdata.offset_of(result, va)),
               "before": before.hex(), "after": after.hex()}
              for label, va, before, after in sites(main["va"], "modern2", variant=variant)]
-    if variant == "b778_late":
+    if variant in LATE_VARIANTS:
         edits.append({"label": "late_owner", "va": hex(late["va"]),
                       "file_offset": hex(late["raw"]), "size": late["size"]})
         edits.append({"label": "late_state", "va": hex(state_va), "size": LATE_STATE_SIZE})
@@ -532,7 +670,7 @@ def _install_modern2(payload, *, allocation=None, allow_no_late=False):
                   "after": code_for(main["va"], "modern2", variant=variant, late_va=late_va,
                                      state_va=state_va).hex()})
     receipt = {"owner": OWNER, "level": "modern2", "vip_policy": True, "clock_policy": True,
-               "late_policy": variant == "b778_late", "variant": variant, "edits": edits,
+               "late_policy": variant in LATE_VARIANTS, "variant": variant, "edits": edits,
                "allocation": allocation,
                "reservations": space.reservations(result),
                "sections_repinned": patch["sections_repinned"],
@@ -553,7 +691,7 @@ def apply(payload, *, level="modern"):
                          "edits": [], "experimental": True, "runtime_witnessed": False}
     if level == "modern2":
         settings = read_settings(payload)
-        if settings and settings["level"] == "modern2" and settings.get("late_policy"):
+        if settings and settings["level"] == "modern2" and settings.get("variant") == CURRENT_LATE:
             return payload, {"owner": OWNER, "level": "modern2", "late_policy": True,
                              "already_applied": True, "changed_bytes": 0, "edits": [],
                              "experimental": True, "runtime_witnessed": False}
@@ -600,7 +738,7 @@ def upgrade_to_modern2(payload):
     from .nfl2k5_bump_strength import _sections, section_digest
     from . import nfl2k5_rdata_sites as rdata
     settings = read_settings(payload)
-    if settings is not None and settings["level"] == "modern2" and settings.get("late_policy"):
+    if settings is not None and settings["level"] == "modern2" and settings.get("variant") == CURRENT_LATE:
         return payload, {"owner": OWNER, "level": "modern2", "late_policy": True,
                          "already_applied": True, "changed_bytes": 0, "edits": []}
     old = settings
@@ -621,22 +759,25 @@ def upgrade_to_modern2(payload):
     a = lever.allocation(payload, OWNER, CODE_SIZE)
     requests = space._read_scale_directory(payload)
     variant = old.get("variant", "b778")
-    new_variant = "b778_late" if late is not None and late_state is not None else "b778"
+    new_variant = CURRENT_LATE if late is not None and late_state is not None else CURRENT_NO_LATE
     old_sites = {name: (hook, before, after) for name, hook, before, after
                  in sites(a["va"], old["level"], variant=variant)}
     new_sites = sites(a["va"], "modern2", variant=new_variant)
     buf = bytearray(payload)
-    late_va = late["va"] if new_variant == "b778_late" else None
-    state_va = late_state["va"] if new_variant == "b778_late" else None
+    late_va = late["va"] if new_variant in LATE_VARIANTS else None
+    state_va = late_state["va"] if new_variant in LATE_VARIANTS else None
     code = code_for(a["va"], "modern2", variant=new_variant, late_va=late_va, state_va=state_va)
     space._require(bytes(buf[a["raw"]:a["raw"] + a["size"]]) ==
-                   code_for(a["va"], old["level"], variant=variant), "foreign owner code")
+                   code_for(a["va"], old["level"], variant=variant, late_va=late_va, state_va=state_va), "foreign owner code")
     buf[a["raw"]:a["raw"] + a["size"]] = code
     edits, touched = [], set()
-    if new_variant == "b778_late":
+    if new_variant in LATE_VARIANTS:
         space._require(XbeImage(payload).read(state_va, LATE_STATE_SIZE) == bytes(LATE_STATE_SIZE),
                        "late fourth-down state must be zero at install")
-        buf[late["raw"]:late["raw"] + late["size"]] = late_code_for(late_va, state_va)
+        helper = late_code_for(late_va, state_va)
+        current = bytes(buf[late["raw"]:late["raw"] + late["size"]])
+        space._require(current in (b"\xcc" * LATE_CODE_SIZE, helper), "Unrecognized late fourth-down companion")
+        buf[late["raw"]:late["raw"] + late["size"]] = helper
         edits.append({"label": "late_owner", "va": hex(late["va"]), "file_offset": hex(late["raw"]),
                       "size": late["size"]})
         edits.append({"label": "late_state", "va": hex(state_va), "size": LATE_STATE_SIZE})
@@ -659,7 +800,7 @@ def upgrade_to_modern2(payload):
     result = bytes(buf)
     space._require(status(result) == "applied", "CPU money downs upgrade postcondition failed")
     return result, {"owner": OWNER, "level": "modern2", "vip_policy": True, "clock_policy": True,
-                    "late_policy": new_variant == "b778_late", "variant": new_variant,
+                    "late_policy": new_variant in LATE_VARIANTS, "variant": new_variant,
                     "from_level": old["level"], "from_vip_policy": old["vip_policy"],
                     "from_variant": old.get("variant"), "already_applied": False,
                     "edits": edits, "changed_bytes": sum(x != y for x, y in zip(payload, result)),

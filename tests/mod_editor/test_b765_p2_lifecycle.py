@@ -7,6 +7,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from tools.b765 import p2_lifecycle_proof as proof
+from mod_editor.core import nfl2k5_roster_arena_growth as growth, nfl2k5_xbe_space as space
 
 
 class LifecycleEvidenceTests(unittest.TestCase):
@@ -19,7 +20,8 @@ class LifecycleEvidenceTests(unittest.TestCase):
         roster = os.environ.get("B765_P2_ROSTER")
         if not executable or not roster:
             self.skipTest("set B765_P2_XBE and B765_P2_ROSTER to private extracted inputs")
-        receipt = proof.prove(Path(executable).read_bytes(), Path(roster).read_bytes())
+        payload = Path(executable).read_bytes()
+        receipt = proof.prove(payload, Path(roster).read_bytes())
         timeline = receipt["timeline"]
         self.assertEqual(timeline["week_one"]["active"], 53)
         self.assertEqual(timeline["week_one"]["reserves"], 2)
@@ -33,7 +35,14 @@ class LifecycleEvidenceTests(unittest.TestCase):
         self.assertEqual([row["remaining"] for row in rollover["after"]], [1, 3, 0, 2])
         for before, after in zip(rollover["before"], rollover["after"]):
             self.assertEqual(after["years_pro"], before["years_pro"] + 1)
-        self.assertIn("allocator union", receipt["sixteen_slot_install_refusal"])
+        self.assertEqual(space.status(payload), "applied")
+        self.assertNotIn(growth.OWNER, {row["owner"] for row in space.layout(payload)["allocations"]})
+        with self.assertRaisesRegex(growth.ArenaGrowthError, "allocator union"):
+            growth.allocation(payload)
+        self.assertEqual(growth.status(payload), "foreign")
+        with self.assertRaises(growth.ArenaGrowthError) as refused:
+            growth.apply(payload)
+        self.assertEqual(receipt["sixteen_slot_install_refusal"], str(refused.exception))
 
 
 if __name__ == "__main__":

@@ -33,7 +33,7 @@ from mod_editor.core import nfl2k5_scorebug_sprite_code as engine  # noqa: E402
 from mod_editor.core import nfl2k5_season_length as season_length  # noqa: E402
 from test_nfl2k5_franchise_records import XBE, HAVE_UC, _Season, _retail, record_text, mirror  # noqa: E402
 
-PACK = ROOT / 'extracted/ESPN NFL 2K5 (USA)/vc_53450030/0'
+PACK = XBE.parent / 'vc_53450030/0'
 NATIVE = PACK.is_file() and (PACK.parents[1] / 'default.xbe').is_file() and HAVE_UC
 CODE_VA, DATA_VA = 0x5100000, 0x5200000
 RECORD_OFFSETS = (48, 72)          # State.record[0] home, [1] away
@@ -350,7 +350,7 @@ class RetailProofTests(unittest.TestCase):
 class NativePreviewTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.preview = sprite.NativePreview()
+        cls.preview = sprite.NativePreview(pack=PACK, xbe=XBE)
 
     def capture(self, widescreen=False, **state):
         g, c = self.preview.capture(state, widescreen)
@@ -428,6 +428,14 @@ class NativePreviewTests(unittest.TestCase):
         compiled = self.preview.modes[False]['compiled']
         cell = compiled.spec['glyph_sets'][glyph_set]['glyphs'][token]['cell']
         return sprite.quantized_uv(compiled.cells[cell], compiled.spec['atlas'])
+
+    def test_modern_final_regular_season_records_show_in_the_native_playoff_preview(self):
+        _, capture = self.capture(False, broadcast="monday_night", season="playoffs",
+                                  away_record=[17, 0, 0], home_record=[10, 6, 1])
+        for side, tokens in (("away", ("17", "-0")), ("home", ("10", "-6", "-1"))):
+            rows = sorted(self.visible(capture, False, side + "_record"), key=lambda quad: quad["vertex"])
+            self.assertEqual([self.uv(capture, quad) for quad in rows],
+                             [self.glyph_uv("record", token) for token in tokens])
 
     def test_record_quads_carry_their_tokens(self):
         g, c = self.capture(False, broadcast='monday_night', away_record=[1, 0, 0], home_record=[10, 5, 1])

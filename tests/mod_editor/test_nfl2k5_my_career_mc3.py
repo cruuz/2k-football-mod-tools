@@ -6,7 +6,10 @@ then "Draft preparation failed. Quit and try again." His boot had put the Quick 
 (and public v0.6) main roster has 13 free player records whose two name cells are not adjacent; with 53 records
 taken, the game's own first free record (BFF50) is one of them, and MyCareer refused the whole career.
 
-These tests use the played discs' own executable, roster and historic files (read only) and skip without them.
+The draft save/load case also accepts the exact extracted October 13 executable in B773_SP2_BASE_XBE.
+The roster censuses accept the original complete entry 5 in NFL2K5_V06_ROST_ENTRY, NFL2K5_OCT13_ROST_ENTRY
+and NFL2K5_I4_ROST_ENTRY for their respective discs. The held-team cases accept the same October 13 executable
+and roster alongside its original team resource in NFL2K5_OCT13_PACKERS_ENTRY. Each extracted input is hash-pinned.
 Retail-fixture tests cover a loaded career, quit, then a new career. EXPERIMENTAL / UNWITNESSED: offline evidence.
 """
 from __future__ import annotations
@@ -16,7 +19,9 @@ import os
 from pathlib import Path
 import struct
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 for entry in (ROOT, ROOT / "tools", ROOT / "tests"):
@@ -31,7 +36,11 @@ OCT13_DISC = Path(os.environ.get("NFL2K5_IC1_BASE", DISCS / "SOFTDRINK 2K28 v0.6
 V06_DISC = DISCS / "SOFTDRINK 2K28 v0.6 (2026-10-09).xiso.iso"
 I4_DISC = DISCS / "SOFTDRINK 2K28 v0.6.1 i4 test (2026-10-17).xiso.iso"
 OCT13_XBE = "1b41ec19aac6377484b9b30ee7a5c5ab220fb93d61aa3c14bafdb70092a9504f"
+V06_ROSTER = ("NFL2K5_V06_ROST_ENTRY", "d50958ccd181e5c9b466e9cd75323105a20fa9909f90a541fd029e180c765e5e")
+OCT13_ROSTER = ("NFL2K5_OCT13_ROST_ENTRY", "dcf17df2eb03e0bb2c17d9a78eef2a2894b4cd85fcd73f2c3ff0d713a026e68a")
+I4_ROSTER = ("NFL2K5_I4_ROST_ENTRY", "462024a53258032901bdf4794443e5ebcb51a5e13d7c97e40d7fce2571e41b27")
 PACKERS_96 = "HTS-h-10-1996-packers-2.iff"   # the season-alias file Quick Game loads on these discs
+OCT13_PACKERS = ("NFL2K5_OCT13_PACKERS_ENTRY", "04451d081b7af4692fa11a5146315f36d85d897b962f9d68e42a23617a3b2f34")
 USER2 = 33
 ENTRY, MAIN_MENU, CREATE_PLAYER = 0x5015CC, 0x515660, 0x56F050
 # The Oct 13 disc's own MyCareer entry menu. Machine takes its labels from the Studio's CURRENT template, whose code
@@ -41,19 +50,60 @@ ENTRY, MAIN_MENU, CREATE_PLAYER = 0x5015CC, 0x515660, 0x56F050
 SHIPPED_ENTRY_MENU = 0x14F27B0
 
 
-def disc_inputs(disc):
-    """(default.xbe, main ROST resource, {file name: bytes}) read from a disc image, never written."""
-    from mod_editor.core import nfl2k5_espn25_more_moments as mm
-    from mod_editor.core import nfl2k5_music_archive as archive
-    from tools.b77 import frz_xbe_bisect as bisect
-    payload, _ = bisect.read_xbe(disc)
-    with archive.Disc(disc, descriptors=()) as d:
-        entries = d.archive_entries
-        main = d.read_entry_range(entries[5], 0, entries[5].size)
-        by_id = {e.name_id: e for e in entries}
-        team = by_id[mm.name_id(PACKERS_96)]
-        files = {PACKERS_96: d.read_entry_range(team, 0, team.size)}
-    return payload, main, files
+def verify_member(payload: bytes, expected: str, name: str) -> bytes:
+    if hashlib.sha256(payload).hexdigest() != expected:
+        raise ValueError(f"{name} SHA-256 differs from the recorded disc member")
+    return payload
+
+
+def october_13_executable(disc: Path, extracted: str | None) -> bytes:
+    if disc.is_file():
+        from tools.b77 import frz_xbe_bisect as bisect
+        payload, _ = bisect.read_xbe(disc)
+    elif extracted:
+        payload = Path(extracted).read_bytes()
+    else:
+        raise unittest.SkipTest("October 13 played disc or its exact B773_SP2_BASE_XBE is required")
+    return verify_member(payload, OCT13_XBE, "October 13 default.xbe")
+
+
+def archive_member(disc: Path, member: tuple[str, str], name: str | None = None) -> bytes:
+    label = name or "entry 5"
+    if disc.is_file():
+        from mod_editor.core import nfl2k5_music_archive as archive
+        with archive.Disc(disc, descriptors=()) as image:
+            if name is None:
+                entry = image.archive_entries[5]
+            else:
+                from mod_editor.core import nfl2k5_espn25_more_moments as mm
+                entry = {row.name_id: row for row in image.archive_entries}[mm.name_id(name)]
+            resource = image.read_entry_range(entry, 0, entry.size)
+    elif path := os.environ.get(member[0]):
+        resource = Path(path).read_bytes()
+    else:
+        raise unittest.SkipTest(f"{disc.name} or its exact {member[0]} is required")
+    return verify_member(resource, member[1], label)
+
+
+class HistoricalInputTests(unittest.TestCase):
+    def test_unrelated_executable_is_rejected_before_repair(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            extracted = root / "default.xbe"
+            extracted.write_bytes(b"different executable")
+            with self.assertRaisesRegex(ValueError, "SHA-256"):
+                october_13_executable(root / "absent.iso", str(extracted))
+
+    def test_wrong_archive_members_are_rejected_before_native_use(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            extracted = root / "main.resource"
+            extracted.write_bytes(b"different roster")
+            members = ((V06_ROSTER, None), (OCT13_ROSTER, None), (I4_ROSTER, None), (OCT13_PACKERS, PACKERS_96))
+            for member, name in members:
+                with self.subTest(member=member[0]), patch.dict(os.environ, {member[0]: str(extracted)}):
+                    with self.assertRaisesRegex(ValueError, "SHA-256"):
+                        archive_member(root / "absent.iso", member, name)
 
 
 def body_of(resource):
@@ -88,14 +138,11 @@ class HeldHistoricTeamTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        if not OCT13_DISC.is_file():
-            raise unittest.SkipTest("the Oct 13 played disc is absent")
-        cls.shipped, main, files = disc_inputs(OCT13_DISC)
-        if hashlib.sha256(cls.shipped).hexdigest() != OCT13_XBE:
-            raise unittest.SkipTest("Oct 13 disc executable pin differs")
+        cls.shipped = october_13_executable(OCT13_DISC, os.environ.get("B773_SP2_BASE_XBE"))
+        cls.roster = body_of(archive_member(OCT13_DISC, OCT13_ROSTER))
+        cls.team = archive_member(OCT13_DISC, OCT13_PACKERS, PACKERS_96)
         from tools.b77 import mc2_repair
         cls.current = mc2_repair.build(cls.shipped)[0]    # the Studio's MyCareer owner on the same executable
-        cls.roster, cls.team = body_of(main), files[PACKERS_96]
 
     def held(self, m, entry_menu=None):
         from tests.nfl2k5_my_career_played_fixture import Machine  # noqa: F401
@@ -150,14 +197,9 @@ class DiscDraftSaveLoadTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        if not OCT13_DISC.is_file():
-            raise unittest.SkipTest("the Oct 13 played disc is absent")
-        from tools.b77 import frz_xbe_bisect as bisect
         from tools.b77 import mc2_repair
         from tests.mod_editor.test_nfl2k5_my_career_frontend import retail_roster
-        shipped, _ = bisect.read_xbe(OCT13_DISC)
-        if hashlib.sha256(shipped).hexdigest() != OCT13_XBE:
-            raise unittest.SkipTest("Oct 13 disc executable pin differs")
+        shipped = october_13_executable(OCT13_DISC, os.environ.get("B773_SP2_BASE_XBE"))
         cls.payload = mc2_repair.build(shipped)[0]
         code, state = mode.legacy.allocations(cls.payload)
         cls.labels = mc2_repair.studio_owner(cls.payload, code, state)[1]
@@ -196,24 +238,21 @@ class DiscDraftSaveLoadTests(unittest.TestCase):
 class RosterSplitNameRecordTests(unittest.TestCase):
     """Which shipped main rosters can hand MyCareer a split free record at all (read-only disc ROSTs)."""
 
-    def check(self, disc, expected):
-        if not disc.is_file():
-            self.skipTest(f"{disc.name} is absent")
-        from mod_editor.core import nfl2k5_music_archive as archive
-        with archive.Disc(disc, descriptors=()) as d:
-            entry = d.archive_entries[5]
-            body = body_of(d.read_entry_range(entry, 0, entry.size))
+    def check(self, disc, expected, member):
+        body = body_of(archive_member(disc, member))
         free, split = split_free_records(body)
         self.assertEqual((free, len(split)), expected)
         return body
 
-    def test_public_v06_and_oct13_carry_thirteen(self):
-        self.check(V06_DISC, (155, 13))
-        self.check(OCT13_DISC, (155, 13))
+    def test_public_v06_carries_thirteen(self):
+        self.check(V06_DISC, (155, 13), V06_ROSTER)
+
+    def test_oct13_carries_thirteen(self):
+        self.check(OCT13_DISC, (155, 13), OCT13_ROSTER)
 
     def test_the_release_candidate_roster_path_carries_none(self):
         # i4 = the 10/14 dated refresh (it took those records); then mo1's import floor adds 69 blank records.
-        body = self.check(I4_DISC, (65, 0))
+        body = self.check(I4_DISC, (65, 0), I4_ROSTER)
         from mod_editor.core import nfl2k5_spare_capacity as capacity
         floored, _receipt = capacity.restore_import_floor(body)
         free, split = split_free_records(floored)

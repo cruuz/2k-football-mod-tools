@@ -31,8 +31,8 @@ check_pin() {
   test "$(sha256sum "$path" | cut -d' ' -f1)" = "$digest"
 }
 
-# Preserve the complete v1 selector-negative evidence chain as immutable and
-# separate from this positive v2 result.
+# Pin the live v1 files. The v2 test also verifies the two original harness
+# files byte-for-byte after reversing their fixture guard and source-pin edits.
 check_pin reports/specs/nfl2k5_group36_xemu_runtime_result.v1.schema.json \
   6934 ca553ac95199813fec740a6eca305f4860daf21f062303ce2d98c689af3854b1
 check_pin reports/assets/nfl2k5_group36_s42_xemu_runtime_partial.v1.json \
@@ -40,11 +40,11 @@ check_pin reports/assets/nfl2k5_group36_s42_xemu_runtime_partial.v1.json \
 check_pin tools/nfl_group36_xemu_runtime_result.py \
   22386 3d1d6bff68f000f86f72f52db83613cef06053d0daf9d3b1e7df449843129f1f
 check_pin tests/test_nfl_group36_xemu_runtime_result.py \
-  9842 e449e3da9d525e59e6601df1f4f1ac53f9ed6e1b6f24169eebe23066466ab444
+  9938 093ffe1875c5830287eb5c72941a90bd78552a22465425074c4b1b620280189b
 check_pin docs/research/nfl_group36_xemu_runtime_result.md \
   5577 df3f85b774959fc2a134fe8617b5d4cc106d6204f309bc05d739b10492e11368
 check_pin tools/validate_nfl_group36_xemu_runtime_result.sh \
-  5007 94f5b0213959ae7a8b725ee8490af50bdc11520a7082c7e607971b3e4f815227
+  5007 3f885f3996c323de93b01219a546f428634f0edbe001a7be621a48961b16db54
 
 check_pin "$SCHEMA" \
   15865 bd580e1abd911f5dbe16f733ececc843f94f2e862f233db10b766f38cec1c370
@@ -53,7 +53,7 @@ check_pin "$REPORT" \
 check_pin "$TOOL" \
   36637 80af3e1edc0bd00acc240d26bee0e299fc2b19b18144ad5b06d86556d92836e7
 check_pin "$TEST" \
-  9911 369ffb5767b8d606df8800f7db6d6a094db59a8aae5a32c55608d4057f3eb1cc
+  11697 15bd74c2687479bc728d18c4809b298a0bb80c05fc75c1fa6e92a7f97708ec7a
 check_pin "$DOC" \
   10452 8029d75627b01f1a5870b4b8e33eaeb3957865ae123ea6e50b90019dcc6a28cc
 

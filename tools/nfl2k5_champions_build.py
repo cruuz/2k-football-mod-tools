@@ -16,7 +16,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = Path(__file__).resolve().parent / "nfl2k5_champions"
 TARGET = ROOT / "mod_editor/core/nfl2k5_champions_code.py"
-FLAGS = ["-m32", "-Os", "-ffreestanding", "-fno-builtin", "-fno-strict-aliasing", "-fno-pic", "-fno-pie",
+FLAGS = ["-m32", "-Oz", "-ffreestanding", "-fno-builtin", "-fno-strict-aliasing", "-fno-pic", "-fno-pie",
          "-fno-stack-protector", "-fno-asynchronous-unwind-tables", "-fno-unwind-tables", "-fomit-frame-pointer",
          "-fno-jump-tables", "-mpreferred-stack-boundary=2", "-mno-sse", "-mno-mmx", "-Wall", "-Wextra", "-Werror"]
 EXTERNAL = {}  # no relocation outside the blob itself

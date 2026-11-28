@@ -114,7 +114,14 @@ class Contract(unittest.TestCase):
                     self.assertIn(row["selector"], ("12A5", "12H5"))
                     self.assertEqual(row["chunk"], 1)
                     continue
-                self.assertIn(op["op"], ("warp", "texels"))
+                # b81-retail-free-art (ruling 2, round 3): the old swoosh is painted out by rule (clear, the recolour
+                # helper's map, the coordinator's inpaint), never by a stored texel list
+                self.assertIn(op["op"], ("warp", "want", "clear", "rule"))
+                if op["op"] == "rule":
+                    self.assertEqual(op["module"], "recolour")
+                    self.assertIn(op["do"], ("map", "inpaint", "rowfill", "move"))
+                if op["op"] == "clear":
+                    self.assertTrue(all((x1 - x0) * (y1 - y0) >= 16 for x0, y0, x1, y1 in op["boxes"]))
                 if op["op"] == "warp":
                     # one clean source swoosh (the Packers home sleeve), pinned on every row that names it
                     self.assertEqual(op["donor"], "10H0:3")

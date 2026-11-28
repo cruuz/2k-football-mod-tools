@@ -253,21 +253,11 @@ def helmet_ops():
                           {"op": "multipoly", "color": WHITE, "alpha": 255, "polys": layers["line"]}]
 
 
-# The navy/grey-pants combo (26H4/26A4, uf2's copy of the same shell art) also kept red dotted lines from an older
-# pass on the back: two ticks over the band ends and a ")" under the band at azimuth -12..-17 (26H0 has shell navy
-# there). Measured on the v0.6.1 26H4 art; the blends beside the ticks take 26H0's values.
-ALT_REMNANTS = [
-    (NAVY, [(119, 74), (120, 74), (119, 181), (120, 181), (178, 212), (179, 212), (177, 213), (178, 213), (176, 214),
-            (177, 214), (176, 215), (177, 215), (177, 216), (178, 216), (178, 217), (179, 217), (179, 218),
-            (180, 218)]),
-    ("#475D73", [(119, 73), (120, 73)]),
-    ("#7D8D9C", [(120, 182)]),
-]
-
-
-def alt_ops():
-    return [{"op": "texels", "color": colour, "alpha": 255, "points": [list(p) for p in points]}
-            for colour, points in ALT_REMNANTS]
+# The navy/grey-pants combo (26H4/26A4, uf2's copy of the same shell art): its rows were deleted by the coordinator's
+# ruling (b81-retail-free-art, 2026-11-20). A beta 81 build never holds their input (the helmet pass b81 owns these
+# two textures from the state they find, data/nfl2k5_kit_fixes_2026_b81.json), so they never wrote; they also stored
+# the old red dotted remnants' places as a texel list.
+HELMET_ROWS = ()      # 26H0/26A0 chunk 12 deleted as well (b81-retail-free-art (coordinator's ruling, 2026-11-21, fix 3): rows that never write in a beta 81 build (the step finds another input than their before pin and skips them) and carry shape data are deleted)
 
 
 DIGIT_SCALE = [3, 5]
@@ -275,15 +265,14 @@ DIGIT_SCALE = [3, 5]
 
 def entries():
     rows = []
-    for sel in HELMETS:
-        alt = sel.endswith("4")
+    for sel in HELMET_ROWS:
         note = ("the side A logo's wing tip painted out of the crown-stripe island (the stripe's own mirrored "
                 "pattern), and the helmet back's white upper V line, band edges and the gap between them redrawn "
                 "whole across the island seams; the band and its chevron stay")
         rows.append({"selector": sel, "chunk": 12, "texture": "helmet02", "kind": "txtr", "size": [256, 256, 6],
                      "defects": ["noah-1014-SEA-crown-fragment", "noah-1014-SEA-helmet-back-lines"],
-                     "note": note + ("; the old red dotted remnants on the back painted shell navy" if alt else ""),
-                     "ops": helmet_ops() + (alt_ops() if alt else [])})
+                     "note": note,
+                     "ops": helmet_ops()})
     for sel in DIGITS:
         for d in range(10):
             rows.append({"selector": sel, "chunk": 33 + d, "texture": "an%d" % (48 + d), "kind": "palette",

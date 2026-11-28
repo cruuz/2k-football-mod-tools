@@ -9,8 +9,10 @@ SOFTDRINK pieces are these hashes, kept in ``data/nfl2k5_moment_kits_pins.json``
 
 * the Anniversary kits' donors: the b775 fixture disc's packages passed through the b777-sw1 and b779-vk2 passes exactly as
   ``tests/mod_editor/test_b775_ek1_moment_kits.py`` does, so every donor package equals its pin (checked here);
-* the classic Seamen kit's donors (14H0, 14A0): the SOFTDRINK v0.8 disc's packages; the shipped v0.8 kit packages 14h14.iff and
-  14a14.iff must recompose from them byte for byte (checked here), which proves they are what the stage read.
+* the classic Seamen kit's donors (14H0, 14A0): none since b81-seamen. The Seamen sides are ``own_look`` (every art row and
+  the far sheet draw on any donor piece), so no stock piece is looked up for them. The v0.8 disc is still checked: its
+  shipped 14h14.iff and 14a14.iff carry every donor chunk the kit does not author byte for byte. (Until b81-seamen this
+  recomposed the whole v0.8 kit and took the donors' painted chunks as stock; the Seamen art has changed since v0.8.)
 
     python3 tools/b77/h2_stock_pieces.py --fixture FIXTURE.iso --v08 V08.iso [--write]
 
@@ -36,8 +38,8 @@ ABOUT = (
     " retail chunk; on any other chunk (the user's own art) they are skipped. Anniversary kit donors: the"
     ' pieces as the stage reads them (the b775 fixture disc after the sw1 and vk2 passes, every donor pac'
     'kage equal to its pin above; the same chunks are in the SOFTDRINK v0.8 disc); classic kit donors (14'
-    'H0, 14A0): the v0.8 disc, whose shipped 14h14.iff and 14a14.iff recompose from them byte for byte. D'
-    'erived by tools/b77/h2_stock_pieces.py.')
+    'H0, 14A0): none since b81-seamen (the Seamen sides are own_look and draw on any donor piece). Derived by tools/b77/h2_'
+    'stock_pieces.py.')
 
 
 def _sha(data: bytes) -> str:
@@ -68,9 +70,20 @@ def derive_table(fixture: Path, v08: Path) -> dict:
     with hs.Source(v08) as source:
         donors = {s: source.get(mk.selector_name(s)) for s in mk.donors(classic)}
         shipped = {name: source.get(name) for name in ("14h14.iff", "14a14.iff")}
-    made = mk.compose(classic, donors)          # strict: every step runs, as in the official build
-    if any(made[name] != shipped[name] for name in shipped):
-        raise ValueError("the v0.8 disc's donors do not recompose its shipped classic kit packages")
+    for kit in classic["kits"]:
+        for letter, side in kit["sides"].items():
+            sources = mk._expand(side.get("chunks", {}))
+            authored = {row["chunk"] for row in side.get("art", ())} | ({51} if side.get("atlas") else set())
+            made = parse_chunks(shipped[mk.package_name(kit["code"], letter, kit["style"])])
+            name = mk.package_name(kit["code"], letter, kit["style"])
+            for index in range(1, 53):
+                if index in authored:
+                    continue
+                selector = sources.get(index, side["base"])
+                donor = parse_chunks(donors[selector])[index]
+                if (donors[selector][donor.offset:donor.end_offset]
+                        != shipped[name][made[index].offset:made[index].end_offset]):
+                    raise ValueError(f"the v0.8 disc's {selector} chunk {index} is not the one its shipped {name} carries")
     for selector, chunks in mk.stock_needs(classic).items():
         parsed = parse_chunks(donors[selector])
         table[selector] = {str(i): _sha(donors[selector][parsed[i].offset:parsed[i].end_offset]) for i in chunks}

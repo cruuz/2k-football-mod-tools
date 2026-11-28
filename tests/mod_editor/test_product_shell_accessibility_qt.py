@@ -102,6 +102,30 @@ class ProductShellAccessibilityTests(unittest.TestCase):
                     "Search ready • type to filter • Esc clears • Ctrl+/ keyboard help",
                 )
 
+    def test_2k5_ctrl_f_on_star_rosters_is_finns_find_player(self) -> None:
+        # b81 R1: Finn's Ctrl+F searched the whole league; on ★ Rosters the studio key does the same
+        from mod_editor.core import nfl2k5_roster_records as rr
+        from tests.mod_editor.test_nfl2k5_roster_records import synthetic_body
+
+        panel = self.two_k5._roster_editor_panel
+        self.two_k5.navigation.setCurrentRow(self.two_k5._navigation_row("rosters"))
+        self.application.processEvents()
+        self.assertEqual(self.two_k5._page_find_handler(), panel.studio_find)
+        self.two_k5._show_keyboard_hints()
+        self.assertIn("Ctrl+F find player", self.two_k5.operation_status.text())
+        self.two_k5._focus_current_search()
+        self.assertIsNone(panel._find_dialog, "no roster loaded: the list search takes the key")
+        self.assertTrue(self.two_k5.operation_status.text().startswith("Search ready"))
+        panel.load_document(rr.load_body(synthetic_body()), label="synthetic")
+        self.two_k5._focus_current_search()
+        self.assertIsNotNone(panel._find_dialog)
+        self.assertTrue(panel._find_dialog.isVisible())
+        self.assertTrue(self.two_k5.operation_status.text().startswith("Find player"))
+        panel._find_dialog.close()
+        self.two_k5.navigation.setCurrentRow(self.two_k5._navigation_row("crib"))
+        self.application.processEvents()
+        self.assertIsNone(self.two_k5._page_find_handler(), "other pages keep their own search")
+
     def test_2k5_roster_editors_live_with_players_not_team_identity(self) -> None:
         assert self.two_k5._roster_panel is not None
         assert self.two_k5._text_roster_panel is not None

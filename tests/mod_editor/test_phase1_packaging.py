@@ -34,14 +34,14 @@ class ModStudioPackagingTests(unittest.TestCase):
             line for line in package_source.splitlines()
             if line.startswith("__version__ = ")
         ]
-        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc115"'])
+        self.assertEqual(version_assignments, ['__version__ = "1.0.0rc116"'])
         self.assertIn(
             'release_candidate = __version__.rsplit("rc", 1)[-1]',
             studio_source,
         )
-        # b780-uxfix: the header names the release people know (Beta 80); the RC is in its tooltip
+        # The public beta name is visible and the build number is available in its tooltip.
         self.assertIn(
-            'QLabel(f"{release_name} • Xbox Edition")',
+            'f"{release_name} • Xbox Edition"',
             studio_source,
         )
         self.assertIn(
@@ -59,7 +59,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         )
         status = (ROOT / "STATUS.md").read_text(encoding="utf-8")
         self.assertTrue(getting_started.startswith(
-            "# 2K5 Mod Studio v1.0 RC115: Getting Started"
+            "# 2K5 Mod Studio v1.0 RC116: Getting Started"
         ))
         self.assertIn(
             "## v1.0 RC48 Audio Converter, Stadium Model Export, Update Check", changelog
@@ -75,7 +75,7 @@ class ModStudioPackagingTests(unittest.TestCase):
         self.assertIn("complete 19-page sidebar", getting_started)
         self.assertIn("twelve-section desktop launch signature", packaging_readme)
         self.assertTrue(status.startswith(
-            "# 2K5 Mod Studio: v1.0 RC115 Release Status"
+            "# 2K5 Mod Studio: v1.0 RC116 Release Status"
         ))
 
     def _fixture(self) -> tuple[tempfile.TemporaryDirectory[str], Path, Path]:
@@ -382,19 +382,17 @@ class ModStudioPackagingTests(unittest.TestCase):
                 for path in release_gate.REVIEWED_METADATA),
             16,
         )
-        for relative in release_gate.REVIEWED_METADATA:
-            path = ROOT / relative
-            if relative.startswith("reports/assets/") and not path.exists():
-                self.skipTest(f"Missing asset: {path}")
         for relative, (size, expected_sha, schema) in release_gate.REVIEWED_METADATA.items():
-            path = ROOT / relative
-            payload = path.read_bytes()
-            self.assertEqual(len(payload), size)
-            self.assertEqual(hashlib.sha256(payload).hexdigest(), expected_sha)
-            text = payload.decode("utf-8")
-            document = release_gate.json.loads(text)
-            self.assertEqual(document["schema"], schema)
-            self.assertFalse(release_gate._metadata_contains_payload(document))
+            with self.subTest(metadata=relative):
+                path = ROOT / relative
+                if relative.startswith("reports/assets/") and not path.exists():
+                    self.skipTest(f"Missing asset: {path}")
+                payload = path.read_bytes()
+                self.assertEqual(len(payload), size)
+                self.assertEqual(hashlib.sha256(payload).hexdigest(), expected_sha)
+                document = release_gate.json.loads(payload.decode("utf-8"))
+                self.assertEqual(document["schema"], schema)
+                self.assertFalse(release_gate._metadata_contains_payload(document))
 
     def test_release_allowlist_has_scanner_and_metadata_but_not_private_inventory(self) -> None:
         allowlist_text = (ROOT / "packaging/release-allowlist.txt").read_text(

@@ -100,12 +100,61 @@ class PlanningTests(unittest.TestCase):
                 #   full:   b780 pres2: 4,096 + sprite 6,336 + champions 5,632 = 16,064 -> 4 pages (was 3 with k128 + champions)
                 #   budget: b780 pres2: 4,096 + sprite 6,336 + champions 5,632 + star_career data 4,096 + the 8-byte
                 #           money-downs state word + module loader data 32 -> 5 pages (the same count as before)
+                #   Beta 81 (f2338d527, 0b04dc42c): the budget union also carries rows at fixed pool addresses, the two
+                #   gadget slots and the Coach Matchup card (space.LINEUP_SLOT_VA) and the simulated QB injury bank on
+                #   the page after the card. Those rows end the pool at 29 pages before and after the promotion, so
+                #   the directory page and the spills are measured by themselves: still 2 pages before, 5 after.
+                #   Beta 81 qb34 (90b2b7d36): the budget union also carries the quarterback room, three pages at the
+                #   fixed address space.QB_ROOM_VA after the franchise ownership page. It is now the last fixed row, so
+                #   the pool ends with it: 33 pages before and after the promotion (measured: 12,435,456 B files).
+                #   The 128 MB model already charges those pages (nfl2k5_memory_budget.xbe_resident, owner qb_room).
+                #   Beta 81 qb34 trades (C20, merge queue item 13): the trades owner's page follows the room
+                #   (space.QB_TRADES_VA); the fixed quarterback span (space.QB_FIXED_SPAN) now ends the pool: 34 pages.
+                #   Beta 81 helmet sides (53ad042ea, merge queue item 18): one fixed page for the route-5 owner right after
+                #   the quarterback span (space.HELMET_SIDES_VA), so in-place additions keep working: 35 pages.
+                #   Beta 81 sportscenter (review S1): the budget union (dormant_union) also carries SportsCenter news,
+                #   one fixed page at space.SPORTSCENTER_NEWS_VA (0x1533000, its own step-over): the pool's end,
+                #   41 pages.
+                #   Beta 81 awards (integration, #38): the award vote's fixed page (space.AWARDS_VA, 0x1531000) lies below
+                #   the news page, so the pool still ends with SportsCenter news: 41 pages.
+                #   Beta 81 integration task 7: the union also carries the modern numbers (0x1530000), simulated outcomes
+                #   (0x1534000) and franchise ownership (0x1528000) fixed pages; the outcomes page now ends the pool: 42
+                #   pages. The memory model already charges each (nfl2k5_memory_budget.BUILD_OWNER_BYTES).
+                #   Beta 81 #45: team building's pace page, seven fixed pages at space.TEAM_BUILDING_PACE_VA (0x1535000)
+                #   right after the outcomes page, now ends the pool: 49 pages (team building is 128 MB only, eb519dc5b).
                 self.assertEqual(before['regions'][:6], after['regions'][:6])
+                injury_va = -(-(space.BACKFIELD_VA + space.BACKFIELD_REQUEST[2]) // space.PAGE) * space.PAGE
+                self.assertGreaterEqual(space.QB_ROOM_VA, injury_va + space.QB_INJURY_REQUEST[2])
+                self.assertEqual(space.QB_FIXED_SPAN, (space.QB_ROOM_VA, space.QB_TRADES_VA + space.QB_TRADES_SIZE))
+                self.assertEqual(space.HELMET_SIDES_VA, space.QB_FIXED_SPAN[1])
+                self.assertEqual(space.SPORTSCENTER_NEWS_VA, 0x1533000)
+                self.assertEqual(space.SIM_OUTCOMES_VA, space.SPORTSCENTER_NEWS_VA + space.SPORTSCENTER_NEWS_SIZE)
+                self.assertEqual(space.TEAM_BUILDING_PACE_VA, space.SIM_OUTCOMES_VA + space.SIM_OUTCOMES_SIZE)
+                fixed_end = space.TEAM_BUILDING_PACE_VA + space.TEAM_BUILDING_PACE_SIZE
+                budget_size = space.SCALE3_FILE_SIZE + fixed_end - space.POOL_VA
+                self.assertEqual(budget_size, space.SCALE3_FILE_SIZE + 49 * space.PAGE)
+                self.assertGreater(space.AWARDS_VA, space.HELMET_SIDES_VA + space.HELMET_SIDES_SIZE - 1)
+                self.assertLess(space.AWARDS_VA, space.SPORTSCENTER_NEWS_VA)
                 expected_size = {'full': space.SCALE3_FILE_SIZE + 4 * space.PAGE,
-                                 'budget': space.SCALE3_FILE_SIZE + 5 * space.PAGE}.get(label, space.SCALE3_FILE_SIZE)
+                                 'budget': budget_size}.get(label, space.SCALE3_FILE_SIZE)
                 self.assertEqual(after['file_size'], expected_size)
                 if label == 'budget':
-                    self.assertEqual(before['file_size'], space.SCALE3_FILE_SIZE + 2 * space.PAGE)
+                    self.assertEqual(before['file_size'], budget_size)
+                    self.assertEqual(self.pool_pages(before), 2)
+                    self.assertEqual(self.pool_pages(after), 5)
+                    fixed = {**space.LINEUP_SLOT_VA, space.QB_INJURY_REQUEST[:2]: injury_va,
+                             space.QB_ROOM_REQUEST[:2]: space.QB_ROOM_VA,
+                             space.QB_TRADES_REQUEST[:2]: space.QB_TRADES_VA,
+                             space.HELMET_SIDES_REQUEST[:2]: space.HELMET_SIDES_VA,
+                             space.SPORTSCENTER_NEWS_REQUEST[:2]: space.SPORTSCENTER_NEWS_VA,
+                             space.AWARDS_REQUEST[:2]: space.AWARDS_VA,
+                             space.MODERN_NUMBERS_REQUEST[:2]: space.MODERN_NUMBERS_VA,
+                             space.SIM_OUTCOMES_REQUEST[:2]: space.SIM_OUTCOMES_VA,
+                             (space.FRANCHISE_OWNERSHIP, "code"): space.FRANCHISE_OWNERSHIP_VA,
+                             (space.TEAM_BUILDING_PACE_OWNER, "code"): space.TEAM_BUILDING_PACE_VA}
+                    for report in (before, after):
+                        self.assertEqual({(a['owner'], a['kind']): a['va'] for a in report['allocations']
+                                          if (a['owner'], a['kind']) in fixed}, fixed)
                 elif label == 'full':
                     self.assertEqual(before['file_size'], space.SCALE3_FILE_SIZE)
                 else:
@@ -115,6 +164,16 @@ class PlanningTests(unittest.TestCase):
                                      ('pool', expected_size - space.SCALE3_FILE_SIZE))
                 else:
                     self.assertEqual(len(after['regions']), 6)
+
+    @staticmethod
+    def pool_pages(report):
+        """Pool pages used by the directory page and the spills, leaving out the rows at fixed pool addresses."""
+        # b81 integration: every owner at a fixed pool address (the lanes' pages included), not a hand-kept list
+        fixed = {*space.LINEUP_SLOT_VA, space.QB_INJURY_REQUEST[:2]}
+        fixed |= {(owner, kind) for owner in space.FIXED_PAGE_OWNERS for kind in ("code", "data", "read_only")}
+        ends = [a['va'] + a['size'] for a in report['allocations']
+                if a['va'] >= space.POOL_VA and (a['owner'], a['kind']) not in fixed]
+        return -(-(max(ends, default=space.POOL_VA) - space.POOL_VA) // space.PAGE)
 
     def test_separate_rw_request_is_fixed_and_capacity_is_not_borrowed(self):
         for request in ((mode.EXTRA_OWNER, 'data', 8192, 16),

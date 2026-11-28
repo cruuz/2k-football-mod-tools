@@ -200,6 +200,27 @@ class SyntheticTests(unittest.TestCase):
         with self.assertRaises(fs.FranchiseSaveError):
             save.place_on_injured_reserve(31, victim)                          # not an NFL team in this arena
 
+    def test_team_yards_separate_offense_from_penalties(self) -> None:
+        base = self.save.team_offset(0)
+        # Three independent words from San Francisco's signed Week 1 result.
+        for offset, value in ((0x1AA, 128), (0x1AC, 117), (0x1D2, 25)):
+            struct.pack_into("<H", self.save.buffer, base + offset, value)
+        season = self.save.team_season(0)
+        self.assertEqual(season.stat("total_yards"), 245)
+        self.assertEqual(season.stat("penalty_yards"), 25)
+        self.assertEqual(season.stat("passing_yards"), 128)
+        self.assertEqual(season.stat("rushing_yards"), 117)
+
+    def test_team_yards_preserve_a_negative_game_total(self) -> None:
+        base = self.save.team_offset(0)
+        for passing, rushing, total in ((-12, 5, -7), (0, -3, -3), (0, 0, 0)):
+            with self.subTest(passing=passing, rushing=rushing):
+                struct.pack_into("<hh", self.save.buffer, base + 0x1AA, passing, rushing)
+                season = self.save.team_season(0)
+                self.assertEqual(season.stat("passing_yards"), passing)
+                self.assertEqual(season.stat("rushing_yards"), rushing)
+                self.assertEqual(season.stat("total_yards"), total)
+
     def test_team_seasons_coaches_and_tables(self) -> None:
         seasons = self.save.team_seasons()
         self.assertEqual(len(seasons), self.save.league_team_count)

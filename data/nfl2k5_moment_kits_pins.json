@@ -348,26 +348,6 @@
   "06A0": {
    "2": "0177db3e3ece2335f7748043d37a43dea251f92b41d277e9bf30dddec5146aa0"
   },
-  "14A0": {
-   "1": "d3ea85722cc41e67e2b70c3bb767806ba71d0008dc83a98780d23965c200be93",
-   "2": "94d6bfe438afc1f1a4dfb0cfdc326d3caeb89e418405d5c44c20a8ede7176392",
-   "3": "23c43da6d047e648bf627228236f16b5afd687656421486ce36a42e212e186cd",
-   "11": "3ad11e324c9dc5b507a1aa94553e8475a384ec8746fdaed667b6c66614728242",
-   "12": "007c146ae6ad240aecd98b396376197ecc308f80764ebb892e5f8e935d118416",
-   "49": "046eaf9b9533222122dea19c3a9f0261110c8db0d46b76e1a4db970e8f0a5cf3",
-   "51": "a553295a16f9d7d0164f1050106dcca4c87e6b5b903bbded7613e1d033099019",
-   "52": "2e77f5df384695556ddb387a179c63dc4d3f06a7d4e2b9d63d0c6a65d1df7aff"
-  },
-  "14H0": {
-   "1": "0a76632280dca56a67d709a32dde08d4bce094bc043b3d5ff479f514fe8314e8",
-   "2": "226b354b817a8be0f9966a4d6cad0c1fa03e1645cab9bd3f463e58709f945ac5",
-   "3": "12d53d6fed27e714b9886e33b4a4312e1bc725bdcd04f744b27267c5b4340b19",
-   "11": "3ad11e324c9dc5b507a1aa94553e8475a384ec8746fdaed667b6c66614728242",
-   "12": "007c146ae6ad240aecd98b396376197ecc308f80764ebb892e5f8e935d118416",
-   "49": "046eaf9b9533222122dea19c3a9f0261110c8db0d46b76e1a4db970e8f0a5cf3",
-   "51": "46c36273e32d269f5a544826f0893fc611a353de123b8bd55e931d2cb2315e46",
-   "52": "2e77f5df384695556ddb387a179c63dc4d3f06a7d4e2b9d63d0c6a65d1df7aff"
-  },
   "18A0": {
    "3": "ca3af94c4103a5e2223139d8531d50681dbd7bd8ddf566116abf34e94cd038f3"
   },
@@ -485,5 +465,5 @@
    "42": "2d39d7ea6e8f40630bf281d600c39f09fdc01f9d4b295d6c319dc25166a27632"
   }
  },
- "stock_chunks_about": "b791-h2-kits: sha256 of the chunk spans of the shipped SOFTDRINK pieces that the drawing art steps (poly, multipoly, flood, texels, ring, grow, copy ...) of the Anniversary and classic kits are made for. A donor that is not the shipped set runs those steps only on a chunk listed here or equal to the retail chunk; on any other chunk (the user's own art) they are skipped. Anniversary kit donors: the pieces as the stage reads them (the b775 fixture disc after the sw1 and vk2 passes, every donor package equal to its pin above; the same chunks are in the SOFTDRINK v0.8 disc); classic kit donors (14H0, 14A0): the v0.8 disc, whose shipped 14h14.iff and 14a14.iff recompose from them byte for byte. Derived by tools/b77/h2_stock_pieces.py."
+ "stock_chunks_about": "b791-h2-kits: sha256 of the chunk spans of the shipped SOFTDRINK pieces that the drawing art steps (poly, multipoly, flood, texels, ring, grow, copy ...) of the Anniversary and classic kits are made for. A donor that is not the shipped set runs those steps only on a chunk listed here or equal to the retail chunk; on any other chunk (the user's own art) they are skipped. Anniversary kit donors: the pieces as the stage reads them (the b775 fixture disc after the sw1 and vk2 passes, every donor package equal to its pin above; the same chunks are in the SOFTDRINK v0.8 disc); classic kit donors (14H0, 14A0): none since b81-seamen (the Seamen sides are own_look and draw on any donor piece). Derived by tools/b77/h2_stock_pieces.py."
 }

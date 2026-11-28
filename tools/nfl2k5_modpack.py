@@ -9,6 +9,10 @@
              (or --in-place to patch an existing copy)
     extract  write the bundled assets, recipe and manifest to a folder
     build-sources  run Make my disc with an extracted editable source recipe
+    edit-sim-qb    change only quarterback simulation on a new copy of a built standard disc
+    edit-gadget-play  turn only the gadget player on gadget plays on or off on a new copy of a built standard disc
+    edit-team-building  add only CPU team building (needs-based CPU drafts and signings) to a new copy of a built
+                      standard disc
 
 Every run is verified against the SHA-256 of the bytes it replaces before
 anything is written; a wrong base is refused, not patched.
@@ -33,7 +37,8 @@ from mod_editor.core import modpack  # noqa: E402
 def cmd_export_files(args):
     from mod_editor.core import modpack_files, modpack_sources
     with tempfile.TemporaryDirectory(prefix="pack-sources-", dir=Path(args.out).parent) as work:
-        recipe, assets = ({}, {}) if not args.recipe else modpack_sources.prepare(args.recipe, work, stack=ROOT, marks_pack=args.marks_pack)
+        recipe, assets = ({}, {}) if not args.recipe else modpack_sources.prepare(
+            args.recipe, work, stack=ROOT, marks_pack=args.marks_pack, patched_image=args.patched)
         if args.sources_out:
             modpack._require(bool(assets), "--sources-out requires --recipe")
             recipe["sources_bundle"] = modpack_sources.write_bundle(args.sources_out, recipe, assets, overwrite=args.overwrite)
@@ -230,7 +235,7 @@ def cmd_extract(args: argparse.Namespace) -> int:
 
 def cmd_build_sources(args: argparse.Namespace) -> int:
     """Use the same source-project builder as the Studio Make my disc button."""
-    from mod_editor.core import modpack_sources
+    from mod_editor.core import modpack_sources, nfl2k5_build_settings
     from mod_editor.core.errors import ModEditorError
     recipe = json.loads(Path(args.recipe).read_text(encoding="utf-8"))
     modpack._require(isinstance(recipe, dict) and recipe.get("schema") == "softdrink_sources/v1"
@@ -239,18 +244,134 @@ def cmd_build_sources(args: argparse.Namespace) -> int:
                      "Choose the materialized SOFTDRINK-build-recipe.json from Extract sources")
     try:
         plan = modpack_sources.build_plan(recipe, args.source, args.out)
+        mode = getattr(args, "sim_qb_injuries", None)
+        if mode is not None:
+            plan.sim_qb_injuries = mode
+            if mode in ("realistic", "custom"):
+                plan.sim_realism = plan.k128_memory = True
+        rate = getattr(args, "qb_injury_rate", None)
+        if rate is not None:
+            modpack._require(plan.sim_qb_injuries == "custom", "--qb-injury-rate requires the Custom injury setting")
+            plan.sim_qb_injury_rate = rate
+        room = getattr(args, "qb_room", None)
+        if room is not None:  # b81 qb34: otherwise the recipe's own key, or the quarterback injury setting, decides
+            plan.qb_room = room
+        cpu_trades = getattr(args, "cpu_trades", None)
+        if cpu_trades is not None:  # b81 trades-all (R6): otherwise the recipe's own key, or the quarterback option
+            plan.cpu_trades = cpu_trades
+        nfl2k5_build_settings.validate_sim_qb_injuries(plan.sim_qb_injuries, plan.sim_qb_injury_rate)
+        nfl2k5_build_settings.validate_qb_room(plan.qb_room)
+        nfl2k5_build_settings.validate_cpu_trades(plan.cpu_trades)
     except KeyError as exc:
         raise modpack.ModpackError(f"Source recipe requires an unsupported Studio preset: {recipe['preset']}") from exc
     try:
         receipt = modpack_sources.build_project(plan, recipe["project"], _progress(not args.json))
     except ModEditorError as exc:
         raise modpack.ModpackError(str(exc)) from exc
+    return _print_build_result(args, receipt, (args.recipe, args.source, args.out))
+
+
+def _print_build_result(args, receipt, inputs):
     if args.receipt:
         from mod_editor.core import modpack_files
-        with modpack_files._transaction(args.receipt, (args.recipe, args.source, args.out)) as part:
+        with modpack_files._transaction(args.receipt, inputs) as part:
             part.write_text(json.dumps(receipt, indent=2, default=str) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps(receipt, indent=2, default=str))
     return 0
+
+
+def cmd_update_v09(args: argparse.Namespace) -> int:
+    """Make the same verified copy as selecting these options on the Build page."""
+    from mod_editor.core import mod_build
+    if args.qb_injury_rate is not None and args.sim_qb_injuries != "custom":
+        raise ValueError("--qb-injury-rate requires Custom mode.")
+    rate = mod_build.BuildPlan.sim_qb_injury_rate if args.qb_injury_rate is None else args.qb_injury_rate
+    plan = mod_build.v09_disc_update(args.source, args.out, save_list_type_guard=args.save_list_guard,
+                                     modern_injured_reserve=args.modern_ir, backfield_cards=args.backfield_cards,
+                                     gadget_play=args.gadget_play, team_building=getattr(args, "team_building", False),
+                                     sim_qb_injuries=args.sim_qb_injuries, custom_rate=rate,
+                                     qb_room=getattr(args, "qb_room", None),
+                                     cpu_trades=getattr(args, "cpu_trades", None), overwrite=args.overwrite)
+    receipt = mod_build.build(plan, _progress(not args.json), require_change=True)
+    print(json.dumps(receipt, indent=2, default=str))
+    return 0
+
+
+def cmd_edit_gadget_play(args):
+    """Beta 81 Q62: the gadget player on gadget plays alone, on a new copy of a built 128 MB standard disc."""
+    from mod_editor.core import mod_build
+    from mod_editor.core.errors import ModEditorError
+    plan = mod_build.gadget_disc_edit(args.source, args.out, enabled=args.mode == "on")
+    try:
+        result = mod_build.build(plan, _progress(not args.json), require_change=True)
+    except ModEditorError as exc:
+        raise modpack.ModpackError(str(exc)) from exc
+    return _print_build_result(args, result, (args.source, args.out))
+
+
+def cmd_edit_cpu_decisions(args):
+    """Beta 81 fake kicks: CPU decisions (Modern 2) alone, on a new copy of a built 128 MB standard disc."""
+    from mod_editor.core import mod_build
+    from mod_editor.core.errors import ModEditorError
+    plan = mod_build.cpu_decisions_disc_edit(args.source, args.out)
+    try:
+        result = mod_build.build(plan, _progress(not args.json), require_change=True)
+    except ModEditorError as exc:
+        raise modpack.ModpackError(str(exc)) from exc
+    return _print_build_result(args, result, (args.source, args.out))
+
+
+def cmd_edit_team_building(args):
+    """b81 team building: CPU team building alone, on a new copy of a built 128 MB standard disc."""
+    from mod_editor.core import mod_build
+    from mod_editor.core.errors import ModEditorError
+    plan = mod_build.team_building_disc_edit(args.source, args.out)
+    try:
+        result = mod_build.build(plan, _progress(not args.json), require_change=True)
+    except ModEditorError as exc:
+        raise modpack.ModpackError(str(exc)) from exc
+    return _print_build_result(args, result, (args.source, args.out))
+
+
+def cmd_edit_helmet_sides(args):
+    """b81 helmet-sides: the Chargers' helmet side numbers alone, on a new copy of a built 128 MB standard disc."""
+    from mod_editor.core import mod_build
+    from mod_editor.core.errors import ModEditorError
+    plan = mod_build.helmet_sides_disc_edit(args.source, args.out)
+    try:
+        result = mod_build.build(plan, _progress(not args.json), require_change=True)
+    except ModEditorError as exc:
+        raise modpack.ModpackError(str(exc)) from exc
+    return _print_build_result(args, result, (args.source, args.out))
+
+
+def cmd_edit_modern_numbers(args):
+    """b81 modern numbers: modern jersey numbers (or Retail) alone, on a new copy of a built disc."""
+    from mod_editor.core import mod_build
+    from mod_editor.core.errors import ModEditorError
+    plan = mod_build.modern_numbers_disc_edit(args.source, args.out, mode=args.mode)
+    try:
+        result = mod_build.build(plan, _progress(not args.json), require_change=True)
+    except ModEditorError as exc:
+        raise modpack.ModpackError(str(exc)) from exc
+    return _print_build_result(args, result, (args.source, args.out))
+
+
+def cmd_edit_sim_qb(args):
+    from mod_editor.core import mod_build
+    from mod_editor.core.errors import ModEditorError
+    rate = args.qb_injury_rate
+    if rate is not None and args.mode != "custom":
+        raise ValueError("--qb-injury-rate requires Custom mode.")
+    plan = mod_build.sim_qb_disc_edit(args.source, args.out, args.mode,
+                                      custom_rate=mod_build.BuildPlan.sim_qb_injury_rate if rate is None else rate,
+                                      qb_room=getattr(args, "qb_room", None),
+                                      cpu_trades=getattr(args, "cpu_trades", None))
+    try:
+        result = mod_build.build(plan, _progress(not args.json), require_change=True)
+    except ModEditorError as exc:
+        raise modpack.ModpackError(str(exc)) from exc
+    return _print_build_result(args, result, (args.source, args.out))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -326,8 +447,83 @@ def main(argv: list[str] | None = None) -> int:
     build.add_argument("--source", required=True, help="your unmodified retail image")
     build.add_argument("--out", required=True, help="new output image")
     build.add_argument("--receipt", help="new JSON receipt file")
+    build.add_argument("--sim-qb-injuries", choices=("retail", "realistic", "custom"),
+                       help="override the source recipe's simulated quarterback injury setting")
+    build.add_argument("--qb-injury-rate", type=float, metavar="PERCENT",
+                       help="Custom base chance per eligible play, from 0.000 to 100.000 percent")
+    build.add_argument("--qb-room", choices=("retail", "realistic"), help="set the quarterback room rules explicitly (default: they follow the quarterback injury setting)")
+    build.add_argument("--cpu-trades", choices=("retail", "realistic"),
+                       help="set computer trades at every position explicitly (default: they follow the quarterback option)")
     build.add_argument("--json", action="store_true")
     build.set_defaults(run=cmd_build_sources)
+
+    upgrade = sub.add_parser("update-v09", help="update selected features on a copy of the released v0.9 standard disc")
+    upgrade.add_argument("--source", required=True, help="original SOFTDRINK 2K28 v0.9 standard image")
+    upgrade.add_argument("--out", required=True, help="updated disc copy")
+    upgrade.add_argument("--save-list-guard", action="store_true", help="repair title-screen freezes when the game lists a malformed save")
+    upgrade.add_argument("--modern-ir", action="store_true", help="upgrade the existing modern franchise injured reserve")
+    upgrade.add_argument("--backfield-cards", action="store_true", help="add starting backfield cards")
+    upgrade.add_argument("--gadget-play", action="store_true",
+                         help="add the gadget player on gadget plays (the SPECIAL GAD row; experimental)")
+    upgrade.add_argument("--team-building", action="store_true",
+                         help="add CPU team building: CPU clubs draft and sign to their weakest starters (experimental)")
+    upgrade.add_argument("--sim-qb-injuries", choices=("retail", "realistic", "custom"),
+                         help="set the simulated quarterback injury option on the same copy")
+    upgrade.add_argument("--qb-injury-rate", type=float, metavar="PERCENT", help="Custom base injury chance per eligible play")
+    upgrade.add_argument("--qb-room", choices=("retail", "realistic"), help="set the quarterback room rules explicitly (default: they follow the quarterback injury setting)")
+    upgrade.add_argument("--cpu-trades", choices=("retail", "realistic"),
+                         help="set computer trades at every position explicitly (default: they follow the quarterback option)")
+    upgrade.add_argument("--overwrite", action="store_true")
+    upgrade.add_argument("--json", action="store_true", help="omit progress and print only the resulting receipt")
+    upgrade.set_defaults(run=cmd_update_v09)
+    edit = sub.add_parser("edit-sim-qb", help="change only quarterback simulation on a copy of a built 128 MB disc")
+    edit.add_argument("--source", required=True, help="built 128 MB disc with Simulated season realism")
+    edit.add_argument("--out", required=True, help="new output disc")
+    edit.add_argument("--mode", required=True, choices=("retail", "realistic", "custom"))
+    edit.add_argument("--qb-injury-rate", type=float, metavar="PERCENT", help="base chance in Custom mode")
+    edit.add_argument("--qb-room", choices=("retail", "realistic"), help="set the quarterback room rules explicitly (default: they follow the quarterback injury setting)")
+    edit.add_argument("--cpu-trades", choices=("retail", "realistic"),
+                      help="set computer trades at every position explicitly (default: they follow the quarterback option)")
+    edit.add_argument("--receipt", help="new JSON receipt file")
+    edit.add_argument("--json", action="store_true")
+    edit.set_defaults(run=cmd_edit_sim_qb)
+    gadget = sub.add_parser("edit-gadget-play", help="turn only the gadget player on gadget plays on or off, on a copy of a "
+                                                     "built 128 MB standard disc")
+    gadget.add_argument("--source", required=True, help="built 128 MB standard disc with the SPECIAL rows")
+    gadget.add_argument("--out", required=True, help="new output disc")
+    gadget.add_argument("--mode", required=True, choices=("on", "off"))
+    gadget.add_argument("--receipt", help="new JSON receipt file")
+    gadget.add_argument("--json", action="store_true")
+    gadget.set_defaults(run=cmd_edit_gadget_play)
+    decisions = sub.add_parser("edit-cpu-decisions", help="update only CPU decisions (Modern 2: fourth downs, fake kicks, "
+                                                          "two-point tries) on a copy of a built 128 MB standard disc")
+    decisions.add_argument("--source", required=True, help="built 128 MB standard disc with CPU decisions at Modern 2")
+    decisions.add_argument("--out", required=True, help="new output disc")
+    decisions.add_argument("--receipt", help="new JSON receipt file")
+    decisions.add_argument("--json", action="store_true")
+    decisions.set_defaults(run=cmd_edit_cpu_decisions)
+    building = sub.add_parser("edit-team-building", help="add only CPU team building (needs-based CPU drafts and "
+                                                          "signings) to a copy of a built 128 MB standard disc")
+    building.add_argument("--source", required=True, help="built 128 MB standard disc with the draft AI and the economy")
+    building.add_argument("--out", required=True, help="new output disc")
+    building.add_argument("--receipt", help="new JSON receipt file")
+    building.add_argument("--json", action="store_true")
+    building.set_defaults(run=cmd_edit_team_building)
+    sides = sub.add_parser("edit-helmet-sides", help="add only the helmet side numbers (Chargers) to a copy of a built "
+                                                     "128 MB standard disc with Hair styles")
+    sides.add_argument("--source", required=True, help="built 128 MB standard disc with Hair styles")
+    sides.add_argument("--out", required=True, help="new output disc")
+    sides.add_argument("--receipt", help="new JSON receipt file")
+    sides.add_argument("--json", action="store_true")
+    sides.set_defaults(run=cmd_edit_helmet_sides)
+    numbers = sub.add_parser("edit-modern-numbers", help="set only modern jersey numbers (players who join a club get "
+                                                         "today's numbers) on a copy of a built disc")
+    numbers.add_argument("--source", required=True, help="built disc (v0.9, beta 80 or beta 81)")
+    numbers.add_argument("--out", required=True, help="new output disc")
+    numbers.add_argument("--mode", choices=("modern", "retail"), default="modern")
+    numbers.add_argument("--receipt", help="new JSON receipt file")
+    numbers.add_argument("--json", action="store_true")
+    numbers.set_defaults(run=cmd_edit_modern_numbers)
 
     args = parser.parse_args(argv)
     try:

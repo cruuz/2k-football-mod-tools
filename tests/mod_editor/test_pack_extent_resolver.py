@@ -159,6 +159,10 @@ class PackExtentResolverTests(unittest.TestCase):
             def repair_awards_timing(xbe: bytes) -> tuple[bytes, dict]:  # b771 v1i: already repaired, nothing written
                 return xbe, {"already_applied": True}
 
+            @staticmethod
+            def repair_injury_season_end(xbe: bytes) -> tuple[bytes, dict]:  # b81 sportscenter: already moved
+                return xbe, {"already_applied": True}
+
         class Deadline:  # b778-tr1: reads the retail trade-deadline sites the stubbed bytes cannot carry
             @staticmethod
             def status(_xbe: bytes) -> str:
@@ -208,7 +212,9 @@ class PackExtentResolverTests(unittest.TestCase):
             return {}
 
         target = self.tmp / "built.iso"
-        plan = mod_build.BuildPlan(str(self.image), str(target), season_2026=True)
+        # b81 integration (#32 merge): modern jersey numbers follow season_2026 and would read this fixture's stubbed
+        # executable (b"XBEH") as foreign; the test isolates the schedule writer, so the box is left clear
+        plan = mod_build.BuildPlan(str(self.image), str(target), season_2026=True, modern_numbers=False)
         with (
             mock.patch.object(mod_build, "_core_module", core),
             mock.patch.object(mod_build, "_tools_module", tools),

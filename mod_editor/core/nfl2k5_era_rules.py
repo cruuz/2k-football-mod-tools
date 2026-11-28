@@ -422,7 +422,9 @@ def _prerequisites(payload, neighbors=True):
     pins = manifest["retail_sites"]
     if neighbors:
         for module in (gate, kr, ot, dt):
-            require(module.status(payload) == "applied", f"era rules require installed {module.__name__}")
+            # b81 ot-crash review D1: the overtime owner's earlier revision ("previous") keeps every label era rules wrap
+            require(ot.installed(payload) if module is ot else module.status(payload) == "applied",
+                    f"era rules require installed {module.__name__}")
         settings = ot.read_settings(payload)
         require(settings["both_possessions"] and settings["postseason_no_ties"], "era OT requires complete modern OT base")
         for module in (coin, clock):

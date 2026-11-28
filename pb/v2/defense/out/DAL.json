@@ -2310,7 +2310,7 @@
  "receipt": {
   "team": "DAL",
   "offense_pack": "data/playbooks/softdrink_dal_modern.2k5book",
-  "offense_pack_sha256": "2ee7708cc5fb7c28f0c545cae638c0ffc9c0c9e0e828fb7417055b04d78a9532",
+  "offense_pack_sha256": "ab8a0e96f632b28155d613dd47f6992dafad55bb6b38a725217b61d13e9d0c07",
   "source_fingerprint": "968cbe17845578f084e63ad7fc864d41494e513fb71fc5c928447021235338ff",
   "replacement_sha256": "11fad0d9c94ab0fad6d0081312f3a7003ce3fbd86be24419f52bd99889910bc1",
   "semantic_sha256": "fdf65267420b32b50980810312465760f7655bd1c2efc52f03e294c30257ef83",

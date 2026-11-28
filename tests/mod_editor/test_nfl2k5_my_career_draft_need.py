@@ -60,9 +60,9 @@ class SourceTests(unittest.TestCase):
         blob, labels = mode.code_for(0x400000, 0x500000)
         for key in ('speed', 'agility', 'catch'):
             name = 'm3_rating_' + key
-            self.assertGreaterEqual(labels[name], mode.EXTRA_VA + 2160)
+            self.assertGreaterEqual(labels[name], labels['text2_base'])
             self.assertLess(labels[name], mode.EXTRA_VA + mode.POOL2_END)
-        self.assertLessEqual(2160 + 2 * labels['text2_bytes'], mode.POOL2_END)
+        self.assertLessEqual(mode.POOL2_START + 2 * labels['text2_bytes'], mode.POOL2_END)
         self.assertLessEqual(labels['content_end'] - 0x400000, mode.TAG_OFFSET)
         self.assertGreater(mode.TAG_OFFSET - (labels['content_end'] - 0x400000), 0)
         self.assertEqual(len(blob), mode.CODE_SIZE)

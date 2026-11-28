@@ -76,7 +76,7 @@ class SettingsTests(unittest.TestCase):
             root = Path(tmp).resolve(); disc = root/'NFL 2K5 Modded.xiso.iso'; disc.write_bytes(b'synthetic')
             launcher = Mock()
             facade = Nfl2k5StudioFacade(uniform_catalog=SimpleNamespace(), xemu_command=('xemu',), process_launcher=launcher)
-            facade._last_build = ExternalBuild(disc)
+            facade.register_external_build(disc, console_memory=128)
             config = root/'xemu.toml'
             with patch.object(x,'config_path',return_value=config), \
                     patch('mod_editor.studio.facade._validate_xemu_executable'):
@@ -247,6 +247,16 @@ class PlayCheckTests(unittest.TestCase):
                     patch.object(x, "KNOWN_4627_UNITS", ()):
                 self.assertEqual(x.play_warning(self._config(root, bios=bios), hash_file=lambda _p: self.HASH), "")
 
+    def test_64_mb_release_and_unknown_discs_do_not_require_the_standard_kernel(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = self._config(root, memory="'64'", bios=None)
+            self.assertEqual(x.play_warning(config, target_mb=64), "")
+            self._config(root, memory="'128'", bios=None)
+            self.assertIn("64 MiB", x.play_warning(config, target_mb=64))
+            self.assertNotIn("4627", x.play_warning(config, target_mb=64))
+            self.assertEqual(x.play_warning(config, target_mb=None), "")
+
     def test_launch_emits_the_warning_before_starting_xemu(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp).resolve()
@@ -256,7 +266,7 @@ class PlayCheckTests(unittest.TestCase):
             launched = []
             facade = Nfl2k5StudioFacade(uniform_catalog=SimpleNamespace(), xemu_command=("xemu",),
                                         process_launcher=lambda argv, **kwargs: launched.append(tuple(argv)))
-            facade._last_build = ExternalBuild(disc)
+            facade.register_external_build(disc, console_memory=128)
             events = []
             with patch.object(x, "config_path", return_value=config), \
                     patch("mod_editor.studio.facade._validate_xemu_executable"):

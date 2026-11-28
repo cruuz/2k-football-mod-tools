@@ -644,6 +644,36 @@ def mnf_panel_span(template, team, side, *, plate_tints=None, logo_fit=None, win
     return bytes(span)
 
 
+# b81-seamen (the owner 11/25: "the scorebug shows miami dolphins, not the seamen logo"): classic teams' own panels. The
+# engine names one by the team's identity (tools/scorebug_sprite/runtime.c logo(): identity 230 -> "sbSEh0"), never by
+# art code, because the Seamen ride the Dolphins' code 14. The mark is the Seamen's traced anchor
+# (data/nfl2k5_scorebug_mnf/logos/seamen.png, tools/b77/ss2_scorebug.py). Its plate and wing words are the franchise's
+# (accents() gives a historic team its franchise's row, so the bar's colours stay the Dolphins' aqua, close to the
+# Seamen's teal).
+CLASSIC_PANELS = {"SE": {"logo": "SEAMEN", "identity": 230, "franchise": "MIA"}}
+
+
+def classic_panel_span(template, key, *, plate_tints=None, logo_fit=None, wing_tints=None):
+    """The classic team ``key``'s panel (``sb<key>h0``), as mnf_panel_span lays out a team's."""
+    from . import nfl2k5_scorebug_exact as exact
+    from . import nfl2k5_scorebug_assets as assets
+    import struct
+    row = CLASSIC_PANELS[key]
+    franchise = row["franchise"]
+    image = exact.mnf_panel(row["logo"], "home", fit=logo_fit_for(row["logo"], logo_fit))
+    if image.getchannel("A").getbbox() is None:
+        raise ValueError(f"the {row['logo'].title()} scorebug mark is missing")
+    span = bytearray(assets.texture_chunk(f"sb{key}h0", image, template, colours=256, alpha_aware=True)[0])
+    plate = exact.plate_argb(franchise)
+    if franchise in (plate_tints or {}):
+        plate = 0xff000000 | int(plate_tints[franchise][1:], 16)
+    wing = exact.wing_table()[int(TEAM_LOGOS[franchise]["asset_code"])]
+    if franchise in (wing_tints or {}):
+        wing = 0xff000000 | int(wing_tints[franchise][1:], 16)
+    struct.pack_into("<II", span, 32 + 48, plate, wing)
+    return bytes(span)
+
+
 MNF_ATLAS_SPAN_SIZE = 132256
 MNF_LOGO_SPAN_SIZE = 5280
 MNF_NEUTRAL_SPAN_SIZE = 2208

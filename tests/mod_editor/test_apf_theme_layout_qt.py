@@ -13,11 +13,12 @@ import os
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 os.environ["MOD_STUDIO_NO_UPDATE_CHECK"] = "1"
 
-from PyQt5.QtCore import QCoreApplication, QEvent, Qt
+from PyQt5.QtCore import QCoreApplication, QEvent, QRect, QSize, Qt
 from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import QApplication, QDialogButtonBox, QLineEdit, QTableWidget, QTableWidgetItem, QWidget
 from mod_editor.apf_studio.apf_theme import TOKENS, configure_table, contrast, sort_visual_rows
@@ -167,6 +168,40 @@ print("APF_LAUNCH_EXIT_PASS", flush=True)
         self.assertEqual(edit.text(), "My authored team name")
         self.assertEqual(search.text(), "")
         edit.deleteLater()
+
+    def test_new_window_fits_the_available_screen_and_its_origin(self):
+        for x, y, width, height in ((0, 0, 1366, 768), (1920, 30, 1366, 768),
+                                    (-1366, -60, 1366, 768), (0, 0, 1920, 1080)):
+            with self.subTest(origin=(x, y), width=width):
+                available = QRect(x, y, width, height)
+                with patch.object(QApplication, "screenAt") as screen:
+                    screen.return_value.availableGeometry.return_value = available
+                    window = ApfStudioMainWindow(ApfStudioFacade(cache_root=self.root / "fresh-cache"),
+                                                 offer_recovery=False)
+                try:
+                    self.assertTrue(available.contains(window.geometry()), (available, window.geometry()))
+                    self.assertEqual(window.geometry().center(), available.center())
+                    self.assertEqual(window.size(), QSize(min(1480, width - 24), min(920, height - 48)))
+                finally:
+                    window._allow_close = True
+                    window.close()
+                    window.deleteLater()
+
+    def test_remembered_window_keeps_its_exact_monitor_position_and_size(self):
+        store = WorkspaceStateStore(self.root / "remembered-offset-screen")
+        previous = QRect(2020, 86, 1200, 650)
+        store.record_ui(previous.getRect(), APF_CATEGORY_ORDER[0].value, {})
+        with patch.object(QApplication, "screenAt") as screen:
+            screen.return_value.availableGeometry.return_value = QRect(1920, 30, 1366, 768)
+            window = ApfStudioMainWindow(ApfStudioFacade(cache_root=self.root / "saved-cache"),
+                                         workspace_store=store, offer_recovery=False)
+        try:
+            screen.assert_called_with(previous.center())
+            self.assertEqual(window.geometry(), previous)
+        finally:
+            window._allow_close = True
+            window.close()
+            window.deleteLater()
 
     def test_workspace_store_restores_page_and_workspace(self):
         self.window.navigation.setCurrentRow(APF_CATEGORY_ORDER.index(ApfCategory.PLAYBOOKS))

@@ -2008,7 +2008,7 @@
  "receipt": {
   "team": "GB",
   "offense_pack": "data/playbooks/softdrink_gb_modern.2k5book",
-  "offense_pack_sha256": "942ac4fc8730ae3c90123b3c6a78df935dfa3c7211c841bbe7dc225e7c6d61a3",
+  "offense_pack_sha256": "49dd37a873ba8f0af19873f01afc47425971ad91486145cd35dca1b83b006a7a",
   "source_fingerprint": "66143cf10ee0800642cb4787cb59f080dc79f53e8c3078d78b33bcfdc76498ae",
   "replacement_sha256": "92b0ede7b5e30c31106d6dd5aca89aa8b31d35892ce67980ccf17c5cc16e7202",
   "semantic_sha256": "819e47ed96ab85d19e71b9cc24539d37f62f5a7e62fba53e817aa7db8c774058",

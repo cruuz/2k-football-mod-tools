@@ -67,10 +67,15 @@ class RepairTests(unittest.TestCase):
         broken[0x106D6E] = 17  # no section digest repair
         with self.assertRaises(ValueError):
             repair.repair_xbe(bytes(broken))
+        # A caller-approved image digest cannot bless a modified standalone F5 hook.
+        bad_f5 = rdata.apply(self.raw, [("card input", 0x320D7B, bytes.fromhex("e8d0f21b01"),
+                                         bytes.fromhex("e8d1f21b01"))], "test")[0]
+        with self.assertRaisesRegex(ValueError, "F5 code, hooks or dependencies"):
+            repair.repair_xbe(bad_f5, approved=(repair.sha(bad_f5),))
         # Resealed padding after the dispatcher, outside its dependency span:
         # valid F5/calendar code, but not the approved complete executable.
         foreign = rdata.apply(self.raw, [("padding", 0x116E6A, b"\x90", b"\xcc")], "test")[0]
-        self.assertEqual(honors.status(foreign), "applied")
+        self.assertTrue(repair.f5_applied(foreign))
         with self.assertRaisesRegex(ValueError, "unexpected input SHA-256"):
             repair.repair_xbe(foreign)
         repaired, _ = repair.repair_xbe(foreign, approved=(repair.sha(foreign),))

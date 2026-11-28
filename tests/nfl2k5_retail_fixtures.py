@@ -1,6 +1,26 @@
-"""Explicit prerequisites for tests using the complete private NFL pack reader."""
+"""Explicit prerequisites for tests using private retail NFL data."""
+import hashlib
+import os
 from pathlib import Path
 import unittest
+
+
+def read_nfl_retail_xbe() -> bytes:
+    from mod_editor.core.nfl2k5_cave_oracle import RETAIL_SHA256
+
+    candidates = []
+    if path := os.environ.get('NFL2K5_RETAIL_XBE'):
+        candidates.append(Path(path))
+    if root := os.environ.get('NFL2K5_RETAIL_EXTRACTION'):
+        candidates.extend((Path(root) / 'default.xbe', Path(root) / 'ESPN NFL 2K5 (USA)' / 'default.xbe'))
+    for candidate in candidates:
+        if candidate.is_file():
+            with candidate.open('rb') as source:
+                payload = source.read(16 * 1024**2 + 1)
+            if hashlib.sha256(payload).hexdigest() != RETAIL_SHA256:
+                raise AssertionError(f'Unexpected retail USA executable in {candidate}')
+            return payload
+    raise unittest.SkipTest('A retail USA executable or its extraction is required')
 
 
 def require_nfl_retail_packs(source: Path) -> None:

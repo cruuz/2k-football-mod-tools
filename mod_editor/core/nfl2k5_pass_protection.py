@@ -33,6 +33,17 @@ normaliser (``0x10404D``) becomes ``c^3 / (1 + 0.055 * max(0, season half-sacks 
 owner (``sack_draw`` / ``sack_norm``, season field 19 through the game's getter ``0x14EE40``), so a leader gets
 fewer of the next sacks and the normaliser hands them to the rest of the line: the NFL's leaderboard top is flatter
 than a pure rating draw gives (12+ sacks: 7 to 11 players a season).
+
+b81 combined calibration (lever 1, the sack lever): the centre is this owner's own float, ``SIM_CENTRE``, a named
+constant. v0.8, v0.9 and beta 80 pointed the operand at ``0x1083F8`` at the retail .rdata float ``0x4E73E4`` (0.866, no
+other reader), which no owner may rewrite. The owner's 352-byte code allocation has no spare byte (code to offset 316,
+its constants to 352), and growing it would move every later late owner and break the in-place upgrade, so the float
+lives in the owner's own ``sim_event_chance`` site: that edit already writes 0x3E bytes of which only the first 22 are
+code and the rest NOPs. Now a two-byte jump at ``0x1083AE`` steps over the float at ``0x1083B0`` and lands on the same
+NOPs. No branch in the executable targets the site's interior (a scan of every retail rel8/rel32 branch and absolute
+pointer), so the jump is the only way past the float. The lever was built at 0.866 (the float32 bits at ``0x4E73E4``, so
+that install simulated bit for bit like the old one) and is fitted to 0.890; the old form reads "legacy" and ``apply``
+updates it in place to this release's centre.
 """
 from __future__ import annotations
 
@@ -64,14 +75,21 @@ SIM_LIST_VA = 0x004F6B0C
 SIM_LIST_RETAIL = (15, 18, 19, 21, 17, 16, 27, 20, 23, 24, 25, 22, 26, 28, -1)   # sacker candidates (slot ids)
 SIM_LIST_NEW = (15, 18, 19, 21, 17, 16, 20, 22, 27, 28, 23, 24, 25, 26, -1)      # DL, LB, then backs last
 SIM_GAIN_VA = 0x004E6968         # float 0.75 in retail .rdata: the lines' effect on the sack chance (retail: none)
-SIM_CENTRE_VA = 0x004E73E4       # float 0.866 in retail .rdata (the shared 0.875 at 0x4F6BD4 stays for its other reader)
 SIM_NORM_VA = 0x004E696C         # float 0.25 (retail 0x4E6D5C = 0.1)
-SIM_EDITS = (
-    ("sim_event_chance", 0x00108398,
-     bytes.fromhex("d94424188b4c2418d81d5c6d4e00894c2428dfe0f6c4417408c7442428cdcccc3dd905d86b4f00d85c2418"
-                   "c7442418cdccccbddfe0f6c4057b04894c2418"),
-     bytes.fromhex("d9442418d80d68694e00d95c24188b4c2418894c2428").ljust(0x3E, b"\x90")),
-    ("sim_event_centre", 0x001083F8, struct.pack("<I", 0x004F6BD4), struct.pack("<I", SIM_CENTRE_VA)),
+# b81 combined calibration, lever 1: the simulated pass-pressure centre (see the module docstring). Raising it lowers the
+# sack-or-scramble chance of every simulated dropback whose centre plus offset stays inside the clamp [0.825, 0.925].
+# Fitted by the combined calibration and accepted (coordinator, 2026-11-21): 0.890. Earlier releases read 0.866 (float32
+# 0x3F5DB22D, the retail .rdata float LEGACY_CENTRE_VA), which a legacy install keeps until apply() updates it.
+SIM_CENTRE = 0.890
+SIM_CENTRE_RANGE = (0.825, 0.925)  # the clamp window around it (0x4F6BD0, 0x4F6BCC); a centre outside it is refused
+SIM_CENTRE_VA = 0x001083B0       # the owner's float, inside its own sim_event_chance site
+LEGACY_CENTRE_VA = 0x004E73E4    # what v0.8, v0.9 and beta 80 read (the shared 0.875 at 0x4F6BD4 stays for 0x23803E)
+SIM_EVENT_VA = 0x00108398
+SIM_EVENT_RETAIL = bytes.fromhex("d94424188b4c2418d81d5c6d4e00894c2428dfe0f6c4417408c7442428cdcccc3dd905d86b4f00d85c2418"
+                                 "c7442418cdccccbddfe0f6c4057b04894c2418")
+SIM_EVENT_CODE = bytes.fromhex("d9442418d80d68694e00d95c24188b4c2418894c2428")   # o = 0.75 * x, kept for the clamp
+SIM_CENTRE_OPERAND_VA = 0x001083F8   # the fadd's operand (instruction at 0x1083F6)
+SIM_RUSHER_EDITS = (
     ("sim_rusher_slots", 0x0010404C, bytes([0x1C]), bytes([0x16])),
     ("sim_rusher_leftover", 0x00104068, struct.pack("<I", 0x004E6D5C), struct.pack("<I", SIM_NORM_VA)),
     ("sim_rusher_list", SIM_LIST_VA, struct.pack("<15i", *SIM_LIST_RETAIL), struct.pack("<15i", *SIM_LIST_NEW)),
@@ -82,15 +100,8 @@ SIM_EDITS = (
     ("sim_rusher_strength", 0x00514E88, struct.pack("<f", 0.2), struct.pack("<f", 0.1)),
     ("sim_rusher_tackle", 0x00514E90, struct.pack("<f", 0.2), struct.pack("<f", 0.15)),
 )
-SIM_GUARDS = (          # (va, size, sha256 of the retail bytes): the pass-play block, the sacker draw, the normaliser
-    (0x00108340, 0x180, "6dd48d900dd0e5db53e3da2f06fb5ed310bcce76dbdbeae68a7ca503f3e373f2"),
-    (0x00103760, 0x0F2, "687d3b1ffbe23412b264c51348747fb8ba0a11ddfb49a25706429c5d60e27930"),
-    (0x00103F61, 0x220, "962183d67eb47d7b99ff6152a4f2d95eb8454c4cea3c1b0b6d64f4ff33fc0c80"),
-    (0x00514E50, 0x048, "9839d631c32d91bea828cfd8d86fe6f7d0916fbeef5771d979f4d404436b8313"),                  # the pass-rusher composite entry (count, weights, getters)
-)
-# 0x17B010 is not hash-guarded: the abilities runtime replaces its entry with a jump to its own copy of the
-# accessor on the release disc, so its bytes are not a stable prerequisite. Every call still goes through
-# the game's accessor and its own slider/fatigue terms.
+
+
 _ERRORS = (ValueError, TypeError, KeyError, IndexError, struct.error, OverflowError, UnicodeError)
 
 
@@ -101,6 +112,49 @@ class PassProtectionError(ValueError):
 def require(ok, message):
     if not ok:
         raise PassProtectionError(message)
+
+
+def centre_bytes(centre=None):
+    """The float32 the owner stores for ``centre`` (default: the module's SIM_CENTRE, read at call time)."""
+    import math
+    centre = SIM_CENTRE if centre is None else centre
+    require(isinstance(centre, (int, float)) and not isinstance(centre, bool) and math.isfinite(centre)
+            and SIM_CENTRE_RANGE[0] <= centre <= SIM_CENTRE_RANGE[1],
+            f"The simulated pass-pressure centre must be from {SIM_CENTRE_RANGE[0]} to {SIM_CENTRE_RANGE[1]}")
+    return struct.pack("<f", centre)
+
+
+def _event_site(centre=None):
+    """sim_event_chance's 0x3E bytes: the 22 bytes of code, a jump over the centre float, the float, NOP padding."""
+    slot = SIM_CENTRE_VA - SIM_EVENT_VA
+    jump = b"\xeb" + bytes([4])                       # jmp short over the four float bytes, onto the NOPs
+    require(len(SIM_EVENT_CODE) + len(jump) == slot, "The centre float must follow the event code and its jump")
+    return (SIM_EVENT_CODE + jump + centre_bytes(centre)).ljust(len(SIM_EVENT_RETAIL), b"\x90")
+
+
+def sim_edits(centre=None):
+    """The nine in-place simulated-game edits of this release, with the centre float (default SIM_CENTRE)."""
+    return (("sim_event_chance", SIM_EVENT_VA, SIM_EVENT_RETAIL, _event_site(centre)),
+            ("sim_event_centre", SIM_CENTRE_OPERAND_VA, struct.pack("<I", 0x004F6BD4), struct.pack("<I", SIM_CENTRE_VA)),
+            *SIM_RUSHER_EDITS)
+
+
+# The same nine edits as v0.8, v0.9 and beta 80 installed them ("legacy"): no float in the site, the operand at the
+# retail .rdata float. Retail bytes are the same in both forms; only these two "after" values differ.
+LEGACY_SIM_EDITS = (
+    ("sim_event_chance", SIM_EVENT_VA, SIM_EVENT_RETAIL, SIM_EVENT_CODE.ljust(len(SIM_EVENT_RETAIL), b"\x90")),
+    ("sim_event_centre", SIM_CENTRE_OPERAND_VA, struct.pack("<I", 0x004F6BD4), struct.pack("<I", LEGACY_CENTRE_VA)),
+    *SIM_RUSHER_EDITS)
+SIM_EDITS = sim_edits()   # at the module's SIM_CENTRE; the owner itself calls sim_edits(), so a changed constant applies
+SIM_GUARDS = (          # (va, size, sha256 of the retail bytes): the pass-play block, the sacker draw, the normaliser
+    (0x00108340, 0x180, "6dd48d900dd0e5db53e3da2f06fb5ed310bcce76dbdbeae68a7ca503f3e373f2"),
+    (0x00103760, 0x0F2, "687d3b1ffbe23412b264c51348747fb8ba0a11ddfb49a25706429c5d60e27930"),
+    (0x00103F61, 0x220, "962183d67eb47d7b99ff6152a4f2d95eb8454c4cea3c1b0b6d64f4ff33fc0c80"),
+    (0x00514E50, 0x048, "9839d631c32d91bea828cfd8d86fe6f7d0916fbeef5771d979f4d404436b8313"),                  # the pass-rusher composite entry (count, weights, getters)
+)
+# 0x17B010 is not hash-guarded: the abilities runtime replaces its entry with a jump to its own copy of the
+# accessor on the release disc, so its bytes are not a stable prerequisite. Every call still goes through
+# the game's accessor and its own slider/fatigue terms.
 
 
 def allocation(payload):
@@ -184,8 +238,11 @@ def sim_hook_sites(code_va=0):
     return out
 
 
-def sim_sites(code_va=0):
-    return list(SIM_EDITS) + sim_hook_sites(code_va)
+def sim_sites(code_va=0, *, form="applied"):
+    """The simulated-game sites as (label, va, retail bytes, installed bytes): this release's form ("applied") or the
+    one v0.8, v0.9 and beta 80 installed ("legacy")."""
+    require(form in ("applied", "legacy"), f"Unknown simulated pass-rush form {form!r}")
+    return list(sim_edits() if form == "applied" else LEGACY_SIM_EDITS) + sim_hook_sites(code_va)
 
 
 def _owner_va(payload):
@@ -195,33 +252,49 @@ def _owner_va(payload):
 
 
 def _sim_state(payload):
-    """'retail' or 'applied' for the simulated-game edits; raises on any foreign byte."""
+    """'retail', 'applied' or 'legacy' (v0.8, v0.9, beta 80) for the simulated-game edits; raises on anything else.
+
+    Every site must be in the same form: all retail bytes, all of this release's bytes, or all of the legacy bytes."""
     from .nfl2k5_cave_oracle import XbeImage
     image = XbeImage(payload)
     owned = _owner_va(payload)
-    edits = list(SIM_EDITS) + sim_hook_sites(owned or 0)
-    states = set()
-    for _name, va, before, after in edits:
-        raw = image.read(va, len(before))
-        states.add("retail" if raw == before else "applied" if owned and raw == after else "foreign")
-    require(states in ({"retail"}, {"applied"}), "Foreign or mixed simulated pass-rush sites")
+    forms = {form: sim_sites(owned or 0, form=form) for form in ("applied", "legacy")}
+    raws = [image.read(va, len(before)) for _name, va, before, _after in forms["applied"]]
+    if all(raw == before for raw, (_n, _va, before, _a) in zip(raws, forms["applied"])):
+        state = "retail"
+    else:
+        state = next((form for form, edits in forms.items()
+                      if owned and all(raw == after for raw, (_n, _va, _b, after) in zip(raws, edits))), None)
+        require(state is not None, "Foreign or mixed simulated pass-rush sites")
     for va, size, digest in SIM_GUARDS:
         content = bytearray(image.read(va, size))
-        for _name, at, before, _after in edits:
+        for _name, at, before, _after in forms["applied"]:
             if va <= at and at + len(before) <= va + size:
                 content[at - va:at - va + len(before)] = before
         require(hashlib.sha256(content).hexdigest() == digest, f"Foreign simulated pass-rush prerequisite at {va:#x}")
-    return next(iter(states))
+    return state
 
 
 def _recognize(payload):
-    """'retail', 'applied', or 'partial' (the played-game owner installed, the simulated edits not).
+    """'retail', 'applied', 'legacy' (the v0.8, v0.9 or beta 80 simulated edits: apply updates them in place), or
+    'partial' (the played-game owner installed, the simulated edits not).
 
     A disc built by the b778 owner (160 bytes) is not recognised: the owner grew to 240 bytes, so such an image is
     'foreign' and is rebuilt from the retail dump like every other owner."""
     owner = _recognize_owner(payload)
     sim = _sim_state(payload)
+    if sim == "legacy":
+        return "legacy"
     return owner if owner == sim else "partial"
+
+
+def sim_centre(payload):
+    """The centre the installed simulated edits add (this release's float, or the legacy .rdata float); None if retail."""
+    from .nfl2k5_cave_oracle import XbeImage
+    state = _sim_state(payload)
+    if state == "retail":
+        return None
+    return struct.unpack("<f", XbeImage(payload).read(SIM_CENTRE_VA if state == "applied" else LEGACY_CENTRE_VA, 4))[0]
 
 
 def status(payload):
@@ -232,7 +305,11 @@ def status(payload):
 
 
 def read_settings(payload):
-    return {"status": status(payload)}
+    state = status(payload)
+    out = {"status": state}
+    if state in ("applied", "legacy"):
+        out["sim_centre"] = sim_centre(payload)
+    return out
 
 
 def _apply_owner(payload):
@@ -260,20 +337,51 @@ def _apply_owner(payload):
     return bytes(buf), allocation_receipt, code_va, edits
 
 
-def _apply_sim(payload):
+def _write_sim(payload, current, wanted):
+    """Move every simulated-game site from form ``current`` to form ``wanted`` ('retail', 'applied' or 'legacy'),
+    authenticating each site's present bytes first; returns (payload, the sites whose bytes changed)."""
     from .nfl2k5_bump_strength import _sections, section_digest
     from .nfl2k5_cave_oracle import XbeImage
     image = XbeImage(payload)
     buf = bytearray(payload)
     owned = _owner_va(payload)
     require(owned is not None, "The simulated sacker taper calls into the pass-protection owner, which is not installed")
-    for _, va, old, new in sim_sites(owned):
+    def installed(form):
+        return [(name, va, before if form == "retail" else after)
+                for name, va, before, after in sim_sites(owned, form="legacy" if form == "legacy" else "applied")]
+    changed = []
+    for (name, va, old), (_n, _va, new) in zip(installed(current), installed(wanted)):
         off = image.offset(va, len(old))
-        require(bytes(buf[off:off + len(old)]) == old, f"Simulated pass-rush site {va:#x} is not retail")
-        buf[off:off + len(old)] = new
+        require(bytes(buf[off:off + len(old)]) == old, f"Simulated pass-rush site {va:#x} is not {current}")
+        if old != new:
+            buf[off:off + len(old)] = new
+            changed.append((name, va, old, new))
     for section in _sections(buf):
         buf[section.header_offset + 36:section.header_offset + 56] = section_digest(buf, section)
-    return bytes(buf)
+    return bytes(buf), changed
+
+
+def _apply_sim(payload):
+    return _write_sim(payload, "retail", "applied")[0]
+
+
+def restore_sim(payload):
+    """Retail for the simulated half: the nine simulated-game edits and the two taper calls back to their retail bytes,
+    from this release's form or the legacy one. The played half stays installed, so the result reads 'partial' (which
+    apply completes). A payload whose simulated half is already retail is returned unchanged."""
+    try:
+        state = _sim_state(payload)
+    except _ERRORS as exc:
+        raise PassProtectionError(f"foreign/mixed pass-protection input: {exc}") from exc
+    if state == "retail":
+        return payload, dict(owner=OWNER, status="retail", changed_bytes=0, edits=[])
+    result, changed = _write_sim(payload, state, "retail")
+    require(_sim_state(result) == "retail", "Simulated pass-rush restore postcondition failed")
+    from . import nfl2k5_xbe_space as space
+    return result, dict(owner=OWNER, status="retail", restored_from=state,
+                        changed_bytes=space.count_differing_bytes(payload, result),
+                        edits=[dict(label=name, va=hex(va), before=old.hex(), after=new.hex())
+                               for name, va, old, new in changed])
 
 
 def apply(payload):
@@ -291,9 +399,14 @@ def apply(payload):
     if _recognize_owner(payload) == "retail":
         payload, allocation_receipt, code_va, edits = _apply_owner(payload)
         labels += [dict(label=name, va=hex(va), before=old.hex(), after=new.hex()) for name, va, old, new in edits]
-    if _sim_state(payload) == "retail":
-        payload = _apply_sim(payload)
-        labels += [dict(label=name, va=hex(va), before=old.hex(), after=new.hex()) for name, va, old, new in sim_sites(_owner_va(payload))]
+    upgraded_from = None
+    sim = _sim_state(payload)
+    if sim in ("retail", "legacy"):
+        # b81 combined calibration: a legacy install keeps its seven shared edits and two calls; only the event site
+        # (now carrying the centre float) and the centre operand are rewritten, in place.
+        payload, changed = _write_sim(payload, sim, "applied")
+        labels += [dict(label=name, va=hex(va), before=old.hex(), after=new.hex()) for name, va, old, new in changed]
+        upgraded_from = "legacy" if sim == "legacy" else None
     result = payload
     require(_recognize(result) == "applied" and space.status(result) == "applied",
             "Pass-protection postcondition failed")
@@ -302,9 +415,11 @@ def apply(payload):
                         before_sha256=hashlib.sha256(before).hexdigest(), after_sha256=hashlib.sha256(result).hexdigest(),
                         changed_bytes=space.count_differing_bytes(before, result), file_growth=len(result) - len(before),
                         allocation=allocation_receipt, code_va=hex(code_va), edits=labels,
-                        simulated_sacks=True,
+                        simulated_sacks=True, sim_centre=sim_centre(result),
+                        **({"upgraded_from": upgraded_from} if upgraded_from else {}),
                         reservations=[r for r in space.reservations(result) if r["owner"] == OWNER])
 
 
-__all__ = ["OWNER", "REQUESTS", "GUARDS", "HOOK", "apply", "status", "read_settings",
-           "allocation", "code_for", "sites", "sim_sites", "sim_hook_sites", "SIM_HOOKS", "SIM_EDITS", "SIM_GUARDS", "DELAY_BASE", "DELAY_SLOPE", "DELAY_MIN", "DELAY_MAX"]
+__all__ = ["OWNER", "REQUESTS", "GUARDS", "HOOK", "apply", "status", "read_settings", "restore_sim", "sim_centre",
+           "allocation", "code_for", "sites", "sim_sites", "sim_hook_sites", "sim_edits", "SIM_HOOKS", "SIM_EDITS",
+           "LEGACY_SIM_EDITS", "SIM_CENTRE", "SIM_CENTRE_VA", "LEGACY_CENTRE_VA", "SIM_GUARDS", "DELAY_BASE", "DELAY_SLOPE", "DELAY_MIN", "DELAY_MAX"]

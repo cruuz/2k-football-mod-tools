@@ -1,6 +1,7 @@
 """V1D: reject unsupported team arguments, retain FRZ4, replay shipped callers."""
 from __future__ import annotations
 
+from hashlib import sha256
 import os
 from pathlib import Path
 import struct
@@ -102,12 +103,23 @@ class NativeCallerTests(unittest.TestCase):
         _, weights = stock._installed_kind(XbeImage(self.after), self.owned["va"])
         self.assertEqual(stock.apply(self.after, weights=weights[0], team_weights=weights[1])[0], self.after)
         start = self.owned["raw"]
-        self.assertEqual(self.before[start:start+stock.STUB_OFFSET], self.after[start:start+stock.STUB_OFFSET])
-        self.assertEqual(self.before[start+stock.WEIGHT_OFFSET:start+stock.CODE_SIZE],
-                         self.after[start+stock.WEIGHT_OFFSET:start+stock.CODE_SIZE])
+        before = self.before[start:start + stock.CODE_SIZE]
+        after = self.after[start:start + stock.CODE_SIZE]
+        # The October V1D upgrade kept the old book resolver. Later releases
+        # changed era and Situation routing. Pin their exact instructions from
+        # 6cc319755 replayed on the shipped v0.6 allocation at 0x14E3BD0.
+        self.assertEqual(sha256(after[:stock.TABLE]).hexdigest(),
+                         "274671ec08561fffb67486204224e382000fbb9ed0899e4105046d522bea43d0")
+        self.assertEqual(sha256(after[stock.STUB_OFFSET:stock.WEIGHT_OFFSET]).hexdigest(),
+                         "cfc32effc96b769044c03cc5f2b8450f0c4a1394072bf9929318fb5f72e24ba0")
+        self.assertEqual(after[stock.GATE_OFFSET:], bytes.fromhex("a180ffe50083f0080b054c01e600c3cc"))
+        # Both generations preserve the 32 team keys, filename strings,
+        # 51 moment weights and 32 x 7 franchise weights, including padding.
+        self.assertEqual(before[stock.TABLE:stock.STUB_OFFSET], after[stock.TABLE:stock.STUB_OFFSET])
+        self.assertEqual(before[stock.WEIGHT_OFFSET:stock.GATE_OFFSET], after[stock.WEIGHT_OFFSET:stock.GATE_OFFSET])
         self.assertTrue(digests_ok(self.after))
         self.assertTrue(self.receipt["outside_scope_identical"])
-        body = bytearray(self.before[start:start+stock.CODE_SIZE])
+        body = bytearray(before)
         body[stock.STUB_OFFSET+7] ^= 1
         foreign = stock._write_body(self.before, self.owned, body)
         self.assertEqual(stock.status(foreign), "foreign")

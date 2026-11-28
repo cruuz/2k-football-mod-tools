@@ -449,7 +449,10 @@ def apply_to_image(path, retail=None, *, strict=False, document=None):
                     structures=[], hyphens=[], skipped=[])
     selectors = _candidate_selectors(by_name)
     wanted = {row["selector"] for row in structures(document)}
-    if not strict and wanted and not wanted <= {s + ".IFF" for s in selectors}:
+    # b81-uniforms: this guard compared the bare selectors of the rows with package FILE names (selector + ".IFF"), so
+    # it was never satisfied and every Studio build left the pass undone (the released v0.9 disc still holds the four
+    # Jaguars atlases in their "before" state and the hollow hyphens). The rows are present when their kit packages are.
+    if not strict and wanted and not wanted <= set(selectors):
         return dict(state="other_uniform", written_spans=0, written_bytes=0, changed_bytes=0,
                     structures=[], hyphens=[], skipped=[])
     donors = sorted({row["retail_selector"] for row in structures(document)})

@@ -600,7 +600,7 @@ def _career_fix_sites(payload: bytes, image: XbeImage) -> list:
         got = image.read(va, len(before))
         if got == before:
             continue
-        _require(got == after and career_fix.status(payload) == "applied",
+        _require(got == after and career_fix.status(payload) in ("previous", "applied"),
                  f"foreign carousel dependency: {label} ({va:#x})")
         out.append((label, va, before, after))
     return out

@@ -193,7 +193,7 @@ RELEASE = os.environ.get("NFL2K5_V061_DISC")
 RETAIL = os.environ.get("NFL2K5_RETAIL_XISO")
 
 
-@unittest.skipUnless(RELEASE, "set NFL2K5_V061_DISC (the SOFTDRINK 2K28 v0.6.1 release disc, read only)")
+@unittest.skipUnless(RELEASE and Path(RELEASE).is_file(), "set NFL2K5_V061_DISC (the SOFTDRINK 2K28 v0.6.1 release disc, read only)")
 class ReleaseDisc(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -223,7 +223,7 @@ class ReleaseDisc(unittest.TestCase):
         for selector, (raw, _detail) in self.after.items():
             self.assertTrue(kitfix.nameplate_layout(raw)[2], selector)
 
-    @unittest.skipUnless(RETAIL, "set NFL2K5_RETAIL_XISO (the retail disc, read only)")
+    @unittest.skipUnless(RETAIL and Path(RETAIL).is_file(), "set NFL2K5_RETAIL_XISO (the retail disc, read only)")
     def test_jaguars_letters_get_their_counters_and_outline(self):
         for row in fixes.structures(self.doc):
             replacements, detail = fixes._compile_package(row["selector"], self.kits[row["selector"]], self.doc,
@@ -249,7 +249,7 @@ class ReleaseDisc(unittest.TestCase):
         dark = away_cell[(away_cell[..., 3] > 0)]
         self.assertLessEqual(int(dark[:, :3].max()), 32)
 
-    @unittest.skipUnless(RETAIL, "set NFL2K5_RETAIL_XISO (the retail disc, read only)")
+    @unittest.skipUnless(RETAIL and Path(RETAIL).is_file(), "set NFL2K5_RETAIL_XISO (the retail disc, read only)")
     def test_retail_kits_are_left_alone(self):
         for row in fixes.structures(self.doc):
             replacements, detail = fixes._compile_package(row["selector"], self.retail_kits[row["selector"]],
@@ -259,7 +259,7 @@ class ReleaseDisc(unittest.TestCase):
         self.assertEqual(hollow, [])
 
 
-@unittest.skipUnless(RETAIL, "set NFL2K5_RETAIL_XISO (the retail disc, read only)")
+@unittest.skipUnless(RETAIL and Path(RETAIL).is_file(), "set NFL2K5_RETAIL_XISO (the retail disc, read only)")
 class RetailDisc(unittest.TestCase):
     def test_every_retail_hyphen_is_solid_and_every_layout_fits(self):
         kits = read_kits(RETAIL)

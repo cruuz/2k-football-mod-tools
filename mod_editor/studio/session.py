@@ -1516,7 +1516,8 @@ class StudioSession:
 
     def staged_path(self, asset: Any) -> Path | None:
         """A cheap snapshot for UI preview workers, without decoding source art."""
-        edit = self._edits.get(asset.asset_id)
+        asset_id = asset if isinstance(asset, str) else asset.asset_id
+        edit = self._edits.get(asset_id)
         return edit.replacement_path if edit else None
 
     def export_asset(

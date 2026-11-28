@@ -131,44 +131,19 @@ def was_w_ops():
 # the retail logo's gold rear spike, beak tip and its gold outline arcs above and below are still on the black shell
 # beside the new bird (Noah, 09:04: "the Ravens logo plastered over the old logo"), on both shells and both sides,
 # plus a dotted ghost of a moved flag on helmet02. The 2026 primary helmet carries the one gold-edged bird on plain
-# black. The texels below are those left-overs, measured on the v0.6.1 art: every coloured texel in the two decal
-# areas outside the new bird (the bird is the region its white border closes, grown by one texel) and outside the US
-# flag on helmet00. Row runs "y:x0-x1,...", end exclusive. They are painted the shell black around them.
-BAL_REMNANTS = {
-    11: ("80:122-124 81:121-124 82:119-124 83:117-123 84:34-36,115-122 85:33-39,111-112,113-122 "
-         "86:33-39,112-121 87:33-37,112-121 88:33-36,112-115,116-120 89:33-36,112-113,115-119 90:34-36,114-119 "
-         "91:34-37,111-113,114-118 92:35-38,113-117 93:36-39,112-116 94:37-40,111-115 95:38-40,110-114 "
-         "96:109-113 97:108-112 98:107-111 99:105-110 100:104-108 101:102-107 102:100-105 103:98-104 "
-         "104:96-102 105:93-100 106:89-98 107:80-95 108:71-92 109:76-87 158:39-40,112-113 159:38-40,112-114 "
-         "160:37-40,112-115 161:36-39,112-116 162:35-38,113-117 163:34-37,112-113,114-118 164:34-36,115-119 "
-         "165:33-36,112-113,115-119 166:33-36,112-115,116-120 167:33-37,112-121 168:33-40,113-121 "
-         "169:34-40,114-122 170:34-35,39-40,116-123 171:118-123 172:120-124 173:121-124 174:123-124"),
-    12: ("80:122-124 81:121-124 82:119-124 83:117-123 84:34-36,38-39,115-122 85:33-39,111-112,113-122 "
-         "86:33-39,112-121 87:33-37,112-121 88:33-36,112-115,116-120 89:33-36,112-113,115-119 90:34-37,114-119 "
-         "91:34-37,111-113,114-118 92:35-38,113-117 93:36-39,112-116 94:37-40,112-115 95:38-40,112-114 "
-         "96:112-113 108:71-92 109:75-88 136:129-130 138:106-107,128-129 139:127-128 140:126-127 "
-         "141:110-111,125-126 142:111-112,125-126 143:124-125 144:123-124 145:115-116,122-123 "
-         "146:73-90,116-117,121-123 147:71-92,121-122 148:119-121 159:39-40,112-113 160:38-40,112-115 "
-         "161:36-40,112-115 162:35-39,112-116 163:35-38,111-112,113-117 164:34-37,111-113,114-118 "
-         "165:33-36,115-119 166:33-36,112-113,115-120 167:33-37,112-115,116-120 168:33-37,112-121 "
-         "169:33-39,112-121 170:33-39,111-112,114-122 171:116-122 172:118-123 173:120-124 174:121-124 "
-         "175:123-124"),
-}
-BAL_SHELL = {11: "#010103", 12: "#010001"}
-
-
-def runs_to_points(text):
-    points = []
-    for item in text.split():
-        y, spans = item.split(":")
-        for span in spans.split(","):
-            x0, x1 = span.split("-")
-            points.extend([x, int(y)] for x in range(int(x0), int(x1)))
-    return points
+# black. They are painted the shell black.
+# b81-retail-free-art (ruling 2, round 3): no texel list ships. helmet02 (chunk 12) paints the left-overs out by rule:
+# inside these boxes every texel more than ``above`` levels from the shell black takes it, at full reflection alpha
+# (kf ``clear``); boxes and threshold measured on the input a beta 81 build holds at this step (the instrumented full
+# build of 2026-11-20), where the rule reproduces the old texel list texel for texel and compiles to the same pin.
+# helmet00 (chunk 11): its rows were deleted by the coordinator's ruling (2026-11-20): a beta 81 build never holds
+# their input (the v0.10 league import already paints 351 of their 358 texels), so they never wrote.
+BAL_SHELL = {12: "#010001"}
+BAL_CLEAR = {12: {"op": "clear", "to": "#010001", "above": 24, "boxes": [[111, 74, 127, 96], [112, 160, 128, 178], [0, 52, 36, 196], [44, 139, 106, 151], [43, 105, 106, 116], [114, 115, 130, 149], [0, 91, 38, 164], [0, 52, 39, 88], [0, 168, 39, 196], [0, 145, 49, 163], [0, 93, 50, 111], [102, 130, 130, 145], [108, 152, 115, 166], [0, 90, 37, 166], [107, 91, 115, 103], [0, 167, 37, 196], [111, 170, 126, 185]], "alpha": 255}}
 
 
 def bal_ops(chunk):
-    return [{"op": "texels", "color": BAL_SHELL[chunk], "alpha": 255, "points": runs_to_points(BAL_REMNANTS[chunk])}]
+    return [{"op": "want", "color": BAL_SHELL[chunk]}, json.loads(json.dumps(BAL_CLEAR[chunk]))]
 
 
 # -- Indianapolis: the shoulder stripes and the sleeve swoosh (N21, N24) ---------------------------------------------
@@ -393,13 +368,9 @@ def recipes():
     for sel in ("16H4", "16A4"):
         add(sel, (1, ne_ops(), ["ur1-16H4-shoulder-bars", "uw2-NE-home-4-shoulder-bands", "uw2-NE-away-4-shoulder-bands"],
                   "clean equal white/blue/white shoulder bars over the shoulder top (ragged, and down to the armpit)"))
-    for sel in ("03H8", "03A8"):
-        for chunk in (11, 12):
-            add(sel, (chunk, buf_outline_ops(chunk), ["ur1-03H8-helmet-outline", "uw2-BUF-home-8-helmet-graphic",
-                                                      "uw2-BUF-away-8-helmet-graphic"],
-                      "a continuous white outline round the blue buffalo and the red streak (it was scattered dots)"))
+    # 03H8/03A8 chunks 11 and 12 (the buffalo's white outline): deleted. b81-retail-free-art (coordinator's ruling, 2026-11-21, fix 3): rows that never write in a beta 81 build (the step finds another input than their before pin and skips them) and carry shape data are deleted.
     for sel in ("02H0", "02A0"):
-        for chunk in (11, 12):
+        for chunk in (12,):
             add(sel, (chunk, bal_ops(chunk), ["N03", "ur1-02-helmet-remnants"],
                       "the retail Ravens logo's gold spike, beak tip and outline arcs left beside the new bird painted "
                       "out (shell black)"))

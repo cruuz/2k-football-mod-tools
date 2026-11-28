@@ -419,8 +419,8 @@ class TheBuildTabsTimeEstimateCountsTheCurrentStepOnly(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        from PyQt5.QtCore import QCoreApplication
-        cls.app = QCoreApplication.instance() or QCoreApplication([])
+        from PyQt5.QtWidgets import QApplication
+        cls.app = QApplication.instance() or QApplication([])
 
     def test_estimate_restarts_with_each_step(self):
         from mod_editor.gui.build_panel_qt import _Task

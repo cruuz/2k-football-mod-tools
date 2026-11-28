@@ -81,7 +81,28 @@ class SpeedSeparationIsCountedTests(_PanelCase):
 
 
 class NeedsUpdateWordingTests(_PanelCase):
-    """A beta-79 install that this build updates in place: the badge, the box and its tooltip must agree."""
+    """The badge, locked checkbox and recipe should agree about an installed option."""
+
+    def test_older_coin_clock_and_historical_teams_stay_in_the_build_recipe(self) -> None:
+        keys = ("coin_defer", "decided_clock", "historic_teams_quick_game")
+        settings = dict(status="previous", settings=dict(margin=25, seconds=30))
+        panel = self.panel(**dict.fromkeys(keys, "previous"), decided_clock_settings=settings)
+        plan = panel._plan_for_build()
+        for key in keys:
+            box = panel._boxes()[key]
+            self.assertTrue(box.isChecked() and not box.isEnabled(), key)
+            self.assertEqual(panel._badges[key].text(), "Needs update")
+            self.assertTrue(getattr(plan, key))
+        self.assertEqual((plan.decided_clock_margin, plan.decided_clock_seconds), (25, 30))
+
+    def test_previous_franchise_loader_can_be_updated_in_the_shared_build_recipe(self) -> None:
+        panel = self.panel(load_user_team_guard="previous")
+        box = panel._boxes()["load_user_team_guard"]
+        self.assertTrue(box.isEnabled())
+        self.assertEqual(panel._badges["load_user_team_guard"].text(), "Needs update")
+        self.assertIn("saved coaching gameplans", box.text())
+        box.setChecked(True)
+        self.assertTrue(panel._plan_for_build().to_recipe()["load_user_team_guard"])
 
     def test_boxes_that_stay_ticked_do_not_tell_the_player_to_select_them(self) -> None:
         panel = self.panel(honors_page="previous", k128_memory="previous", camera="previous")
@@ -143,6 +164,19 @@ class InstalledBasesMeetDependenciesTests(_PanelCase):
         panel.catch_check.setChecked(True)                                              # an in-place update
         self.assertEqual(panel.blocker(), "")
         self.assertTrue(panel.build_button.isEnabled())
+
+    def test_the_released_discs_earlier_overtime_is_a_base_and_offered_as_an_update(self) -> None:
+        # b81 ot-crash review D2: the released v0.8 and v0.9 discs read "previous" for the overtime owner (its beta-79 ..
+        # v0.9 revision); the box offers the in-place update and era rules still find their base
+        panel = self.panel(**dict(self.V08, overtime="previous"))
+        self.assertTrue(panel.overtime_check.isEnabled())
+        self.assertFalse(panel.overtime_check.isChecked())
+        self.assertEqual(panel._badges["overtime"].text(), "Needs update")
+        self.assertIn("modern overtime rules", panel.overtime_check.toolTip())
+        panel.catch_check.setChecked(True)
+        self.assertEqual(panel.blocker(), "")
+        build = panel._plan_for_build()
+        self.assertTrue(build.espn25_era_rules and build.overtime)
 
     def test_the_plan_for_a_build_carries_the_installed_bases_and_the_plain_plan_does_not(self) -> None:
         panel = self.panel(**self.V08)
@@ -226,7 +260,8 @@ class V08DiscStatesTests(_PanelCase):
             box = getattr(panel, key + "_check", None)
             if box is None:
                 continue                                            # my_career_home has no box of its own
-            self.assertIn(panel._badges[key].text(), ("Needs update", "Beta 79 version: rebuild from retail"), key)
+            rebuild_label = "Earlier version: rebuild from retail" if key == "pass_rush_stats" else "Beta 79 version: rebuild from retail"
+            self.assertIn(panel._badges[key].text(), ("Needs update", rebuild_label), key)
             if panel._badges[key].text() != "Needs update":
                 self.assertFalse(box.isEnabled(), key)
                 self.assertIn("build from your retail game", box.toolTip(), key)
@@ -264,6 +299,7 @@ class RebuildOnlyDiscTests(_PanelCase):
         self.assertIn("practice field's team logo at midfield", disc)
         self.assertIn("build again from a dump of your own retail disc", disc)
         self.assertIn("this disc", disc)
+        self.assertNotIn("older build", disc)   # b81 relrev M1: this release's own standard discs read this way too
         self.assertIn("this executable", rebuild_only_reason(dict(self.LOGO, container="xbe")))
         self.assertNotIn("\u2014", disc)
 
@@ -431,6 +467,30 @@ class GameFixesNeedsUpdateTests(unittest.TestCase):
         state.update(overrides)
         panel.apply_state(state)
         return panel
+
+    def test_older_coin_clock_and_historical_teams_stay_in_the_game_fixes_recipe(self) -> None:
+        keys = ("coin_defer", "decided_clock", "historic_teams_quick_game")
+        settings = dict(status="previous", settings=dict(margin=25, seconds=30))
+        panel = self.fixes(**dict.fromkeys(keys, "previous"), decided_clock_settings=settings)
+        plan = panel.plan()
+        summary = panel.source_status.text()
+        self.assertIn("Earlier revisions are installed for", summary)
+        for key in keys:
+            self.assertTrue(panel.checks[key].isChecked() and not panel.checks[key].isEnabled(), key)
+            self.assertTrue(getattr(plan, key))
+            self.assertEqual(panel.badges[key].text(), "Needs update")
+            self.assertIn(next(label for name, label, _help in panel._patches if name == key), summary)
+        self.assertEqual((plan.decided_clock_margin, plan.decided_clock_seconds), (25, 30))
+
+    def test_previous_franchise_loader_updates_in_game_fixes(self) -> None:
+        panel = self.fixes(load_user_team_guard="previous")
+        box = panel.checks["load_user_team_guard"]
+        self.assertTrue(box.isEnabled())
+        self.assertEqual(panel.badges["load_user_team_guard"].text(), "Needs update")
+        box.setChecked(True)
+        self.assertTrue(panel.plan().to_recipe()["load_user_team_guard"])
+        panel = self.fixes(load_user_team_guard="foreign")
+        self.assertFalse(panel.checks["load_user_team_guard"].isEnabled())
 
     def test_each_beta_79_state_is_an_update_a_locked_update_or_a_rebuild(self) -> None:
         panel = self.fixes(catch_slider="previous", camera="previous", draft_ai="legacy", progression="legacy",

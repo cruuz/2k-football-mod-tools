@@ -60,6 +60,9 @@ class ModelDelegation(unittest.TestCase):
                        sites=[dict(kind="stadium", offset=16, size=32, retail=mv.sha(b"R" * 32))])
             model = dict(pin, offset=16, length=32, model_sha256=mv.sha(b"M" * 32),
                          model_portrait_sha256="portrait", classic_sha256="classic", retail_sha256=mv.sha(b"R" * 32))
+            # b81-allegiant-shine: Allegiant's pins also carry the helmet reflection span (the other owners ignore the
+            # key); bytes 48 to 64 read as the model's reflection here, so the stretch alone decides
+            model["reflection"] = dict(offset=48, length=16, retail_sha256="retail", model_sha256=mv.sha(b"R" * 16))
             fan = dict(schema="nfl2k5_model_fan_art/v1", offset=16, length=32,
                        before_sha256=model["model_sha256"], after_sha256=mv.sha(b"F" * 32))
             with self.subTest(model=name), patch.object(module, "_pin", return_value=model), \

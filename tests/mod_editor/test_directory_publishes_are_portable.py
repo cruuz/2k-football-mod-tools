@@ -76,6 +76,7 @@ def _hand_rolled_directory_publishes(path: Path) -> list[int]:
         lines = path.read_text(encoding="utf-8").splitlines()
     except UnicodeDecodeError:  # pragma: no cover - defensive
         return []
+    tree = None
     found: list[int] = []
     for index, line in enumerate(lines):
         if line.lstrip().startswith("#") or not _MKDIR_RESERVE.search(line):
@@ -84,8 +85,28 @@ def _hand_rolled_directory_publishes(path: Path) -> list[int]:
             candidate for candidate in lines[index:index + _WINDOW]
             if not candidate.lstrip().startswith("#")
         )
-        if _RENAME.search(window):
-            found.append(index + 1)
+        if not _RENAME.search(window):
+            continue
+        # Atomic file renames *inside* a new journal directory are portable.
+        # Only exempt a destination that is visibly a child of that directory.
+        if tree is None:
+            tree = ast.parse("\n".join(lines))
+        calls = [node for node in ast.walk(tree) if isinstance(node, ast.Call)
+                 and index < node.lineno <= index + _WINDOW]
+        directory = next((node.func.value for node in calls
+                          if node.lineno == index + 1 and isinstance(node.func, ast.Attribute)
+                          and node.func.attr == "mkdir"), None)
+        renames = [node for node in calls if isinstance(node.func, ast.Attribute)
+                   and isinstance(node.func.value, ast.Name) and node.func.value.id == "os"
+                   and node.func.attr in {"rename", "replace"}]
+        if directory is not None and renames and all(
+            len(node.args) >= 2 and isinstance(node.args[1], ast.BinOp)
+            and isinstance(node.args[1].op, ast.Div)
+            and ast.dump(node.args[1].left) == ast.dump(directory)
+            for node in renames
+        ):
+            continue
+        found.append(index + 1)
     return found
 
 
@@ -152,6 +173,19 @@ class DirectoryPublishPortabilityTests(unittest.TestCase):
                 newline="\n",
             )
             self.assertEqual(_hand_rolled_directory_publishes(probe), [3])
+
+    def test_the_detector_allows_a_receipt_to_be_renamed_inside_a_new_journal(self) -> None:
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as directory:
+            probe = Path(directory) / "probe.py"
+            probe.write_text(
+                "import os\n"
+                "def publish(stage, journal):\n"
+                "    journal.mkdir(mode=0o700)\n"
+                "    os.replace(stage, journal / 'receipt.json')\n"
+            )
+            self.assertEqual(_hand_rolled_directory_publishes(probe), [])
 
     def test_the_detector_leaves_file_publishes_alone(self) -> None:
         """Replacing a FILE is portable and must not be flagged."""

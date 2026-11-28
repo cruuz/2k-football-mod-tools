@@ -26,6 +26,9 @@ from unicorn.x86_const import UC_X86_REG_ESP, UC_X86_REG_ECX, UC_X86_REG_EDX
 
 G_SHA256 = '7ddb384bf4dee80f09cb3fabc422747ea1a009a1a904415aee94efeef098a91e'
 ENTRY_SHA256 = '7d3de460e8d98d9cce9fc38a80badd2cf9314dd57a11137d7dc9681c9888c60d'
+# b81 sb-booth: with the 2026 season the pregame director (outer 1194) says the generic Super Bowl welcome; only the
+# four say operands differ (nfl2k5_super_bowl_booth.ENTRY_PINS[1194]['applied']), so both entries load the same.
+ENTRY_SHA256S = frozenset({ENTRY_SHA256, 'de1fc5e361ada65c585e0c2b095a786e521c8d6a786beb78efd422a8543a041e'})
 OFFSET = 0x3178820
 
 
@@ -205,9 +208,10 @@ def main():
     with _outer_image()(args.disc) as archive:
         body=archive.read_entry(5)[32:]
         entry=archive.read_entry(1194)
-    assert hashlib.sha256(entry).hexdigest()==ENTRY_SHA256
+    entry_sha256=hashlib.sha256(entry).hexdigest()
+    assert entry_sha256 in ENTRY_SHA256S
     rows,receipt=run(xbe,body,entry)
-    report=dict(evidence='PROVED OFFLINE',xbe_sha256=G_SHA256,entry_sha256=ENTRY_SHA256,
+    report=dict(evidence='PROVED OFFLINE',xbe_sha256=G_SHA256,entry_sha256=entry_sha256,
                 affinity=sorted(os.sched_getaffinity(0)),max_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
                 limitation='Controlled main-heap fixtures, modeled archive I/O and inherited setup UI/context boundaries. No renderer, coin toss or kernel execution. K128 upper region is a bounded 2 MiB fixture; startup has separate tests.',
                 patch=receipt,rows=rows)

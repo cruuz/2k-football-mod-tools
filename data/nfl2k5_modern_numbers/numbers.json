@@ -1,0 +1,940 @@
+{
+ "schema": "nfl2k5_modern_numbers/v1",
+ "note": "Jersey numbers a club does not hand out automatically (modern numbers owner). The page never auto-assigns a club's retired numbers or another position's legacy number; a user's own choice (Create Player, Assign Jersey Number, the Studio) is always allowed and nobody already wearing one is renumbered.",
+ "club_index": {
+  "SF": 0,
+  "CHI": 1,
+  "CIN": 2,
+  "BUF": 3,
+  "DEN": 4,
+  "CLE": 5,
+  "TB": 6,
+  "ARI": 7,
+  "LAC": 8,
+  "KC": 9,
+  "IND": 10,
+  "DAL": 11,
+  "MIA": 12,
+  "PHI": 13,
+  "ATL": 14,
+  "NYG": 15,
+  "JAX": 16,
+  "NYJ": 17,
+  "DET": 18,
+  "GB": 19,
+  "CAR": 20,
+  "NE": 21,
+  "LV": 22,
+  "LAR": 23,
+  "BAL": 24,
+  "WAS": 25,
+  "NO": 26,
+  "SEA": 27,
+  "PIT": 28,
+  "HOU": 29,
+  "TEN": 30,
+  "MIN": 31
+ },
+ "club_index_source": "the game's league slots as the 2026 SOFTDRINK roster names them (club abbreviation at each slot of a 2026 franchise)",
+ "retired": {
+  "source": {
+   "title": "List of NFL retired numbers (Wikipedia)",
+   "url": "https://en.wikipedia.org/wiki/List_of_NFL_retired_numbers",
+   "fetched": "2026-11-25",
+   "wikitext_sha256": "cc6402e73367799ced32f239015763a90f3bfcb578b4fc07c72aa1476e37a764",
+   "note": "every row of the page's table; 'announced' = set to be retired; clubs the page lists none for (ATL, BAL, DAL, HOU, LV, NO) have none here"
+  },
+  "clubs": {
+   "ARI": [
+    {
+     "number": 8,
+     "player": "Larry Wilson",
+     "year": 1970
+    },
+    {
+     "number": 11,
+     "player": "Larry Fitzgerald",
+     "year": 2026
+    },
+    {
+     "number": 40,
+     "player": "Pat Tillman",
+     "year": 2004
+    },
+    {
+     "number": 77,
+     "player": "Stan Mauldin",
+     "year": 1948
+    },
+    {
+     "number": 88,
+     "player": "J. V. Cain",
+     "year": 1979
+    },
+    {
+     "number": 99,
+     "player": "Marshall Goldberg",
+     "year": 2022
+    }
+   ],
+   "BUF": [
+    {
+     "number": 12,
+     "player": "Jim Kelly",
+     "year": 2001
+    },
+    {
+     "number": 34,
+     "player": "Thurman Thomas",
+     "year": 2018
+    },
+    {
+     "number": 78,
+     "player": "Bruce Smith",
+     "year": 2016
+    },
+    {
+     "number": 83,
+     "player": "Andre Reed",
+     "year": 2027,
+     "announced": true
+    }
+   ],
+   "CAR": [
+    {
+     "number": 51,
+     "player": "Sam Mills",
+     "year": 2005
+    }
+   ],
+   "CHI": [
+    {
+     "number": 3,
+     "player": "Bronko Nagurski",
+     "year": 1949
+    },
+    {
+     "number": 5,
+     "player": "George McAfee",
+     "year": 1955
+    },
+    {
+     "number": 7,
+     "player": "George Halas",
+     "year": 1928
+    },
+    {
+     "number": 28,
+     "player": "Willie Galimore",
+     "year": 1963
+    },
+    {
+     "number": 34,
+     "player": "Walter Payton",
+     "year": 1987
+    },
+    {
+     "number": 40,
+     "player": "Gale Sayers",
+     "year": 1994
+    },
+    {
+     "number": 41,
+     "player": "Brian Piccolo",
+     "year": 1970
+    },
+    {
+     "number": 42,
+     "player": "Sid Luckman",
+     "year": 1950
+    },
+    {
+     "number": 51,
+     "player": "Dick Butkus",
+     "year": 1994
+    },
+    {
+     "number": 56,
+     "player": "Bill Hewitt",
+     "year": 1949
+    },
+    {
+     "number": 61,
+     "player": "Bill George",
+     "year": 1965
+    },
+    {
+     "number": 66,
+     "player": "Bulldog Turner",
+     "year": 1963
+    },
+    {
+     "number": 77,
+     "player": "Red Grange",
+     "year": 1949
+    },
+    {
+     "number": 89,
+     "player": "Mike Ditka",
+     "year": 2013
+    }
+   ],
+   "CIN": [
+    {
+     "number": 54,
+     "player": "Bob Johnson",
+     "year": 1978
+    }
+   ],
+   "CLE": [
+    {
+     "number": 14,
+     "player": "Otto Graham",
+     "year": 1955
+    },
+    {
+     "number": 32,
+     "player": "Jim Brown",
+     "year": 1965
+    },
+    {
+     "number": 45,
+     "player": "Ernie Davis",
+     "year": 1962
+    },
+    {
+     "number": 46,
+     "player": "Don Fleming",
+     "year": 1962
+    },
+    {
+     "number": 76,
+     "player": "Lou Groza",
+     "year": 1968
+    }
+   ],
+   "DEN": [
+    {
+     "number": 7,
+     "player": "John Elway",
+     "year": 1999
+    },
+    {
+     "number": 18,
+     "player": "Frank Tripucka",
+     "year": 2015
+    },
+    {
+     "number": 44,
+     "player": "Floyd Little",
+     "year": 1984
+    }
+   ],
+   "DET": [
+    {
+     "number": 7,
+     "player": "Dutch Clark",
+     "year": 1939
+    },
+    {
+     "number": 20,
+     "player": "Lem Barney",
+     "year": 2004
+    },
+    {
+     "number": 22,
+     "player": "Bobby Layne",
+     "year": 1958
+    },
+    {
+     "number": 37,
+     "player": "Doak Walker",
+     "year": 1955
+    },
+    {
+     "number": 56,
+     "player": "Joe Schmidt",
+     "year": 1965
+    },
+    {
+     "number": 85,
+     "player": "Chuck Hughes",
+     "year": 1971
+    }
+   ],
+   "GB": [
+    {
+     "number": 3,
+     "player": "Tony Canadeo",
+     "year": 1952
+    },
+    {
+     "number": 4,
+     "player": "Brett Favre",
+     "year": 2015
+    },
+    {
+     "number": 14,
+     "player": "Don Hutson",
+     "year": 1951
+    },
+    {
+     "number": 15,
+     "player": "Bart Starr",
+     "year": 1973
+    },
+    {
+     "number": 66,
+     "player": "Ray Nitschke",
+     "year": 1983
+    },
+    {
+     "number": 92,
+     "player": "Reggie White",
+     "year": 1999
+    }
+   ],
+   "IND": [
+    {
+     "number": 18,
+     "player": "Peyton Manning",
+     "year": 2017
+    },
+    {
+     "number": 19,
+     "player": "Johnny Unitas",
+     "year": 1972
+    },
+    {
+     "number": 22,
+     "player": "Buddy Young",
+     "year": 1955
+    },
+    {
+     "number": 24,
+     "player": "Lenny Moore",
+     "year": 1968
+    },
+    {
+     "number": 70,
+     "player": "Art Donovan",
+     "year": 1962
+    },
+    {
+     "number": 77,
+     "player": "Jim Parker",
+     "year": 1967
+    },
+    {
+     "number": 82,
+     "player": "Raymond Berry",
+     "year": 1967
+    },
+    {
+     "number": 89,
+     "player": "Gino Marchetti",
+     "year": 1966
+    }
+   ],
+   "JAX": [
+    {
+     "number": 71,
+     "player": "Tony Boselli",
+     "year": 2022
+    }
+   ],
+   "KC": [
+    {
+     "number": 3,
+     "player": "Jan Stenerud",
+     "year": 1992
+    },
+    {
+     "number": 16,
+     "player": "Len Dawson",
+     "year": 1975
+    },
+    {
+     "number": 18,
+     "player": "Emmitt Thomas",
+     "year": 2008
+    },
+    {
+     "number": 28,
+     "player": "Abner Haynes",
+     "year": 1964
+    },
+    {
+     "number": 33,
+     "player": "Stone Johnson",
+     "year": 1963
+    },
+    {
+     "number": 36,
+     "player": "Mack Lee Hill",
+     "year": 1965
+    },
+    {
+     "number": 58,
+     "player": "Derrick Thomas",
+     "year": 2009
+    },
+    {
+     "number": 63,
+     "player": "Willie Lanier",
+     "year": 1992
+    },
+    {
+     "number": 78,
+     "player": "Bobby Bell",
+     "year": 1984
+    },
+    {
+     "number": 86,
+     "player": "Buck Buchanan",
+     "year": 1992
+    }
+   ],
+   "LAC": [
+    {
+     "number": 14,
+     "player": "Dan Fouts",
+     "year": 1969
+    },
+    {
+     "number": 18,
+     "player": "Charlie Joiner",
+     "year": 2023
+    },
+    {
+     "number": 19,
+     "player": "Lance Alworth",
+     "year": 2005
+    },
+    {
+     "number": 21,
+     "player": "LaDainian Tomlinson",
+     "year": 2015
+    },
+    {
+     "number": 55,
+     "player": "Junior Seau",
+     "year": 2012
+    },
+    {
+     "number": 80,
+     "player": "Kellen Winslow",
+     "year": 2023
+    }
+   ],
+   "LAR": [
+    {
+     "number": 7,
+     "player": "Bob Waterfield",
+     "year": 1952
+    },
+    {
+     "number": 28,
+     "player": "Marshall Faulk",
+     "year": 2007
+    },
+    {
+     "number": 29,
+     "player": "Eric Dickerson",
+     "year": 1987
+    },
+    {
+     "number": 74,
+     "player": "Merlin Olsen",
+     "year": 1976
+    },
+    {
+     "number": 75,
+     "player": "Deacon Jones",
+     "year": 2009
+    },
+    {
+     "number": 78,
+     "player": "Jackie Slater",
+     "year": 1996
+    },
+    {
+     "number": 80,
+     "player": "Isaac Bruce",
+     "year": 2010
+    },
+    {
+     "number": 85,
+     "player": "Jack Youngblood",
+     "year": 1984
+    }
+   ],
+   "MIA": [
+    {
+     "number": 12,
+     "player": "Bob Griese",
+     "year": 1985
+    },
+    {
+     "number": 13,
+     "player": "Dan Marino",
+     "year": 2000
+    },
+    {
+     "number": 39,
+     "player": "Larry Csonka",
+     "year": 2002
+    }
+   ],
+   "MIN": [
+    {
+     "number": 10,
+     "player": "Fran Tarkenton",
+     "year": 1979
+    },
+    {
+     "number": 53,
+     "player": "Mick Tingelhoff",
+     "year": 2001
+    },
+    {
+     "number": 70,
+     "player": "Jim Marshall",
+     "year": 1999
+    },
+    {
+     "number": 77,
+     "player": "Korey Stringer",
+     "year": 2001
+    },
+    {
+     "number": 80,
+     "player": "Cris Carter",
+     "year": 2003
+    },
+    {
+     "number": 88,
+     "player": "Alan Page",
+     "year": 1988
+    }
+   ],
+   "NE": [
+    {
+     "number": 12,
+     "player": "Tom Brady",
+     "year": 2024
+    },
+    {
+     "number": 20,
+     "player": "Gino Cappelletti",
+     "year": 1970
+    },
+    {
+     "number": 40,
+     "player": "Mike Haynes",
+     "year": 1982
+    },
+    {
+     "number": 57,
+     "player": "Steve Nelson",
+     "year": 1988
+    },
+    {
+     "number": 73,
+     "player": "John Hannah",
+     "year": 1985
+    },
+    {
+     "number": 78,
+     "player": "Bruce Armstrong",
+     "year": 2000
+    },
+    {
+     "number": 79,
+     "player": "Jim Lee Hunt",
+     "year": 1970
+    },
+    {
+     "number": 89,
+     "player": "Bob Dee",
+     "year": 1967
+    }
+   ],
+   "NYG": [
+    {
+     "number": 1,
+     "player": "Ray Flaherty",
+     "year": 2024
+    },
+    {
+     "number": 4,
+     "player": "Tuffy Leemans",
+     "year": 1940
+    },
+    {
+     "number": 7,
+     "player": "Mel Hein",
+     "year": 1963
+    },
+    {
+     "number": 10,
+     "player": "Eli Manning",
+     "year": 2021
+    },
+    {
+     "number": 11,
+     "player": "Phil Simms",
+     "year": 1995
+    },
+    {
+     "number": 14,
+     "player": "Ward Cuff",
+     "year": 1946
+    },
+    {
+     "number": 16,
+     "player": "Frank Gifford",
+     "year": 2000
+    },
+    {
+     "number": 32,
+     "player": "Al Blozis",
+     "year": 1945
+    },
+    {
+     "number": 40,
+     "player": "Joe Morrison",
+     "year": 1973
+    },
+    {
+     "number": 42,
+     "player": "Charlie Conerly",
+     "year": 1962
+    },
+    {
+     "number": 50,
+     "player": "Ken Strong",
+     "year": 1968
+    },
+    {
+     "number": 56,
+     "player": "Lawrence Taylor",
+     "year": 1994
+    },
+    {
+     "number": 92,
+     "player": "Michael Strahan",
+     "year": 2021
+    }
+   ],
+   "NYJ": [
+    {
+     "number": 12,
+     "player": "Joe Namath",
+     "year": 1985
+    },
+    {
+     "number": 13,
+     "player": "Don Maynard",
+     "year": 1972
+    },
+    {
+     "number": 28,
+     "player": "Curtis Martin",
+     "year": 2012
+    },
+    {
+     "number": 73,
+     "player": "Joe Klecko",
+     "year": 2004
+    },
+    {
+     "number": 90,
+     "player": "Dennis Byrd",
+     "year": 2012
+    }
+   ],
+   "PHI": [
+    {
+     "number": 5,
+     "player": "Donovan McNabb",
+     "year": 2013
+    },
+    {
+     "number": 15,
+     "player": "Steve Van Buren",
+     "year": 1951
+    },
+    {
+     "number": 20,
+     "player": "Brian Dawkins",
+     "year": 2012
+    },
+    {
+     "number": 40,
+     "player": "Tom Brookshier",
+     "year": 1962
+    },
+    {
+     "number": 44,
+     "player": "Pete Retzlaff",
+     "year": 1965
+    },
+    {
+     "number": 60,
+     "player": "Chuck Bednarik",
+     "year": 1962
+    },
+    {
+     "number": 70,
+     "player": "Al Wistert",
+     "year": 1952
+    },
+    {
+     "number": 92,
+     "player": "Reggie White",
+     "year": 2005
+    },
+    {
+     "number": 99,
+     "player": "Jerome Brown",
+     "year": 1992
+    }
+   ],
+   "PIT": [
+    {
+     "number": 32,
+     "player": "Franco Harris",
+     "year": 2022
+    },
+    {
+     "number": 70,
+     "player": "Ernie Stautner",
+     "year": 1964
+    },
+    {
+     "number": 75,
+     "player": "Joe Greene",
+     "year": 2014
+    }
+   ],
+   "SEA": [
+    {
+     "number": 12,
+     "player": "12th Man (the fans)",
+     "year": 1984
+    },
+    {
+     "number": 45,
+     "player": "Kenny Easley",
+     "year": 2017
+    },
+    {
+     "number": 71,
+     "player": "Walter Jones",
+     "year": 2010
+    },
+    {
+     "number": 80,
+     "player": "Steve Largent",
+     "year": 2004
+    },
+    {
+     "number": 96,
+     "player": "Cortez Kennedy",
+     "year": 2012
+    }
+   ],
+   "SF": [
+    {
+     "number": 8,
+     "player": "Steve Young",
+     "year": 2008
+    },
+    {
+     "number": 12,
+     "player": "John Brodie",
+     "year": 2007
+    },
+    {
+     "number": 16,
+     "player": "Joe Montana",
+     "year": 1997
+    },
+    {
+     "number": 34,
+     "player": "Joe Perry",
+     "year": 1971
+    },
+    {
+     "number": 37,
+     "player": "Jimmy Johnson",
+     "year": 1977
+    },
+    {
+     "number": 39,
+     "player": "Hugh McElhenny",
+     "year": 1971
+    },
+    {
+     "number": 42,
+     "player": "Ronnie Lott",
+     "year": 2003
+    },
+    {
+     "number": 70,
+     "player": "Charlie Krueger",
+     "year": 1974
+    },
+    {
+     "number": 73,
+     "player": "Leo Nomellini",
+     "year": 1971
+    },
+    {
+     "number": 79,
+     "player": "Bob St. Clair",
+     "year": 2001
+    },
+    {
+     "number": 80,
+     "player": "Jerry Rice",
+     "year": 2010
+    },
+    {
+     "number": 87,
+     "player": "Dwight Clark",
+     "year": 1988
+    }
+   ],
+   "TB": [
+    {
+     "number": 55,
+     "player": "Derrick Brooks",
+     "year": 2014
+    },
+    {
+     "number": 63,
+     "player": "Lee Roy Selmon",
+     "year": 1986
+    },
+    {
+     "number": 99,
+     "player": "Warren Sapp",
+     "year": 2013
+    }
+   ],
+   "TEN": [
+    {
+     "number": 1,
+     "player": "Warren Moon",
+     "year": 2025
+    },
+    {
+     "number": 9,
+     "player": "Steve McNair",
+     "year": 2019
+    },
+    {
+     "number": 27,
+     "player": "Eddie George",
+     "year": 2019
+    },
+    {
+     "number": 34,
+     "player": "Earl Campbell",
+     "year": 1987
+    },
+    {
+     "number": 43,
+     "player": "Jim Norton",
+     "year": 1968
+    },
+    {
+     "number": 63,
+     "player": "Mike Munchak",
+     "year": 1996
+    },
+    {
+     "number": 65,
+     "player": "Elvin Bethea",
+     "year": 1983
+    },
+    {
+     "number": 74,
+     "player": "Bruce Matthews",
+     "year": 2002
+    }
+   ],
+   "WAS": [
+    {
+     "number": 9,
+     "player": "Sonny Jurgensen",
+     "year": 2022
+    },
+    {
+     "number": 21,
+     "player": "Sean Taylor",
+     "year": 2021
+    },
+    {
+     "number": 28,
+     "player": "Darrell Green",
+     "year": 2024
+    },
+    {
+     "number": 33,
+     "player": "Sammy Baugh",
+     "year": 1953
+    },
+    {
+     "number": 44,
+     "player": "John Riggins",
+     "year": 2026
+    },
+    {
+     "number": 49,
+     "player": "Bobby Mitchell",
+     "year": 2020
+    },
+    {
+     "number": 81,
+     "player": "Art Monk",
+     "year": 2025
+    }
+   ]
+  }
+ },
+ "retired_exceptions": [
+  {
+   "club": "NYG",
+   "number": 1,
+   "who_may": "a first-round rookie at QB, HB, FB, WR or TE",
+   "precedent": "Malik Nabers (WR, first round 2024) wears No. 1, retired for Ray Flaherty, with the Flaherty family's permission",
+   "source": "List of NFL retired numbers (Wikipedia), note on Ray Flaherty (No. 1, New York Giants)"
+  },
+  {
+   "club": "TEN",
+   "number": 1,
+   "who_may": "a first-round rookie at QB, HB, FB, WR or TE",
+   "precedent": "Cam Ward (QB, first overall 2025) wears No. 1, retired for Warren Moon, with Moon's approval",
+   "source": "List of NFL retired numbers (Wikipedia), note on Warren Moon (No. 1, Tennessee Titans)"
+  }
+ ],
+ "legacy": [
+  {
+   "club": "DAL",
+   "number": 88,
+   "position": "WR",
+   "holders": "Drew Pearson (1973-1983), Michael Irvin (1988-1999), Dez Bryant, CeeDee Lamb (2026 roster)",
+   "rule": "reserved for a wide receiver; when free, a newly joined WR of tier A or B (draft rounds 1-2, or rated in the top 25 percent of WRs) gets it ahead of the normal draw",
+   "source": {
+    "title": "Dallas Cowboys (Wikipedia), Pro Football Hall of Fame and Ring of Honor tables (Pearson and Irvin, No. 88, WR)",
+    "url": "https://en.wikipedia.org/wiki/Dallas_Cowboys",
+    "fetched": "2026-11-25",
+    "wikitext_sha256": "4506d985a96fc884a65cb7d621d72b5124091a7501a1f6db255424ef7be3d7f3",
+    "also": "nflverse roster_2026 (CeeDee Lamb, DAL WR, No. 88)"
+   }
+  }
+ ]
+}

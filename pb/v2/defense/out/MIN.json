@@ -2374,7 +2374,7 @@
  "receipt": {
   "team": "MIN",
   "offense_pack": "data/playbooks/softdrink_min_modern.2k5book",
-  "offense_pack_sha256": "e43a6a2dded05abb98531611126ca271fec3f6d89bb3d824d85eb9eefb9d7ba9",
+  "offense_pack_sha256": "9197e908eac2e356102be95099dcfa6be17aeccb3c757501fb286f8788539dfe",
   "source_fingerprint": "7e735006ae32f3e73c27aef106b55f3b4778559f68be5066d35505b7df64876b",
   "replacement_sha256": "3ad68e6e20b2b68f4d876ba49ae041f37b22ab7fade0d8a57732d4b2a886aee3",
   "semantic_sha256": "25b050db6bea3cd122beae5a5baeee2c1ec3cb0b7bf4923c5ec055ed49c11004",

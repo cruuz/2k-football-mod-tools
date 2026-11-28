@@ -120,6 +120,15 @@ class ChainedGrowthTests(unittest.TestCase):
         self.assertEqual(current, self.built.stat().st_size)
         self.roundtrip()
 
+    def test_layout_refused_before_diff_for_unaccounted_file_growth(self):
+        write_file(self.built, 'keep.bin', FILES['keep.bin'] * 2)
+        with patch.object(m, 'diff_descriptors', side_effect=AssertionError('whole-image diff started')):
+            with self.assertRaisesRegex(m.ModpackError, 'unrecognised file allocation change: keep.bin'):
+                m.export(self.base, self.built, self.pack, {'name': 'moved allocation'},
+                         format_version=2, file_operations=['default.xbe'])
+        self.assertFalse(self.pack.exists())
+        self.assertFalse(self.pack.with_name(self.pack.name + '.part').exists())
+
     def test_retained_intermediate_allocation_is_hashed_and_reproduced(self):
         report = self.build(retained=True)
         grow = next(o for o in report['ops'] if o['type'] == 3)

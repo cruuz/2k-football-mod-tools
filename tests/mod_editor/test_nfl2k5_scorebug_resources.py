@@ -260,6 +260,7 @@ class RetailTests(unittest.TestCase):
                 if probe in ('mnf','sprite'):
                     expected_names.add('score_buga')
                 if probe=='sprite':expected_names.add('score_bug')
+                if probe=='sprite':expected_names |= {'sb%sh0' % key for key in a.CLASSIC_PANELS}   # b81-seamen: sbSEh0
                 self.assertEqual(names, expected_names)
                 for other in a.PROBES:
                     same=a.probe_codes(probe)==a.probe_codes(other) and (probe=='mnf')==(other=='mnf') and (probe=='sprite')==(other=='sprite')

@@ -208,7 +208,7 @@ class Data(unittest.TestCase):
         earlier = {(r["selector"], r["chunk"]): r for r in fixes.spec()["textures"] + fixes.alternates()["textures"]}
         both = [r for r in fixes.finish()["textures"] if (r["selector"], r["chunk"]) in earlier]
         self.assertEqual(sorted((r["selector"], r["chunk"]) for r in both),
-                         [("03A0", 3), ("03A8", 12), ("03H8", 12), ("05A0", 3), ("05H0", 3), ("08A0", 3),
+                         [("03A0", 3), ("05A0", 3), ("05H0", 3), ("08A0", 3),
                           ("08A5", 3), ("08A6", 3), ("08H0", 3), ("08H5", 3), ("08H6", 3), ("13A0", 3), ("16A4", 1),
                           ("16H4", 1), ("19A0", 3), ("19H0", 3), ("29A0", 12), ("29H0", 12), ("37A2", 3),
                           ("37H2", 3)])
@@ -217,8 +217,8 @@ class Data(unittest.TestCase):
             self.assertEqual((r["before_sha256"], r["offset"], r["length"]), (e["after_sha256"], e["offset"], e["length"]))
 
     def test_documents_are_separate_and_unchanged(self):
-        self.assertEqual(len(fixes.spec()["textures"]), 60)
-        self.assertEqual(len(fixes.alternates()["textures"]), 544)
+        self.assertEqual(len(fixes.spec()["textures"]), 58)        # b81-retail-free-art: dead rows deleted by ruling
+        self.assertEqual(len(fixes.alternates()["textures"]), 534)
         self.assertEqual(len({fixes.DATA, fixes.DATA_ALTS, fixes.DATA_UF3}), 3)
 
     def test_no_private_paths_in_data(self):
@@ -227,12 +227,21 @@ class Data(unittest.TestCase):
         self.assertNotIn("/media/", text)
         self.assertTrue(text.isascii())
 
-    def test_baltimore_leftovers_decode(self):
-        for chunk, count in ((11, 358), (12, 349)):
-            points = author.runs_to_points(author.BAL_REMNANTS[chunk])
-            self.assertEqual(len(points), count)
-            self.assertEqual(len({tuple(p) for p in points}), count)
-            self.assertTrue(all(0 <= x < 256 and 0 <= y < 256 for x, y in points))
+    def test_baltimore_leftovers_are_a_clear_rule_not_a_texel_list(self):
+        """b81-retail-free-art (ruling 2, round 3): the retail logo's left-overs on the Ravens helmet02 are painted out
+        by rule (kf clear: boxes of at least 16 texels, a threshold, full alpha); no texel list ships. The helmet00 rows
+        were deleted by ruling (a beta 81 build never holds their input)."""
+        self.assertFalse(hasattr(author, "BAL_REMNANTS"))
+        self.assertEqual(sorted(author.BAL_CLEAR), [12])
+        rows = {(r["selector"], r["chunk"]): r for r in fixes.finish()["textures"]}
+        for sel in ("02A0", "02H0"):
+            self.assertNotIn((sel, 11), rows)
+            ops = rows[(sel, 12)]["ops"]
+            self.assertEqual([op["op"] for op in ops], ["want", "clear"])
+            clear = ops[1]
+            self.assertEqual((clear["to"], clear["above"], clear["alpha"]), ("#010001", 24, 255))
+            self.assertTrue(all((x1 - x0) * (y1 - y0) >= 16 for x0, y0, x1, y1 in clear["boxes"]))
+            self.assertTrue(all(0 <= x0 < x1 <= 256 and 0 <= y0 < y1 <= 256 for x0, y0, x1, y1 in clear["boxes"]))
 
     def test_swoosh_moves_only_on_sleeve_number_kits(self):
         moved = sorted(author.SWOOSH_FORWARD)

@@ -1935,7 +1935,7 @@
  "receipt": {
   "team": "SEA",
   "offense_pack": "data/playbooks/softdrink_sea_modern.2k5book",
-  "offense_pack_sha256": "9e9b4745bef4b996f394e217d2e5ec32daf9f58227bda4ee56d95303b17f7f59",
+  "offense_pack_sha256": "1f6429cb679fc43d6391568df0abe48cac119472f477a9212a208a3e42b708df",
   "source_fingerprint": "2eebf4de4c8ce2a130db51956242368ed675ee6aa3093db10d41a2c4dee1f53c",
   "replacement_sha256": "bb695f5ab0dd8e467544a17d5b13ec79e7307738ce316f4eba83848fb9a9e8ee",
   "semantic_sha256": "a009c5306560d32ff2e02a780ea55bcc854c1fe8ae9f4acdad4dad1cdac0a577",

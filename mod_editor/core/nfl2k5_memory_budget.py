@@ -46,6 +46,9 @@ import os
 import zlib
 from dataclasses import fields as _dc_fields, is_dataclass
 
+from . import nfl2k5_pass_rush_stats as pass_rush_stats
+from . import nfl2k5_xbe_space as space
+
 EVIDENCE = "MODELLED"
 TARGETS = (64, 128)
 
@@ -92,7 +95,7 @@ CODE_V3_CAP, RO_V3_CAP, DATA_V3_CAP = 106_852 + 64, 17_316 + 624, 86_016
 # MEASURED offline (nfl2k5_xbe_space.apply on the retail XBE, 1 to 36 owners, 2026-11-03).
 LEGACY_DIRECTORY_BYTES = 444     # HEADER_LOGO_OFFSET - DIRECTORY
 LOGO_REQUEST = ("nfl2k5_boot_logo", "code", 690, 16)
-LEGACY_REQUESTS = {"widescreen_menus": (("code", 128, 16),), "period_goalposts": (("code", 176, 16), ("read_only", 32, 4)), "team_logo_swap": (("read_only", 64, 4),), "abilities_runtime": (('code', 1344, 16),), "accelerated_clock": (('code', 1024, 16), ('data', 4, 4), ('read_only', 8, 4)), "audible_legend": (('code', 1280, 16),), "ball_carrier_ai": (('code', 176, 16),), "calendar": (('code', 1024, 16), ('read_only', 2048, 16)), "camera": (('code', 864, 16), ('read_only', 320, 16)), "catch_snap_limit": (('code', 224, 16),), "classic_teams": (('read_only', 288, 16),), "clock_led": (('code', 576, 16),), "coach_carousel": (('code', 4096, 16),), "coin_defer": (('code', 384, 16), ('data', 4, 4), ('read_only', 128, 4)), "contract_college_guard": (('code', 32, 16),), "coverage_slider": (('code', 16, 16),), "coverage_trail": (('code', 640, 16),), "cpu_clock2": (('code', 1152, 16),), "cpu_money_downs": (('code', 2048, 16),), "cpu_money_downs_late": (('code', 400, 16),), "cpu_money_downs_late_state": (('data', 8, 4),), "cpu_passer_iq": (('code', 256, 16), ('data', 16, 16)), "cpu_qb_reads": (('code', 1280, 16), ('data', 192, 16)), "cpu_scrambles": (('code', 128, 16), ('read_only', 4, 4)), "cpu_third_down": (('code', 192, 16),), "db_ball_play": (('code', 256, 16),), "decided_clock": (('code', 384, 16), ('read_only', 8, 4)), "deep_zone": (('code', 2048, 16), ('data', 256, 16)), "dive_window": (('code', 352, 16),), "draft_clock": (('code', 608, 16),), "dynamic_kickoff_relocated": (('code', 1939, 16), ('data', 10, 4)), "espn25_more_moments": (('code', 2560, 16), ('data', 16, 16)), "force_out": (('code', 96, 16),), "formation_art_spacing": (('code', 1024, 16),), "franchise_autosave": (('code', 1536, 16), ('data', 128, 16), ('read_only', 512, 16)), "franchise_edit_player": (('read_only', 704, 16),), "guardian_overlay": (('code', 496, 16),), "hair_styles": (('code', 768, 16),), "historic_teams_quick_game": (('code', 1280, 16), ('data', 16, 16)), "human_tap_burst_spill": (('code', 512, 16),), "k128": (('code', 1536, 16),), "letter_grades": (('code', 160, 16), ('read_only', 240, 16)), "letter_grades_progress": (('code', 16, 16),), "module_loader": (('code', 256, 16), ('data', 32, 16)), "moment_coaches": (('code', 512, 16), ('data', 512, 16)), "momentum": (('code', 1408, 16), ('data', 2064, 16)), "music_playlist": (('code', 2048, 16), ('data', 512, 16), ('read_only', 1024, 16)), "pass_protection": (('code', 352, 16),), "play_art_routes": (('code', 576, 16),), "practice_injuries": (('code', 48, 16),), "preseason_warning": (('data', 16, 16),), "protection_calls": (('code', 288, 16), ('data', 16, 16)), "qb_accuracy": (('code', 448, 16),), "qb_spy": (('code', 2048, 16), ('data', 768, 16), ('read_only', 512, 16)), "read_option_runtime": (('code', 2048, 16), ('data', 256, 16), ('read_only', 88, 16)), "return_coverage": (('code', 192, 16),), "roster_storage": (('code', 82, 16),), "run_blocking": (('code', 160, 16),), "runner_vision": (('code', 1664, 16),), "scramble_blocking": (('code', 816, 16), ('data', 16, 16)), "scramble_tuning": (('code', 160, 16),), "screen_hooks": (('code', 640, 16),), "sim_cb_tackles": (('code', 256, 16),), "sim_rb_injuries": (('code', 640, 16),), "sim_realism": (('code', 896, 16), ('data', 16, 4)), "standings_records": (('code', 2304, 16), ('data', 16, 16)), "star_retention": (('code', 64, 16),), "stock_books": (('code', 1536, 16),), "team_number_scale": (('code', 624, 16),), "weekly_prep": (('code', 1536, 16),), "weekly_progression": (('code', 608, 16),), "zone_drop": (('code', 80, 16),)}
+LEGACY_REQUESTS = {"widescreen_menus": (("code", 128, 16),), "period_goalposts": (("code", 176, 16), ("read_only", 32, 4)), "team_logo_swap": (("read_only", 64, 4),), "abilities_runtime": (('code', 1344, 16),), "accelerated_clock": (('code', 1024, 16), ('data', 4, 4), ('read_only', 8, 4)), "audible_legend": (('code', 1280, 16),), "ball_carrier_ai": (('code', 176, 16),), "calendar": (('code', 1024, 16), ('read_only', 2048, 16)), "camera": (('code', 864, 16), ('read_only', 320, 16)), "catch_snap_limit": (('code', 224, 16),), "classic_teams": (('read_only', 288, 16),), "clock_led": (('code', 576, 16),), "coach_carousel": (('code', 4096, 16),), "coin_defer": (('code', 384, 16), ('data', 4, 4), ('read_only', 128, 4)), "contract_college_guard": (('code', 32, 16),), "coverage_slider": (('code', 16, 16),), "coverage_trail": (('code', 640, 16),), "cpu_clock2": (('code', 1152, 16),), "cpu_money_downs": (('code', 2048, 16),), "cpu_money_downs_late": (('code', 400, 16),), "cpu_money_downs_late_state": (('data', 8, 4),), "cpu_passer_iq": (('code', 256, 16), ('data', 16, 16)), "cpu_qb_reads": (('code', 1280, 16), ('data', 192, 16)), "cpu_scrambles": (('code', 128, 16), ('read_only', 4, 4)), "cpu_third_down": (('code', 192, 16),), "db_ball_play": (('code', 256, 16),), "decided_clock": (('code', 384, 16), ('read_only', 8, 4)), "deep_zone": (('code', 2048, 16), ('data', 256, 16)), "dive_window": (('code', 352, 16),), "draft_clock": (('code', 608, 16),), "dynamic_kickoff_relocated": (('code', 1939, 16), ('data', 10, 4)), "espn25_more_moments": (('code', 2560, 16), ('data', 16, 16)), "force_out": (('code', 96, 16),), "formation_art_spacing": (('code', 1024, 16),), "franchise_autosave": (('code', 1536, 16), ('data', 128, 16), ('read_only', 512, 16)), "franchise_edit_player": (('read_only', 704, 16),), "guardian_overlay": (('code', 496, 16),), "hair_styles": (('code', 768, 16),), "historic_teams_quick_game": (('code', 1280, 16), ('data', 16, 16)), "human_tap_burst_spill": (('code', 512, 16),), "k128": (('code', 1536, 16),), "letter_grades": (('code', 160, 16), ('read_only', 240, 16)), "letter_grades_progress": (('code', 16, 16),), "module_loader": (('code', 256, 16), ('data', 32, 16)), "moment_coaches": (('code', 512, 16), ('data', 512, 16)), "momentum": (('code', 1408, 16), ('data', 2064, 16)), "music_playlist": (('code', 2048, 16), ('data', 512, 16), ('read_only', 1024, 16)), "pass_protection": (('code', 352, 16),), "play_art_routes": (('code', 576, 16),), "practice_injuries": (('code', 48, 16),), "preseason_warning": (('data', 16, 16),), "protection_calls": (('code', 288, 16), ('data', 16, 16)), "qb_accuracy": (('code', 448, 16),), "qb_spy": (('code', 2048, 16), ('data', 768, 16), ('read_only', 512, 16)), "read_option_runtime": (('code', 2048, 16), ('data', 256, 16), ('read_only', 88, 16)), "return_coverage": (('code', 192, 16),), "roster_storage": (('code', 82, 16),), "run_blocking": (('code', 160, 16),), "runner_vision": (('code', 1664, 16),), "scramble_blocking": (('code', 816, 16), ('data', 16, 16)), "scramble_tuning": (('code', 160, 16),), "screen_hooks": (('code', 640, 16),), "sim_cb_tackles": (('code', 256, 16),), "sim_rb_injuries": (('code', 640, 16),), "sim_realism": (('code', 896, 16), ('data', 16, 4)), "standings_records": (('code', 2304, 16), ('data', 16, 16)), "star_retention": (('code', 64, 16),), "stock_books": (('code', 1536, 16),), "team_number_scale": (('code', 624, 16),), "helmet_side_numbers": (('code', 4096, 4096),), "classic_crowd": (('code', 4096, 4096),), "weekly_prep": (('code', 1536, 16),), "weekly_progression": (('code', 608, 16),), "zone_drop": (('code', 80, 16),), "awards": (('code', 4096, 4096),)}
 
 # owner: (code in v3, code in the pool, read-only in v3, read-only in the pool, data), bytes in the RC
 OWNER_BYTES = {
@@ -135,8 +138,25 @@ OWNER_BYTES = {
     "playbook_pair": (8192, 0, 4096, 0, 512), "senior_bowl": (4096, 0, 0, 0, 65536),
     "franchise_2026": (5120, 0, 0, 0, 4096), "dynamic_kickoff_relocated": (1939, 0, 0, 0, 10),
     "guardian_overlay": (496, 0, 0, 0, 0),
-    "injured_reserve": (6144, 0, 0, 0, 5312),   # b780 IR1: the runtime and its 32 x 20 store (nfl2k5_injured_reserve.REQUESTS)
+    "classic_crowd": (space.CLASSIC_CROWD_SIZE, 0, 0, 0, 0),  # b81-seamen: the Seamen's crowd redirect, one fixed page
+    "helmet_side_numbers": (space.HELMET_SIDES_SIZE, 0, 0, 0, 0),  # b81 helmet sides: route 5 -> set E, one fixed page
+    "sportscenter_news": (space.SPORTSCENTER_NEWS_SIZE, 0, 0, 0, 0),  # b81 sportscenter: one fixed page (128 MB)
+    "awards": (space.AWARDS_SIZE, 0, 0, 0, 0),  # b81 awards: the season vote and All-Pro team, one fixed page
+    "franchise_ownership": (space.FRANCHISE_OWNERSHIP_SIZE, 0, 0, 0, 0),
+    "injured_reserve": (6144, 0, 0, 0, 5312),  # Modern IR, franchise ownership checks and the 32-club IR store.
+    "sim_outcomes": (space.SIM_OUTCOMES_SIZE, 0, 0, 0, 0),  # b81 game outcomes: one fixed page, with Simulated realism
+    "team_building_pace": (space.TEAM_BUILDING_PACE_SIZE, 0, 0, 0, 0),  # b81 #45: team building's pace pages (fixed)
 }
+
+# Keep the calibrated release layout for comparisons against the actual RC executable.
+BUILD_OWNER_BYTES = {**OWNER_BYTES, "backfield_cards": (space.BACKFIELD_REQUEST[2], 0, 0, 0, 0),
+                     "sim_qb_injuries": (4 * PAGE, 0, 0, 0, 0),
+                     "qb_room": (space.QB_ROOM_SIZE, 0, 0, 0, 0),  # b81 qb34: the fixed quarterback room pages
+                     "cpu_trades": (space.CPU_TRADES_SIZE, 0, 0, 0, 0),  # b81 trades-all: the two fixed CPU trades pages
+                     "gadget_reservation": (space.GADGET_REQUESTS[0][2], 0, space.GADGET_REQUESTS[1][2], 0, 0),
+                     "pass_rush_stats": (
+    0, pass_rush_stats.CODE_SIZE, pass_rush_stats.READ_ONLY_SIZE, 0, pass_rush_stats.DATA_SIZE)}
+
 FRANCHISE_STATIC_BODY = 98_352 - 64    # without the 128 MB roster heap the franchise history body is XBE data
 # the scale-out's own owners (counted only with the scale-out; the legacy layout carries the boot logo itself)
 INFRASTRUCTURE = ("xbe_space_directory", "boot_logo", "moment_context")
@@ -146,8 +166,21 @@ def _modern(value):
     return value not in (None, False, "", "retail", 0)
 
 
+# b81 game outcomes: one fixed page at space.SIM_OUTCOMES_VA (after the modern jersey numbers page)
+LEGACY_REQUESTS["sim_outcomes"] = (("code", 4096, 4096),)
+# b81 #45 (sim speed): seven fixed pages at space.TEAM_BUILDING_PACE_VA (the code page and the day state; after the
+# simulated-outcomes page), with team building
+LEGACY_REQUESTS["team_building_pace"] = (("code", space.TEAM_BUILDING_PACE_SIZE, 4096),)
+
 # owner -> the plan fields that install it (any of them); INFRASTRUCTURE rides with any space owner
+# b81 modern numbers: one fixed page at space.MODERN_NUMBERS_VA (after the CPU trades lane's two pages)
+LEGACY_REQUESTS["modern_numbers"] = (("code", 4096, 4096),)
+BUILD_OWNER_BYTES["modern_numbers"] = (space.MODERN_NUMBERS_SIZE, 0, 0, 0, 0)
+
 OWNER_FIELDS = {
+    "sim_qb_injuries": ("sim_qb_injuries",),
+    "backfield_cards": ("backfield_cards",),
+    "gadget_reservation": ("backfield_cards",),
     "history_screen": ("history_screen",), "player_progress_screen": ("player_progress",), "my_career": ("my_career",),
     "my_career_m3": ("my_career",), "roster_arena_growth": ("reserves_16", "created_teams_extra", "roster_capacity"),
     "pass_rush_stats": ("pass_rush_stats",), "star_career": ("star_career",), "defensive_try_stats": ("defensive_try",),
@@ -168,7 +201,8 @@ OWNER_FIELDS = {
     "formation_art_spacing": ("play_art_routes",), "play_art_routes": ("play_art_routes",),
     "sim_realism": ("sim_realism",), "hair_styles": ("hair_styles",),
     "franchise_edit_player": ("franchise_edit_player",), "coverage_trail": ("coverage_trail", "coverage_hitch_brake"),
-    "screen_hooks": ("screen_hooks",), "sim_rb_injuries": ("sim_rb_injuries",), "team_number_scale": ("team_number_scale",),
+    "screen_hooks": ("screen_hooks",), "sim_rb_injuries": ("sim_rb_injuries",), "team_number_scale": ("team_number_scale",), "helmet_side_numbers": ("helmet_side_numbers",),
+    "classic_crowd": ("classic_crowd",),
     "draft_clock": ("franchise_draft_clock",), "weekly_progression": ("weekly_progression",),
     "clock_led": ("modern_clock_led",), "coin_defer": ("coin_defer",), "qb_accuracy": ("qb_accuracy",),
     "letter_grades": ("letter_grades",), "letter_grades_progress": ("letter_grades",),
@@ -201,15 +235,22 @@ SCALEOUT_FIELDS = ("camera", "franchise_autosave", "weekly_prep", "weekly_prep_c
                    "coin_defer", "decided_clock", "cpu_scrambles", "sim_rb_injuries", "sim_realism", "coach_carousel",
                    "standings_records", "history_screen", "franchise_history", "speed_threshold", "cpu_clock2",
                    "cpu_runner_vision", "catch_snap_limit", "scramble_blocking", "audible_legend", "team_ratings",
-                   "roster_draft_pick_ownership", "roster_hback_roles", "modern_injured_reserve")
+                   "roster_draft_pick_ownership", "roster_hback_roles", "modern_injured_reserve", "backfield_cards")
 
 # --- disc resources the options add to the main heap (inventory of the RC disc against retail, decoded charges) ------
 RESOURCE_BYTES = {
-    "scorebug_runtime": 332_544,   # gamedata.iff: 34 appended TXTR and the grown HUD scene (BK: 331,264 + 1,280)
+    # b81-seamen: + the classic Seamen's panel sbSEh0 (5,280 B -> 5,376 B of heap), appended with every sprite scorebug
+    # (nfl2k5_scorebug_sprite.appendix loops over CLASSIC_PANELS): 35 TXTR, sprite.appendix(...)["native_heap_bytes"]
+    "scorebug_runtime": 337_920,   # gamedata.iff: 35 appended TXTR and the grown HUD scene (BK: 331,264 + 1,280 + 5,376)
     "scorebug": 67_584,            # global.iff: five appended TXTR (the HUD fonts; attribution INFERRED)
-    "hair_styles": 84_736,         # global.iff: hi_head +26,496, lo_body +9,856, nine 64x64 hair textures 48,384
+    # b81 helmet-sides: the growth also carries helmet number set E (hi_head +2,176, lo_body +2,560; receipt of
+    # nfl2k5_hair_styles.grow_scene on the USA scenes)
+    "hair_styles": 89_472,         # global.iff: hi_head +28,672, lo_body +12,416, nine 64x64 hair textures 48,384
     "kick_meter_2026": 6_784,      # gamedata.iff: the kick meter FONT
 }
+#: what the measured RC disc (ANCHOR) carried where it differs from today's charge: its hair growth had no set E
+#: (and its scorebug appendix had 34 TXTR: no Seamen panel)
+ANCHOR_RESOURCE_BYTES = {"hair_styles": 84_736, "scorebug_runtime": 332_544}
 
 # --- the roster block ---------------------------------------------------------------------------------------------------
 ROSTER_RETAIL = 0x91000 + 0x80       # 594,048 B in the main heap (BK, K1 lab)
@@ -302,11 +343,25 @@ team_sleeves the1wam_lineman_rating throw trophy_room weather_haze weekly_prep w
 weekly_progression widescreen xemu_display_list_fix zone_drop_cap""".split())
 RC_VALUES = {"momentum": 50, "momentum_collision_level": 50, "cpu_money_downs": "modern2", "cpu_scrambles": "modern",
              "team_number_scale": {"13A0": 1.1, "13H0": 1.1}, "modern_venues_2026": "2026 venue art",
-             "roster_capacity": True, "roster_draft_pick_ownership": True, "roster_hback_roles": True}
+             "roster_capacity": True, "roster_draft_pick_ownership": True, "roster_hback_roles": True,
+             # b81 game outcomes: the RC predates the simulated-outcomes page that now rides with sim_realism (a pseudo
+             # field: a plan without it, a Studio build of this release, gets the page with Simulated season realism)
+             "sim_outcomes_page": False}
+RC_VALUES["modern_numbers"] = False   # b81 modern numbers: the v0.9 pack had none (its season_2026 would select it)
+RC_VALUES["award_vote"] = False   # b81 awards: the v0.9 pack had no award vote (its honors page installs it from beta 81)
+# b81 awards (review M1): the Studio's v0.9 update installs the award vote on the released v0.9 executable (honors.apply);
+# its fixed page at 0x1531000 carries the v4 pool from 0x1520000 to 0x1532000: 73,728 bytes more file and boot-loaded
+# image, measured on the released default.xbe (d78088f9). RC_VALUES above stays the measured anchor; v09_update_plan() is
+# the pack as the update leaves it, which this model charges at least V09_UPDATE_GROWTH more.
+V09_UPDATE_VALUES = {"award_vote": True}
+V09_UPDATE_GROWTH = 73_728
 
 # Options a 64 MB build cannot have. A plan field, except roster_capacity: roster edits whose document asks for the
 # capacity arena (free_agent_capacity; see roster_capacity_records).
 REQUIRES_128 = {
+    "sim_qb_injuries": "The updated simulated quarterback injuries and passing model require 128 MB.",
+    "backfield_cards": "This option is available in the standard preset. The compact preset keeps the original display.",
+    "gadget_play": "The gadget player is a SPECIAL depth chart row, which only the standard 128 MB preset installs.",
     "k128_memory": "It teaches the Xbox's 4627 kernel to use 128 MB at start-up. A 64 MB console has nothing to add, "
                    "hakuX has no real kernel to patch, and with the 128 MB start-up check the disc refuses to start "
                    "below 128 MB.",
@@ -326,6 +381,23 @@ REQUIRES_128 = {
                               "the extra executable sections (the scale-out), and the 64 MB profile is the legacy "
                               "layout, which has no room left for it. A 64 MB build keeps the 2004 injured reserve "
                               "(5 a club, season-ending) with the Pro Bowl guard.",
+    # b81 modern numbers (review M1): its fixed page sits in the scale-out pool, which the 64 MB legacy layout has not
+    "modern_numbers": "Modern jersey numbers keep their rules on a page of the extra executable sections (the "
+                      "scale-out), and the 64 MB profile is the legacy layout, which has no room left for it. A 64 MB "
+                      "build keeps the game's own jersey numbers.",
+    # b81 #43 (coordinator ruling 2, 11/27): two fixed pages at the top of the scale-out pool. Mapping the pool up to
+    # them costs a 64 MB build about 356 KB at NRG Stadium (s37), more than it has; v0.9's 64 MB build had neither.
+    "helmet_side_numbers": "Helmet side numbers keep their code on a fixed page at the top of the extra executable "
+                           "sections, and a 64 MB build has no room to map the sections up to it. A 64 MB build keeps "
+                           "the original helmets.",
+    "classic_crowd": "The classic Seamen's crowd keeps its code on a fixed page at the top of the extra executable "
+                     "sections, and a 64 MB build has no room to map the sections up to it. A 64 MB build keeps the "
+                     "stadium's own crowd.",
+    # b81 #45 re-review (REVIEW_45 F1): with the sim-speed pace, team building keeps seven resident pages
+    # (0x1535000..0x153BFFF) at the top of the scale-out pool; a 64 MB build has neither the room nor an open image.
+    "team_building": "CPU team building keeps its code and its resident tables on seven pages at the top of the extra "
+                     "executable sections, which a 64 MB build has no room to map. A 64 MB build keeps the game's own "
+                     "CPU drafts and signings.",
 }
 
 # A field and the sub-options that only matter with it; a suggestion turns the whole group off.
@@ -335,7 +407,7 @@ GROUPS = {"momentum": ("momentum_contact", "momentum_collisions"), "weekly_prep"
           "player_progress": ("player_progress_visible",), "scorebug": ("scorebug_runtime",)}
 # b780 m64prof: each value is the BuildPlan's own off value (the build refuses None for modern_venues_2026 and
 # team_number_scale: "Jersey number sizes must be an object of kit: scale").
-OFF_VALUES = {"cpu_money_downs": "retail", "cpu_scrambles": "retail", "momentum": 0, "created_teams_extra": 0,
+OFF_VALUES = {"cpu_money_downs": "retail", "sim_qb_injuries": None, "cpu_scrambles": "retail", "momentum": 0, "created_teams_extra": 0,
               "speed_threshold": 0, "modern_venues_2026": "", "team_number_scale": {}, "momentum_collision_level": 0}
 
 
@@ -350,6 +422,11 @@ NOT_SUGGESTED = frozenset(("module_loader", "resource_load_guard")) | frozenset(
 def rc_plan() -> dict:
     """The v0.9 pack's effective options (what the anchor measured), as a flat {field: value} dict."""
     return {**{f: True for f in RC_ON}, **RC_VALUES}
+
+
+def v09_update_plan() -> dict:
+    """The v0.9 pack as the Studio's v0.9 update leaves it (b81: plus the award vote's fixed page)."""
+    return {**rc_plan(), **V09_UPDATE_VALUES}
 
 
 _ROSTER_CACHE: dict = {}
@@ -405,10 +482,12 @@ def options(plan=None) -> dict:
         return rc_plan()
     if is_dataclass(plan) and not isinstance(plan, type):
         out = {f.name: getattr(plan, f.name) for f in _dc_fields(plan)}
+        out.setdefault("sportscenter_news", True)
     elif isinstance(plan, dict):
         if isinstance(plan.get("overrides"), dict):
             out = _preset(plan.get("preset"))
             out.update(plan["overrides"])
+            out.setdefault("sportscenter_news", True)
         else:
             out = dict(plan)
     else:
@@ -459,8 +538,55 @@ def _roster_heap(opts, target_mb) -> bool:
     return target_mb == 128 and on(opts, "k128_memory") and on(opts, "k128_roster_heap")
 
 
-def owners(opts: dict) -> list:
+def owners(opts: dict, target_mb: int = 64) -> list:
     out = [o for o, fs in OWNER_FIELDS.items() if any(on(opts, f) for f in fs)]
+    if target_mb == 128 and (on(opts, "injured_reserve_guard") or on(opts, "modern_injured_reserve")):
+        out.append("franchise_ownership")
+    from .nfl2k5_build_settings import qb_room_level, qb_room_needs_met  # b81 qb34
+    from . import nfl2k5_qb_room as room
+    # The floor whenever quarterback injuries are above zero (coordinator's rule); piece 3's handed-over bits where
+    # named or where their needs are in the plan (DESIGN_CHANGES C1).
+    injuries = (opts.get("sim_qb_injuries") == "realistic"
+                or (opts.get("sim_qb_injuries") == "custom" and opts.get("sim_qb_injury_rate", 0.310) > 0))
+    piece3 = (room.REALISTIC_STAGES & room.PIECE3_BITS
+              and qb_room_level(opts.get("qb_room"), opts.get("sim_qb_injuries")) == "realistic"
+              and (opts.get("qb_room") is not None or (target_mb == 128 and qb_room_needs_met(opts.get))))
+    if (target_mb == 128 and injuries) or piece3:
+        out.append("qb_room")
+    value = opts.get("modern_numbers")   # b81 modern numbers: None follows season_2026; True or "modern" installs it
+    if target_mb == 128 and (value in (True, "modern") or (value is None and on(opts, "season_2026"))):
+        out.append("modern_numbers")
+    # b81 trades-all (R6): computer trades' two fixed pages where the plan installs them: named Realistic, or unnamed with
+    # the quarterback trades wanted (injuries above zero with the room's who-starts rules), and their needs in the plan
+    # (a full build adds the floor's economy, practice squad and modern IR whenever injuries are above zero).
+    from .nfl2k5_build_settings import cpu_trades_needs_met
+    named = opts.get("cpu_trades")
+    wanted = (injuries and qb_room_level(opts.get("qb_room"), opts.get("sim_qb_injuries")) == "realistic"
+              and (opts.get("qb_room") is not None or not room.REALISTIC_STAGES & room.PIECE3_BITS
+                   or qb_room_needs_met(opts.get)))
+    floor = ("franchise_economy", "practice_squad", "modern_injured_reserve") if injuries else ()
+    if (target_mb == 128 and (named == "realistic" or (named is None and wanted))
+            and cpu_trades_needs_met(lambda name: name in floor or opts.get(name))):
+        out.append("cpu_trades")
+    # b81 sportscenter: this release's builder installs SportsCenter news on every 128 MB scale-out build with the 2026
+    # season or modern injured reserve (mod_build._apply_sportscenter_news; no option of its own). options() marks a
+    # BuildPlan or a recipe with "sportscenter_news"; a flat {field: value} dict is a measured build's effective options
+    # (the RC and v0.8 anchors had no news page) and counts it only when it says so.
+    if (target_mb == 128 and on(opts, "sportscenter_news")
+            and (on(opts, "season_2026") or on(opts, "modern_injured_reserve"))
+            and any(on(opts, f) for f in SCALEOUT_FIELDS)):
+        out.append("sportscenter_news")
+    # b81 awards: the award vote's fixed page rides with the honors page (None follows it); the v0.9 pack had none
+    value = opts.get("award_vote")
+    if value is True or (value is None and on(opts, "honors_page")):
+        out.append("awards")
+    # b81 game outcomes: the simulated-outcomes page rides with Simulated season realism (not on the v0.9 RC or v0.8,
+    # whose anchors predate it: their plans carry sim_outcomes_page False)
+    if on(opts, "sim_realism") and opts.get("sim_outcomes_page", True) is not False:
+        out.append("sim_outcomes")
+    # b81 #45 (sim speed): team building's pace page rides with CPU team building (the v0.9 RC and v0.8 had neither)
+    if on(opts, "team_building"):
+        out.append("team_building_pace")
     return out + list(INFRASTRUCTURE) if out else out
 
 
@@ -470,12 +596,12 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
     extra = XTLID_PRELOAD if on(opts, "depth_chart_rows") else 0
     if on(opts, "my_career") and on(opts, "my_career_home") and not on(opts, "module_loader"):
         extra += 3 * PAGE                      # Career Home's section is preloaded without the on-demand loader
-    found = owners(opts)
+    found = owners(opts, target_mb)
     if not found:
         return RETAIL_RESIDENT + extra
-    code = sum(OWNER_BYTES[o][0] + OWNER_BYTES[o][1] for o in found)
-    read_only = sum(OWNER_BYTES[o][2] + OWNER_BYTES[o][3] for o in found)
-    data = sum(OWNER_BYTES[o][4] for o in found)
+    code = sum(BUILD_OWNER_BYTES[o][0] + BUILD_OWNER_BYTES[o][1] for o in found)
+    read_only = sum(BUILD_OWNER_BYTES[o][2] + BUILD_OWNER_BYTES[o][3] for o in found)
+    data = sum(BUILD_OWNER_BYTES[o][4] for o in found)
     if "franchise_footer" in found and not _roster_heap(opts, target_mb):
         data += FRANCHISE_STATIC_BODY
     if not any(on(opts, f) for f in SCALEOUT_FIELDS):
@@ -484,6 +610,41 @@ def xbe_resident(plan=None, target_mb: int = 64) -> int:
             return RETAIL_RESIDENT + pages + extra
     overflow = max(0, code - CODE_V3_CAP) + max(0, read_only - RO_V3_CAP) + max(0, data - DATA_V3_CAP)
     pool = POOL_DOC + math.ceil(overflow / PAGE) * PAGE if overflow else 0
+    if "backfield_cards" in found or "sim_qb_injuries" in found:
+        last = space.BACKFIELD_VA + space.BACKFIELD_REQUEST[2] - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+        if "sim_qb_injuries" in found:
+            pool = max(pool, math.ceil(last / PAGE) * PAGE + BUILD_OWNER_BYTES["sim_qb_injuries"][0])
+    if "franchise_ownership" in found:
+        last = space.FRANCHISE_OWNERSHIP_VA + space.FRANCHISE_OWNERSHIP_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "qb_room" in found:
+        last = space.QB_ROOM_VA + space.QB_ROOM_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "modern_numbers" in found:  # b81 modern numbers: its fixed page at 0x1530000 (after the CPU trades pages)
+        last = space.MODERN_NUMBERS_VA + space.MODERN_NUMBERS_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "helmet_side_numbers" in found:  # b81 helmet sides: its fixed page after the quarterback trades page
+        last = space.HELMET_SIDES_VA + space.HELMET_SIDES_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "classic_crowd" in found:  # b81-seamen: its fixed page (0x1532000, right after the awards lane's page)
+        last = space.CLASSIC_CROWD_VA + space.CLASSIC_CROWD_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "cpu_trades" in found:  # b81 trades-all: its two fixed pages after the helmet-sides page (the end of the span)
+        last = space.CPU_TRADES_VA + space.CPU_TRADES_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "sportscenter_news" in found:  # b81 sportscenter: its fixed page at 0x1533000
+        last = space.SPORTSCENTER_NEWS_VA + space.SPORTSCENTER_NEWS_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "awards" in found:  # b81 awards: its fixed page at 0x1531000 (installed with the honors owner)
+        last = space.AWARDS_VA + space.AWARDS_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "sim_outcomes" in found:  # b81 game outcomes: its fixed page after the modern jersey numbers page
+        last = space.SIM_OUTCOMES_VA + space.SIM_OUTCOMES_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
+    if "team_building_pace" in found:  # b81 #45: team building's pace pages at 0x1535000, after the outcomes page
+        last = space.TEAM_BUILDING_PACE_VA + space.TEAM_BUILDING_PACE_SIZE - space.POOL_VA
+        pool = max(pool, math.ceil(last / PAGE) * PAGE)
     return RETAIL_RESIDENT + LEGACY_SPACE + SCALEOUT_V3 + pool + extra
 
 
@@ -617,7 +778,7 @@ def room(plan=None, target_mb: int = 64, matchup="hardest") -> tuple:
     rc = rc_plan()
     value = ANCHOR["room"] + ANCHOR["resident"] - xbe_resident(opts, target_mb)
     for field, size in RESOURCE_BYTES.items():
-        value += (int(on(rc, field)) - int(on(opts, field))) * size
+        value += int(on(rc, field)) * ANCHOR_RESOURCE_BYTES.get(field, size) - int(on(opts, field)) * size
     value -= roster_block(opts, target_mb)
     if target_mb == 128 and on(opts, "k128_memory") and on(opts, "k128_early"):
         value += EARLY_ARENA_GAIN
@@ -653,6 +814,30 @@ def option_costs(plan=None, target_mb: int = 64) -> dict:
     return dict(sorted(out.items(), key=lambda kv: -kv[1]))
 
 
+def _fits_room(opts: dict, target_mb: int, export: int, need: int, capped: bool) -> bool:
+    """Whether ``opts`` fits at its hardest matchup by predict's own rule."""
+    value = room(opts, target_mb, "hardest")[0]
+    if capped:
+        return heaps(value, export, capped=True)["heap_b"] - DIR_INTRO_BYTES >= SAFETY_MARGIN
+    return value >= need
+
+
+def _fitting_set(opts: dict, chosen: list, target_mb: int, export: int, need: int, capped: bool):
+    """b81 #43 (coordinator ruling 2): the changes to name when a plan does not fit, computed, not guessed. The greedy
+    suggestions measure each option after the ones before it are off (two fixed pages at the top of the pool free
+    nothing apart and 356 KB together), so the set is checked as a whole, then each option is dropped again while the
+    rest still fits. Returns the option groups (each a tuple: the option and the sub-options that go with it) that,
+    turned off together, make the plan fit, or None when even all of them do not."""
+    if not chosen or not _fits_room(_turn_off(opts, [f for g in chosen for f in g]), target_mb, export, need, capped):
+        return None
+    kept = list(chosen)
+    for group in sorted(chosen, key=lambda g: room(_turn_off(opts, g), target_mb)[0]):
+        rest = [g for g in kept if g is not group]
+        if rest and _fits_room(_turn_off(opts, [f for g in rest for f in g]), target_mb, export, need, capped):
+            kept = rest
+    return [tuple(f for f in group if f == group[0] or on(opts, f)) for group in kept]
+
+
 def predict(plan=None, target_mb: int = 64) -> dict:
     """Fits verdict for the plan at the target at its hardest matchup. Keys: fits, spare_bytes, over_bytes, hardest,
     suggestions [(field, bytes)], plus target_mb, room, block, heap_a, heap_b, dir_intro_bytes, margin, needed_room,
@@ -673,7 +858,7 @@ def predict(plan=None, target_mb: int = 64) -> dict:
         over = max(0, DIR_INTRO_BYTES + SAFETY_MARGIN - got["heap_b"])
     else:
         ok, spare, over = value >= need, max(0, value - need), max(0, need - value)
-    suggestions, trial, left = [], dict(opts), over
+    suggestions, trial, left, chosen = [], dict(opts), over, []
     while left > 0:
         base = room(trial, target_mb)[0]
         best = None
@@ -687,8 +872,10 @@ def predict(plan=None, target_mb: int = 64) -> dict:
         group, saved = best
         suggestions.append((group[0], saved))
         suggestions.extend((g, 0) for g in group[1:] if on(trial, g))
+        chosen.append(group)
         trial = _turn_off(trial, group)
         left -= saved
+    fitting_set = _fitting_set(opts, chosen, target_mb, export, need, capped) if over else []
     primary_value, primary_game = room(opts, target_mb, "primary")
     primary = heaps(primary_value, export, capped=capped)
     notes = [f"MODELLED, anchored on EMU1's measured v0.9 RC heaps (Texans at Ravens, 128 MiB); no {target_mb} MB run "
@@ -699,7 +886,7 @@ def predict(plan=None, target_mb: int = 64) -> dict:
     if target_mb == 64:
         notes.append("Unproven on a console and on hakuX; xemu at 128 MB is the recommended full experience.")
     return {"fits": bool(ok and not forced), "spare_bytes": spare, "over_bytes": over,
-            "hardest": f"{game['name']} ({game['venue']})", "suggestions": suggestions,
+            "hardest": f"{game['name']} ({game['venue']})", "suggestions": suggestions, "fitting_set": fitting_set,
             "target_mb": target_mb, "room": value, "block": got["block"], "heap_a": got["heap_a"],
             "heap_a_short": got["heap_a_short"], "heap_b": got["heap_b"], "dir_intro_bytes": DIR_INTRO_BYTES,
             "margin": got["heap_b"] - DIR_INTRO_BYTES, "needed_room": need, "safety_bytes": SAFETY_MARGIN,
@@ -727,9 +914,12 @@ PROFILE_64_TRIM = ("scorebug", "scorebug_runtime", "hair_styles", "kick_meter_20
 # cost nothing at 64 MB). The career history pool fix keeps a long franchise's totals whole and its pool collecting in
 # 6,000-word chunks (nfl2k5_history_pool: six sites inside the history engine's own bytes).
 # b780 mc1: the Franchise load user-team guard (three in-place sites, a retail crash path on a save with no human club).
-PROFILE_64_ON = ("history_pool", "load_user_team_guard", "save_list_type_guard")
+# beta 81 review M1: the save messages that keep a player from deleting a franchise saved by the 128 MB edition
+# (nfl2k5_edition_save_notes: two strings in place). Only this profile turns it on; the presets leave it off.
+# b81 ot-crash: the show block guard (five in-place sites, a retail crash path after an overtime score; no allocation).
+PROFILE_64_ON = ("history_pool", "load_user_team_guard", "save_list_type_guard", "edition_save_notes", "show_block_guard")
 PSEUDO_FIELDS = frozenset(("roster_capacity", "roster_draft_pick_ownership", "roster_hback_roles",
-                           "cpu_money_downs_modern2"))
+                           "cpu_money_downs_modern2", "sim_outcomes_page"))
 PROFILE_64_ROSTER = ("roster edits at retail capacity without the draft_pick_ownership and hback_roles sections: "
                      "tools/nfl2k5_roster_retail_fit.py fit --drop-xbe-sections")
 

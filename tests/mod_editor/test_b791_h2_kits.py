@@ -509,9 +509,11 @@ class StockPieceRule(Synthetic):
             expected = []
             for kit in doc["kits"]:
                 for letter, side in sorted(kit["sides"].items()):
-                    expected += [(kit["id"], letter, row["chunk"], not mk.row_paints(row)) for row in side.get("art", ())]
+                    # b81-seamen: an own_look side (the classic Seamen) draws its whole look on any donor piece
+                    expected += [(kit["id"], letter, row["chunk"], mk.own_look(side) or not mk.row_paints(row))
+                                 for row in side.get("art", ())]
                     if side.get("atlas"):
-                        expected.append((kit["id"], letter, 51, not mk.atlas_paints(side["atlas"])))
+                        expected.append((kit["id"], letter, 51, mk.own_look(side) or not mk.atlas_paints(side["atlas"])))
                     if side.get("unif_colours") or side.get("unif"):
                         expected.append((kit["id"], letter, 0, True))
             self.assertEqual([(r["kit"], r["side"], r["chunk"], r["runs_on_user_art"]) for r in rows], expected)
@@ -1024,18 +1026,31 @@ class StageOnTheFixtureDisc(unittest.TestCase):
 @unittest.skipUnless(V08.is_file() and RETAIL.is_file(), "v0.8 or retail disc absent")
 class OfficialClassicKit(unittest.TestCase):
     """The official recipe composes the classic Seamen kit in the forgiving mode (its donors 14H0 and 14A0 are not in the moment
-    pins): its drawing steps must keep running on the SOFTDRINK Dolphins pieces, byte for byte what v0.8 shipped."""
+    pins): its drawing steps must keep running on the SOFTDRINK Dolphins pieces, exactly as the strict mode draws them.
+    b81-seamen: the Seamen art changed after v0.8 (the larger helmet anchor; the own_look sides), so v0.8's shipped packages
+    are the expected bytes only for the chunks the kit does not author."""
 
-    def test_the_seamen_kit_is_the_shipped_bytes_in_the_forgiving_mode(self):
+    def test_the_seamen_kit_is_the_strict_bytes_in_the_forgiving_mode(self):
+        from nfl_txtr import parse_chunks
         from mod_editor.core import nfl2k5_classic_teams as ct
         doc = ct.authored_kits()
         with hs.Source(V08) as source:
             donors = {s: source.get(mk.selector_name(s)) for s in mk.donors(doc)}
             shipped = {name: source.get(name) for name in ("14h14.iff", "14a14.iff")}
+        strict = mk.compose(doc, donors)
         report, nothing, kept = [], [], []
         made = mk.compose(doc, donors, mk.RetailPackages(RETAIL), report, {}, nothing, kept)
-        self.assertEqual(made, shipped)
+        self.assertEqual(made, strict)
         self.assertEqual((report, nothing, kept), ([], [], []))
+        kit = doc["kits"][0]
+        for letter, side in kit["sides"].items():
+            name = mk.package_name(kit["code"], letter, kit["style"])
+            authored = {row["chunk"] for row in side["art"]} | {51}
+            a, b = parse_chunks(made[name]), parse_chunks(shipped[name])
+            for index in range(1, 53):
+                if index not in authored:
+                    self.assertEqual(made[name][a[index].offset:a[index].end_offset],
+                                     shipped[name][b[index].offset:b[index].end_offset], (name, index))
 
 
 def flip_last_byte(package, index):

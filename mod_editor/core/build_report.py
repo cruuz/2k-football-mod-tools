@@ -36,7 +36,8 @@ from . import build_steps
 APP_NAME = "2K5 Mod Studio"
 LOG_SUFFIX = ".build-log.txt"
 ZIP_INFIX = ".diagnostic-"
-DISCORD = "the SOFTDRINK Discord"
+from .errors import COMMUNITY_DISCORD  # noqa: E402 - the one invite both Studios offer
+DISCORD = f"the SOFTDRINK Discord, {COMMUNITY_DISCORD}"
 #: Steps whose errors are refusals made before any long work: the message is the fix, so no doctor run.
 NO_DOCTOR_STEPS = frozenset({"preflight", "artwork_recipe", "project_check", "hash", "publish"})
 #: Build logs kept in the log folder's builds/ (oldest removed first).

@@ -34,6 +34,14 @@ source.
   python3 tools/nfl2k5_roster_retail_fit.py validate --edits OUT.json --source IN.json --base BASE
           [--report REPORT.json] [--compare-rost ROST] [--drop-xbe-sections]
 
+b81: the ratings-2026 step (reviewed_ratings_2026_step) names records by index, so the fit re-addresses it to the
+variant by gsis id (readdress_ratings_step). b81 #48: the release's contract import
+(tools/franchise_economy/release_contracts.py) runs on each edition after the fit. ``fit`` on a document that carries
+it fits the document the import ran on (strip_contract_import: its receipt makes that exact) and leaves the import to
+be run on the variant; ``validate`` checks the fit on those documents, and the variant's contracts are checked by the
+import's owner (``release_contracts.py validate``: this validate plus the import re-run on the fitted document with
+the snapshot it recorded). retail_variant itself (a 64 MB build's own fit) carries the document's contract entries.
+
 --drop-xbe-sections  also leave out ``draft_pick_ownership`` and ``hback_roles``: their build steps install XBE
          directory spills that always take the allocator's scale-out (+212,992 resident bytes at 64 MB; see
          mod_editor/core/nfl2k5_memory_budget.py). Franchises then start with retail pick ownership and the backfield
@@ -67,6 +75,8 @@ from tools.b77 import b778_fa3_free_agent_depth as fa3  # noqa: E402
 
 SCHEMA = "nfl2k5.roster_retail_fit.v1"
 XBE_SECTIONS = ("draft_pick_ownership", "hback_roles")   # the roster edits' own XBE steps (scale-out owners)
+RATINGS_STEP = "reviewed_ratings_2026_step"   # b81 ratings-2026: a receipt that names each change's record by index
+CONTRACT_IMPORT = "b81_contract_refresh"      # b81 #48: tools/franchise_economy/release_contracts.py, run after the fit
 RETAIL_PRIMARY = capacity.PRIMARY_AFTER          # 2619 primary records: the retail main ROST (and every grown one's base)
 DEPTH_KEY = "fa3_priority"
 CLUB_KEY = "club_new"           # b780 rst2: a real player created for a club's 53-man roster
@@ -375,6 +385,30 @@ def fit(base: bytes, stripped: dict, rows: list[dict], margin: int = fa3.DEFAULT
     return lo, vacant, body, floor
 
 
+def readdress_ratings_step(step: dict, refresh: dict, source_refresh: dict) -> dict:
+    """b81 (coordinator 11/25, #48 review 11/27): the ratings-2026 step lists every rating change with its record's
+    index. The fit renumbers or leaves out refresh-created records, so the step is re-addressed to this edition by gsis
+    id, as the ratings lane's apply_ratings_update.py does on it: a change keeps its order and takes the index of the
+    refresh row carrying its gsis id; one whose refresh-created player this edition does not carry is listed in
+    skipped_absent; one no refresh row carries (a record the edits name) keeps its index."""
+    here: dict[str, int] = {}
+    for row in refresh["players"]:
+        if row.get("gsis_id"):
+            require(row["gsis_id"] not in here, f"two refresh rows carry {row['gsis_id']}")
+            here[row["gsis_id"]] = row["index"]
+    there = {row["gsis_id"] for row in source_refresh["players"] if row.get("gsis_id")}
+    changes, absent = [], list(step.get("skipped_absent") or [])
+    for change in step["changes"]:
+        if change["gsis_id"] in here:
+            changes.append(dict(change, index=here[change["gsis_id"]]))
+        elif change["gsis_id"] in there:
+            absent.append(f"{change['player']} {change['field']} (index {change['index']} in the 128 MB edition)")
+        else:
+            changes.append(change)
+    return {**step, "changed": len(changes), "players": len({c["gsis_id"] for c in changes}), "changes": changes,
+            "skipped_absent": absent}
+
+
 def retail_variant(document: dict, base: bytes, *, margin: int = fa3.DEFAULT_MARGIN, source_sha256: str = "",
                    progress=None, drop_xbe_sections: bool = False) -> tuple[dict, dict]:
     """(the retail-capacity roster-edits document, its receipt)."""
@@ -393,6 +427,9 @@ def retail_variant(document: dict, base: bytes, *, margin: int = fa3.DEFAULT_MAR
     # the variant releases players for room (charted starters protected) as the pre-IR plans did
     out["roster_refresh"]["room_policy"] = "release"
     out.pop("free_agent_capacity", None)
+    if RATINGS_STEP in out:
+        out[RATINGS_STEP] = readdress_ratings_step(document[RATINGS_STEP], out["roster_refresh"],
+                                                   document["roster_refresh"])
     old = document.get("fa3_free_agent_depth") or {}
     kept_rows, left_rows = rows[:count], rows[count:]
     depth_kept = [r for r in kept_rows if DEPTH_KEY in r]
@@ -456,9 +493,64 @@ def _writers(base: bytes, refresh: dict, created_history: Any):
     return body, receipt["roster_refresh"]["import_floor"], heal, history
 
 
+CONTRACT_FIELDS = ("contract_value", "contract_type", "contract_bonus", "contract_length", "contract_remaining")
+CONTRACT_CHECK = "contracts equal the contract import's output after the fit (re-run on this edition's club players)"
+
+
+def contract_parts_sha256(document: dict) -> str:
+    """The contract-bearing parts of a document: its edits and the refresh's contract corrections and initializers."""
+    plan = document.get("roster_refresh") or {}
+    parts = {"edits": document.get("edits"), "contract_corrections": plan.get("contract_corrections"),
+             "contract_initializations": plan.get("contract_initializations")}
+    return sha256(json.dumps(parts, sort_keys=True).encode("utf-8"))
+
+
+def strip_contract_import(document: dict) -> dict:
+    """b81 #48: the document before the release's contract import (tools/franchise_economy/release_contracts.py, run
+    on each edition after the fit), from the entries its receipt records: the edits it appended, the corrections it
+    added, and the corrections and initializers it replaced. Its contract parts must hash to the receipt's
+    contracts_before_sha256 (other parts may differ: a 64 MB build drops the base pins). Without the receipt the
+    document is returned as it is."""
+    receipt = document.get(CONTRACT_IMPORT)
+    if not receipt:
+        return document
+    layer = receipt["layer"]
+    out = copy.deepcopy(document)
+    out.pop(CONTRACT_IMPORT)
+    if layer["appended_edits"]:
+        tail = out["edits"][-layer["appended_edits"]:]
+        require(all(set(e) == {"fields", "first", "index", "last", "pool"} and set(e["fields"]) == set(CONTRACT_FIELDS)
+                    for e in tail), "the edits the contract receipt counts are not the import's contract entries")
+        out["edits"] = out["edits"][:-layer["appended_edits"]]
+    plan = out["roster_refresh"]
+    corrections = plan.get("contract_corrections", [])
+    if layer["added_corrections"]:
+        tail = corrections[-layer["added_corrections"]:]
+        require(all(str(c.get("rule", "")).startswith(receipt["rule"]) for c in tail),
+                "the corrections the contract receipt counts are not the import's")
+        corrections = corrections[:-layer["added_corrections"]]
+    before = {c["index"]: c for c in layer["replaced_corrections"]}
+    corrections = [before.get(c["index"], c) for c in corrections]
+    if corrections or layer["had_corrections"]:
+        plan["contract_corrections"] = corrections
+    else:
+        plan.pop("contract_corrections", None)
+    before = {c["index"]: c for c in layer["replaced_initializers"]}
+    plan["contract_initializations"] = [before.get(c["index"], c) for c in plan.get("contract_initializations", [])]
+    require(contract_parts_sha256(out) == receipt["contracts_before_sha256"],
+            "stripping the contract import does not give back the contracts it was run on")
+    return out
+
+
 def validate(variant: dict, source: dict, base: bytes, *, margin: int = fa3.DEFAULT_MARGIN,
              compare_rost: bytes | None = None, variant_path: Path | None = None, progress=None,
-             drop_xbe_sections: bool = False) -> dict:
+             drop_xbe_sections: bool = False, after_fit=None) -> dict:
+    """b81 #48 review: when the editions carry the release's contract import (run on each edition after the fit), the
+    fit is checked on the documents the import ran on (strip_contract_import, which its receipt makes exact), and
+    CONTRACT_CHECK asks the import's owner whether the variant's contracts are its output on the fitted document:
+    ``after_fit(check, shipped variant, fitted document, shipped source)``, which the authoring tool supplies
+    (tools/franchise_economy/release_contracts.py validate re-runs the import with the snapshot it recorded). Without
+    it that check fails: the release Studio does not ship the import or its snapshot."""
     checks: list[dict] = []
 
     def check(name, ok, detail=""):
@@ -466,7 +558,10 @@ def validate(variant: dict, source: dict, base: bytes, *, margin: int = fa3.DEFA
         if progress:
             progress(f"{'PASS' if ok else 'FAIL'} {name}{': ' + str(detail) if detail else ''}")
 
-    rr.read_edits(variant)
+    shipped, source_shipped = variant, source
+    if variant.get(CONTRACT_IMPORT) or source.get(CONTRACT_IMPORT):
+        variant, source = strip_contract_import(variant), strip_contract_import(source)
+    rr.read_edits(shipped)
     check("read_edits accepts the document", True)
     check("no capacity block", "free_agent_capacity" not in variant)
     refresh, source_refresh = variant["roster_refresh"], source["roster_refresh"]
@@ -514,6 +609,12 @@ def validate(variant: dict, source: dict, base: bytes, *, margin: int = fa3.DEFA
           == [x for x in source_refresh["free_agents"] if x not in droppable_source])
     other = sorted(k for k in set(variant) | set(source) if variant.get(k) != source.get(k))
     allowed = {"roster_refresh", "free_agent_capacity", "fa3_free_agent_depth", "name"}
+    if RATINGS_STEP in source:
+        step = readdress_ratings_step(source[RATINGS_STEP], refresh, source_refresh)
+        left = len(step["skipped_absent"]) - len(source[RATINGS_STEP].get("skipped_absent") or [])
+        check("the ratings-2026 step is the source's re-addressed to this edition's records (by gsis id)",
+              variant.get(RATINGS_STEP) == step, f"{step['changed']} changes, {left} left out with their players")
+        allowed.add(RATINGS_STEP)
     if drop_xbe_sections:
         allowed |= set(XBE_SECTIONS)
         check("no scale-out XBE sections (draft-pick ownership, H-back roles)",
@@ -547,6 +648,14 @@ def validate(variant: dict, source: dict, base: bytes, *, margin: int = fa3.DEFA
     teams_ok &= refresh.get("room_policy", "release") == "release"
     check("refresh teams, guards, contracts and corrections unchanged (signed depth free agents re-addressed)", teams_ok,
           f"{len(lost_pinned)} club players removed from their clubs")
+    if shipped.get(CONTRACT_IMPORT) or source_shipped.get(CONTRACT_IMPORT):
+        if not (shipped.get(CONTRACT_IMPORT) and source_shipped.get(CONTRACT_IMPORT)):
+            check(CONTRACT_CHECK, False, "one edition carries the contract import and the other does not")
+        elif after_fit is None:
+            check(CONTRACT_CHECK, False, "run by the import's owner with the snapshot it recorded: "
+                  "tools/franchise_economy/release_contracts.py validate")
+        else:
+            after_fit(check, shipped, variant, source_shipped)
     from mod_editor.core import mod_build
     from mod_editor.core import nfl2k5_throw_tuning as tt
     records = 0
@@ -670,6 +779,12 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "fit":
             raw = Path(args.edits).read_bytes()
             source = json.loads(raw.decode("utf-8"))
+            if source.get(CONTRACT_IMPORT):
+                # b81 #48: fit the document the contract import ran on; run the import on the variant afterwards
+                source = strip_contract_import(source)
+                raw = (json.dumps(source, indent=1) + "\n").encode("utf-8")
+                say("the contract import is left out of the fit: run tools/franchise_economy/release_contracts.py "
+                    "--edition 64 on the variant")
             variant, receipt = retail_variant(source, base, margin=args.margin, source_sha256=sha256(raw), progress=say,
                                               drop_xbe_sections=args.drop_xbe_sections)
             _write_json(Path(args.out), variant)

@@ -322,7 +322,13 @@ class ExecutableTests(unittest.TestCase):
         self.assertLess(body.index("_apply_champions_history(plan, target, receipt, progress, capacity_records)"), pool)
         self.assertLess(body.index("_apply_coach_carousel(plan, target, receipt, progress)"), pool)
         self.assertLess(body.index("_apply_sim_realism(plan, target"), body.index("_apply_coach_carousel(plan, target"))
-        self.assertLess(pool, body.index("finish_private(target"))
+        # Beta 81 moved the disc compaction into _compact_build_disc (shared with the single-option QB and v0.9
+        # update routes); _build calls it once, after the pool.
+        helper = next(node for node in ast.parse(source).body
+                      if isinstance(node, ast.FunctionDef) and node.name == "_compact_build_disc")
+        self.assertIn("finish_private(target", ast.get_source_segment(source, helper))
+        self.assertEqual(body.count("_compact_build_disc("), 1)
+        self.assertLess(pool, body.index("_compact_build_disc(target"))
 
     def test_the_coach_career_fix_inside_the_guarded_loop_composes(self):
         """b780 int (cave dry run #5): the coach career fix (on in every preset) rewrites 8 bytes inside the guarded
@@ -630,6 +636,66 @@ class SeasonEndTests(unittest.TestCase):
         if m.call(0xC4D50, ecx=m.team_base):                                 # still the user's (the owner kept him)
             self.assertEqual(after[0], self.ref_after[0])
         self.assertEqual(sum(1 for i in range(32) if before[i][4:8] != after[i][4:8]), 12)
+
+
+@unittest.skipUnless(HAVE_UC, "unicorn is not installed")
+class FranchiseHistoryReloadTests(unittest.TestCase):
+    def test_enabled_carousel_and_history_reload_the_same_franchise_and_photos(self):
+        from mod_editor.core import nfl2k5_my_career_mode as career
+        from tests.nfl2k5_supersim_draft_fixture import retail_roster, signed_save
+
+        self.check_combination(career.apply(retail_bytes())[0], retail_roster(), signed_save(), 2479)
+
+    @unittest.skipUnless(_have(V08_SAVE) and _have(V08_ROST), "private signed expanded franchise or roster absent")
+    def test_expanded_signed_franchise_and_photos_survive_both_features(self):
+        from mod_editor.core import nfl2k5_my_career_mode as career, nfl2k5_roster_arena_growth as growth
+        from mod_editor.core import nfl2k5_player_progress_screen as progress
+        from mod_editor.core import nfl2k5_roster_records as roster, nfl2k5_xbe_space as space
+
+        if not V08_SAVE.with_name("EXTRA").is_file():
+            self.skipTest("the retained franchise's companion EXTRA is required")
+        original = V08_SAVE.read_bytes()
+        self.assertTrue(roster.verify_extra(original, V08_SAVE.with_name("EXTRA").read_bytes()))
+        payload = space.apply(retail_bytes(), career.REQUESTS + growth.REQUESTS, scaleout=True)[0]
+        payload = growth.apply(payload, capacity=True, reserves_16=False)[0]
+        payload = progress.apply(career.apply(payload)[0], hosted=True)[0]
+        self.check_combination(payload, V08_ROST.read_bytes(), original, 4096)
+
+    def check_combination(self, payload, disc, original, expected_count):
+        from mod_editor.core import nfl2k5_franchise_extension as extension
+        from mod_editor.core import nfl2k5_franchise_footer as footer, nfl2k5_history as history
+        from mod_editor.core import nfl2k5_roster_records as roster
+        from tests.nfl2k5_my_career_home_fixture import Machine as MenuMachine
+
+        document = roster.RosterDocument(original, base=roster.find_block_base(original))
+        photos = tuple(p.record.values["photo_id"] for p in document.players if p.pool == "primary")
+        self.assertEqual(len(photos), expected_count)
+        payload = cc.apply(payload)[0]
+        payload = footer.apply(payload, static_body=True)[0]
+        payload = history.apply(payload)[0]
+
+        def load(machine, body):
+            machine.frontend(disc)
+            machine.native_load(body, requested=False)
+            machine.loaded_menu()
+            self.assertEqual(machine.top(), 0x522190)  # the ordinary franchise menu
+            root = machine.get(0xB72918)
+            table, count = machine.get(root + 4), machine.get(root)
+            self.assertEqual(tuple(struct.unpack("<H", machine.uc.mem_read(table + i * 84 + 6, 2))[0]
+                                   for i in range(count)), photos)
+
+        with MenuMachine(payload) as first:
+            load(first, original)
+            first.put(cc.OWNER_FIRING_VA, 1)  # CPU Teams, persisted in the game's options block
+            saved = first.native_save(budget=500_000_000)
+            self.assertTrue(roster.verify_extra(saved, first.native_signature(saved)))
+            self.assertEqual(len(saved), len(original) + extension.BODY_SIZE)
+            body = extension.body_of(saved)
+            self.assertIsNotNone(body)
+            self.assertEqual(body[:len(extension.MAGIC)], extension.MAGIC)
+        with MenuMachine(payload) as cold:
+            load(cold, saved)
+            self.assertEqual(cold.get(cc.OWNER_FIRING_VA), 1)
 
 
 @unittest.skipUnless(_have(V08_SAVE) and _have(V08_ROST), "private v0.8 franchise save or roster absent")

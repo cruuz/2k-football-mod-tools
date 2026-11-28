@@ -98,10 +98,12 @@ class SiteTableTests(unittest.TestCase):
         self.assertEqual((by_label["regular_season_generator_year"].retail, by_label["regular_season_generator_year"].patched),
                          (b"\x04", b"\x1a"))
         self.assertNotIn("preseason_generator_year", by_label)     # inside the rewritten preseason generator now
-        # rookies: retail (season + 80..82) % 100 = born 1980-82 in 2004; 2026 -> (season + 102..104) % 100 = 2002-04
-        self.assertEqual((by_label["rookie_birth_base"].retail, by_label["rookie_birth_base"].patched), (b"\x50", b"\x66"))
-        self.assertEqual((by_label["rookie_birth_top"].retail, by_label["rookie_birth_top"].patched), (b"\x52", b"\x68"))
-        self.assertEqual(season.rookie_birth_base(2004), 0x50)
+        # rookies: retail (season + 80..82) % 100 = born 1980-82 in 2004, a year older than real rookies; b81 league-aging
+        # (coordinator R2): 2026 -> (season + 103..105) % 100 = born 2003-05, and the b780 base (102) still reads applied
+        self.assertEqual((by_label["rookie_birth_base"].retail, by_label["rookie_birth_base"].patched), (b"\x50", b"\x67"))
+        self.assertEqual((by_label["rookie_birth_top"].retail, by_label["rookie_birth_top"].patched), (b"\x52", b"\x69"))
+        self.assertEqual((by_label["rookie_birth_base"].legacy, by_label["rookie_birth_top"].legacy), (b"\x66", b"\x68"))
+        self.assertEqual(season.rookie_birth_base(2004), 0x51)
         self.assertEqual(season.dob_pivot(2026), 30)
         self.assertEqual(season.dob_pivot(2004), 8)
         dob = by_label["dob_four_digit_year"]

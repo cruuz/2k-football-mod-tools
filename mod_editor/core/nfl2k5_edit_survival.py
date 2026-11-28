@@ -19,6 +19,7 @@ from __future__ import annotations
 import hashlib
 import re
 import time
+from .errors import COMMUNITY_DISCORD
 from pathlib import Path
 from typing import Callable, Iterable
 
@@ -170,7 +171,7 @@ def user_notes(result: dict) -> list:
         named = ", ".join(f"{piece_words(row)} ({row['state']})" for row in lost[:MAX_NAMED])
         more = f" and {len(lost) - MAX_NAMED} more" if len(lost) > MAX_NAMED else ""
         notes.append(f"Your edits: {len(lost)} of {checked:,} edited pieces did not survive the build as you made them: "
-                     f"{named}{more}. Please send this Build summary to the SOFTDRINK Discord.")
+                     f"{named}{more}. Please send this Build summary to the SOFTDRINK Discord ({COMMUNITY_DISCORD}).")
     if result.get("not_checked"):
         notes.append(f"Your edits: {result['not_checked']:,} edits outside the kit files and stadium bundles (Team Select "
                      "cards and other art) were not checked.")

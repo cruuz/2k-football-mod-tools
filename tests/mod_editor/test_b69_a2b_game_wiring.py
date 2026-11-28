@@ -197,8 +197,9 @@ class CompactBuildTests(unittest.TestCase):
             self.assertEqual(owner.status(result),'applied')
         tt.decided_clock_patch.verify(result,margin=25,seconds=90)
         self.assertTrue(receipt['plan']['depth_locks'])
-        # b773-ic1: the Denver miniature check is the last image step of every build
-        self.assertEqual([row['step'] for row in receipt['steps']][-2:],['weather_plan','menu_icon_orientation'])
+        # b773-ic1: the Denver miniature check is the last art step of every build; b81 sb-booth: only the pregame
+        # welcome and the stale booth lines (speech, no art) follow it
+        self.assertEqual([row['step'] for row in receipt['steps']][-4:],['weather_plan','menu_icon_orientation','stadium_welcome','stale_speech'])
         weather.verify(weather.load_resource(target),self.document,before=self.resource)
         self.assertEqual(hashlib.sha256(self.source.read_bytes()).hexdigest(),original)
         repeat=self.root/'repeated.iso'
@@ -237,8 +238,9 @@ class CompactBuildTests(unittest.TestCase):
         self.assertEqual(build._xbe_bytes(target),self.retail)
         # b778 uf2 added nameplate_fixes_2026 between the Carolina uniforms and the icon owner, so the closing window is
         # four rows: the haze restore still sits directly before the uniform, nameplate and icon owners that end the build.
-        self.assertEqual([row['step'] for row in receipt['steps']][-4:],
-                         ['weather_haze', 'unc_bowl_uniforms', 'nameplate_fixes_2026', 'menu_icon_orientation'])
+        self.assertEqual([row['step'] for row in receipt['steps']][-6:],   # b81 sb-booth: the two booth steps close it
+                         ['weather_haze', 'unc_bowl_uniforms', 'nameplate_fixes_2026', 'menu_icon_orientation',
+                          'stadium_welcome', 'stale_speech'])
         target.write_bytes(b'KEEP DESTINATION')
         with patch.object(weather,'apply_to_image',side_effect=OSError('simulated final write failure')):
             with self.assertRaises(OSError):build.build(build.BuildPlan(str(self.source),str(target),overwrite=True,weather_plan=str(self.plan_file)))

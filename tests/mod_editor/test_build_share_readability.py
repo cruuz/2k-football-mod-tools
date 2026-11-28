@@ -20,8 +20,9 @@ for entry in (ROOT, ROOT / "tests"):
     if str(entry) not in sys.path:
         sys.path.insert(0, str(entry))
 
-from PyQt5.QtGui import QPalette  # noqa: E402
-from PyQt5.QtWidgets import QApplication, QPushButton, QScrollArea  # noqa: E402
+from PyQt5.QtCore import QEvent, QObject  # noqa: E402
+from PyQt5.QtGui import QFontInfo, QPalette  # noqa: E402
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QScrollArea  # noqa: E402
 
 from mod_editor.core import mod_build  # noqa: E402
 from mod_editor.gui.build_panel_qt import BuildPanel  # noqa: E402
@@ -52,6 +53,13 @@ def _scroll_host(panel: BuildPanel) -> QScrollArea:
     host.resize(1032, 720)
     host.show()
     return host
+
+
+def _font_pixels(widget) -> int:
+    font = widget.font()
+    if font.pixelSize() > 0:
+        return font.pixelSize()
+    return max(1, round(font.pointSizeF() * widget.logicalDpiY() / 72))
 
 
 class ContrastTests(unittest.TestCase):
@@ -130,6 +138,25 @@ class ContrastTests(unittest.TestCase):
 
 
 class DescriptionVisibilityTests(unittest.TestCase):
+    def test_option_descriptions_stay_inside_the_panel_during_construction(self):
+        shown = []
+
+        class WindowObserver(QObject):
+            def eventFilter(self, widget, event):
+                if (event.type() == QEvent.Show and isinstance(widget, QLabel)
+                        and widget.isWindow() and widget.objectName() in {"optionBadge", "throwMuted"}):
+                    shown.append(widget.objectName())
+                return False
+
+        observer = WindowObserver()
+        APP.installEventFilter(observer)
+        try:
+            panel = BuildPanel()
+            self.addCleanup(panel.deleteLater)
+        finally:
+            APP.removeEventFilter(observer)
+        self.assertFalse(shown, f"{len(shown)} option labels showed as separate windows")
+
     def _panel_on_scroll(self, theme: str) -> tuple[BuildPanel, QScrollArea]:
         panel = BuildPanel(theme=theme)
         host = _scroll_host(panel)
@@ -204,6 +231,49 @@ class DescriptionVisibilityTests(unittest.TestCase):
 
 
 class WindowFitTests(unittest.TestCase):
+    def test_sidebar_brand_fits_when_text_doubles(self):
+        window = StudioMainWindow(offer_recovery=False)
+        try:
+            window.resize(1480, 920)
+            window.show()
+            APP.processEvents()
+            brand = window.findChild(QLabel, "brandTitle")
+            subtitle = next(label for label in brand.parentWidget().findChildren(QLabel)
+                            if label.text().endswith(" • Xbox Edition"))
+            for widget in window.findChildren(QLabel) + window.findChildren(QPushButton):
+                if widget.isVisible():
+                    pixels = _font_pixels(widget) * 2
+                    widget.setStyleSheet(f"font-size: {pixels}px;")
+            for _ in range(4):
+                APP.processEvents()
+            for label in (brand, subtitle):
+                fits_on_one_line = label.fontMetrics().horizontalAdvance(label.text()) <= label.contentsRect().width()
+                fits_when_wrapped = label.wordWrap() and label.heightForWidth(label.width()) <= label.height()
+                self.assertTrue(fits_on_one_line or fits_when_wrapped, label.text())
+        finally:
+            window._allow_close = True
+            window.close()
+
+    def test_getting_started_heading_fits_with_enlarged_header_text(self):
+        window = StudioMainWindow(offer_recovery=False)
+        try:
+            header = window.page_title.parentWidget()
+            header.setFixedWidth(690)
+            window.show()
+            APP.processEvents()
+            for widget in header.findChildren(QLabel) + header.findChildren(QPushButton):
+                pixels = round(_font_pixels(widget) * 1.25)
+                widget.setStyleSheet(f"font-size: {pixels}px;")
+            for _ in range(4):
+                APP.processEvents()
+            title = window.page_title
+            fits_on_one_line = title.fontMetrics().horizontalAdvance(title.text()) <= title.contentsRect().width()
+            fits_when_wrapped = title.wordWrap() and title.heightForWidth(title.width()) <= title.height()
+            self.assertTrue(fits_on_one_line or fits_when_wrapped, title.text())
+        finally:
+            window._allow_close = True
+            window.close()
+
     def _window(self, theme: str, width: int, height: int) -> StudioMainWindow:
         window = StudioMainWindow(theme=theme)
         window.resize(width, height)
@@ -293,11 +363,14 @@ class WindowFitTests(unittest.TestCase):
             while scroll is not None and not isinstance(scroll, QScrollArea):
                 scroll = scroll.parent()
             self.assertIsInstance(scroll, QScrollArea)
-            with self.subTest(theme=theme):
-                self.assertEqual(scroll.horizontalScrollBar().maximum(), 0)
-                self.assertLessEqual(
-                    window._build_panel.minimumSizeHint().width(), scroll.viewport().width()
-                )
+            tabs = window._build_share_page
+            for page in (window._build_panel, window._share_panel):
+                tabs.setCurrentWidget(page)
+                for _ in range(4):
+                    APP.processEvents()
+                with self.subTest(theme=theme, tab=tabs.tabText(tabs.currentIndex())):
+                    self.assertEqual(scroll.horizontalScrollBar().maximum(), 0)
+                    self.assertLessEqual(tabs.minimumSizeHint().width(), scroll.viewport().width())
 
     def test_a_missing_official_marks_pack_does_not_widen_the_page(self) -> None:
         # b778 ci2: a lean checkout has no saved logo pack. The old full "missing"

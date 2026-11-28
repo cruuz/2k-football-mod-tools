@@ -21,6 +21,45 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA = "nfl2k5_franchise_limit_feasibility/v1"
 
+# The August 23 signed-save replay supplied these dated findings after the static report.
+A7_BASIS = (
+    "A7 runtime triple 2026-08-23 (control accepted hub year 2011; resigned-mutated accepted hub year "
+    "2012; stale-signature rejected 'Unable to load Franchise1') plus A2 xemu-OPEN XBE patch lane; load"
+    " path OPTIONS->LOAD/SAVE (GAME MODES->FRANCHISE is new-franchise only)"
+)
+A7_ROWS = {
+    "cpu_fantasy_draft_priority": {
+        "lane": "XBE-side: A2 lane, xemu-OPEN (digest-recomputed patch boots and runs)",
+        "save_side": "none",
+        "grade": "A_PROVEN (localization); lane open on xemu; retail-hw boundary unchanged",
+        "summary": "XBE-side: A2 lane xemu-OPEN; no save-side component",
+    },
+    "cpu_trade_evaluation": {
+        "lane": "threshold XBE-side: A2 lane xemu-OPEN; valuation inputs save/runtime: A4 lane (schema open)",
+        "save_side": "A4 save lane available (load integrity runtime-proven); trade records unmapped",
+        "grade": "B_INFERENCE (split lane)",
+        "summary": "threshold XBE-side A2 xemu-OPEN; valuation inputs A4 save lane (schema open)",
+    },
+    "salary_cap_enforcement": {
+        "lane": "constants XBE-side: A2 lane xemu-OPEN; current cap total save-fed: A4 lane",
+        "save_side": "A4 lane runtime-proven for load/accept; cap file offset still UNKNOWN",
+        "grade": "A_PROVEN (code path + save-lane integrity); UNKNOWN (cap file offset)",
+        "summary": "constants XBE-side A2 xemu-OPEN; current total save-fed A4 lane (cap file offset UNKNOWN)",
+    },
+    "contract_model_and_serialization": {
+        "lane": "save-side: A4 lane (schema recovery open); XBE negotiation: A2 lane",
+        "save_side": "A4 writer proven (byte writeback + resign verified at runtime); contract fields unmapped",
+        "grade": "UNKNOWN (schema)",
+        "summary": "save-side A4 lane (writer proven; schema open); XBE negotiation A2 lane",
+    },
+    "future_super_bowl_stadium_assignment": {
+        "lane": "selector XBE-side: A2 lane xemu-OPEN; season/year index save-fed: A4 lane",
+        "save_side": "year field @0x91326 runtime-proven (7->2011 ctrl, 8->2012 mut; displayed year = 2004 + field)",
+        "grade": "A_PROVEN (selector + save year field runtime effect)",
+        "summary": "selector XBE-side A2 xemu-OPEN; season/year index save-fed A4 lane (year field runtime-proven)",
+    },
+}
+
 SOURCES = {
     "xbox_xbe": (
         ROOT / "extracted/ESPN NFL 2K5 (USA)/default.xbe",
@@ -674,6 +713,11 @@ def generate() -> dict[str, Any]:
     trade = validate_trade_logic(xbe, sources["pseudo_cap_validator"])
     matrix = make_matrix(joined, venue, trade)
     return {
+        "lane_assignment_a7_2026_08_23": {
+            "basis": A7_BASIS,
+            "rows": {row_id: {key: info[key] for key in ("lane", "save_side", "grade")}
+                     for row_id, info in A7_ROWS.items()},
+        },
         "schema": SCHEMA,
         "scope": {
             "operation": "read-only evidence join and feasibility classification",
@@ -738,7 +782,9 @@ def matrix_tsv(report: dict[str, Any]) -> str:
         "archive_only_fix", "current_writer_safe", "feasibility", "blockers",
         "smallest_safe_next",
     )
-    lines = ["\t".join(fields)]
+    a7 = report.get("lane_assignment_a7_2026_08_23")
+    columns = (*fields, "lane_a7") if a7 else fields
+    lines = ["\t".join(columns)]
     for row in report["matrix"]:
         values: list[str] = []
         for field in fields:
@@ -748,6 +794,10 @@ def matrix_tsv(report: dict[str, Any]) -> str:
             elif isinstance(value, bool):
                 value = str(value).lower()
             values.append(str(value).replace("\t", " ").replace("\n", " "))
+        if a7:
+            lane = a7["rows"][row["id"]]["lane"]
+            original = A7_ROWS.get(row["id"], {})
+            values.append(original["summary"] if original.get("lane") == lane else lane)
         lines.append("\t".join(values))
     return "\n".join(lines) + "\n"
 

@@ -8,6 +8,7 @@ save/load call sites. The visibility-only variant installs only the 0x2C26A0 pat
 
 from __future__ import annotations
 
+import hashlib
 import os
 import struct
 import sys
@@ -61,8 +62,19 @@ class StaticTests(unittest.TestCase):
 
     def test_retail_and_released_are_retail(self):
         self.assertEqual(screen.status(self.retail), "retail")
-        if self.released is not None:
-            self.assertEqual(screen.status(self.released), "retail")
+        if self.released is None:
+            self.skipTest("set NFL2K5_RELEASED_XBE to the v0.6.1 default.xbe")
+        self.assertEqual(hashlib.sha256(self.released).hexdigest(),
+                         "9465382bfd617b6d1aeadc5653fefef256678c12a65a5f828705495291e40610")
+        self.assertEqual(screen.status(self.released), "retail")
+        with self.assertRaisesRegex(screen.PlayerProgressScreenError, "foreign franchise save routine"):
+            screen.apply(self.released)
+        image = XbeImage(self.released)
+        for label, va in (("load hook displacement", 0x16E541), ("Auto Save load handler", 0x14DEE44),
+                          ("relocated Coach's Desk event list", 0x1D82D0), ("unrelated native code", 0x2815F0)):
+            with self.subTest(site=label):
+                changed = repin_edit(self.released, va, bytes([image.read(va, 1)[0] ^ 1]))
+                self.assertEqual(screen.status(changed), "foreign")
 
     def test_foreign_prerequisite_is_refused(self):
         bad = repin_edit(self.retail, 0xE6660, b"\xcc")

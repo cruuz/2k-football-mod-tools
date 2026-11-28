@@ -1,0 +1,760 @@
+"""b81 qb34: the quarterback room owner's fixed pages, byte authentication and Retail restore.
+
+Allocator (DESIGN 5.1, test T14 in part): the owner takes 0x1529000..0x152BFFF in every request set, never advances the
+pool cursor, and every other pool owner steps over the range whether or not the room is requested. Owner (T12 at
+owner level, T15): Realistic then Retail is the source plus an empty reservation byte for byte; foreign bytes at any
+hook site or in the page make status() read foreign and both levels refuse, with or without the page.
+Real executables come from the private fixtures (b81 env.sh); those cases skip without them.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+import unittest
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+
+from mod_editor.core import nfl2k5_xbe_space as space  # noqa: E402
+from mod_editor.core import nfl2k5_memory_budget as budget  # noqa: E402
+from mod_editor.core.nfl2k5_cave_oracle import XbeImage  # noqa: E402
+
+ROOM = ("nfl2k5_qb_room", "code", 0x3000, 0x1000)
+HELMET_XBE_SHA = "98dd732945fb665a8d7fe771650d61c1098015cda4917ac83037059db477008e"
+V09_XBE_SHA = "d78088f9ba47c6197e99ea540d0bc3d2c9255f7cd49152a77946be70dacab866"
+
+
+def _room_row(rows):
+    found = [r for r in rows if r["owner"] == ROOM[0]]
+    return found[0] if len(found) == 1 else None
+
+
+class AllocatorPlacementTests(unittest.TestCase):
+    def test_constants_and_late_owner_order(self):
+        self.assertEqual((space.QB_ROOM_OWNER, space.QB_ROOM_VA, space.QB_ROOM_SIZE), (ROOM[0], 0x1529000, 0x3000))
+        self.assertEqual(space.QB_ROOM_REQUEST, ROOM)
+        # C20: the trades page (fixed right after the room) follows the room; b81 helmet sides (review 11/22): the
+        # side-numbers page, fixed right after the trades page; b81 CPU trades: its two pages after that; b81 integration
+        # (#33, #35, #38): then the outcomes', classic crowd's and award vote's fixed pages (fixed pages never advance
+        # the cursor, so their place among the late owners moves nobody)
+        # b81 #45: and team building's pace page (seven fixed pages at 0x1535000) after the outcomes page
+        self.assertEqual(space.LATE_OWNERS[-8:], (ROOM[0], space.QB_TRADES_OWNER, space.HELMET_SIDES_OWNER,
+                                                  space.CPU_TRADES_OWNER, space.SIM_OUTCOMES_OWNER,
+                                                  space.TEAM_BUILDING_PACE_OWNER, space.CLASSIC_CROWD_OWNER,
+                                                  space.AWARDS_OWNER))
+        self.assertIn(ROOM, space.dormant_union())
+
+    def test_the_room_alone_and_in_the_dormant_union_sits_at_its_fixed_pages(self):
+        for name, requests in (("alone", [ROOM]), ("legacy flag", None), ("dormant union", list(space.dormant_union()))):
+            with self.subTest(case=name):
+                report = space.plan([ROOM], scaleout=False) if requests is None else space.plan(requests)
+                row = _room_row(report["allocations"])
+                self.assertEqual((row["va"], row["size"], row["align"]), (0x1529000, 0x3000, 0x1000))
+                # C20: the dormant union also carries the trades page right after the room (0x152C000..0x152CFFF) and
+                # (b81 helmet sides) the side-numbers page after it (0x152D000..0x152DFFF).
+                # b81 CPU trades: + 0x152E000..0x152FFFF; b81 integration (#33, #37, #38): + the award vote, classic crowd
+                # and SportsCenter news pages; b81 integration task 7: + the numbers page (0x1530000, which the mapping
+                # already spanned) and the simulated outcomes' page, so the dormant union ends at 0x1534FFF
+                # b81 #45: + the pace page's seven pages, so the dormant union ends at 0x153BFFF
+                end = 0x153C000 if name == "dormant union" else 0x152C000
+                self.assertEqual(report["file_size"] - space.SCALE3_FILE_SIZE, end - space.POOL_VA)
+
+    def test_adding_the_room_moves_no_row_and_does_not_advance_the_cursor(self):
+        union = [r for r in space.dormant_union() if r[0] not in (ROOM[0], space.QB_TRADES_OWNER)]
+        before = space.plan(union)["allocations"]
+        after = space.plan(union + [ROOM])["allocations"]
+        self.assertEqual([r for r in before if r["owner"] != space.DIRECTORY_OWNER and r not in after], [])
+        # A pool owner planned after the room still starts at the cursor below it, not above 0x152C000.
+        later = ("zz_synthetic_after_room", "code", 0x100, 16)
+        with_room = space.plan(union + [ROOM, later])["allocations"]
+        without = space.plan(union + [later])["allocations"]
+        self.assertEqual(next(r for r in with_room if r["owner"] == later[0])["va"],
+                         next(r for r in without if r["owner"] == later[0])["va"])
+        self.assertLess(next(r for r in with_room if r["owner"] == later[0])["va"], 0x1529000)
+
+    def test_every_other_pool_owner_steps_over_the_range_even_without_the_room(self):
+        # An owner that would straddle 0x1529000 is placed after the room's pages whether or not the room is requested,
+        # so an owner installed first can never take the room's address. (On the old code it straddled the range.)
+        # C20: the span stepped over is the room's three pages and the trades page, 0x1529000..0x152CFFF; b81 helmet sides
+        # (review 11/22): it also holds the side-numbers page, so it ends at 0x152DFFF; b81 CPU trades: and its two pages,
+        # so it ends at 0x152FFFF.
+        filler = ("aa_synthetic_filler", "code", 0x1529000 - 0x80 - space.POOL_VA - space.PAGE, space.PAGE)
+        # Both are larger than the v3 code run holds, so both go whole to the pool, in name order.
+        straddle = ("ab_synthetic_straddle", "code", 0x20000, 16)
+        for requests in ([filler, straddle], [filler, straddle, ROOM]):
+            with self.subTest(room=ROOM in requests):
+                rows = space.plan(requests)["allocations"]
+                placed = next(r for r in rows if r["owner"] == straddle[0])
+                # b81 integration (#32, #33, #35-#38): the span ends at 0x1530000 (CPU trades' two pages); from there the
+                # 0x20000-byte owner would straddle the numbers page (0x1530000), the award vote (0x1531000), the classic
+                # crowd (0x1532000), the SportsCenter news page (0x1533000) and the outcomes page (0x1534000), so it steps
+                # past all five
+                # b81 #45: and past the pace page's seven pages (0x1535000..0x153BFFF), the last fixed page
+                self.assertEqual(placed["va"], space.TEAM_BUILDING_PACE_VA + space.TEAM_BUILDING_PACE_SIZE)
+                self.assertEqual(space.FIXED_SPAN_END, 0x1530000)
+                for row in rows:
+                    if row["owner"] != ROOM[0]:
+                        self.assertFalse(row["va"] < 0x1530000 and row["va"] + row["size"] > 0x1529000, row)
+
+    def test_an_owner_bumped_over_the_ownership_page_also_steps_over_the_room(self):
+        ownership = (space.FRANCHISE_OWNERSHIP, "code", space.FRANCHISE_OWNERSHIP_SIZE, 16)
+        filler = ("aa_synthetic_filler", "code", 0x1528000 - 0x80 - space.POOL_VA - space.PAGE, space.PAGE)
+        bumped = ("ab_synthetic_bumped", "code", 0x20000, 16)
+        rows = space.plan([filler, bumped, ownership])["allocations"]
+        # past trades, side numbers and CPU trades, then (b81 integration) past the numbers, award vote, classic crowd,
+        # SportsCenter news and outcomes pages it would otherwise straddle
+        # b81 #45: and the pace page's seven pages, so it lands at 0x153C000
+        self.assertEqual(next(r for r in rows if r["owner"] == bumped[0])["va"], 0x153C000)
+
+    def test_a_foreign_room_request_is_refused(self):
+        for request in (("nfl2k5_qb_room", "code", 0x2000, 0x1000), ("nfl2k5_qb_room", "data", 0x3000, 0x1000)):
+            with self.subTest(request=request), self.assertRaisesRegex(ValueError, "quarterback room"):
+                space.plan([request])
+
+    def test_allocator_fixture_is_the_dormant_union(self):
+        rows = json.loads((ROOT / "tests/fixtures/nfl2k5_allocator_beta62_requests.json").read_text(encoding="utf-8"))
+        self.assertIn(list(ROOM), rows)
+        self.assertEqual({tuple(r) for r in rows}, set(space.dormant_union()))
+
+
+class MemoryBudgetTests(unittest.TestCase):
+    def test_the_room_row_follows_the_quarterback_option_unless_named(self):
+        # The floor rides with injuries above zero (coordinator's rule); piece 3 where its handed-over bits apply.
+        from mod_editor.core import nfl2k5_qb_room as room
+        piece3 = room.REALISTIC_STAGES & room.PIECE3_BITS
+        needs = {"k128_memory": True, "depth_locks": True, "depth_chart_rows": True}
+        cases = (({"sim_qb_injuries": "realistic", **needs}, True), ({"sim_qb_injuries": "custom", **needs}, True),
+                 ({"sim_qb_injuries": "realistic", "k128_memory": True}, True),
+                 ({"sim_qb_injuries": "custom", "sim_qb_injury_rate": 0.0, **needs}, bool(piece3)),
+                 ({"sim_qb_injuries": "custom", "sim_qb_injury_rate": 0.0, "k128_memory": True}, False),
+                 ({"sim_qb_injuries": "retail", **needs}, False), (needs, False),
+                 ({"sim_qb_injuries": "realistic", "qb_room": "retail", **needs}, True),
+                 ({"qb_room": "realistic"}, bool(piece3)))
+        for opts, expected in cases:
+            with self.subTest(opts=opts):
+                self.assertEqual("qb_room" in budget.owners(opts, 128), expected)
+        self.assertEqual(budget.BUILD_OWNER_BYTES["qb_room"], (0x3000, 0, 0, 0, 0))
+
+    def test_the_resident_executable_reaches_the_end_of_the_room(self):
+        base = {"k128_memory": True, "sim_qb_injuries": "realistic", "depth_locks": True, "depth_chart_rows": True}
+        with_room = budget.xbe_resident(base, 128)
+        # Custom 0 keeps slice 1's bank but needs no floor, and without depth locks piece 3 is left out: no room.
+        without = budget.xbe_resident(dict(base, sim_qb_injuries="custom", sim_qb_injury_rate=0.0, depth_locks=False), 128)
+        # The quarterback bank ends at 0x1528000; the room's pages end at 0x152C000.
+        self.assertEqual(with_room - without, 0x152C000 - 0x1528000)
+
+
+def _private(variable, sha):
+    path = Path(os.environ.get(variable, ""))
+    if not path.is_file():
+        raise unittest.SkipTest(f"private fixture {variable} is absent")
+    from mod_editor.core import mod_build
+    data = mod_build._xbe_bytes(path)
+    if hashlib.sha256(data).hexdigest() != sha:
+        raise unittest.SkipTest(f"{variable} is not the pinned executable")
+    return data
+
+
+class OwnerTests(unittest.TestCase):
+    """Owner level on the reviewed v0.10 helmet test executable (98dd7329) with the injury option Realistic (slices 1 to 3
+    since the merge of 5854e5144: 501b8412; with scoring and revision 4 at the integration merge: f3a22805; slice 1
+    alone gave 9f435b38)."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_qb_room as room, nfl2k5_sim_qb_injuries as qb
+        cls.room, cls.code = room, room._code()
+        cls.source = _private("NFL2K5_B81_REVIEWED_TEST_DISC", HELMET_XBE_SHA)
+        cls.slice1, _ = qb.apply(cls.source, "realistic")
+        # Page mechanics on a D1 page through the calibration path (the Studio installs no piece 3 bit at the floor
+        # handover, and its Realistic needs modern IR, which this executable lacks).
+        cls.applied, cls.receipt = room.install_stages(cls.slice1, cls.code.STAGE_D1)
+
+    def test_settings_and_status(self):
+        room = self.room
+        # b81 integration merge of qb34 (scoring + stability revision 4): f3a22805 (was 501b8412 at 5854e5144, 9f435b38
+        # for slice 1 alone)
+        # combined calibration levers (merge queue item 15: QB_CHANCE_SCALE 1.06, breakaway stop 68): 68c9db2e (was f3a22805)
+        # b81 game outcomes (QB option revision 5: the kicker and punter rows, only while both specialists play):
+        # 1acfdcae (was 68c9db2e)
+        self.assertEqual(hashlib.sha256(self.slice1).hexdigest()[:8], "1acfdcae")
+        self.assertEqual(room.read_settings(self.slice1), {"status": "retail", "mode": "retail", "reserved": False,
+                                                           "va": None})
+        settings = room.read_settings(self.applied)
+        self.assertEqual((settings["status"], settings["stages"], settings["shadow"], settings["va"]),
+                         ("applied", self.code.STAGE_D1, False, 0x1529000))
+        # E1/E2 hand-over (C21): D1, D2, D3 (256), D4 (4), E1 (8) and E2 (32) ship; the floor comes from the injury
+        # level (bit 64 alone since the floor review), and E1/E2 only where the floor and piece 3 are both installed,
+        # so Realistic installs 367 (327 at the D3/D4 hand-over, 67 at the floor hand-over).
+        c = self.code
+        self.assertEqual((room.REALISTIC_STAGES, room.SHADOW_DEFAULT),
+                         (c.STAGE_D1 | c.STAGE_D2 | c.STAGE_D4 | c.STAGE_D3 | c.STAGE_SIGN | c.STAGE_E2, False))
+        self.assertEqual((room.FLOOR_STUDIO_STAGES, room.realistic_stages()), (64, 367))
+        self.assertEqual((room.studio_stages(True, False), room.studio_stages(False, True)), (64, 263))
+        self.assertEqual(room.stage_names(367), ["D1 veteran or rookie", "D2 the kid's turn", "D3 benched for poor play",
+                                                 "D4 returning starter", "E1 emergency backup signing",
+                                                 "E2 better quarterback while the starter is out", "floor"])
+        self.assertFalse(room.REALISTIC_STAGES & c.STAGE_TRADE)
+        self.assertEqual(settings["stage_names"], ["D1 veteran or rookie"])
+        row = _room_row(space.layout(self.applied)["allocations"])
+        self.assertEqual((row["va"], row["size"]), (0x1529000, 0x3000))
+
+    def test_the_page_and_sites_hold_exactly_the_linked_template(self):
+        code, image = self.code, XbeImage(self.applied)
+        record = code.settings_record(code.STAGE_D1, shadow=False)
+        self.assertEqual(image.read(0x1529000, 0x3000), code.page_bytes(0x1529000, record))
+        for label, at, original, patched in code.sites(0x1529000, code.STAGE_D1):
+            self.assertEqual(image.read(at, 5), patched, label)
+            self.assertEqual(XbeImage(self.slice1).read(at, 5), original, label)
+        sign = next(h for h in code.HOOKS if h[2] == "sign_entry")
+        self.assertEqual(image.read(sign[0], 5), sign[1])
+
+    def test_realistic_then_retail_is_the_source_plus_the_empty_reservation(self):
+        room = self.room
+        retail, receipt = room.apply(self.applied, "retail")
+        reserved, _ = space.extend_scaleout(self.slice1, room.REQUESTS)
+        self.assertEqual(retail, reserved)
+        self.assertEqual(receipt["status"], "retail")
+        self.assertEqual(XbeImage(retail).read(0x1529000, 0x3000), b"\xcc" * 0x3000)
+        self.assertEqual(room.read_settings(retail)["reserved"], True)
+        self.assertEqual(room.install_stages(retail, self.code.STAGE_D1)[0], self.applied)
+        self.assertEqual(room.apply(self.slice1, "retail"), (self.slice1, room.apply(self.slice1, "retail")[1]))
+        self.assertEqual(room.apply(self.slice1, "retail")[1]["changed_bytes"], 0)
+        again, receipt = room.install_stages(self.applied, self.code.STAGE_D1)
+        self.assertEqual((again, receipt["status"]), (self.applied, "already_applied"))
+
+    def test_a_calibration_record_is_recognized_and_replaced_by_the_studio_record(self):
+        room, code = self.room, self.code
+        record = code.settings_record(code.STAGE_D1 | code.STAGE_D2D3, shadow=False, h0_ppm=12500)
+        page = code.page_bytes(0x1529000, record)
+        custom = room._patch(self.applied, [(0x1529000, XbeImage(self.applied).read(0x1529000, 0x3000), page)])
+        settings = room.read_settings(custom)
+        self.assertEqual((settings["status"], settings["stages"], settings["shadow"], settings["h0_ppm"]),
+                         ("applied", 3, False, 12500))
+        self.assertEqual(room.install_stages(custom, code.STAGE_D1)[0], self.applied)
+
+    def test_a_signing_stage_page_links_the_ir_store_and_retail_restores_all_three_sites(self):
+        from mod_editor.core import nfl2k5_injured_reserve as ir
+        room, code = self.room, self.code
+        stages = code.STAGE_D1 | code.STAGE_SIGN | code.STAGE_E2  # only E2 reads the IR store link
+        store = ir.store_va(self.applied)
+        self.assertTrue(store)
+        record = code.settings_record(stages, shadow=True)
+        page = code.page_bytes(0x1529000, record, ir_store_va=store)
+        self.assertEqual(page[code.LINK_IR_STORE:code.LINK_IR_STORE + 4], store.to_bytes(4, "little"))
+        image = XbeImage(self.applied)
+        edits = [(0x1529000, image.read(0x1529000, 0x3000), page)]
+        edits += [(at, original, patched) for label, at, original, patched in code.sites(0x1529000, stages)
+                  if label == "sign_entry"]
+        self.assertEqual(len(edits), 2)
+        self.assertEqual(room._ir_store_va(self.applied, code.STAGE_D1 | code.STAGE_SIGN), 0)
+        signing = room._patch(self.applied, edits)
+        settings = room.read_settings(signing)
+        self.assertEqual((settings["status"], settings["stages"]), ("applied", stages))
+        unlinked = code.page_bytes(0x1529000, record, ir_store_va=0)
+        self.assertEqual(room.status(room._patch(signing, [(0x1529000, page, unlinked)])), "foreign")
+        retail, _ = room.apply(signing, "retail")
+        self.assertEqual(retail, room.apply(self.applied, "retail")[0])
+        sign_at, sign_retail = next((h[0], h[1]) for h in code.HOOKS if h[2] == "sign_entry")
+        self.assertEqual(XbeImage(retail).read(sign_at, 5), sign_retail)
+        self.assertTrue(room.requirements(self.applied, stages))  # 4a needs modern IR and ownership applied
+        # C20: bit 16 is installable (its own page, nfl2k5_qb_trades); its needs are named, never skipped.
+        self.assertTrue(all(m.startswith("Quarterback trades need") or "128 MB" in m
+                            for m in room.requirements(self.applied, code.STAGE_TRADE)))
+
+    def test_foreign_site_bytes_are_refused_with_and_without_the_page(self):
+        room = self.room
+        for name, image in (("no page", self.slice1), ("page", self.applied),
+                            ("empty reservation", room.apply(self.applied, "retail")[0])):
+            for at, original, label, _stage in self.code.HOOKS:
+                with self.subTest(image=name, site=label):
+                    xbe = XbeImage(image)
+                    data = bytearray(image)
+                    offset = xbe.offset(at + 1, 1)
+                    data[offset] ^= 0x40
+                    foreign = bytes(data)
+                    self.assertEqual(room.status(foreign), "foreign")
+                    for level in room.LEVELS:
+                        with self.assertRaisesRegex(ValueError, "not recognized"):
+                            room.apply(foreign, level)
+
+    def test_foreign_page_bytes_are_refused(self):
+        room = self.room
+        xbe = XbeImage(self.applied)
+        for name, va in (("code", 0x1529004), ("settings", 0x1529000 + self.code.SETTINGS_OFFSET + 12),
+                         ("link word", 0x1529000 + self.code.LINK_IR_STORE), ("counters", 0x1529000 + 0x2040),
+                         ("ring", 0x1529000 + 0x2400), ("tail", 0x152BFFF)):
+            with self.subTest(span=name):
+                data = bytearray(self.applied)
+                data[xbe.offset(va, 1)] ^= 0x01
+                foreign = bytes(data)
+                self.assertEqual(room.status(foreign), "foreign")
+                for level in room.LEVELS:
+                    with self.assertRaises(ValueError):
+                        room.apply(foreign, level)
+        retail = room.apply(self.applied, "retail")[0]
+        data = bytearray(retail)
+        data[XbeImage(retail).offset(0x152A000, 1)] = 0x90
+        self.assertEqual(room.status(bytes(data)), "foreign")
+
+    def test_realistic_needs_the_standard_executable_and_its_dependencies(self):
+        retail = Path(os.environ.get("NFL2K5_RETAIL_XBE", ""))
+        if not retail.is_file():
+            self.skipTest("the private retail default.xbe is absent")
+        payload = retail.read_bytes()
+        self.assertEqual(len(self.room.requirements(payload, self.code.STAGE_D1)), 3)
+        self.assertEqual(self.room.status(payload), "retail")
+        with self.assertRaisesRegex(ValueError, "128 MB standard executable"):
+            self.room.apply(payload, "realistic")
+        self.assertEqual(self.room.apply(payload, "retail")[0], payload)
+
+
+class FloorOwnerTests(unittest.TestCase):
+    """The floor's owner side (DESIGN addendum F1 to F8): stage bit 64, the 0x248010 site for bit 8 or 64, the native
+    signing routine the last resort enters (F7.5) authenticated, the floor's needs, Retail restoring everything."""
+
+    @classmethod
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_qb_room as room, nfl2k5_sim_qb_injuries as qb
+        cls.room, cls.code = room, room._code()
+        cls.source = _private("NFL2K5_B81_REVIEWED_TEST_DISC", HELMET_XBE_SHA)
+        cls.slice1, _ = qb.apply(cls.source, "realistic")
+        # b81 integration (practice squad merge): the helmet disc's economy is revision 7, which reads "legacy" since
+        # revision 8; the floor needs the current economy, so the fixture upgrades it in place as the Studio routes do.
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        cls.slice1, _ = economy.apply(cls.slice1)
+
+    def _changed(self, payload, va, data):
+        image, out = XbeImage(payload), bytearray(payload)
+        at = image.offset(va, len(data))
+        out[at:at + len(data)] = data
+        return bytes(out)
+
+    def test_star_retention_reads_the_same_with_the_signing_call(self):
+        # nfl2k5_star_retention authenticates the weekly advance's stage-6 caller window 0x247FD7..0x248015, which holds
+        # the 0x248010 call the floor (and stage 4a) replaces; only the room's own call into its page is accepted.
+        from mod_editor.core import nfl2k5_injured_reserve as ir, nfl2k5_star_retention as retention
+        room = self.room
+        base, _ = ir.apply(self.slice1, "modern", standard_guard=True)
+        floor, _ = room.apply(base, "realistic", stages=room.STAGE_FLOOR | 1)
+        self.assertEqual(retention.status(base), retention.status(floor))
+        self.assertEqual(retention.status(floor), "applied")
+        self.assertEqual(retention.apply(floor)[1]["status"], "already_applied")
+        other = room._patch(floor, [(0x248010, XbeImage(floor).read(0x248010, 5), bytes.fromhex("e800000000"))])
+        self.assertEqual(retention.status(other), "foreign")
+
+    def test_the_floor_bit_and_its_site(self):
+        room, code = self.room, self.code
+        self.assertEqual((room.STAGE_FLOOR, room.STAGE_OVER_CAP), (64, 128))
+        self.assertEqual((code.STAGE_FLOOR, code.STAGE_OVER_CAP, code.STAGE_MASK), (64, 128, 511))  # D3 = 256
+        labels = {label: at for label, at, _o, _p in room._sites(0x1529000, code.STAGE_D1)}
+        # Floor review step 2: 0x24807A enters end_entry (room_entry's pass, then the end-of-advance floor) and the
+        # floor adds the stage advance's 0x248687.
+        self.assertEqual(labels, {"pregame_entry": 0x247DCA, "end_entry": 0x24807A})
+        self.assertEqual({label: at for label, at, *_ in room._sites(0x1529000, room.STAGE_FLOOR)},
+                         {"pregame_entry": 0x247DCA, "end_entry": 0x24807A, "sign_entry": 0x248010,
+                          "stage_entry": 0x248687})
+        self.assertEqual(room._site_stages(room.STAGE_FLOOR) & code.STAGE_SIGN, code.STAGE_SIGN)
+        self.assertEqual(room._site_stages(code.STAGE_D1), code.STAGE_D1)
+        self.assertFalse(room.REALISTIC_STAGES & room.STAGE_FLOOR)  # set only at the floor handover, by the lead
+
+    def test_over_the_cap_is_retired_and_the_ungated_entry_is_not_read(self):
+        # Floor review F1(b), route A: the floor signs only through the gated routine and never over the cap, so bit 128
+        # is refused for new installs and the native signing routine 0x322BB0..0x322DF1 is no longer the owner's to read.
+        from mod_editor.core import nfl2k5_injured_reserve as ir
+        room = self.room
+        base, _ = ir.apply(self.slice1, "modern", standard_guard=True)
+        for stages in (room.STAGE_OVER_CAP, room.STAGE_FLOOR | room.STAGE_OVER_CAP):
+            with self.subTest(stages=stages):
+                with self.assertRaisesRegex(ValueError, "over the cap is retired"):
+                    room.apply(base, "realistic", stages=stages)
+        floor, _ = room.apply(base, "realistic")
+        for name, va in (("entry", 0x322BB0), ("body start", 0x322BB6), ("body", 0x322C40), ("return", 0x322DEE)):
+            with self.subTest(case=name):
+                changed = room._patch(floor, [(va, XbeImage(floor).read(va, 1), b"\xcc")])
+                self.assertEqual(room.status(changed), "applied")
+                self.assertEqual(room.apply(changed, "retail")[0],
+                                 room._patch(room.apply(floor, "retail")[0],
+                                             [(va, XbeImage(floor).read(va, 1), b"\xcc")]))
+                self.assertFalse(any("native signing routine" in line
+                                     for line in room.requirements(changed, room.STAGE_FLOOR)))
+
+    def test_the_stage_advance_site(self):
+        # Floor review step 2 (01535a35b): 0x248687, the stage advance's call 0x27EDF0 where every case converges, enters
+        # stage_entry for bit 64 only. It is authenticated with the other sites and Retail restores it.
+        from mod_editor.core import nfl2k5_injured_reserve as ir
+        room, code = self.room, self.code
+        site, retail = 0x248687, bytes.fromhex("e864670300")
+        self.assertIn((site, retail, "stage_entry", room.STAGE_FLOOR), code.HOOKS)
+        base, _ = ir.apply(self.slice1, "modern", standard_guard=True)
+        empty = space.extend_scaleout(base, room.REQUESTS)[0]
+        floor, receipt = room.apply(base, "realistic", stages=room.STAGE_FLOOR)
+        self.assertIn(hex(site), receipt["sites"])
+        call = XbeImage(floor).read(site, 5)
+        self.assertEqual(call[0], 0xE8)
+        self.assertEqual(site + 5 + int.from_bytes(call[1:], "little", signed=True), room.VA + code.LABELS["stage_entry"])
+        piece3, _ = room.apply(base, "realistic", stages=code.STAGE_D1 | code.STAGE_D2)
+        self.assertEqual(XbeImage(piece3).read(site, 5), retail)  # no floor, no stage advance call
+        self.assertEqual(room.apply(floor, "retail")[0], empty)
+        self.assertEqual(XbeImage(empty).read(site, 5), retail)
+        foreign_call = bytes.fromhex("e800000000")
+        for name, payload in (("floor page", floor), ("empty reservation", empty), ("piece 3 page", piece3)):
+            with self.subTest(case=name):
+                changed = room._patch(payload, [(site, XbeImage(payload).read(site, 5), foreign_call)])
+                self.assertEqual(room.status(changed), "foreign")
+                for level in ("retail", "realistic"):
+                    with self.assertRaisesRegex(ValueError, "not recognized"):
+                        room.apply(changed, level)
+
+    def test_the_economy_routines_the_floor_calls_are_authenticated(self):
+        room = self.room
+        self.assertIsNone(room.floor_economy_problem(self.slice1))
+        retail = Path(os.environ.get("NFL2K5_RETAIL_XBE", ""))
+        if retail.is_file():
+            self.assertIn("restructure", room.floor_economy_problem(retail.read_bytes()))
+        for name, va, data, word in (("restructure", 0x3B9F60, b"\xc3", "restructure"),
+                                     ("cut-down jump", room.SMART_CUT + 1, b"\x00", "smart cut"),
+                                     ("smart cut body", 0x3E21D4, b"\xcc", "smart cut")):
+            with self.subTest(case=name):
+                self.assertIn(word, room.floor_economy_problem(self._changed(self.slice1, va, data)))
+
+    def test_the_floors_needs(self):
+        room, code = self.room, self.code
+        self.assertEqual(room.requirements(self.slice1, code.STAGE_D1), [])
+        needs = room.requirements(self.slice1, code.STAGE_D1 | room.STAGE_FLOOR)
+        # The helmet test executable has the economy and the practice squad but not modern IR or the ownership page.
+        self.assertEqual(needs, ["Emergency quarterback signings need modern injured reserve.",
+                                 "Emergency quarterback signings need the franchise ownership safeguards."])
+        foreign = self._changed(self.slice1, 0x3B9F60, b"\xc3")
+        self.assertIn("The quarterback floor found unrecognized code in the economy's restructure (0x3B9F60).",
+                      room.requirements(foreign, code.STAGE_D1 | room.STAGE_FLOOR))
+        # Without the floor bit the economy's routines are not the owner's business (the changed byte also breaks the
+        # section digest the other owners check, so only the floor's own line is compared).
+        self.assertFalse(any("restructure" in line for line in room.requirements(foreign, code.STAGE_D1)))
+        with self.assertRaisesRegex(ValueError, "over the cap is retired"):
+            room.requirements(self.slice1, code.STAGE_D1 | room.STAGE_FLOOR | room.STAGE_OVER_CAP)
+
+    def test_install_stages_needs_modern_ir_and_ownership_and_round_trips(self):
+        from mod_editor.core import nfl2k5_injured_reserve as ir
+        room, code = self.room, self.code
+        stages = code.STAGE_D1 | room.STAGE_FLOOR
+        with self.assertRaisesRegex(ValueError, "modern injured reserve"):
+            room.install_stages(self.slice1, stages)
+        upgraded, _ = ir.apply(self.slice1, "modern", standard_guard=True)  # the real IR installer adds ownership
+        floor, receipt = room.install_stages(upgraded, stages)
+        settings = room.read_settings(floor)
+        self.assertEqual((settings["status"], settings["stages"], settings["shadow"]), ("applied", stages, False))
+        self.assertEqual(receipt["sites"], ["0x247dca", "0x24807a", "0x248010", "0x248687"])
+        empty = space.extend_scaleout(upgraded, room.REQUESTS)[0]
+        self.assertEqual(room.apply(floor, "retail")[0], empty)
+        self.assertEqual(room.install_stages(empty, stages)[0], floor)
+        self.assertEqual(room.apply(floor, "realistic")[0], room.apply(empty, "realistic")[0])  # Studio record wins
+        self.assertEqual(room.status(self._changed(floor, 0x3B9F60, b"\xc3")), "foreign")
+
+    def test_a_floor_page_installs_the_signing_site_and_retail_restores_everything(self):
+        room, code = self.room, self.code
+        if not hasattr(code, "STAGE_FLOOR"):
+            self.skipTest("the page template has no floor yet ([native] commits it)")
+        applied, _ = room.install_stages(self.slice1, code.STAGE_D1)
+        stages = code.STAGE_D1 | room.STAGE_FLOOR
+        record = code.settings_record(stages)
+        page = code.page_bytes(0x1529000, record, ir_store_va=room._ir_store_va(applied, stages))
+        edits = [(0x1529000, XbeImage(applied).read(0x1529000, 0x3000), page)]
+        edits += [(at, original, patched) for label, at, original, patched in room._sites(0x1529000, stages)
+                  if label in ("sign_entry", "stage_entry")]
+        self.assertEqual(len(edits), 3)
+        floor = room._patch(applied, edits)
+        self.assertEqual((room.read_settings(floor)["status"], room.read_settings(floor)["stages"]), ("applied", stages))
+        self.assertEqual(room.apply(floor, "retail")[0], room.apply(applied, "retail")[0])
+        restructure = room._patch(floor, [(0x3B9F60, XbeImage(floor).read(0x3B9F60, 1), b"\xc3")])
+        self.assertEqual(room.status(restructure), "foreign")
+
+
+
+class PreviousRevisionTests(unittest.TestCase):
+    """Pages an earlier revision's Studio wrote ([validator]'s finding at c8683ea7e, lead's request): the floor handover
+    (template 75257128, stage set 192; the P2a candidate c93f6c0d), the reviewed stage 0 + 3a page (78d3633d3, stage
+    set 1; candidate 4af354d7) and the D1 + D2 handover (template 65259084 at 692062151, 195; the P6 candidate
+    72a78fce). They read "previous"; Realistic upgrades them in place to the current template
+    (the bytes of a fresh install on the same source, no allocator row moves); Retail restores the source plus the
+    empty reservation; any other page is still foreign. The previous executables are rebuilt here from the frozen
+    templates and must equal the hashes recorded when those revisions were built."""
+
+    # b81 merge of 5854e5144 (slices 2 and 3): the injury option's Realistic now writes slices 1 to 3, so every rebuilt
+    # previous executable differs from the one its panel ran (on slice 1 alone). Re-pinned to the rebuilds at the merged
+    # head; the panel executables were, in order: 72a78fce (P6 candidate at 692062151), 9e1f2b83 (P6-final at
+    # 66d8a7e1b), 58462a62 (P2a-final at 66d8a7e1b), c93f6c0d / a0a81494 (floor handover), 4af354d7 / 6aef88eb (3a).
+    # Integration merge of qb34 (scoring + stability revision 4 under the room): re-pinned again; every rebuild differs
+    # from its 5854e5144 rebuild only where its source (the injury option's executable) differs, plus the shared registry
+    # and header fields; the room's page and sites are unchanged. The 5854e5144 values were D1D2 52f4d9fe, REVIEW_67
+    # 1c68a15f, REVIEW_64 e6928baf, FLOOR ab292056 / 6e14638a, STAGE_3A 449e651e / e3270c1b.
+    # Practice squad merge (economy revision 8): the fixture's economy is upgraded first, so re-pinned once more; each
+    # rebuild differs from its qb34-merge rebuild exactly where the economy upgrade changes its source (plus one header
+    # digest byte). The qb34-merge values were D1D2 cdb2fd96, REVIEW_67 e0acccbd, REVIEW_64 15a779c5, FLOOR 5087b8d3 /
+    # 5a798bf1, STAGE_3A cd746c09 / 33b007d0.
+    # Combined calibration levers (merge queue item 15): re-pinned once more; every rebuild differs from its
+    # practice-squad-merge rebuild exactly where the injury option's executable differs (the QB bank's tables for
+    # QB_CHANCE_SCALE 1.06, the scoring site's breakaway stop 68, the registry hash and digests).
+    # b81 integration (#36 CPU trades + #35 game outcomes merge): both lanes re-pinned these rebuilt previous executables
+    # for their own change (the trades owner's pages and registry; the QB option's revision 5 bank); with both merged
+    # every one moves again. Re-measured on the merged code; the upgrade and restore round trips below pass on it.
+    # b81 integration (#34 economy rev 10 merge): the economy lane's note, then re-measured again:
+    # Economy revision 10 (with team building's revision 9 and its 6c5a4ec17 review fixes, and the hole rule on the
+    # mid-rank header, then the one retune round of 11/25 the review fixes and the 11/25 constants): re-pinned. Every rebuild differs from the same rebuild on
+    # 3647cabab only inside the economy's own sites (revisions 9 and 10) plus two section digests (40 bytes). The
+    # earlier values were D1D2 5d471c14, REVIEW_67 08087d17, REVIEW_64 c22d95b6, FLOOR 55e52233 / 8652889e,
+    # STAGE_3A 5b3c065a / 0af4c40f, HANDOVER 61724296 / 58e85935 (3647cabab's revision 9 had already moved them).
+    # b81 #46 (economy K/P cover: three more windows, roster_a/roster_h rewritten, the stage-9 table entry, the cover from stage 7, the smart cut's pick (#46c)): re-pinned;
+    # every rebuild differs from its 6e37263e1 rebuild only inside the economy's own sites plus one section digest
+    # (20 bytes; floor and 3a checked byte for byte). The 6e37263e1 values were D1D2 a7667035, REVIEW_67 2860ea73, REVIEW_64 e53ef640, FLOOR a4d3322e, FLOOR_EMPTY a9f8c440, STAGE_3A 5faed0e6, STAGE_3A_EMPTY f70579bd, HANDOVER_67 a3560aa2, HANDOVER_64 926cbb2d.
+    # b81 #46 review (F1 the stage-9 sim call 0x247E77 instead of the table entry, F3-F5 the one-release cover and its three
+    # windows, D2/D3 the club count and the cut's bound): re-pinned; each rebuild differs from its a44936f8e rebuild only inside
+    # the economy's own sites, one section digest (20 bytes) and the table entry 0x2480A8, retail again (floor checked byte
+    # for byte). The a3dbd0774 values were D1D2 3b2b3735, REVIEW_67 e31e867d, REVIEW_64 a6cbdcd4, FLOOR 7516651d, FLOOR_EMPTY 04067f62, STAGE_3A a415e37e, STAGE_3A_EMPTY d05a6bf9, HANDOVER_67 ff3eaeed, HANDOVER_64 78d362eb.
+    # b81 integration (#45 + #46 merge, 11/27): every rebuild is on a base the economy upgraded to the current revision,
+    # and #45 (revision 11) rewrites its two rank windows (value 0x2BD440, r10_15e9d0 0x15E9D0): each rebuild differs from
+    # #46's exactly there and in the section digests (3 runs, 67 bytes; the room's pages and sites unchanged). #46's values
+    # were D1D2 c45f5ae1, REVIEW_67 dbbf1994, REVIEW_64 d037908f, FLOOR 2bba2ade, FLOOR_EMPTY 07a4e865, STAGE_3A 9bb3a549,
+    # STAGE_3A_EMPTY 9f1dd439, HANDOVER_67 30e484cf, HANDOVER_64 d2a0f3b6.
+    D1D2_SHA = "c99e7013e4ef389dd107acf6744359e08cec7756f38dcf504288f443962e9048"
+    REVIEW_67_SHA = "9dddcdd5cfd3d3d1cb0fe6089d07d59cf0b2ea308ea531bf094a4fdd41d78aad"
+    REVIEW_64_SHA = "61c65c9a7cec256b8a53ce45b7fa689b7a90ec8b109ac8e6eaa0c57f8d553ed8"
+    FLOOR_SHA = "827f1eab79acf1af5c0b9c4da532e6318029ce51ee13c068738d9ca9b7c82ae8"
+    FLOOR_EMPTY_SHA = "2cb5341bbd4e241e6e94c28342ceed170d406cc36033f7dc1d49261c12d7b33c"
+    STAGE_3A_SHA = "ef49e73a633d013844544207982628d073761d34b6d925f905d49b9b66468936"
+    STAGE_3A_EMPTY_SHA = "0ade5b38b2df8c0b771319327d09e3e868a70ce22b882028a3e76fcca690e275"
+    # b2672e398's page (C21/C23 freeze it as "previous"): the P5 and P6-5ff panels ran f5270f4d (67) and 35ce7727 (64)
+    # on slice 1 alone; rebuilt here at the merged head.
+    HANDOVER_67_SHA = "85fe7b26226ae675a5663de32e7944850747a5704c9314634ffa7cb850fc423a"
+    HANDOVER_64_SHA = "74a1371002a656cc60de7ed7c4a089b1c90844e3d7b15d6f6c67a6347e313b6b"
+
+    @classmethod
+    # b81 modern numbers (modern IR's number-rights revision, 866fe3a8d / 911e590e3): the fixture's base is built with
+    # ir.apply, so every rebuild on that base differs from its earlier rebuild exactly in the IR runtime's code (its own
+    # allocation) and the digests; the room's pages and sites are unchanged, and the 3a rebuilds (no IR) did not move.
+    # The earlier values were D1D2 5d471c14, REVIEW_67 08087d17, REVIEW_64 c22d95b6, FLOOR 55e52233, FLOOR_EMPTY 8652889e, HANDOVER_67 61724296, HANDOVER_64 58e85935.
+    # Review S2 (IR rollover renumbers after the store is rebuilt) moved them again; before it: D1D2 103a4a6a, REVIEW_67 35d7feb5, REVIEW_64 3d752303, FLOOR 217c10a8, FLOOR_EMPTY 68c1556b, HANDOVER_67 8a2c1b18, HANDOVER_64 566e68b5.
+    def setUpClass(cls):
+        from mod_editor.core import nfl2k5_injured_reserve as ir, nfl2k5_qb_room as room, nfl2k5_sim_qb_injuries as qb
+        cls.room = room
+        source = _private("NFL2K5_B81_REVIEWED_TEST_DISC", HELMET_XBE_SHA)
+        cls.slice1, _ = qb.apply(source, "realistic")
+        # b81 integration (practice squad merge): economy revision 7 on the helmet disc upgraded to the current one, as
+        # the Studio routes do before the floor (the floor authenticates the current economy's routines)
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        cls.slice1, _ = economy.apply(cls.slice1)
+        cls.base, _ = ir.apply(cls.slice1, "modern", standard_guard=True)
+        cls.floor_empty, cls.floor = cls._written_by("nfl2k5_qb_room_code_b81_floor", cls.base, 192)
+        cls.stage_3a_empty, cls.stage_3a = cls._written_by("nfl2k5_qb_room_code_b81_3a", cls.slice1, 1)
+        _empty, cls.d1d2 = cls._written_by("nfl2k5_qb_room_code_b81_d1d2", cls.base, 195)
+        _empty, cls.review67 = cls._written_by("nfl2k5_qb_room_code_b81_floor_review", cls.base, 67)
+        _empty, cls.review64 = cls._written_by("nfl2k5_qb_room_code_b81_floor_review", cls.base, 64)
+        _empty, cls.handover67 = cls._written_by("nfl2k5_qb_room_code_b81_handover", cls.base, 67)
+        _empty, cls.handover64 = cls._written_by("nfl2k5_qb_room_code_b81_handover", cls.base, 64)
+
+    @classmethod
+    def _written_by(cls, template, source, stages):
+        """(empty reservation, what that revision's Studio wrote): its whole page and its calls, byte for byte."""
+        import importlib
+        old, room = importlib.import_module(f"mod_editor.core.{template}"), cls.room
+        empty = space.extend_scaleout(source, room.REQUESTS)[0]
+        page = old.page_bytes(room.VA, old.settings_record(stages), ir_store_va=0)
+        edits = [(room.VA, b"\xcc" * room.SIZE, page)]
+        edits += [(at, o, p) for _l, at, o, p in old.sites(room.VA, stages | 8 if stages & 64 else stages)]
+        return empty, room._patch(empty, edits)
+
+    @staticmethod
+    def _rows(payload):
+        """Allocator rows, the trades page's left out: Realistic is 383 on this base (the trades review's F1), which adds
+        that one row at 0x152C000 and moves none (StudioTrades in test_b81_qb_room_trades.py pins it)."""
+        return [(r["owner"], r["kind"], r["va"], r["size"]) for r in space.layout(payload)["allocations"]
+                if r["owner"] != "nfl2k5_qb_trades"]
+
+    def _changed(self, payload, va, data):
+        image, out = XbeImage(payload), bytearray(payload)
+        at = image.offset(va, len(data))
+        out[at:at + len(data)] = data
+        return bytes(out)
+
+    def test_the_rebuilt_previous_executables_are_the_recorded_ones(self):
+        sha = lambda data: hashlib.sha256(data).hexdigest()
+        self.assertEqual((sha(self.floor), sha(self.floor_empty)), (self.FLOOR_SHA, self.FLOOR_EMPTY_SHA))
+        self.assertEqual((sha(self.stage_3a), sha(self.stage_3a_empty)), (self.STAGE_3A_SHA, self.STAGE_3A_EMPTY_SHA))
+        self.assertEqual(sha(self.d1d2), self.D1D2_SHA)
+        self.assertEqual((sha(self.review67), sha(self.review64)), (self.REVIEW_67_SHA, self.REVIEW_64_SHA))
+        self.assertEqual((sha(self.handover67), sha(self.handover64)), (self.HANDOVER_67_SHA, self.HANDOVER_64_SHA))
+
+    def test_status_reads_previous(self):
+        room = self.room
+        for payload, revision, stages in ((self.floor, "b81 floor handover", 192), (self.stage_3a, "b81 stage 3a", 1),
+                                          (self.d1d2, "b81 D1 + D2 handover", 195),
+                                          (self.review67, "b81 floor review", 67), (self.review64, "b81 floor review", 64),
+                                          (self.handover67, "b81 floor + D1 + D2 hand-over", 67),
+                                          (self.handover64, "b81 floor + D1 + D2 hand-over", 64)):
+            with self.subTest(revision=revision):
+                settings = room.read_settings(payload)
+                self.assertEqual((settings["status"], settings.get("revision"), settings.get("stages")),
+                                 ("previous", revision, stages))
+                self.assertEqual(room.status(payload), "previous")
+
+    def test_realistic_upgrades_the_floor_page_in_place(self):
+        room = self.room
+        for stages in (None, 64):
+            with self.subTest(stages=stages):
+                upgraded, receipt = room.apply(self.floor, "realistic", stages=stages)
+                fresh, _ = room.apply(self.base, "realistic", stages=stages)
+                self.assertEqual(upgraded, fresh)
+                self.assertEqual(receipt["upgraded_from"], "b81 floor handover")
+                self.assertEqual(self._rows(upgraded), self._rows(self.floor))
+                self.assertEqual(room.read_settings(upgraded)["status"], "applied")
+
+    def test_the_d1_d2_page_upgrades_and_restores(self):
+        room = self.room
+        upgraded, receipt = room.apply(self.d1d2, "realistic")
+        self.assertEqual(upgraded, room.apply(self.base, "realistic")[0])
+        self.assertEqual((receipt["upgraded_from"], self._rows(upgraded)), ("b81 D1 + D2 handover", self._rows(self.d1d2)))
+        self.assertEqual(room.apply(self.d1d2, "retail")[0], self.floor_empty)  # 87346291 + the empty reservation
+
+    def test_the_floor_review_pages_upgrade_and_restore(self):
+        # The page 66d8a7e1b's Studio wrote (P6-final and P2a-final; the witnesses there) differs from the current one
+        # (the pool-free choose, 5ff30d9f8): it reads previous, upgrades to a fresh install and restores.
+        room = self.room
+        for payload, stages in ((self.review67, None), (self.review64, 64)):
+            with self.subTest(stages=stages):
+                upgraded, receipt = room.apply(payload, "realistic", stages=stages)
+                self.assertEqual(upgraded, room.apply(self.base, "realistic", stages=stages)[0])
+                self.assertEqual(receipt["upgraded_from"], "b81 floor review")
+                self.assertEqual(self._rows(upgraded), self._rows(payload))
+                self.assertEqual(room.apply(payload, "retail")[0], self.floor_empty)
+
+    def test_the_hand_over_pages_upgrade_and_restore(self):
+        # C21: the page b2672e398's Studio wrote (f5270f4d, 35ce7727: the P5 and P6-5ff candidates) differs from the
+        # current one (E1/E2's protected release); it reads previous, upgrades to a fresh install and restores.
+        room = self.room
+        for payload, stages in ((self.handover67, None), (self.handover64, 64)):
+            with self.subTest(stages=stages):
+                upgraded, receipt = room.apply(payload, "realistic", stages=stages)
+                self.assertEqual(upgraded, room.apply(self.base, "realistic", stages=stages)[0])
+                self.assertEqual(receipt["upgraded_from"], "b81 floor + D1 + D2 hand-over")
+                self.assertEqual(self._rows(upgraded), self._rows(payload))
+                self.assertEqual(room.apply(payload, "retail")[0], self.floor_empty)
+
+    def test_the_hand_over_page_at_every_set_its_studios_wrote(self):
+        # The E1/E2 review's F1 and the standing rule (coordinator, 11/21): every page and stage set a Studio at a head
+        # merged to integration could write reads "previous" at every later head. b2672e398's page was written at 67,
+        # 64 and 3 (Custom 0) there, and at 327 and 263 (Custom 0) by the D3/D4 hand-over's Studio at 9c7f38657 (the
+        # lead's witnesses 72ca9c12, 961d13db, ba363326). Each reads previous, upgrades in place to a fresh 367 (E1 and
+        # E2 on, the stage set this branch's needs allow) and restores to the empty reservation.
+        room = self.room
+        fresh, _ = room.install_stages(self.base, 367)
+        for stages in (67, 64, 3, 327, 263):
+            with self.subTest(stages=stages):
+                _empty, payload = self._written_by("nfl2k5_qb_room_code_b81_handover", self.base, stages)
+                settings = room.read_settings(payload)
+                self.assertEqual((settings["status"], settings.get("revision"), settings.get("stages")),
+                                 ("previous", "b81 floor + D1 + D2 hand-over", stages))
+                upgraded, receipt = room.install_stages(payload, 367)
+                self.assertEqual(upgraded, fresh)
+                self.assertEqual((receipt["upgraded_from"], receipt["stages"]), ("b81 floor + D1 + D2 hand-over", 367))
+                self.assertEqual(self._rows(upgraded), self._rows(payload))
+                self.assertEqual(room.apply(payload, "retail")[0], self.floor_empty)
+
+    def test_retail_restores_the_floor_page(self):
+        restored, receipt = self.room.apply(self.floor, "retail")
+        self.assertEqual(restored, self.floor_empty)
+        self.assertEqual((receipt["restored_stages"], receipt["restored_revision"]), (192, "b81 floor handover"))
+
+    def test_the_stage_3a_page_upgrades_and_restores(self):
+        room = self.room
+        self.assertEqual(room.apply(self.stage_3a, "retail")[0], self.stage_3a_empty)
+        self.assertEqual(room.apply(self.stage_3a, "realistic", stages=3)[0],
+                         room.apply(self.stage_3a_empty, "realistic", stages=3)[0])
+        # The current Realistic carries the floor, whose needs this executable lacks: refused with the needs.
+        with self.assertRaisesRegex(ValueError, "modern injured reserve"):
+            room.apply(self.stage_3a, "realistic")
+
+    def test_star_retention_accepts_the_floor_pages_signing_call(self):
+        from mod_editor.core import nfl2k5_star_retention as retention
+        self.assertEqual(retention.status(self.base), "applied")
+        self.assertEqual(retention.status(self.floor), "applied")
+        self.assertEqual(retention.apply(self.floor)[1]["status"], "already_applied")
+
+    def test_anything_else_is_still_foreign(self):
+        import importlib
+        room = self.room
+        old = importlib.import_module("mod_editor.core.nfl2k5_qb_room_code_b81_floor")
+        current_calls = {at: p for _l, at, _o, p in room._code().sites(room.VA, 64 | 8)}
+        _empty, unwritten = self._written_by("nfl2k5_qb_room_code_b81_floor", self.base, 64)  # a set no Studio wrote
+        cases = {"page code byte": self._changed(self.floor, room.VA + 0x10, b"\x90"),
+                 "settings record": self._changed(self.floor, room.VA + old.SETTINGS_OFFSET + 8, b"\x41"),
+                 "old page, current call": self._changed(self.floor, 0x248010, current_calls[0x248010]),
+                 "stage set no Studio wrote": unwritten,
+                 "3a page with a changed byte": self._changed(self.stage_3a, room.VA + 0x20, b"\x90"),
+                 # The floor handover never wrote the stage advance site (floor review step 2); a call there is foreign.
+                 "floor handover page, stage advance call": room._patch(
+                     self.floor, [(0x248687, XbeImage(self.floor).read(0x248687, 5), current_calls[0x248687])])}
+        for name, payload in cases.items():
+            with self.subTest(case=name):
+                self.assertEqual(room.status(payload), "foreign")
+                for level in ("retail", "realistic"):
+                    with self.assertRaisesRegex(ValueError, "not recognized"):
+                        room.apply(payload, level)
+
+class TestOnlyInstallTests(unittest.TestCase):
+    """install_stages(test_without_needs=True) replays recorded seasons on executables made before modern IR and the
+    ownership page; it skips only the dependency checks, and nothing in the Studio can reach it."""
+
+    def test_the_studio_never_reaches_the_calibration_path(self):
+        import re
+        hits = []
+        for path in [*(ROOT / "mod_editor").rglob("*.py"), ROOT / "tools/nfl2k5_modpack.py"]:
+            if path.name in ("nfl2k5_qb_room.py", "nfl2k5_cpu_trades.py"):   # each owner's own calibration path
+                continue
+            text = path.read_text(encoding="utf-8", errors="replace")
+            if re.search(r"install_stages|test_without_needs", text):
+                hits.append(str(path.relative_to(ROOT)))
+        self.assertEqual(hits, [])
+
+    def test_the_floor_without_its_needs_on_9f435b38(self):
+        from mod_editor.core import nfl2k5_qb_room as room, nfl2k5_sim_qb_injuries as qb
+        source = _private("NFL2K5_B81_REVIEWED_TEST_DISC", HELMET_XBE_SHA)
+        slice1, _ = qb.apply(source, "realistic")
+        # b81 economy r10: the floor authenticates the CURRENT economy's restructure, and revision 10 changed it (no
+        # restructure under 3 years left, no 6-to-2 deal), so the helmet disc's revision 7 economy is upgraded first, as
+        # the Studio routes and PreviousRevisionTests do.
+        from mod_editor.core import nfl2k5_franchise_economy as economy
+        slice1, _ = economy.apply(slice1)
+        stages = room.STAGE_FLOOR
+        with self.assertRaisesRegex(ValueError, "modern injured reserve"):
+            room.install_stages(slice1, stages)
+        replay, receipt = room.install_stages(slice1, stages, test_without_needs=True)
+        self.assertTrue(receipt["test_without_needs"])
+        self.assertEqual((room.read_settings(replay)["stages"], room.read_settings(replay)["shadow"]), (64, False))
+        self.assertEqual(room.apply(replay, "retail")[0], space.extend_scaleout(slice1, room.REQUESTS)[0])
+        with self.assertRaisesRegex(ValueError, "over the cap is retired"):
+            room.install_stages(slice1, stages | room.STAGE_OVER_CAP, test_without_needs=True)
+        # Authentication still applies (the byte is changed with resealed digests, so only the routine differs).
+        changed = room._patch(slice1, [(0x3B9F60, XbeImage(slice1).read(0x3B9F60, 1), b"\xc3")])
+        with self.assertRaisesRegex(ValueError, "restructure"):
+            room.install_stages(changed, stages, test_without_needs=True)
+
+
+class ReleasedV09OwnerTests(unittest.TestCase):
+    def test_the_released_v09_executable_takes_and_returns_the_room(self):
+        from mod_editor.core import nfl2k5_qb_room as room
+        source = _private("NFL2K5_V09_XISO", V09_XBE_SHA)
+        self.assertEqual(room.requirements(source, room._code().STAGE_D1), [])
+        applied, receipt = room.install_stages(source, room._code().STAGE_D1)
+        self.assertEqual(room.status(applied), "applied")
+        before = space.layout(source)["allocations"]
+        after = space.layout(applied)["allocations"]
+        self.assertEqual([r for r in before if r["owner"] != space.DIRECTORY_OWNER and r not in after], [])
+        self.assertEqual(_room_row(after)["va"], 0x1529000)
+        self.assertEqual(room.apply(applied, "retail")[0], space.extend_scaleout(source, room.REQUESTS)[0])
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -463,9 +463,9 @@ def compress_h7a(
 # first try ``compress_h7a`` and pass that result back here only when it does
 # not fit.
 _OPTIMAL_BINARY = Path(__file__).resolve().parent / "apf_h7a_optimal"
-_OPTIMAL_BINARY_SIZE = 14_472
+_OPTIMAL_BINARY_SIZE = 18_568
 _OPTIMAL_BINARY_SHA256 = (
-    "9061866e31f1a2930eceaa4fb8652ef1b7aa9b04cbce0174cc0eae125f8e49ab"
+    "d081d19c0078f768d2cb935732c910945c55d372dd9e1cc2b3e16ef9cfcf86a0"
 )
 
 

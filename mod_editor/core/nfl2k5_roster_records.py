@@ -228,6 +228,9 @@ FREE_AGENT_LIST_CAP = 0x9C4          # the game's append helper (0x242560): cmp 
 # same records as the clubs -- 364 retail players are on a club and an all-star side at once.
 CLUB_TEAM_COUNT = 34
 FLAG_NFL_PLAYER = 0x04           # +0x08 bit 2: every rostered / free-agent retail record carries it
+PBP_FULL_NAME_WORD = 4           # Finn's "PBP Last Only" unchecked: the word at +0x08 is 4
+PBP_LAST_ONLY_WORD = 5           # Finn's "PBP Last Only" checked: the word at +0x08 is 5 (0x04 stays set)
+PHOTO_CLEARED = 0xFFFF           # Finn's Clear Photo: the game asks its global "nophoto" picture for this id
 FLAG_PROSPECT = 0x10             # +0x08 bit 4: the class generator's mark (or byte [esi+8],0x10 @ 0x2BE8D7)
 MSG_RELEASE_MINIMUM = "Unable to release player! {team} must maintain at least {minimum} players."
 MSG_RELEASE_MAX_FREE_AGENTS = "Unable to release player! Max free agents reached."
@@ -248,6 +251,32 @@ DRAFT_CLASS_WHY = ("the game regenerates the draft class into a fixed window of 
 # chain, rank = players already at that code (capped at 7), side by this rule.
 DEPTH_ROW_CAP = 7
 DEPTH_SIDE_FOR_RANK = {0: 2, 1: 0, 2: 1}
+# b81 R4 (Codex's native witness, finn-facts FACTS.md): the depth chart screen (row picker 0x242AE0) and the fielded
+# starter (0xE80D0 / 0xE8790) follow the stored depth rank at +0x28 bits 10-12; the club's pointer order changes
+# neither. Paired positions carry a second order in bits 13-15 (the side): the retail chart draws the left slot (LT,
+# LG, LWR, LCB, LDE, LDT, LOLB, ILB/LILB) from the rank order and the right slot (RT, RG, RWR, RCB, RDE, RDT, ROLB,
+# RILB) from the side order (slot table 0x5140D8, +0x44 chain). The game's own chart swap (0x242CA0) exchanges one
+# order's rows between two players and sets that order's lock bit on both, which is what keeps a change through the
+# patched weekly pass.
+DEPTH_FIELDS = ("depth_rank", "depth_side")
+DEPTH_LOCK_BITS = {"depth_rank": 0x01, "depth_side": 0x02}
+PAIRED_DEPTH_CODES = (3, 4, 7, 10, 11, 13, 14, 15, 16)          # nfl2k5_depth_locks.PAIRED_POSITIONS
+_RETAIL_DEPTH_SLOTS = {3: ("LWR", "RWR"), 4: ("LCB", "RCB"), 7: ("HB", "HB 2nd order"), 10: ("LOLB", "ROLB"),
+                       11: ("ILB", "RILB"), 13: ("LG", "RG"), 14: ("LT", "RT"), 15: ("LDT", "RDT"), 16: ("LDE", "RDE")}
+
+
+def depth_slot_names(code: int, scheme: str = "retail") -> tuple[str, str | None]:
+    """What the game's depth chart calls a position's rank order and, for a paired position, its side order."""
+
+    code = int(code)
+    if code not in PAIRED_DEPTH_CODES:
+        return position_name(code, scheme), None
+    name = position_name(code, scheme)
+    if name == position_name(code, "retail") and code in _RETAIL_DEPTH_SLOTS:
+        return _RETAIL_DEPTH_SLOTS[code]
+    if code == 7:
+        return name, f"{name} 2nd order"
+    return (f"L{name}", f"R{name}") if len(name) <= 3 else (f"L {name}", f"R {name}")
 
 
 class RosterRecordError(ValueError):
@@ -840,7 +869,10 @@ FIELDS: tuple[Field, ...] = (
     _f("college_pointer", 0x00, 4, 0, 32, "College pointer", "relative pointer to the 8-byte college record"),
     _f("pbp_id", 0x04, 2, 0, 16, "Play-By-Play Name", "index into the recorded name bank"),
     _f("photo_id", 0x06, 2, 0, 16, "Photo", "portrait id (f%04d)"),
-    _f("player_type", 0x08, 1, 0, 8, "Player Type", "4 = NFL player, 0 = draft class; bit 2 = announce last name only"),
+    _f("player_type", 0x08, 1, 0, 8, "Player Type",
+       "4 = NFL player, 0 = draft class. Bit 2 (0x04) is the game's NFL player marker (it keeps him eligible), "
+       "not a name setting. Finn's play-by-play last-name-only setting is the whole word at +0x08 (this byte "
+       "and +0x09) equal to 5"),
     _f("unknown_09", 0x09, 1, 0, 8, "Unknown +0x09"),
     _f("contract_value", 0x0A, 2, 0, 16, "Contract Value", "in $10,000 units: 377 = $3.77m"),
     _f("left_shoe", 0x0C, 1, 0, 3, "Left Shoe"),
@@ -927,14 +959,34 @@ def field_coverage() -> list[int]:
     return bits
 
 
+_FIELD_NAMES = tuple(f.name for f in FIELDS)
+_DECODED: dict[bytes, tuple[int, ...]] = {}      # b81 item 6: raw record -> field values (bounded below)
+_DECODED_LIMIT = 16384
+# b81 wave 3: records this process has produced with encode_record. decode_record of such bytes gives back the exact
+# values that made them, so a record decoded from them can reuse the bytes instead of encoding again (a composed franchise
+# edit re-reads the whole roster and then writes it, 4,164 encodes, about 0.6 s).
+_ENCODED_RAW: set[bytes] = set()
+
+
 def decode_record(raw: bytes) -> dict[str, int]:
-    """Every field of one 0x54 record, named fields and unknown bits alike."""
+    """Every field of one 0x54 record, named fields and unknown bits alike.
+
+    b81: remembered by the record's bytes. One franchise edit read the 4,164-record SOFTDRINK arena nine times
+    (the Rosters document and the save codecs' checks each decode every record); unchanged records now come from
+    this table. A fresh dict is returned every time, so callers may edit it."""
 
     _require(len(raw) == PLAYER_SIZE, f"a player record is {PLAYER_SIZE} bytes, got {len(raw)}")
+    key = bytes(raw)
+    known = _DECODED.get(key)
+    if known is not None:
+        return dict(zip(_FIELD_NAMES, known))
     out: dict[str, int] = {}
     for f in FIELDS:
         word = int.from_bytes(raw[f.offset: f.offset + f.size], "little")
         out[f.name] = (word >> f.shift) & ((1 << f.width) - 1)
+    if len(_DECODED) >= _DECODED_LIMIT:
+        _DECODED.clear()
+    _DECODED[key] = tuple(out[name] for name in _FIELD_NAMES)
     return out
 
 
@@ -952,6 +1004,26 @@ def encode_record(values: Mapping[str, int]) -> bytes:
     for (offset, size), word in words.items():
         raw[offset: offset + size] = word.to_bytes(size, "little")
     return bytes(raw)
+
+
+HISTORY_END_BIT = 0x80000000          # the last word of a player's history stream
+HISTORY_POSTSEASON_BIT = 0x20000000   # a postseason row (0x14EDB0 phase 1)
+HISTORY_CLEAR_FIELDS = (13, 8, 2)     # receiving, passing and rushing yards: the three averages the game divides by
+HISTORY_CLEAR_WORDS = 6
+HISTORY_CAPACITY_LARGE, HISTORY_CAPACITY_SMALL = 50_000, 20_000
+
+
+def neutral_history(slot: int) -> tuple[int, ...]:
+    """b81 R9: the six-word stream the game's own writer 0x14F220 leaves when it records zero for fields 2, 8 and 13 in
+    the regular season and then the postseason of season slot ``slot`` (Codex's native witness: slot 9 gave
+    0x248D0000 0x24880000 0x24820000 0x048D0000 0x04880000 0x84820000). Every getter reads zero and the three averages
+    have a row to divide by."""
+
+    _require(0 <= int(slot) <= 31, f"season slot {slot} is outside 0-31")
+    words = [phase | (int(slot) << 23) | (field << 16)
+             for phase in (HISTORY_POSTSEASON_BIT, 0) for field in HISTORY_CLEAR_FIELDS]
+    words[-1] |= HISTORY_END_BIT
+    return tuple(words)
 
 
 def _signed(value: int) -> int:
@@ -1019,14 +1091,25 @@ def franchise_reference_year(payload: bytes | bytearray, preamble: int,
     return None
 
 
+def finn_ir_marker(values: Mapping[str, int]) -> bool:
+    """Finn's injured-reserve marker in a save without an IR list (b81 finn-r2 review F1): +0x28 is exactly 0x00EE (the
+    low byte Finn writes over a healthy player's empty injury id) and the game's injured bit (+0x20 bit 31) is clear.
+    A low byte of 0xEE alone is not enough: the game's own injury id 750 (0x2EE) ends in it (T.J. Edwards on the
+    SOFTDRINK 2026 season). In a franchise save the IR list decides, never this byte."""
+
+    return (int(values["injured_reserve"]) == 0xEE and int(values["unknown_29_low"]) == 0
+            and not int(values["unknown_20_high"]) & 0x200)
+
+
 class PlayerRecord:
     """A decoded 0x54 record with typed access to every field and to the composites."""
 
-    __slots__ = ("values", "scheme", "reference_year")
+    __slots__ = ("values", "scheme", "reference_year", "_encoded")
 
     def __init__(self, values: Mapping[str, int], scheme: str = "retail", *,
                  reference_year: int | None = None) -> None:
         self.values: dict[str, int] = dict(values)
+        self._encoded: tuple[tuple[tuple[str, int], ...], bytes] | None = None
         # which position table this record's code should be READ through; the stored bytes never
         # change with it (see POSITION_SCHEMES)
         self.scheme: str = normalise_scheme(scheme)
@@ -1034,10 +1117,26 @@ class PlayerRecord:
 
     @classmethod
     def decode(cls, raw: bytes, scheme: str = "retail", *, reference_year: int | None = None) -> "PlayerRecord":
-        return cls(decode_record(raw), scheme, reference_year=reference_year)
+        record = cls(decode_record(raw), scheme, reference_year=reference_year)
+        key = bytes(raw)
+        if key in _ENCODED_RAW:
+            record._encoded = (tuple(record.values.items()), key)
+        return record
 
     def encode(self) -> bytes:
-        return encode_record(self.values)
+        """The 0x54 bytes. b81: remembered against the exact field values, so writing a 4,164-record roster encodes only
+        the records that changed since the last write (every franchise edit wrote the roster twice, about 3 s)."""
+
+        key = tuple(self.values.items())
+        cached = self._encoded
+        if cached is not None and cached[0] == key:
+            return cached[1]
+        raw = encode_record(self.values)
+        self._encoded = (key, raw)
+        if len(_ENCODED_RAW) >= _DECODED_LIMIT:
+            _ENCODED_RAW.clear()
+        _ENCODED_RAW.add(raw)
+        return raw
 
     def copy(self) -> "PlayerRecord":
         return PlayerRecord(self.values, self.scheme, reference_year=self.reference_year)
@@ -1259,11 +1358,22 @@ class PlayerRecord:
         return rating_profile(self.values["position"])
 
     @property
+    def player_type_word(self) -> int:
+        """The little-endian word at +0x08 that Finn's player form reads (player_type, then unknown_09)."""
+
+        return self.values["player_type"] | (self.values["unknown_09"] << 8)
+
+    @property
     def pbp_last_name_only(self) -> bool:
-        return bool(self.values["player_type"] & 0x04)
+        """Finn's "PBP Last Only" checkbox: checked exactly when the whole word at +0x08 equals 5."""
+
+        return self.player_type_word == PBP_LAST_ONLY_WORD
 
     @property
     def on_injured_reserve(self) -> bool:
+        """The low byte Finn writes on IR (any id ending in 0xEE, which includes the game's injury 750). Not the
+        Studio's IR test: use ``RosterDocument.is_on_injured_reserve`` (b81 finn-r2 review F1). Kept for the callers
+        that only become more cautious with it (save-to-disc, team transfer); see finn-r2/REVIEW_ME.md."""
         return self.values["injured_reserve"] == 0xEE
 
     @property
@@ -1529,7 +1639,8 @@ class RosterDocument:
     def __init__(self, body: bytes | bytearray, *, base: int = 0, source: str = "body",
                  container: "SaveContainer | None" = None, resource_header: bytes = b"",
                  scheme: str = "retail", reference_year: int | None = None,
-                 base_year: int = 2004) -> None:
+                 base_year: int = 2004, modern_ir: bool = False) -> None:
+        self.modern_ir = bool(modern_ir)
         self.body = bytearray(body)
         self.base = base
         self.source = source
@@ -1664,6 +1775,10 @@ class RosterDocument:
         except arena.ArenaError as exc:
             raise RosterRecordError(str(exc)) from exc
         self.arena_end = arena_end
+        from .nfl2k5_save_rost import Layout
+        descriptor = arena.capacity_descriptor(b, Layout(self.version, None, base, root, arena_end))
+        self.original_primary_count = self.u32(ob + POOL_FIELDS["primary"][0]) - (descriptor[0] if descriptor else 0)
+
         try:
             self.stadiums = storage.read_stadiums(b, root=root, end=arena_end)
         except storage.RosterStorageError as exc:
@@ -1751,6 +1866,8 @@ class RosterDocument:
                     name_offsets.append(target)
                     self.name_refs[target] = self.name_refs.get(target, 0) + 1
         self.names = StringPool(self.body, name_offsets, "player name")
+        if self.names.free:
+            self._protect_split_name_pool()
         self.college_pool = StringPool(self.body, college_strings, "college") if college_strings else None
         free_agent_set = set(self.free_agents)
         for player in self.players:
@@ -1776,12 +1893,15 @@ class RosterDocument:
         kind = player.record.values["player_type"]
         if (player.pool, player.index) in self.reserve_owner:
             player.group = "reserve"
+        elif player.offset in members and self.club_of(player) is None:
+            player.group = "free_agent"
         elif player.teams:
             player.group = "team"
-        elif player.offset in members:
-            player.group = "free_agent"
         elif player.pool == "primary" and (kind == 0 or kind & FLAG_PROSPECT):
-            player.group = "draft_class"
+            if player.first or player.last:
+                player.group = "draft_class"
+            else:
+                player.group = "draft_slot" if player.index < self.original_primary_count else "draft_capacity"
         else:
             player.group = "pool"
         return player.group
@@ -1841,6 +1961,8 @@ class RosterDocument:
                 "secondary": len(self.by_pool("secondary")), "teams": len(self.teams),
                 "colleges": len(self.colleges), "free_agents": len(self.free_agents),
                 "draft_class": len(self.group_players("draft_class")),
+                "draft_slots": len(self.group_players("draft_slot")),
+                "draft_capacity": len(self.group_players("draft_capacity")),
                 "names": self.names.summary(), "source": self.source,
                 "scheme": self.scheme, "base": f"0x{self.base:x}"}
 
@@ -1896,7 +2018,109 @@ class RosterDocument:
         for key in ("position", "depth_rank", "depth_side", "unknown_52"):
             player.record.values[key] = int(values[key])
 
+    def paste_player(self, target: Player, source: PlayerRecord, *, mode: str = "all",
+                     abilities: bool = False, identity: Mapping[str, Any] | None = None) -> dict[str, Any]:
+        """Finn's Paste onto ``target`` without carrying another player's slot (b81 R7).
+
+        ``copy_player`` keeps the target's depth rank/side, lock bits, injury (id, weeks, status) and IR
+        state, player kind, pool kind and star tag.  A pasted position is checked against the loaded scheme
+        first (a retired code refuses the whole paste, nothing changes) and then set the way a position edit
+        sets it: on a club the player goes to the bottom of his new position's chain, unlocked.
+
+        ``mode="exact"`` is Finn's Paste Player-Exact Copy, tailored: everything ``all`` copies, plus first and
+        last name, college (by name), play-by-play id and photo id.  ``identity`` carries the copied player's
+        ``{"first", "last", "college"}``.  The names go through ``set_name``, which points a shared name string
+        elsewhere instead of renaming every player who shares it (Finn's text edit renames them all).  Finn also
+        points both players at ONE career-history stream, which would make them share every future stat; the
+        Studio keeps the target's own history link.  A bad name or an unknown position refuses the whole paste.
+
+        Returns ``{"count", "before", "position_changed", "identity_before", "identity"}``; ``before`` is the
+        record to restore for undo and ``identity_before`` is ``{"first", "last", "college_index"}``."""
+
+        _require(self.by_offset.get(target.offset) is target, "player belongs to another document")
+        new_position = None
+        if mode in ("all", "exact") and source.values["position"] != target.record.values["position"]:
+            new_position = int(source.values["position"])
+            check_position_code(new_position, self.scheme)
+        wanted: dict[str, Any] = {}
+        if mode == "exact":
+            _require(identity is not None, "Paste exact copy needs the copied player's names and college")
+            wanted["first"] = validate_name(identity["first"])
+            wanted["last"] = validate_name(identity["last"])
+            college = str(identity.get("college") or "")
+            wanted["college_index"] = self.colleges.index(college) if college and college in self.colleges else None
+            wanted["college_missing"] = bool(college) and wanted["college_index"] is None
+        before = target.record.copy()
+        identity_before = {"first": target.first, "last": target.last, "college_index": target.college_index}
+        count = 0
+        identity_result: dict[str, Any] = {}
+        if mode == "exact":
+            changed_first = target.first != wanted["first"]
+            changed_last = target.last != wanted["last"]
+            try:
+                if changed_first:
+                    self.set_name(target, "first", wanted["first"])
+                if changed_last:
+                    self.set_name(target, "last", wanted["last"])
+            except RosterRecordError:
+                if changed_first and target.first != identity_before["first"]:
+                    self.set_name(target, "first", identity_before["first"])
+                raise
+            count += int(changed_first) + int(changed_last)
+            if wanted["college_index"] is not None and wanted["college_index"] != target.college_index:
+                self.set_college(target, wanted["college_index"])
+                count += 1
+            identity_result = {"first": changed_first, "last": changed_last,
+                               "college_missing": wanted["college_missing"],
+                               "college": wanted["college_index"] is not None
+                               and wanted["college_index"] != identity_before["college_index"]}
+        count += copy_player(source, target.record, mode=mode, abilities=abilities)
+        if new_position is not None:
+            target.record.values["position"] = before.values["position"]
+            self.change_position(target, new_position)
+        return {"count": count, "before": before, "position_changed": new_position is not None,
+                "identity_before": identity_before, "identity": identity_result}
+
+    def restore_pasted_player(self, target: Player, values: Mapping[str, int],
+                              identity: Mapping[str, Any] | None = None) -> None:
+        """Undo or redo of ``paste_player``: the record values put back, except the name and college pointers,
+        which live in the shared string pool and are re-pointed through ``set_name`` and ``set_college`` instead
+        (a stale pointer value would no longer match the body).  ``identity`` is ``{"first", "last",
+        "college_index"}`` for an exact paste, or None."""
+
+        _require(self.by_offset.get(target.offset) is target, "player belongs to another document")
+        skip = {"college_pointer", "first_name_pointer", "last_name_pointer"}
+        target.record.values.update({key: value for key, value in values.items() if key not in skip})
+        if identity is not None:
+            for which in ("first", "last"):
+                if getattr(target, which) != identity[which]:
+                    self.set_name(target, which, identity[which])
+            index = identity.get("college_index")
+            if index is not None and index != target.college_index:
+                self.set_college(target, index)
+
     # ------------------------------------------------------------------ edits
+    def _protect_split_name_pool(self) -> None:
+        """A relocated roster can place other live objects inside the outer range of player names."""
+        from bisect import bisect_left
+        from . import nfl2k5_roster_arena as arena, nfl2k5_save_rost as codec
+
+        try:
+            parsed = codec.decode(self.original, preamble=self.base)
+            pointers = sorted(target for f in arena.pointer_fields(parsed) if (target := parsed.rel(f)) is not None)
+        except ValueError:
+            # An unfamiliar layout can still reuse the referenced names and their own allocations.
+            self.names.free.clear()
+            return
+        tables = [(t.offset, t.offset + t.count * t.stride) for t in parsed.tables.values()
+                  if t.offset is not None and t.count]
+        for start, size in tuple(self.names.free.items()):
+            end = start + size
+            step = bisect_left(pointers, start)
+            if ((step < len(pointers) and pointers[step] < end)
+                    or any(left < end and start < right for left, right in tables)):
+                del self.names.free[start]
+
     def set_name(self, player: Player, which: str, text: str) -> dict[str, Any]:
         """Set a player's first or last name through the shared pool.  ``which`` is first|last."""
 
@@ -1922,6 +2146,7 @@ class RosterDocument:
         if current is not None and current != offset and self.name_refs.get(current, 0) == 0:
             self.names.release_if_unused(current)
         setattr(player, which, text)
+        self._reclassify(player)
         mode = "shared" if self.name_refs[offset] > 1 else ("in place" if offset == current else "moved")
         return {"changed": True, "offset": offset, "mode": mode,
                 "free_bytes_before": before_free, "free_bytes_after": self.names.free_bytes}
@@ -1934,10 +2159,120 @@ class RosterDocument:
         player.college_index = index
         player.college = self.colleges[index]
 
-    def move_in_depth(self, team_index: int, slot: int, delta: int) -> bool:
-        """Move one player up or down his team's pointer list -- Finn's ↑↓ arrows.
+    # ------------------------------------------------------------------ depth chart (b81 R4)
+    def depth_order(self, team_index: int, code: int, field: str = "depth_rank") -> list[Player]:
+        """One position's order on a club as the game's chart reads it: by the stored row, then pointer order."""
 
-        The holder, returner, kicker and snapper slot bytes stay with their players (b780 hunt5)."""
+        _require(field in DEPTH_FIELDS, f"{field!r} is not a depth order")
+        team = self.teams[team_index]
+        players = [(slot, self.by_offset[offset]) for slot, offset in enumerate(team.slots)
+                   if self.by_offset[offset].record.values["position"] == int(code)]
+        players.sort(key=lambda item: (item[1].record.values[field], item[0]))
+        return [player for _slot, player in players]
+
+    def _depth_snapshot(self, team_index: int, code: int) -> dict[int, tuple[int, int, int]]:
+        return {p.offset: (p.record.values["depth_rank"], p.record.values["depth_side"], p.record.values["unknown_52"])
+                for p in self.depth_order(team_index, code)}
+
+    def roster_state_ranges(self) -> list[tuple[int, int]]:
+        """b81 item 6: the body ranges that hold roster STATE (player records, every team's pointer list and count, the
+        free-agent list and its count). An edit whose bytes miss all of these cannot change what this document parsed,
+        so it can be written straight into ``body`` without re-reading the whole roster."""
+
+        ranges = [(p.offset, p.offset + PLAYER_SIZE) for p in self.players]
+        for team in self.teams:
+            ranges.append((team.offset, team.offset + TEAM_SLOTS * 4))
+            ranges.append((team.offset + TEAM_PLAYER_COUNT, team.offset + TEAM_PLAYER_COUNT + 1))
+        if self.free_agent_list is not None:
+            ranges.append((self.free_agent_list, self.free_agent_list + 4 * max(self.free_agent_capacity, 1)))
+            count_field = self.obj_base + OBJ_OFF + 0x38
+            ranges.append((count_field, count_field + 4))
+        return ranges
+
+    def restore_depth(self, snapshot: Mapping[int, Sequence[int]]) -> None:
+        """Undo of ``place_in_depth`` / ``settle_depth``: rows and lock bits exactly as they were."""
+
+        for offset, (rank, side, flags) in snapshot.items():
+            values = self.by_offset[offset].record.values
+            values["depth_rank"], values["depth_side"], values["unknown_52"] = int(rank), int(side), int(flags)
+
+    def settle_depth(self, team_index: int, code: int, field: str, pinned: Mapping[int, int],
+                     *, lock: bool = True, displaced: Player | None = None) -> dict[str, Any]:
+        """Seat one position order on a club: each ``pinned`` player (record offset -> row) at his row (in row order; a
+        taken row goes to the
+        next free one), everyone else in his current order in the rows left, rows unique and gap-free from 0 (the
+        eighth and later players share row 7, the game's overflow row). Players whose row changed get that order's
+        lock bit, as the game's own chart swap does, so the patched weekly pass keeps the new order (it still frees a
+        CPU club's lock when an unlocked player is 3 or more overall points better).
+
+        On a paired position one player must not start in both slots (LT and RT). If the new top of this order is also
+        the top of the other order, he and ``displaced`` (who started here before; by default the old top of this
+        order) exchange their rows in the other order: the two starters swap sides. Returns ``{"before", "changed"}``
+        with ``before`` for ``restore_depth``."""
+
+        _require(field in DEPTH_FIELDS, f"{field!r} is not a depth order")
+        code = int(code)
+        _require(field == "depth_rank" or code in PAIRED_DEPTH_CODES,
+                 f"{position_name(code, self.scheme)} has one depth order (the side order is for paired positions)")
+        order = self.depth_order(team_index, code, field)
+        position_of = {p.offset: i for i, p in enumerate(order)}
+        _require(all(offset in position_of for offset in pinned), "a pinned player is not on this club at this position")
+        before = self._depth_snapshot(team_index, code)
+        old_top = order[0] if order else None
+        seats: list[Player | None] = [None] * len(order)
+        for offset, row in sorted(pinned.items(), key=lambda item: (int(item[1]), position_of[item[0]])):
+            wanted = max(0, min(int(row), len(order) - 1))
+            free = [i for i, seat in enumerate(seats) if seat is None]
+            seats[min((i for i in free if i >= wanted), default=max(free))] = order[position_of[offset]]
+        rest = iter(p for p in order if p.offset not in pinned)
+        seats = [player if player is not None else next(rest) for player in seats]
+        reordered = {p.offset for row, p in enumerate(seats) if position_of[p.offset] != row}
+        for row, player in enumerate(seats):
+            player.record.values[field] = min(row, DEPTH_ROW_CAP)
+        locked = {offset: {field} for offset in reordered}
+        other = "depth_side" if field == "depth_rank" else "depth_rank"
+        if code in PAIRED_DEPTH_CODES and len(seats) > 1:
+            # the other order stays as it was, made unique and gap-free (housekeeping, no new lock) ...
+            for row, player in enumerate(self.depth_order(team_index, code, other)):
+                player.record.values[other] = min(row, DEPTH_ROW_CAP)
+            # ... unless the new top here also tops it: then the two starters swap sides
+            top = seats[0]
+            previous = displaced if displaced is not None else old_top
+            if (top.record.values[other] == 0 and previous is not None and previous is not top
+                    and previous.offset in position_of):
+                a, b = top.record.values, previous.record.values
+                a[other], b[other] = b[other], a[other]
+                for offset in (top.offset, previous.offset):
+                    locked.setdefault(offset, set()).add(other)
+        changed = [p for p in seats if (p.record.values["depth_rank"], p.record.values["depth_side"])
+                   != before[p.offset][:2]]
+        if lock:
+            for player in seats:
+                for name in locked.get(player.offset, ()):
+                    player.record.values["unknown_52"] |= DEPTH_LOCK_BITS[name]
+        return {"before": before, "changed": changed}
+
+    def place_in_depth(self, player: Player, row: int, field: str = "depth_rank") -> dict[str, Any]:
+        """Put ``player`` at ``row`` (0 = starter) of his position's order on his club: what the Rosters arrows and the
+        CSV's depth columns do. Refused for a player who is not on a club's active list. See ``settle_depth``."""
+
+        _require(self.by_offset.get(player.offset) is player, "player belongs to another document")
+        _require((player.pool, player.index) not in self.reserve_owner,
+                 "a reserve has no depth chart row; promote him first")
+        team_index = self.club_of(player)
+        _require(team_index is not None and player.offset in self.teams[team_index].slots,
+                 f"{player.display} is not on a club's active list, so he has no depth chart row")
+        assert team_index is not None
+        code = player.record.values["position"]
+        order = self.depth_order(team_index, code, field)
+        target = max(0, min(int(row), len(order) - 1))
+        displaced = order[target] if order[target] is not player else None
+        return self.settle_depth(team_index, code, field, {player.offset: target}, displaced=displaced)
+
+    def move_in_depth(self, team_index: int, slot: int, delta: int) -> bool:
+        """Move one player up or down his team's POINTER list. The game's depth chart and starters do not follow this
+        order (they follow the stored depth rank, see ``place_in_depth``); it decides only what the six specialist bytes
+        index, which is why they move with their players here (b780 hunt5). The Rosters arrows use ``place_in_depth``."""
 
         team = self.teams[team_index]
         target = slot + delta
@@ -1946,6 +2281,208 @@ class RosterDocument:
         team.slots[slot], team.slots[target] = team.slots[target], team.slots[slot]
         self._set_specialists(team, specialists_after_exchange(self._specialists(team), slot, target))
         return True
+
+    # ------------------------------------------------------------------ special teams (b81 R3)
+    # Codex's native witness (finn-facts FACTS.md): the six bytes at team +0x194..+0x199 are signed indexes into the
+    # club's pointer list (0xFF = nobody): holder, KR1, KR2, stored kicker, stored long snapper, PR. KR1, KR2 and PR
+    # pick the screen rows and the formation's returners. The holder byte selects the holder.
+    # The stored kicker and long snapper bytes do not decide who plays:
+    # K #1 kicks, P #1 punts and the center at C #2 snaps on punts and kicks (rank order). On SOFTDRINK the weekly pass
+    # puts a returner back on the player who holds that returner's lock claim (+0x52), so the claim moves with him.
+    RETURNER_ROLES = ("kr1", "kr2", "pr")
+    RETURNER_CODES = (3, 4, 5, 6, 7, 8)              # WR, CB, FS, SS, HB, FB: the lock owners the patch accepts
+
+    def special_teams(self, team_index: int) -> dict[str, Any]:
+        """The club's special teams as the game picks them: the role bytes (as players) and the depth-chart roles."""
+
+        team = self.teams[team_index]
+        def at(value: int) -> Player | None:
+            return self.by_offset[team.slots[value]] if value < 0x80 and value < len(team.slots) else None
+        stored = dict(zip(SPECIAL_TEAM_OFFSETS, self._specialists(team)))
+        kickers, punters, centers = (self.depth_order(team_index, code) for code in (1, 2, 12))
+        return {"holder": at(stored["h"]), "kr1": at(stored["kr1"]), "kr2": at(stored["kr2"]), "pr": at(stored["pr"]),
+                "kicker": kickers[0] if kickers else None, "punter": punters[0] if punters else None,
+                "long_snapper": centers[1] if len(centers) > 1 else None,
+                "stored_kicker": at(stored["k"]), "stored_long_snapper": at(stored["ls"]), "bytes": stored}
+
+    def special_teams_snapshot(self, team_index: int) -> dict[str, Any]:
+        team = self.teams[team_index]
+        return {"team": team_index, "bytes": self._specialists(team),
+                "players": {p.offset: (p.record.values["depth_rank"], p.record.values["depth_side"],
+                                       p.record.values["unknown_52"]) for p in self.team_players(team_index)}}
+
+    def restore_special_teams(self, snapshot: Mapping[str, Any]) -> None:
+        self._set_specialists(self.teams[int(snapshot["team"])], snapshot["bytes"])
+        self.restore_depth(snapshot["players"])
+
+    def _role_slot(self, team: TeamRecord, player: Player | None) -> int:
+        if player is None:
+            return 0xFF
+        _require(player.offset in team.slots, f"{player.display} is not on {team.display}'s active list")
+        return team.slots.index(player.offset)
+
+    def set_special_role(self, team_index: int, role: str, player: Player | None) -> None:
+        """Holder, KR1, KR2 or PR (``None`` = nobody): the team byte, and for a returner his lock claim, which leaves
+        whoever held it so the patched weekly pass keeps the choice. Kicker, punter and long snapper go through
+        ``set_depth_role``: the game picks them by depth rank."""
+
+        _require(role in ("holder",) + self.RETURNER_ROLES, f"{role!r} is not a team byte role; use set_depth_role")
+        team = self._team_for_membership(team_index)
+        _require(team.is_club, "special teams belong to a club")
+        _require(player is None or self.by_offset.get(player.offset) is player, "player belongs to another document")
+        if role in self.RETURNER_ROLES and player is not None:
+            _require(player.record.values["position"] in self.RETURNER_CODES,
+                     f"{player.display} is a {player.record.position_name}: returners are WR, CB, FS, SS, HB or FB "
+                     "(the positions the returner lock accepts)")
+        slot = self._role_slot(team, player)
+        values = self._specialists(team)
+        values[list(SPECIAL_TEAM_OFFSETS).index("h" if role == "holder" else role)] = slot
+        self._set_specialists(team, values)
+        if role in self.RETURNER_ROLES:
+            if player is None:
+                for peer in self.team_players(team_index):
+                    peer.record.set_depth_lock(role, False)
+            else:
+                self.set_depth_lock(player, role, True, team_index=team_index)
+
+    def set_depth_role(self, team_index: int, role: str, player: Player) -> dict[str, Any]:
+        """The kicker (K #1), punter (P #1) or long snapper (the center at C #2, who snaps on punts and kicks): a depth
+        chart change (``place_in_depth``), and the stored kicker / long snapper byte follows him (the game does not use
+        it to pick who plays; the weekly pass refills the snapper byte for a computer-run club)."""
+
+        rows = {"kicker": (1, 0, "k"), "punter": (2, 0, None), "long_snapper": (12, 1, "ls")}
+        _require(role in rows, f"{role!r} is not a depth chart role")
+        code, row, byte = rows[role]
+        team = self._team_for_membership(team_index)
+        _require(player.record.values["position"] == code,
+                 f"{player.display} is a {player.record.position_name}; make him "
+                 f"{position_name(code, self.scheme)} first (the game picks this role by {position_name(code, self.scheme)} "
+                 "depth)")
+        if role == "long_snapper":
+            _require(len(self.depth_order(team_index, code)) >= 2,
+                     "the snap on punts and kicks comes from the second center by depth; this club has one center")
+        result = self.place_in_depth(player, row)
+        if byte is not None:
+            values = self._specialists(team)
+            values[list(SPECIAL_TEAM_OFFSETS).index(byte)] = self._role_slot(team, player)
+            self._set_specialists(team, values)
+        return result
+
+    # ------------------------------------------------------------------ b81 R9: Clear Stats
+    # Finn's Clear Stats writes 0 to the player's +0x2C history link. Codex's native witness (finn-facts
+    # TEAM_AND_HISTORY.md, history_clear_native.py) showed that crashes the game: the average reader 0x14EEC0 divides
+    # by the number of matching rows at 0x14EEF2, and the passing/receiving/rushing comparators (fields 8, 13, 2) reach it
+    # with zero rows. The safe clear points the player at a NEW six-word private stream (zero-valued fields 13, 8 and 2,
+    # postseason then regular season, in his current season slot), written at the end of the used pool exactly as the
+    # game's writer 0x14F220 leaves it, and counts the six words at root+0x40. The old stream is left as it was, so any
+    # other player sharing it keeps it, and every other byte of the save is unchanged.
+    def history_pool(self) -> dict[str, int]:
+        """The career-stat pool: where it starts, the words used, the native capacity (0x14E7E0: 50,000 with 35 or more
+        team records, else 20,000) and the free words, after checking its unused room touches no other table."""
+
+        from .nfl2k5_save_rost import TABLES
+        root = self.obj_base + OBJ_OFF
+        used = self.u32(root + 0x40)
+        pool = self.rel(root + 0x44)
+        _require(pool is not None, "this roster has no career-stat pool")
+        assert pool is not None
+        capacity = HISTORY_CAPACITY_LARGE if self.u32(root + 0x18) >= 35 else HISTORY_CAPACITY_SMALL
+        end = pool + 4 * capacity
+        _require(used <= capacity and end <= self.arena_end,
+                 f"the career-stat pool ({used:,} of {capacity:,} words) does not fit this roster block")
+        for name, count_field, pointer_field, stride, _maximum in TABLES:
+            count, start = self.u32(root + count_field), self.rel(root + pointer_field)
+            if count and start is not None:
+                _require(start + count * stride <= pool or start >= end,
+                         f"the {name} table sits inside the career-stat pool's room")
+        return {"offset": pool, "used": used, "capacity": capacity, "free": capacity - used}
+
+    def _history_link(self, player: Player) -> int:
+        return player.offset + FIELD_BY_NAME["history_pointer"].offset
+
+    def history_words(self, player: Player, pool: Mapping[str, int] | None = None) -> tuple[int, ...]:
+        """The player's history stream as this document holds it now (empty when he has none)."""
+
+        value = player.record.values["history_pointer"]
+        if not value:
+            return ()
+        pool = pool or self.history_pool()
+        start = self._history_link(player) + _signed(value) - 1
+        used_end = pool["offset"] + 4 * pool["used"]
+        _require(pool["offset"] <= start < used_end and (start - pool["offset"]) % 4 == 0,
+                 f"{player.display}: the history link points outside the used pool")
+        words = []
+        for at in range(start, used_end, 4):
+            words.append(self.u32(at))
+            if words[-1] & HISTORY_END_BIT:
+                break
+        _require(bool(words) and bool(words[-1] & HISTORY_END_BIT), f"{player.display}: unterminated history stream")
+        return tuple(words)
+
+    def history_is_clear(self, player: Player, pool: Mapping[str, int] | None = None) -> bool:
+        """True when the player already reads the neutral stream for his current season slot."""
+
+        value = player.record.values["history_pointer"]
+        if not value:
+            return False
+        pool = pool or self.history_pool()
+        start = self._history_link(player) + _signed(value) - 1
+        relative = start - pool["offset"]
+        # Only an exact neutral stream can be skipped. Clearing a damaged link installs a new
+        # stream at the verified pool tail and never follows or changes its former target.
+        if relative < 0 or relative % 4 or relative + 4 * HISTORY_CLEAR_WORDS > 4 * pool["used"]:
+            return False
+        return struct.unpack_from("<6I", self.body, start) == neutral_history(player.record.values["years_pro"])
+
+    def history_state(self, offsets: Sequence[int], words: int) -> dict[str, Any]:
+        """What ``clear_history`` changes, for undo: the used count, the next ``words`` pool words and the players'
+        links."""
+
+        pool = self.history_pool()
+        start = pool["offset"] + 4 * pool["used"]
+        return {"used": pool["used"], "start": start, "tail": bytes(self.body[start:start + 4 * words]),
+                "links": {offset: self.by_offset[offset].record.values["history_pointer"] for offset in offsets}}
+
+    def restore_history(self, state: Mapping[str, Any]) -> None:
+        struct.pack_into("<I", self.body, self.obj_base + OBJ_OFF + 0x40, int(state["used"]))
+        start, tail = int(state["start"]), bytes(state["tail"])
+        self.body[start:start + len(tail)] = tail
+        for offset, value in state["links"].items():
+            self.by_offset[int(offset)].record.values["history_pointer"] = int(value)
+
+    def clear_history(self, players: Sequence[Player]) -> dict[str, Any]:
+        """Clear each player's season and career stats, the clubs on his history card and his own honor credits the safe
+        way (see above). Refuses, changing nothing, when the pool has fewer free words than six per player; a player who
+        already reads a neutral stream is left alone. Returns the before/after states for undo."""
+
+        pool = self.history_pool()
+        todo: list[Player] = []
+        already: list[Player] = []
+        for player in players:
+            if player in todo or player in already:
+                continue
+            (already if self.history_is_clear(player, pool) else todo).append(player)
+        need = HISTORY_CLEAR_WORDS * len(todo)
+        if need > pool["free"]:
+            raise RosterRecordError(
+                f"the career-stat pool has {pool['free']:,} free words of {pool['capacity']:,} and clearing "
+                f"{len(todo)} player{'' if len(todo) == 1 else 's'} needs {need:,} ({HISTORY_CLEAR_WORDS} each). Nothing "
+                "was changed. The game makes room by folding old seasons as it plays; a fuller clear needs a separate "
+                "proof first")
+        offsets = [p.offset for p in todo]
+        before = self.history_state(offsets, need)
+        at = before["start"]
+        for player in todo:
+            for index, word in enumerate(neutral_history(player.record.values["years_pro"])):
+                struct.pack_into("<I", self.body, at + 4 * index, word)
+            player.record.values["history_pointer"] = (at - self._history_link(player) + 1) & 0xFFFFFFFF
+            at += 4 * HISTORY_CLEAR_WORDS
+        struct.pack_into("<I", self.body, self.obj_base + OBJ_OFF + 0x40, pool["used"] + need)
+        after = {"used": pool["used"] + need, "start": before["start"],
+                 "tail": bytes(self.body[before["start"]:at]),
+                 "links": {p.offset: p.record.values["history_pointer"] for p in todo}}
+        return {"cleared": todo, "already": already, "words": need, "used_before": pool["used"],
+                "used_after": pool["used"] + need, "capacity": pool["capacity"], "before": before, "after": after}
 
     def _specialists(self, team: TeamRecord) -> list[int]:
         """The team's six specialist slot bytes (holder, KR1, KR2, K, LS, PR) as this document holds them now."""
@@ -1977,7 +2514,8 @@ class RosterDocument:
         Conflicting chain locks refuse before mutation. Returner selection
         transfers that role's bit from its previous owner. The next patched
         in-game compaction resolves the returner bit to a roster-slot index.
-        Pointer-list arrows alone do not change a rank/side assignment.
+        The Rosters arrows (``place_in_depth``) change the stored rank or side
+        row and set these bits for the players they move.
         """
         from .nfl2k5_depth_locks import lock_bit
         lock_bit(role)
@@ -2046,7 +2584,7 @@ class RosterDocument:
         _require(len(payload) == len(self.body), "the roster arena changed size")
         fresh = RosterDocument(payload, base=self.base, source=self.source, container=self.container,
                                resource_header=self.resource_header, scheme=self.scheme,
-                               reference_year=self.reference_year, base_year=self.base_year)
+                               reference_year=self.reference_year, base_year=self.base_year, modern_ir=self.modern_ir)
         old_players = {(p.pool, p.index): p for p in self.players}
         _require(set(old_players) == {(p.pool, p.index) for p in fresh.players},
                  "pool remapping requires an explicit complete identity map")
@@ -2081,6 +2619,35 @@ class RosterDocument:
             fresh.teams[i] = current
         self.__dict__.update(fresh.__dict__)
         self.original, self.scheme_detection = original, detection
+
+    def reserve_move_precheck(self, team_index: int, primary_index: int, *, promote: bool) -> None:
+        """The refusals of ``nfl2k5_practice_squad.reserve_transaction`` that the document state answers, in its words,
+        without encoding and re-decoding the whole save (b81: that full check took about 3 s a player on the 4,096-player
+        SOFTDRINK save, and the Rosters page ran it for every player it selected). Promote and Demote still run the full
+        transaction when pressed, so an arena that cannot be repacked is refused there."""
+
+        from . import nfl2k5_practice_squad as ps
+        try:
+            ps._require(self.version in (0, 1), 'reserve moves require a signed-save copy')
+            ps._require(type(team_index) is int and 0 <= team_index < min(32, len(self.teams)), 'select an NFL team')
+            player = next((p for p in self.by_pool("primary") if p.index == primary_index), None)
+            ps._require(player is not None, 'invalid primary player identity')
+            assert player is not None
+            flags = player.record.values["player_type"]
+            ps._require(bool(flags & 4) and not flags & 0x18, 'player is inactive, retired, or a draft prospect')
+            ps._require(player.record.values["injured_reserve"] != 0xEE,     # the game's own screen test (b81 finn-r2)
+                        "the game's practice squad screen will not move him: his injury code ends in the byte the game also uses to mark injured reserve (0xEE). Activate him from injured reserve, or heal him, first")
+            team = self.teams[team_index]
+            reserves = list(self.reserves.get(team_index, ()))
+            if promote:
+                ps._require(primary_index in reserves, 'player is not a reserve owned by this team')
+                ps._require(len(team.slots) < ps.ACTIVE_LIMIT, 'promotion requires fewer than 53 active players')
+            else:
+                ps._require(team.slots.count(player.offset) == 1, 'player is not active on this team')
+                limit = self.reserve_limit(team_index)
+                ps._require(len(reserves) < limit, f'practice squad is full ({limit} players)')
+        except ValueError as exc:
+            raise MembershipRefused(str(exc)) from exc
 
     def reserve_move_check(self, team_index: int, primary_index: int, *, promote: bool) -> None:
         from . import nfl2k5_practice_squad as ps
@@ -2174,30 +2741,61 @@ class RosterDocument:
         return player.offset in self.free_agents
 
     def is_draft_class(self, player: Player) -> bool:
-        return player.group == "draft_class"
+        return player.group in ("draft_class", "draft_slot", "draft_capacity")
 
-    def check_operation(self, player: Player, operation: str) -> None:
-        """Finn's refusals, before any list is touched."""
+    def membership_context(self) -> dict[str, Any]:
+        """The whole-document part of ``check_operation``, read once: the injured-reserve players of a franchise
+        save and the reserve lists' validity. A batch of operations (b81 M3) passes it to every ``check_operation``
+        and ``release`` instead of re-reading the document for each player (about half a second each on the
+        SOFTDRINK roster)."""
 
-        _require(self.by_offset.get(player.offset) is player, "player belongs to another document")
-        if (player.pool, player.index) in self.reserve_owner:
-            raise MembershipRefused("Promote this team's reserve before signing, moving, releasing, swapping or placing on IR")
-        from .nfl2k5_franchise_save import FranchiseSave, is_franchise_save
-        if is_franchise_save(bytes(self.body)):
-            ir = FranchiseSave(bytes(self.body)).injured_reserve()
-            if player.pool == "primary" and any(e.player_index == player.index for e in ir):
-                raise MembershipRefused("Activate this player from injured reserve first")
+        context = self.injured_reserve_context()
+        invalid = ""
         if any(self.reserves.values()):
             from .nfl2k5_practice_squad import validate_save
             try:
                 validate_save(self.to_body())
             except ValueError as exc:
-                raise MembershipRefused(str(exc)) from exc
-        if player.record.on_injured_reserve:
+                invalid = str(exc)
+        return {**context, "invalid": invalid}
+
+    def injured_reserve_context(self) -> dict[str, Any]:
+        """Who is on injured reserve, read once (b81 finn-r2 review F1): ``{"franchise", "ir_players"}``. Pass it to
+        ``is_on_injured_reserve`` for many players (the Rosters grid, a batch)."""
+
+        from .nfl2k5_franchise_save import FranchiseSave, is_franchise_save
+        franchise = is_franchise_save(bytes(self.body))
+        ir_players: frozenset[int] = frozenset()
+        if franchise:
+            ir_players = frozenset(e.player_index for e in FranchiseSave(bytes(self.body)).injured_reserve())
+        return {"franchise": franchise, "ir_players": ir_players}
+
+    def is_on_injured_reserve(self, player: Player, context: Mapping[str, Any] | None = None) -> bool:
+        """THE injured-reserve test of the Studio (b81 finn-r2 review F1): in a franchise save the IR list (the legacy
+        cells and the modern extension) decides; in a roster save or a disc roster, which have no IR list, only Finn's
+        exact marker (``finn_ir_marker``). ``PlayerRecord.on_injured_reserve`` (any low byte 0xEE) is not this test:
+        the game's own injury id 750 (0x2EE) ends in that byte."""
+
+        context = self.injured_reserve_context() if context is None else context
+        if context["franchise"]:
+            return player.pool == "primary" and player.index in context["ir_players"]
+        return finn_ir_marker(player.record.values)
+
+    def check_operation(self, player: Player, operation: str, *, context: Mapping[str, Any] | None = None) -> None:
+        """Finn's refusals, before any list is touched."""
+
+        _require(self.by_offset.get(player.offset) is player, "player belongs to another document")
+        if (player.pool, player.index) in self.reserve_owner:
+            raise MembershipRefused("Promote this team's reserve before signing, moving, releasing, swapping or placing on IR")
+        if context is None:
+            context = self.membership_context()
+        if self.is_on_injured_reserve(player, context):            # b81 finn-r2 review F1: the IR list, or Finn's marker
             raise MembershipRefused("Activate this player from injured reserve first")
+        if context["invalid"]:
+            raise MembershipRefused(context["invalid"])
         if self.is_draft_class(player):
             raise MembershipRefused(f"{MSG_DRAFT_CLASS} {player.display}: {DRAFT_CLASS_WHY}.")
-        if operation == "injured_reserve" and self.is_free_agent(player) and not player.teams:
+        if operation == "injured_reserve" and self.is_free_agent(player) and self.club_of(player) is None:
             raise MembershipRefused(MSG_FREE_AGENT_IR)
 
     def membership_limit(self, team_index: int) -> int:
@@ -2207,6 +2805,48 @@ class RosterDocument:
         if is_franchise_save(bytes(self.body)) and FranchiseSave(bytes(self.body)).header.stage >= 8:
             limit = min(limit, 53)
         return limit
+
+    def projected_ir_players(self, team_index: int, slots=None) -> set[int]:
+        """Offsets the modern franchise-start pass will place on IR for this club."""
+        if not self.modern_ir or self.version not in (17, 18) or not 0 <= team_index < min(32, len(self.teams)):
+            return set()
+        from . import nfl2k5_injured_reserve as ir
+        extra_remaining = ir.EXTENDED_CAP
+        for team in self.teams[:team_index + 1]:
+            held = set()
+            for offset in slots if team.index == team_index and slots is not None else team.slots:
+                player = self.by_offset[offset]
+                injury = player.record.values["unknown_20_high"]
+                if not injury & 0x200 or injury & 0xff < ir.LONG_WEEKS:
+                    continue
+                if len(held) == ir.CAP:
+                    break
+                if len(held) >= ir.LEGACY_SLOTS:
+                    if extra_remaining == 0 or player.pool != "primary" or player.index > 0xfff:
+                        continue
+                    extra_remaining -= 1
+                held.add(offset)
+        return held
+
+    def projected_ir_count(self, team_index: int, slots=None) -> int:
+        return len(self.projected_ir_players(team_index, slots))
+
+    def active_count(self, team_index: int, slots=None) -> int:
+        slots = self.teams[team_index].slots if slots is None else slots
+        return len(slots) - self.projected_ir_count(team_index, slots)
+
+    def active_limit(self, team_index: int, maximum: int = TEAM_MAX_PLAYERS) -> int:
+        if self.modern_ir and self.version in (17, 18) and self.teams[team_index].is_club:
+            return min(maximum, 53)
+        return min(maximum, self.membership_limit(team_index))
+
+    def _check_sign_room(self, team: TeamRecord, player: Player, maximum: int) -> None:
+        limit = self.active_limit(team.index, maximum)
+        if self.active_count(team.index, [*team.slots, player.offset]) > limit:
+            raise MembershipRefused(f"{MSG_SIGN_MAX_PLAYERS} {team.display} has {self.active_count(team.index)} "
+                                    f"active players (the cap is {limit}).")
+        if len(team.slots) >= self.membership_limit(team.index):
+            raise MembershipRefused(f"{team.display} has no free pointer slot for another player or reserve")
 
     def _team_for_membership(self, team_index: int) -> TeamRecord:
         _require(0 <= team_index < len(self.teams), f"no team {team_index}")
@@ -2240,7 +2880,8 @@ class RosterDocument:
         # the game's removal handler 0xC3A90: his roles are cleared, the roles below him move up with their players
         self._set_specialists(team, specialists_after_removal(self._specialists(team), slot))
         player.teams.remove(team_index)
-        player.record.values["unknown_52"] &= ~0x1F
+        if team.is_club or (self.club_of(player) is None and not self.is_free_agent(player)):
+            player.record.values["unknown_52"] &= ~0x1F
         return slot
 
     def _attach(self, player: Player, team_index: int, slot: int | None) -> int:
@@ -2254,32 +2895,32 @@ class RosterDocument:
         return at
 
     def release(self, player: Player, team_index: int | None = None, *,
-                minimum: int = TEAM_MIN_PLAYERS) -> dict[str, Any]:
+                minimum: int = TEAM_MIN_PLAYERS, context: Mapping[str, Any] | None = None) -> dict[str, Any]:
         """Release a player to free agency: compact the team's pointer list, drop its count, append
         him to the free-agent list.  His record is not touched (retail free agents keep the rank and
         side bits of their last team, so the game does not need them cleared)."""
 
-        self.check_operation(player, "release")
+        self.check_operation(player, "release", context=context)
         if team_index is None:
             team_index = self.team_of(player)
         _require(team_index is not None, f"{player.display} is not on a team")
         assert team_index is not None
         team = self._team_for_membership(team_index)
         _require(player.offset in team.slots, f"{player.display} is not on {team.display}")
-        if len(team.slots) - 1 < minimum:
+        if self.active_count(team.index, [p for p in team.slots if p != player.offset]) < minimum:
             raise MembershipRefused(MSG_RELEASE_MINIMUM.format(team=team.display, minimum=minimum))
-        already_free_agent = self.is_free_agent(player)
-        if not already_free_agent and len(self.free_agents) >= self.free_agent_capacity:
+        enter_free_agency = team.is_club and not self.is_free_agent(player)
+        if enter_free_agency and len(self.free_agents) >= self.free_agent_capacity:
             raise MembershipRefused(f"{MSG_RELEASE_MAX_FREE_AGENTS} The list holds "
                                     f"{self.free_agent_capacity} pointers and all are used.")
         slot = self._detach(player, team_index)
-        if not already_free_agent:
+        if enter_free_agency:
             self.free_agents.append(player.offset)
         self._reclassify(player)
         return {"operation": "release", "player": player.display, "pool": player.pool,
                 "index": player.index, "from": {"kind": "team", "team": team.abbreviation,
                                                 "team_index": team_index, "slot": slot},
-                "to": {"kind": "free_agent"}, "team_players": len(team.slots),
+                "to": {"kind": player.group}, "team_players": len(team.slots),
                 "free_agents": len(self.free_agents), "group": player.group}
 
     def sign(self, player: Player, team_index: int, *, slot: int | None = None,
@@ -2296,21 +2937,18 @@ class RosterDocument:
             if other is not None:
                 raise MembershipRefused(f"{player.display} is on {self.teams[other].display}; move him "
                                         "between teams instead of signing him twice")
-        maximum = min(maximum, self.membership_limit(team_index))
-        if len(team.slots) >= maximum:
-            raise MembershipRefused(f"{MSG_SIGN_MAX_PLAYERS} {team.display} has {len(team.slots)} "
-                                    f"(the cap is {maximum}).")
-        if len(team.slots) >= TEAM_SLOTS:
-            raise MembershipRefused(f"{team.display} has no free pointer slot (the record holds {TEAM_SLOTS})")
+        self._check_sign_room(team, player, maximum)
         was_free_agent = self.is_free_agent(player)
-        if was_free_agent:
+        old_group = player.group
+        if was_free_agent and team.is_club:
             self.free_agents.remove(player.offset)
         at = self._attach(player, team_index, slot)
-        depth = self._rerank(player, team_index)
+        depth = (self._rerank(player, team_index) if team.is_club or
+                 (self.club_of(player) is None and not was_free_agent) else {})
         self._reclassify(player)
         return {"operation": "sign", "player": player.display, "pool": player.pool,
                 "index": player.index,
-                "from": {"kind": "free_agent"} if was_free_agent else {"kind": player.group},
+                "from": {"kind": old_group},
                 "to": {"kind": "team", "team": team.abbreviation, "team_index": team_index, "slot": at},
                 "depth": depth, "team_players": len(team.slots),
                 "free_agents": len(self.free_agents), "group": player.group}
@@ -2330,14 +2968,9 @@ class RosterDocument:
         target = self._team_for_membership(to_team)
         _require(player.offset in source.slots, f"{player.display} is not on {source.display}")
         _require(player.offset not in target.slots, f"{player.display} is already on {target.display}")
-        if len(source.slots) - 1 < minimum:
+        if self.active_count(source.index, [p for p in source.slots if p != player.offset]) < minimum:
             raise MembershipRefused(MSG_RELEASE_MINIMUM.format(team=source.display, minimum=minimum))
-        maximum = min(maximum, self.membership_limit(to_team))
-        if len(target.slots) >= maximum:
-            raise MembershipRefused(f"{MSG_SIGN_MAX_PLAYERS} {target.display} has {len(target.slots)} "
-                                    f"(the cap is {maximum}).")
-        if len(target.slots) >= TEAM_SLOTS:
-            raise MembershipRefused(f"{target.display} has no free pointer slot (the record holds {TEAM_SLOTS})")
+        self._check_sign_room(target, player, maximum)
         was = self._detach(player, from_team)
         at = self._attach(player, to_team, slot)
         depth = self._rerank(player, to_team)
@@ -2365,6 +2998,13 @@ class RosterDocument:
         if team_a != team_b:
             _require(second.offset not in a.slots, f"{second.display} is already on {a.display}")
             _require(first.offset not in b.slots, f"{first.display} is already on {b.display}")
+            if self.modern_ir:
+                for team, departing, arriving in ((a, first, second), (b, second, first)):
+                    after = [arriving.offset if p == departing.offset else p for p in team.slots]
+                    before, count = self.active_count(team.index), self.active_count(team.index, after)
+                    if count > max(before, self.active_limit(team.index)) or count < min(before, TEAM_MIN_PLAYERS):
+                        raise MembershipRefused(f"{team.display} would have {count} active players after this swap")
+
         slot_a, slot_b = a.slots.index(first.offset), b.slots.index(second.offset)
         a.slots[slot_a], b.slots[slot_b] = second.offset, first.offset
         if team_a == team_b:
@@ -2485,6 +3125,8 @@ class RosterDocument:
             entries = sorted(by_offset.get(player.offset, []))
             if player.pool == "primary" and player.index in reserve_owners:
                 text = f"{self.teams[reserve_owners[player.index]].abbreviation} Reserves"
+            elif player.offset in free_set and not any(self.teams[t].is_club for t, _, _ in entries):
+                text = "Free Agents" + "".join(" + " + self.teams[t].abbreviation for t, _, _ in entries)
             elif entries:
                 team_index, slot, count = entries[0]
                 text = f"{self.teams[team_index].abbreviation} ({slot + 1} of {count})"
@@ -2495,8 +3137,10 @@ class RosterDocument:
                 text = "Free Agents"
             else:
                 kind = player.record.values["player_type"]
-                text = ("Draft Class" if player.pool == "primary" and (kind == 0 or kind & FLAG_PROSPECT)
-                        else "Pool")
+                text = "Pool"
+                if player.pool == "primary" and (kind == 0 or kind & FLAG_PROSPECT):
+                    text = ("Draft Class" if player.first or player.last else
+                            "Draft generator slot" if player.index < self.original_primary_count else "Unused class capacity")
             out[player.offset] = text
         return out
 
@@ -2657,9 +3301,11 @@ class RosterDocument:
             was_college = original._college_name_at(player.offset, self.colleges, self.college_record_index)
             if was_college != player.college:
                 texts["college"] = (was_college, player.college)
-            if changes or texts:
+            # b81 R9: a new history link is Clear Stats (the only writer of this pointer); say so, not the offset
+            history = before.values["history_pointer"] != player.record.values["history_pointer"]
+            if changes or texts or history:
                 out.append({"pool": player.pool, "index": player.index, "name": player.display,
-                            "changes": changes, "texts": texts, "membership": None})
+                            "changes": changes, "texts": texts, "membership": None, "history_cleared": history})
         moved = {(m["pool"], m["index"]): m for m in self.membership_changes()}
         for entry in out:
             move = moved.pop((entry["pool"], entry["index"]), None)
@@ -2734,6 +3380,20 @@ def load_body(body: bytes, *, scheme: str = "retail", reference_year: int | None
     return RosterDocument(body, base=0, source="body", scheme=scheme, reference_year=reference_year)
 
 
+def image_rules(path: Path | str) -> tuple[int, bool]:
+    from . import mod_build, nfl2k5_injured_reserve as ir, nfl2k5_season_length as seasons
+    source = Path(path)
+    if source.is_dir():
+        source = source / "default.xbe"
+    if not source.is_file():
+        return 2004, False
+    try:
+        payload = mod_build._xbe_bytes(source)
+        return seasons.read_year(payload) or 2004, ir.status(payload) in ("applied", "previous")
+    except (OSError, ValueError, struct.error):
+        return 2004, False
+
+
 def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False,
                reference_year: int | None = None) -> RosterDocument:
     """The main roster resource of a disc image or a loose pack folder (read-only).
@@ -2747,9 +3407,10 @@ def load_image(path: Path | str, *, scheme: str = "retail", detect: bool = False
         resource = archive.read(entry.virtual_offset, entry.size)
     _require(resource[:4] == b"ROST" and len(resource) in MAIN_ROSTER_RESOURCE_SIZES,
              "the roster resource is foreign")
+    year, modern_ir = image_rules(path)
     document = RosterDocument(resource[RESOURCE_HEADER_SIZE:], base=0, source=str(path),
                               resource_header=resource[:RESOURCE_HEADER_SIZE], scheme=scheme,
-                              reference_year=reference_year)
+                              reference_year=reference_year, base_year=year, modern_ir=modern_ir)
     if detect:
         document.scheme_detection = detect_scheme(document, source=path)
         document.set_scheme(str(document.scheme_detection["scheme"]))
@@ -2980,29 +3641,62 @@ class SaveContainer:
         return members
 
     def write(self, target: Path | str, payload: bytes, *, overwrite: bool = False) -> dict[str, Any]:
-        """Write a re-signed copy of this container.  Never writes over the source."""
+        """Write a re-signed copy of this container.  Never writes over the source.
 
-        destination = Path(target).expanduser()
-        _require(destination.resolve() != self.path.resolve(), "the target must not be the source save")
+        The loose save writer stages and verifies every member. A drive with atomic folder renames receives a new
+        folder in one step. Other destinations use per-file publication with rollback and report any retained
+        recovery paths. An output folder inside the source save is refused."""
+
+        from . import nfl2k5_save_writer as writer
+        from . import platform_compat
+
+        destination = platform_compat.io_path(platform_compat.absolute_path(Path(target).expanduser()))
+        source = platform_compat.io_path(platform_compat.absolute_path(self.path))
+        _require(not platform_compat.paths_alias(destination, source) and destination.resolve() != source.resolve(),
+                 "the target must not be the source save")
+        if self.kind == "directory":
+            # A copy inside the source folder becomes one of its members and mixes the two saves.
+            inside = (platform_compat.path_is_within(destination, source)
+                      or platform_compat.path_is_within(destination.resolve(), source.resolve()))
+            _require(not inside, "Choose an output folder outside the source save. A copy inside it would mix "
+                                 "the two saves.")
         members = self.with_savegame(payload)
+        _require(members[self.savegame_name] == payload and verify_extra(payload, members[self.extra_name]),
+                 "the re-signed copy does not verify")
         if self.kind == "zip" or destination.suffix.lower() == ".zip":
-            _require(overwrite or not destination.exists(), f"{destination} exists")
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            with zipfile.ZipFile(destination, "w", zipfile.ZIP_DEFLATED) as archive:
+            buffer = io.BytesIO()
+            with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
                 for name in self.members:
                     archive.writestr(name, members[name])
-            written = str(destination)
+            with zipfile.ZipFile(io.BytesIO(buffer.getvalue())) as check:
+                _require({info.filename: check.read(info) for info in check.infolist() if not info.is_dir()} == members,
+                         "signed-copy members differ on read-back")
+            files = {destination: buffer.getvalue()}
+            new_root = None
         else:
-            destination.mkdir(parents=True, exist_ok=True)
+            files = {}
             for name, data in members.items():
-                item = destination / name
-                item.parent.mkdir(parents=True, exist_ok=True)
-                _require(overwrite or not item.exists(), f"{item} exists")
-                item.write_bytes(data)
-            written = str(destination)
-        reopened = SaveContainer.load(destination, require_signature=True)
-        _require(reopened.savegame == payload, "signed-copy SAVEGAME.DAT read-back differs")
-        _require(reopened.members == members, "signed-copy members differ on read-back")
+                item = destination.joinpath(*name.split("/"))
+                _require(platform_compat.path_is_within(item, destination), f"unsafe member name {name!r}")
+                files[item] = data
+            new_root = destination
+        source_files = [source] if source.is_file() else [p for p in source.rglob("*") if p.is_file()]
+        if self.kind == "loose" and source.with_name(EXTRA_NAME).is_file():
+            source_files.append(source.with_name(EXTRA_NAME))
+        previous = {}
+        for path in files:
+            _require(not any(platform_compat.paths_alias(path, item) for item in source_files),
+                     f"{path} is part of the source save")
+            try:
+                previous[path] = writer.output_state(path)
+            except writer.SaveWriterError as exc:
+                raise RosterRecordError(str(exc)) from exc
+            _require(overwrite or previous[path] is None, f"{path} exists")
+        try:
+            writer.publish_save_files(files, previous, new_root=new_root)
+        except writer.SaveWriterError as exc:
+            raise RosterRecordError(str(exc)) from exc
+        written = str(destination)
         untouched = [name for name in self.members if name not in (self.savegame_name, self.extra_name)]
         return {"target": written, "kind": self.kind, "savegame": self.savegame_name,
                 "extra": self.extra_name, "extra_sha1": members[self.extra_name].hex(),
@@ -3039,6 +3733,50 @@ def load_save(path: Path | str, *, require_signature: bool = True, scheme: str =
         document.scheme_detection = detect_scheme(document)
         document.set_scheme(str(document.scheme_detection["scheme"]))
     return document
+
+
+def changed_ranges(before: bytes | bytearray, after: bytes | bytearray, *, block: int = 4096) -> list[tuple[int, int]]:
+    """``[start, end)`` byte ranges where two same-length buffers differ (block-compared, then byte-exact)."""
+
+    _require(len(before) == len(after), "the two buffers differ in length")
+    out: list[tuple[int, int]] = []
+    view_a, view_b = memoryview(before), memoryview(after)
+    for base in range(0, len(before), block):
+        end = min(base + block, len(before))
+        if view_a[base:end] == view_b[base:end]:
+            continue
+        i = base
+        while i < end:
+            if before[i] != after[i]:
+                j = i
+                while j < end and before[j] != after[j]:
+                    j += 1
+                if out and out[-1][1] == i:
+                    out[-1] = (out[-1][0], j)
+                else:
+                    out.append((i, j))
+                i = j
+            else:
+                i += 1
+    return out
+
+
+def ranges_touch(ranges: Sequence[tuple[int, int]], regions: Sequence[tuple[int, int]]) -> bool:
+    """Whether any of ``ranges`` overlaps any of ``regions`` (both ``[start, end)``)."""
+
+    from bisect import bisect_left
+    merged: list[list[int]] = []
+    for start, end in sorted(regions):
+        if merged and start <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            merged.append([start, end])
+    ends = [end for _start, end in merged]
+    for start, end in ranges:
+        k = bisect_left(ends, start + 1)            # the first merged region that ends after ``start``
+        if k < len(merged) and merged[k][0] < end:
+            return True
+    return False
 
 
 def save_document(document: RosterDocument, target: Path | str, *, overwrite: bool = False) -> dict[str, Any]:
@@ -3271,7 +4009,7 @@ def apply_college_aliases(roster: RosterDocument, aliases, updates) -> None:
 
 
 def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
-               scheme: str | None = None, refresh_follows: bool = False) -> tuple[bytes, dict[str, Any]]:
+               scheme: str | None = None, refresh_follows: bool = False, modern_ir: bool = False) -> tuple[bytes, dict[str, Any]]:
     """Apply a roster-edits document to a ROST body; returns the new body and a receipt.
 
     ``scheme`` is the TARGET roster's position scheme.  It defaults to what the target's own
@@ -3287,7 +4025,7 @@ def apply_body(body: bytes, source: Path | str | Mapping[str, Any], *,
     from . import nfl2k5_roster_snapshot as snapshot
     if doc["schema"] == snapshot.SCHEMA:
         return snapshot.apply_body(body, doc, scheme=scheme)
-    roster = RosterDocument(body)
+    roster = RosterDocument(body, modern_ir=modern_ir)
     target_scheme = normalise_scheme(scheme) if scheme else str(detect_scheme_from_data(roster)["scheme"])
     roster.set_scheme(target_scheme)
     index: dict[tuple[str, int], Player] = {(p.pool, p.index): p for p in roster.players}
@@ -3829,6 +4567,7 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
             log.append(f"{key}: reserve moves require a signed-save copy (move skipped)")
             continue
         movers.append((player, entry))
+    original_clubs = {player.offset: roster.club_of(player) for player, _ in movers}
     # phase 1: detach every mover from every team list, and from the free-agent list only when
     # the document says he stops being one (a free agent who stays one keeps his place in the list)
     for player, entry in movers:
@@ -3855,6 +4594,7 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
     for slot, player in sorted(free_placements, key=lambda item: item[0]):
         if player.offset not in roster.free_agents:
             roster.free_agents.insert(max(0, min(slot, len(roster.free_agents))), player.offset)
+    new_clubs = {p.offset: t for _, t, p in placements if roster.teams[t].is_club}
     for slot, team_index, player in sorted(placements, key=lambda item: (item[0], item[1])):
         if player.offset in roster.teams[team_index].slots:
             continue
@@ -3862,8 +4602,16 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
             log.append(f"{player.display}: {roster.teams[team_index].display} has no free pointer slot")
             continue
         roster._attach(player, team_index, slot)
-        roster._rerank(player, team_index)
+        club = new_clubs.get(player.offset)
+        if ((club == team_index and club != original_clubs[player.offset]) or
+                (club is None and original_clubs[player.offset] is None and not roster.is_free_agent(player))):
+            roster._rerank(player, team_index)
     roster._reindex_membership()
+    for player, _entry in movers:
+        club = roster.club_of(player)
+        if club == original_clubs[player.offset] and (club is not None or roster.is_free_agent(player)):
+            player.record.values["unknown_52"] = snapshot["depth_locks"][player.offset]
+            player.record.values["depth_rank"], player.record.values["depth_side"] = snapshot["depth"][player.offset]
     # Phase 1 takes each mover off every list he is on and phase 2 puts him back where the document says, so a
     # player who stays on a team (an all-star squad beside his new club) is detached and attached again there.
     # Each role ends on the player who held it before the transaction (0xFF if he left that list): the game's
@@ -3883,11 +4631,15 @@ def replay_moves(roster: RosterDocument, moves: Sequence[Mapping[str, Any]], log
         now, before = len(team.slots), before_counts.get(team_index, 0)
         if not team.clean_parse:
             problems.append(f"{team.display} did not parse cleanly")
-        if team.is_club and 0 < now < TEAM_MIN_PLAYERS and now < before:
-            problems.append(f"{team.display} would drop to {now} players (minimum {TEAM_MIN_PLAYERS})")
+        active = roster.active_count(team_index)
+        prior_active = roster.active_count(team_index, snapshot["teams"].get(team_index, ()))
+        if team.is_club and 0 < active < TEAM_MIN_PLAYERS and active < prior_active:
+            problems.append(f"{team.display} would drop to {active} players (minimum {TEAM_MIN_PLAYERS})")
         limit = roster.membership_limit(team_index)
         if now > limit and now > before:
             problems.append(f"{team.display} would grow to {now} players (cap {limit}, including reserve storage)")
+        if roster.modern_ir and active > max(prior_active, roster.active_limit(team_index)):
+            problems.append(f"{team.display} would grow to {active} active players (cap {roster.active_limit(team_index)})")
         if now > TEAM_SLOTS:
             problems.append(f"{team.display} would need {now} pointer slots (the record holds {TEAM_SLOTS})")
     for player, _entry in movers:
@@ -3918,7 +4670,9 @@ def apply(path: Path | str, source: Path | str | Mapping[str, Any], *,
         state = resource_status(before)
         _require(state in ("retail", "edited"), f"the roster resource is {state}; refusing")
         say("Applying the roster edits")
-        body, receipt = apply_body(before[RESOURCE_HEADER_SIZE:], edits, scheme=scheme, refresh_follows=refresh_follows)
+        modern_ir = bool(edits.get("moves")) and image_rules(path)[1]
+        body, receipt = apply_body(before[RESOURCE_HEADER_SIZE:], edits, scheme=scheme,
+                                   refresh_follows=refresh_follows, modern_ir=modern_ir)
         body, commentary_receipt = repair_commentary_body(body)
         receipt["commentary"] = {k: v for k, v in commentary_receipt.items() if k != "edits"}
         # b778 fr1: the last word on the main roster: no player leaves without a college record (a null word
@@ -3971,6 +4725,9 @@ CSV_HELP = (
     "without significant leading zeros; pointers and long numeric identifiers are never exported. "
     "For Excel use Data > From Text/CSV, UTF-8, and Text for names, college and birth_date. "
     "Conflicting edits to a raw field and its style/date view refuse the row. "
+    "depth_rank and depth_side are the depth chart rows the game uses (0 = starter): a changed row seats the "
+    "player there on his club, the others in that position keep their order below him, and the moved players "
+    "are locked to their rows (a lock column in the same row wins). "
     "CSV files exported by Bad_AL's NFL2K5Tool also import directly; rows are matched by team "
     "and name, with position and jersey as tie-breakers. By default only its 27 rating columns "
     "are applied; its position, jersey, appearance, equipment and bio columns are ignored and "
@@ -4581,6 +5338,7 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
         if key is not None:
             counts[key] = counts.get(key, 0) + 1
     changes, refused, skipped, matched = [], [], [], 0
+    depth_requests: dict[tuple[str, int], dict[str, tuple[int, bool]]] = {}
     for (number, row), key in zip(rows, identities):
         reason = ("row width differs from header" if None in row or None in row.values() else
                   "invalid pool + index; identity is never matched by name" if key is None else
@@ -4634,6 +5392,10 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
                           for k in CSV_COLUMNS if old[k] != new[k]]
                 if fields:
                     changes.append({"row": number, "pool": key[0], "index": key[1], "changes": fields})
+                for name in DEPTH_FIELDS:              # b81 R4: settled with the club's chart after every row
+                    # (a row that also moves the player to another team keeps its raw rows: the move seats him)
+                    if name in edits and "team" not in edits:
+                        depth_requests.setdefault(key, {})[name] = (int(new[name]), f"lock_{name[6:]}" in edits)
                 for skipped_column, reason in row_skipped:
                     skipped.append({"row": number, "pool": key[0], "index": key[1],
                                     "field": skipped_column, "reason": reason})
@@ -4654,6 +5416,7 @@ def preview_csv(document: RosterDocument, text: str, *, delimiter: str | None = 
                     continue
                 refused.append({"row": number, "pool": key[0], "index": key[1], "reason": f"{column}: {exc}"})
                 break
+    _settle_csv_depth(working, depth_requests)
     # Include changes to peers when a returner lock transfers to another player.
     source_rows = {key: number for (number, _), key in zip(rows, identities) if key is not None}
     final_changes = []
@@ -4700,6 +5463,39 @@ def import_csv(document: RosterDocument, text: str, *, delimiter: str | None = N
     return apply_csv_preview(document, preview_csv(document, text, delimiter=delimiter,
                                                    normalise_commentary=normalise_commentary,
                                                    include_appearance=include_appearance))
+
+
+def _settle_csv_depth(document: RosterDocument, requests: Mapping[tuple[str, int], Mapping[str, tuple[int, bool]]]) -> None:
+    """b81 R4: a CSV that changes depth_rank or depth_side seats those players at their rows in their club's chart the
+    way the Rosters arrows do (unique, gap-free rows, the others in their order, moved players locked). A lock column
+    the same row sets wins over the automatic lock. Free agents and reserves keep the raw values (no chart)."""
+
+    by_key = {(p.pool, p.index): p for p in document.players}
+    groups: dict[tuple[int, int, str], dict[int, int]] = {}
+    explicit: dict[int, set[str]] = {}
+    for key, fields in requests.items():
+        player = by_key.get(key)
+        if player is None or key in document.reserve_owner:
+            continue
+        club = document.club_of(player)
+        if club is None or player.offset not in document.teams[club].slots:
+            continue
+        code = player.record.values["position"]
+        for name, (row, has_lock_column) in fields.items():
+            if name == "depth_side" and code not in PAIRED_DEPTH_CODES:
+                continue
+            groups.setdefault((club, code, name), {})[player.offset] = row
+            if has_lock_column:
+                explicit.setdefault(player.offset, set()).add(name)
+    for (club, code, name), pinned in sorted(groups.items(), key=lambda item: (item[0][0], item[0][1],
+                                                                                 DEPTH_FIELDS.index(item[0][2]))):
+        kept = {offset: document.by_offset[offset].record.values["unknown_52"] for offset in explicit}
+        document.settle_depth(club, code, name, pinned)
+        for offset, flags in kept.items():
+            values = document.by_offset[offset].record.values
+            for field in explicit[offset]:
+                bit = DEPTH_LOCK_BITS[field]
+                values["unknown_52"] = (values["unknown_52"] & ~bit) | (flags & bit)
 
 
 def _apply_csv_cell(document: RosterDocument, player: Player, column: str,
@@ -4998,6 +5794,10 @@ def pbp_name_index(document: RosterDocument | None = None) -> dict[int, str]:
                 bucket.append(label)
         for pbp, labels in names.items():
             out[pbp] = " / ".join(labels[:4]) + (f" (+{len(labels) - 4})" if len(labels) > 4 else "")
+    # b81 R43 (B3): the retail roster's own cues name 1,927 more recordings (id -> the one retail player who carries it,
+    # data/nfl2k5_retail_name_cues.json); Finn's list names them the same way (lane receipt RE_FACTS.md section 9)
+    for pbp, (first, last) in retail_name_cues().items():
+        out.setdefault(pbp, f"{last}, {first} (retail recording)".replace(", ,", ","))
     for number in range(100):
         out.setdefault(PBP_NUMBER_BASE + number, f"#{number:02d} (jersey-number call-out)")
     out[PBP_DOUBLE_ZERO] = "Double zero (recorded 00 clip; SOFTDRINK builds retire it: the live number is called)"
@@ -5007,10 +5807,31 @@ def pbp_name_index(document: RosterDocument | None = None) -> dict[int, str]:
     return dict(sorted(out.items()))
 
 
+def pbp_last_only_state(record: "PlayerRecord") -> tuple[bool, bool, str]:
+    """(checked, can_change, tooltip) for Finn's "PBP Last Only" box, read from the word at +0x08.
+
+    Finn's setter acts only when the word is 4 or 5, so any other word leaves the box disabled."""
+
+    word = record.player_type_word
+    if word in (PBP_FULL_NAME_WORD, PBP_LAST_ONLY_WORD):
+        return word == PBP_LAST_ONLY_WORD, True, (
+            "Finn's play-by-play setting. Checked writes 5 into the player type word at +0x08, unchecked writes 4, "
+            "nothing else changes. The player stays an NFL player. The game then asks for a different recording "
+            "of his name in the commentary (variation 4 instead of 1). What the two recordings actually say has "
+            "not been heard, so this does not promise that the announcer says only his last name.")
+    return False, False, (
+        f"Unavailable: this player's type word is {word} (0x{word:04X}). Finn's box only works when the word is 4 "
+        "or 5, and the Studio does the same so it never overwrites a value it does not understand. "
+        "Change Player Type on the Identity tab if you mean to.")
+
+
 def portrait_confirmation(document: RosterDocument, player: Player,
                           report_path: Path | str | None = None) -> str:
     """Confirm the stored selector without claiming art has been written or played."""
     photo = player.record.values["photo_id"]
+    if photo == PHOTO_CLEARED:
+        return (f"{player.display}: Photo 65535 is Finn's Clear Photo value. The game finds no portrait under it "
+                "and shows its own \"no photo\" picture.")
     entries, meta = portrait_index(document, report_path)
     prefix = f"{player.display}: Photo {photo:04d} is staged in the roster. "
     if meta["reason"]:
@@ -5177,6 +5998,7 @@ PLAYER_DATA_COLLEGE_SIZE = 32
 PLAYER_DATA_EXCLUDED = frozenset(POINTER_FIELDS) | {"star_tag"}
 
 
+
 @dataclass
 class PlayerDataEntry:
     index: int
@@ -5239,24 +6061,50 @@ def read_player_data(data: bytes) -> list[PlayerDataEntry]:
     return entries
 
 
+def _player_data_plan(groups: Sequence[str]) -> tuple[tuple[str, ...], dict[str, int], bool]:
+    """``(whole fields, {field: mask}, college)`` for a set of restore groups."""
+
+    unknown = [name for name in groups if name not in PLAYER_DATA_GROUPS]
+    _require(not unknown, f"unknown .PlayerData group(s): {', '.join(map(str, unknown))}")
+    masks: dict[str, int] = {}
+    whole: list[str] = []
+    for name in groups:
+        group_masks = _PLAYER_DATA_MASKS.get(name, {})
+        for field in PLAYER_DATA_GROUPS[name]:
+            if field in group_masks:
+                masks[field] = masks.get(field, 0) | group_masks[field]
+            elif field not in whole:
+                whole.append(field)
+    if set(groups) >= set(PLAYER_DATA_DEFAULT_GROUPS):
+        # every byte no group names (Finn's unnamed fields) comes back with a full restore, as it did before
+        named = {field for fields in PLAYER_DATA_GROUPS.values() for field in fields} | PLAYER_DATA_EXCLUDED
+        whole += [f.name for f in FIELDS if f.name not in named and f.name not in whole]
+    return tuple(whole), masks, "college" in groups
+
+
 def import_player_data(document: RosterDocument, data: bytes, *, mode: str = "all",
-                       players: Sequence[Player] | None = None) -> dict[str, Any]:
+                       players: Sequence[Player] | None = None,
+                       groups: Sequence[str] | None = None) -> dict[str, Any]:
     """Finn's Restore Player Data, under the studio's identity rules.
 
     Each entry is matched to a roster record by **last + first name and the play-by-play index**;
     a name that is unique on the roster still matches when the index differs (logged), a name
-    that matches several records is skipped rather than guessed.  ``mode`` is ``all`` (every
-    non-pointer field except the studio's star tag, plus the college by name) or ``attributes``
-    (the 28 rating bytes only).  Returns a receipt: entries, matched, changed, fields, log."""
+    that matches several records is skipped rather than guessed.  ``mode`` is ``all`` or ``attributes``
+    (the 28 rating bytes only); ``groups`` (b81 R15, Finn's restore checklist) picks field groups from
+    ``PLAYER_DATA_GROUPS`` instead. ``all`` is every group but ``spot``: the roster slot state (depth rows, locks,
+    injury and IR, player kind, pool) stays as the roster has it unless ``spot`` is asked for, and the studio's star
+    tag never comes back. A restored position goes through ``change_position``. Returns a receipt: entries, matched,
+    changed, fields, log."""
 
     _require(mode in ("all", "attributes"), "mode must be all or attributes")
+    if groups is None:
+        groups = ("ratings",) if mode == "attributes" else PLAYER_DATA_DEFAULT_GROUPS
+    whole, masks, with_college = _player_data_plan(tuple(groups))
     entries = read_player_data(data)
     scope = list(players) if players is not None else list(document.players)
     by_name: dict[tuple[str, str], list[Player]] = {}
     for player in scope:
         by_name.setdefault((player.last.casefold(), player.first.casefold()), []).append(player)
-    keys = RATING_BYTE_ORDER if mode == "attributes" else tuple(
-        f.name for f in FIELDS if f.name not in PLAYER_DATA_EXCLUDED)
     log: list[str] = []
     matched = changed_players = fields_written = 0
     for entry in entries:
@@ -5278,11 +6126,28 @@ def import_player_data(document: RosterDocument, data: bytes, *, mode: str = "al
         matched += 1
         values = entry.values
         touched = 0
-        for name in keys:
+        for name in whole:
+            if name == "position":
+                continue
             if player.record.values[name] != values[name]:
                 player.record.values[name] = values[name]
                 touched += 1
-        if mode == "all" and entry.college and entry.college != player.college:
+        for name, mask in masks.items():
+            merged = (player.record.values[name] & ~mask) | (values[name] & mask)
+            if merged != player.record.values[name]:
+                player.record.values[name] = merged
+                touched += 1
+        if "position" in whole and values["position"] != player.record.values["position"]:
+            try:
+                if "spot" in groups:            # the exact old slot was asked for: no re-rank
+                    check_position_code(values["position"], document.scheme)
+                    player.record.values["position"] = values["position"]
+                else:
+                    document.change_position(player, values["position"])
+                touched += 1
+            except RosterRecordError as exc:
+                log.append(f"entry {entry.index} {entry.display}: position not restored ({exc})")
+        if with_college and entry.college and entry.college != player.college:
             if entry.college in document.colleges:
                 document.set_college(player, document.colleges.index(entry.college))
                 touched += 1
@@ -5338,7 +6203,9 @@ def global_edit_preview(document: RosterDocument, *, attribute: str, mode: str, 
     for player in (players if players is not None else document.players):
         if wanted_positions and player.record.values["position"] not in wanted_positions:
             continue
-        if wanted_teams and not wanted_teams.intersection(player.teams):
+        # a club's reserves are part of the club here (b81): Finn had no reserve list, a SOFTDRINK club does
+        if wanted_teams and not (wanted_teams.intersection(player.teams)
+                                 or document.reserve_owner.get((player.pool, player.index)) in wanted_teams):
             continue
         if rookies_only and not is_rookie_years_pro(player.record.values["years_pro"]):
             continue
@@ -5359,14 +6226,37 @@ def global_edit_preview(document: RosterDocument, *, attribute: str, mode: str, 
     return out
 
 
-def global_edit_apply(document: RosterDocument, preview: Sequence[Mapping[str, Any]], attribute: str) -> int:
+def global_edit_preview_many(document: RosterDocument, *, attributes: Sequence[str], **settings: Any) -> list[dict[str, Any]]:
+    """Finn's Global Attribute Editor with several attributes ticked (b81 R12): the same rule and scope for each.
+
+    Every attribute is previewed against the roster as it is now, so a condition on one of them is judged before any
+    of them changes. Rows carry ``attribute``; ``global_edit_apply`` takes them as one pass."""
+
+    names = list(dict.fromkeys(str(name) for name in attributes))
+    _require(bool(names), "choose at least one attribute")
+    out: list[dict[str, Any]] = []
+    for name in names:
+        for row in global_edit_preview(document, attribute=name, **settings):
+            out.append({**row, "attribute": name})
+    return out
+
+
+def global_edit_apply(document: RosterDocument, preview: Sequence[Mapping[str, Any]], attribute: str = "") -> int:
+    """Apply a preview; a row's own ``attribute`` (several-attribute pass) wins over ``attribute``. A position goes
+    through ``change_position`` (bottom of the new chain, unlocked), the rule every other position edit follows."""
+
     by_key = {(p.pool, p.index): p for p in document.players}
     count = 0
     for row in preview:
         player = by_key.get((str(row["pool"]), int(row["index"])))
         if player is None:
             continue
-        player.record.set(attribute, int(row["after"]))
+        name = str(row.get("attribute") or attribute)
+        _require(bool(name), "the preview row names no attribute")
+        if name == "position":
+            document.change_position(player, int(row["after"]))
+        else:
+            player.record.set(name, int(row["after"]))
         count += 1
     return count
 
@@ -5384,6 +6274,67 @@ def advance_years_pro(document: RosterDocument, players: Sequence[Player] | None
             player.record.values["years_pro"] = current + 1
             count += 1
     return count
+
+
+# b81 R10: Finn's Tools > Auto-update > Body type from weight / from BMI, with the thresholds of his
+# ENFAutoBodyType.txt (Skinny|Normal|Large|Extra Large boundaries). A value at a boundary takes the bigger body.
+BODY_TYPE_THRESHOLDS = {"weight": (200, 270, 300), "bmi": (26.0, 30.0, 35.0)}
+
+
+def body_mass_index(record: PlayerRecord) -> float | None:
+    """Finn's hint: BMI = weight (lb) * 703 / height (in) squared. None without a height."""
+
+    height = record.values["height"]
+    return round(record.weight * 703 / (height * height), 1) if height else None
+
+
+def body_type_preview(document: RosterDocument, method: str, players: Sequence[Player] | None = None,
+                      thresholds: Sequence[float] | None = None) -> list[dict[str, Any]]:
+    """What Body type from weight (``method="weight"``) or from BMI (``"bmi"``) would change, before it changes it.
+
+    Only named players are considered (unused draft and capacity records keep their bytes). Rows:
+    pool, index, name, position, weight, height, bmi, before, after (body codes, see ``BODIES``)."""
+
+    _require(method in BODY_TYPE_THRESHOLDS, "method must be weight or bmi")
+    limits = tuple(thresholds) if thresholds is not None else BODY_TYPE_THRESHOLDS[method]
+    _require(len(limits) == 3 and list(limits) == sorted(limits), "three thresholds, lowest first")
+    rows: list[dict[str, Any]] = []
+    for player in (players if players is not None else document.players):
+        if not (player.first or player.last):
+            continue
+        record = player.record
+        bmi = body_mass_index(record)
+        measure = record.weight if method == "weight" else bmi
+        if measure is None:
+            continue
+        after = sum(1 for limit in limits if measure >= limit)
+        before = record.values["body"]
+        if after != before:
+            rows.append({"pool": player.pool, "index": player.index, "name": player.display,
+                         "position": record.position_name, "weight": record.weight,
+                         "height": record.values["height"], "bmi": bmi, "before": before, "after": after})
+    return rows
+
+
+def body_type_apply(document: RosterDocument, rows: Sequence[Mapping[str, Any]]) -> int:
+    return global_edit_apply(document, [{**row, "attribute": "body"} for row in rows])
+
+
+def contract_years_change(record: PlayerRecord, name: str, value: int) -> dict[str, int]:
+    """b81 R16, Finn's "Years remaining cannot be greater than contract length" (his spelling fixed): the values
+    the contract length and years remaining take when ``name`` is set to ``value``. A remaining above the length is
+    refused; a length below the remaining takes the remaining down with it."""
+
+    _require(name in ("contract_length", "contract_remaining"), "only the contract years are checked here")
+    length = record.values["contract_length"]
+    remaining = record.values["contract_remaining"]
+    if name == "contract_remaining":
+        _require(int(value) <= length, f"Years remaining cannot be greater than the contract length ({length})")
+        return {"contract_remaining": int(value)}
+    out = {"contract_length": int(value)}
+    if remaining > int(value):
+        out["contract_remaining"] = int(value)
+    return out
 
 
 def restore_measurements(document: RosterDocument, retail: RosterDocument,
@@ -5404,29 +6355,166 @@ def restore_measurements(document: RosterDocument, retail: RosterDocument,
     return count
 
 
+COPY_MODES = ("all", "exact", "attributes", "photo")
+EXACT_EXTRA_FIELDS = ("pbp_id", "photo_id")        # what Paste Player-Exact Copy adds to Paste in the record (+0x04, +0x06)
 COPY_EXCLUDED = frozenset({"college_pointer", "first_name_pointer", "last_name_pointer",
                            "history_pointer", "pbp_id", "photo_id"})
 
+# b81 R7 (Finn parity audit, section 4 T5).  A record also says which roster SLOT it holds, and on a
+# SOFTDRINK roster that state is team-unique: KR1, KR2 and PR locks may have one owner per club, a
+# locked depth row one owner per position, the IR marker must agree with the club's IR block, and
+# +0x08 says NFL player, draft prospect, unused slot or MyCareer class.  Finn's Paste predates all of
+# it (his record map calls +0x52/+0x53 padding), and the game's own field-by-field player clone
+# (0xC16CD..0xC1DDB) never copies +0x52 or +0x53 either.  So a Paste keeps the target's slot state;
+# abilities and their tier travel only when the user asks; the Guardian cap is gear and travels.
+#
+# b81 finn-r2: the injury state is the whole of it, not only +0x28.  The game's weeks-left and injured bit (+0x22/+0x23,
+# Studio field unknown_20_high) and the injury status nibble (+0x27 high, unknown_27_high) belong to the same injury as
+# the id at +0x28 (RE_FACTS section 2), so a Paste that kept the id but copied the other player's weeks would leave a
+# healthy target "injured" for the source's weeks, or an injured one healthy with an injury id.
+PASTE_KEEPS_TARGET = ("player_type", "injured_reserve", "unknown_29_low", "unknown_20_high", "unknown_27_high",
+                      "depth_rank", "depth_side", "pool_kind", "star_tag")
+PASTE_LOCK_MASK = 0x1F           # unknown_52 bits 0..4: rank, side, KR1, KR2, PR locks (nfl2k5_depth_locks)
+PASTE_ABILITY_MASKS = {"unknown_52": 0xE0,         # Speedster, Right-Stick Moves, Juke
+                       "unknown_53_high": 0x6F}    # Spin, Truck, Hurdle, Stiff-Arm and the two tier bits
+PASTE_GEAR_MASKS = {"unknown_53_high": 0x10}       # the Guardian cap overlay
+PASTE_KEPT_TEXT = ("his depth place and locks (rank, side, KR1, KR2, PR), injury and IR state, "
+                   "player kind, pool and star tag")
 
-def copy_player(source: PlayerRecord, target: PlayerRecord, *, mode: str = "all") -> int:
-    """Finn's Paste / Paste-Attributes-Only / Paste-Photo.
+# b81 R15: Finn's Restore Player Data options as field groups. The "spot" group is the roster slot state a Paste also
+# keeps (R7): a backup made at another time, or on another save, would put back an old team's depth rows, a returner
+# lock another player now holds, or an IR marker with no IR slot, so it is restored only when asked.
+PLAYER_DATA_GROUPS: dict[str, tuple[str, ...]] = {
+    "ratings": RATING_BYTE_ORDER,
+    "abilities": ("unknown_52", "unknown_53_high"),                  # masked: PASTE_ABILITY_MASKS
+    "appearance": ("skin_low", "skin_high", "face", "body", "dreads", "hair_style", "eye_black", "helmet",
+                   "face_mask", "face_shield", "mouthpiece", "turtleneck", "sleeves", "neck_roll", "left_glove_low",
+                   "left_glove_high", "right_glove", "left_wrist_low", "left_wrist_high", "right_wrist",
+                   "left_elbow_low", "left_elbow_high", "right_elbow", "left_shoe", "right_shoe", "headless",
+                   "unknown_53_high"),                                  # masked: the Guardian cap only
+    "body": ("height", "weight_raw", "hand", "birth_month", "birth_day", "birth_year_low", "birth_year_high"),
+    "contract": ("contract_value", "contract_type", "contract_bonus", "contract_length", "contract_remaining"),
+    "identity": ("jersey", "years_pro", "position"),
+    "commentary_photo": ("pbp_id", "photo_id"),
+    "college": (),
+    "spot": PASTE_KEEPS_TARGET + ("unknown_52",),                       # masked: the lock bits; star_tag never
+}
+PLAYER_DATA_GROUP_LABELS = {
+    "ratings": "Ratings (all 28 bytes)", "abilities": "Abilities and their tier",
+    "appearance": "Appearance and gear", "body": "Height, weight, hand and birth date",
+    "contract": "Contract", "identity": "Number, years pro and position",
+    "commentary_photo": "Play-by-play name and photo id", "college": "College (by name)",
+    "spot": "Roster spot: depth rank and side, depth and returner locks, injury and IR state, player kind, pool",
+}
+PLAYER_DATA_DEFAULT_GROUPS = tuple(name for name in PLAYER_DATA_GROUPS if name != "spot")
+_PLAYER_DATA_MASKS = {"abilities": PASTE_ABILITY_MASKS, "appearance": PASTE_GEAR_MASKS,
+                      "spot": {"unknown_52": PASTE_LOCK_MASK}}
 
-    ``all`` copies everything except college, names, PBP and photo (his own rule); ``attributes``
-    copies the 28 rating bytes only; ``photo`` copies the portrait id only."""
 
-    _require(mode in ("all", "attributes", "photo"), "mode must be all, attributes or photo")
+def copy_player(source: PlayerRecord, target: PlayerRecord, *, mode: str = "all",
+                abilities: bool = False) -> int:
+    """Finn's Paste / Paste-Attributes-Only / Paste-Photo, tailored to a SOFTDRINK roster.
+
+    ``all`` copies everything except college, names, PBP and photo (his own rule) and except the slot
+    state in ``PASTE_KEEPS_TARGET`` and the lock bits (b81 R7); ``exact`` (Finn's Paste Player-Exact Copy) is
+    ``all`` plus the play-by-play id and the photo id here, with the names and the college sent through the
+    document by ``RosterDocument.paste_player``; ``attributes`` copies the 28 rating
+    bytes only; ``photo`` copies the portrait id only.  ``abilities`` adds the ability flags and their
+    tier (never the locks) to ``all`` or ``attributes``.  Returns how many fields changed.
+
+    This is the raw record copy; on a document use ``RosterDocument.paste_player``, which also sends a
+    position change through ``change_position`` (bottom of the new chain, unlocked)."""
+
+    _require(mode in COPY_MODES, "mode must be all, exact, attributes or photo")
+    _require(isinstance(abilities, bool), "abilities must be a boolean")
+    masks: dict[str, int] = {}
     if mode == "photo":
         keys: Sequence[str] = ("photo_id",)
     elif mode == "attributes":
         keys = RATING_BYTE_ORDER
     else:
-        keys = tuple(name for name in (f.name for f in FIELDS) if name not in COPY_EXCLUDED)
+        skip = COPY_EXCLUDED | set(PASTE_KEEPS_TARGET) | set(PASTE_ABILITY_MASKS)
+        if mode == "exact":
+            skip -= set(EXACT_EXTRA_FIELDS)
+        keys = tuple(name for name in (f.name for f in FIELDS) if name not in skip)
+        masks = dict(PASTE_GEAR_MASKS)
+    if abilities and mode != "photo":
+        for name, mask in PASTE_ABILITY_MASKS.items():
+            masks[name] = masks.get(name, 0) | mask
     count = 0
     for key in keys:
         if target.values[key] != source.values[key]:
             target.values[key] = source.values[key]
             count += 1
+    for key, mask in masks.items():
+        merged = (target.values[key] & ~mask) | (source.values[key] & mask)
+        if merged != target.values[key]:
+            target.values[key] = merged
+            count += 1
     return count
+
+
+# ------------------------------------------------------------------------------------------- find (b81 R1)
+FIND_LIST_KINDS = ("team", "reserve", "free_agent", "draft_class", "pool")
+
+
+def player_location(document: RosterDocument, player: Player) -> tuple[str, int]:
+    """Which list on the Rosters page shows ``player``: ``("team", club)``, ``("reserve", club)``,
+    ``("team", squad)`` for someone only on an extra squad, else ``("free_agent" | "draft_class" | "pool", -1)``.
+
+    A club wins over the all-star and all-time squads that may also list him; a reserve is shown under
+    his club's Reserves row; a draft slot or unused capacity record has no list of its own."""
+
+    owner = document.reserve_owner.get((player.pool, player.index))
+    if owner is not None:
+        return ("reserve", owner)
+    club = document.club_of(player)
+    if club is not None:
+        return ("team", club)
+    if player.teams:
+        return ("team", min(player.teams))
+    if player.group in ("free_agent", "draft_class", "pool"):
+        return (player.group, -1)
+    return ("", -1)
+
+
+def find_players(document: RosterDocument, text: str = "", *, positions: Sequence[int] = (),
+                 years_pro: int | None = None, limit: int | None = None) -> list[dict[str, Any]]:
+    """Finn's Search > Find Player(s), over the whole league rather than the open list.
+
+    ``text`` matches first name, last name, the full name, ``Last, First`` (Finn's order) or the college,
+    ignoring case; every word must match somewhere.  ``positions`` keeps those position codes (empty = all);
+    ``years_pro`` keeps one stored value (1 = rookie).  Players with no name at all (unused draft and
+    capacity records) are never returned.  Rows are ``{"player", "where", "location"}``, last-name prefix
+    hits first, then by last and first name; ``where`` is the membership text the header card prints."""
+
+    needle = " ".join(str(text or "").replace(",", " ").split()).casefold()
+    words = needle.split()
+    wanted = {int(code) for code in positions}
+    hits: list[Player] = []
+    for player in document.players:
+        if not (player.first or player.last):
+            continue
+        values = player.record.values
+        if wanted and values["position"] not in wanted:
+            continue
+        if years_pro is not None and values["years_pro"] != int(years_pro):
+            continue
+        if words:
+            haystack = f"{player.first} {player.last} {player.college}".casefold()
+            if not all(word in haystack for word in words):
+                continue
+        if player_location(document, player)[0] == "":
+            continue
+        hits.append(player)
+    first = words[0] if words else ""
+    hits.sort(key=lambda p: (not p.last.casefold().startswith(first), p.last.casefold(), p.first.casefold(),
+                             p.pool, p.index))
+    if limit is not None:
+        hits = hits[:max(0, int(limit))]
+    where = document._membership_map({t.index: t.slots for t in document.teams}, document.free_agents,
+                                     document.reserves) if hits else {}
+    return [{"player": p, "where": where.get(p.offset, ""), "location": player_location(document, p)} for p in hits]
 
 
 # -------------------------------------------------------------------------------------------- repairs
@@ -5569,18 +6657,48 @@ def jersey_range(code: int) -> tuple[int, int]:
     return JERSEY_RANGES_BY_CODE.get(int(code), (0, 99))
 
 
+def jersey_ranges(code: int, year: int, scheme: str = "retail") -> tuple[tuple[int, int], ...]:
+    """Rule 5-1-2 numbering under the 2021 expansion and the 2023 adoption of zero."""
+    if year < 2021:
+        return (jersey_range(code),)
+    low = 0 if year >= 2023 else 1
+    if code == 0 or code in (1, 2) and year < 2023:
+        return ((low, 19),)
+    if code in (1, 2):
+        return ((low, 49), (90, 99))
+    if code in (3, 7, 8, 9):
+        return ((low, 49), (80, 89))
+    if code in (4, 5, 6):
+        return ((low, 49),)
+    if code in (10, 11):
+        return ((low, 59), (90, 99))
+    if code in (12, 13, 14):
+        return ((50, 79),)
+    if code in (15, 16):
+        # The merged EDGE pool includes players registered as outside linebackers.
+        return ((low if code == 16 and scheme == "one_pool" else 50, 79), (90, 99))
+    return ((0, 99),)
+
+
 def validate(document: RosterDocument, players: Sequence[Player] | None = None) -> list[dict[str, Any]]:
     """The validation cards: jersey ranges per position, rating bounds, pool budget, measurements."""
 
     findings: list[dict[str, Any]] = []
+    season = document.reference_year or document.base_year
+    # The game stores designated long snappers in other position pools (usually C). The NFL permits
+    # special positions to request other numbers (Rule 5-1-2); the club's actual LS slot is authoritative.
+    snappers = {t.slots[slot] for t in document.teams[:CLUB_TEAM_COUNT]
+                for slot in [document._specialists(t)[4]] if slot < len(t.slots)}
     for player in (players if players is not None else document.players):
         record = player.record
         position = record.position_name
-        low, high = jersey_range(record.values["position"])
+        ranges = (((0, 99),) if season >= 2021 and player.offset in snappers
+                  else jersey_ranges(record.values["position"], season, document.scheme))
         number = record.values["jersey"]
-        if not low <= number <= high:
+        if player.group not in ("draft_slot", "draft_capacity") and not any(lo <= number <= hi for lo, hi in ranges):
+            valid = " or ".join(f"{lo}-{hi}" for lo, hi in ranges)
             findings.append({"level": "warning", "player": player.display, "check": "jersey",
-                             "detail": f"#{number} is outside the NFL range {low}-{high} for a {position}"})
+                             "detail": f"#{number} is outside the NFL range {valid} for a {position}"})
         if is_retired_position(record.values["position"], document.scheme):
             instead = replacement_position_code(record.values["position"], document.scheme)
             findings.append({"level": "warning", "player": player.display, "check": "position",
@@ -5615,6 +6733,11 @@ def validate(document: RosterDocument, players: Sequence[Player] | None = None) 
                              "detail": "0 years pro prints as 0 on the card; the game's rookie is 1 (it prints R) and "
                                        "retail never stores 0 on a club or free agent. nflverse years_exp counts "
                                        "completed seasons: add 1 (years_pro_from_years_exp)"})
+        if (record.values["contract_remaining"] > record.values["contract_length"] and player.pool == "primary"
+                and record.values["player_type"] & FLAG_NFL_PLAYER):
+            findings.append({"level": "warning", "player": player.display, "check": "contract",
+                             "detail": f"{record.values['contract_remaining']} years remaining on a "
+                                       f"{record.values['contract_length']}-year contract (Finn refused this)"})
         if record.values["headless"]:
             findings.append({"level": "error", "player": player.display, "check": "headless",
                              "detail": "+0x0C bit 7 is set; this model renders without a head "
@@ -5633,6 +6756,18 @@ def validate_membership(document: RosterDocument) -> list[dict[str, Any]]:
 
     findings: list[dict[str, Any]] = []
     for team in document.teams:
+        if team.is_club and document.modern_ir:
+            numbers: dict[int, list[Player]] = {}
+            off_roster = document.projected_ir_players(team.index)
+            for offset in team.slots:
+                if offset not in off_roster:
+                    p = document.by_offset[offset]
+                    numbers.setdefault(p.record.values["jersey"], []).append(p)
+            for number, duplicates in numbers.items():
+                if len(duplicates) > 1:
+                    findings.append({"level": "warning", "player": team.display, "check": "duplicate jersey",
+                                     "detail": f"#{number} is shared by active players " +
+                                               ", ".join(p.display for p in duplicates)})
         if not team.clean_parse:
             findings.append({"level": "error", "player": team.display, "check": "team list",
                              "detail": f"the count byte says {team.player_count} players but only "
@@ -5640,13 +6775,15 @@ def validate_membership(document: RosterDocument) -> list[dict[str, Any]]:
         if len(set(team.slots)) != len(team.slots):
             findings.append({"level": "error", "player": team.display, "check": "team list",
                              "detail": "the same player record is listed twice"})
-        if team.is_club and 0 < len(team.slots) < TEAM_MIN_PLAYERS:
+        active = document.active_count(team.index)
+        maximum = document.active_limit(team.index)
+        if team.is_club and 0 < active < TEAM_MIN_PLAYERS:
             findings.append({"level": "warning", "player": team.display, "check": "roster size",
-                             "detail": f"{len(team.slots)} players; Finn's editor keeps every club at "
+                             "detail": f"{active} players on the active roster; Finn's editor keeps every club at "
                                        f"{TEAM_MIN_PLAYERS} or more"})
-        if len(team.slots) > TEAM_MAX_PLAYERS:
+        if active > maximum:
             findings.append({"level": "warning", "player": team.display, "check": "roster size",
-                             "detail": f"{len(team.slots)} players, above the {TEAM_MAX_PLAYERS}-man cap "
+                             "detail": f"{active} active players, above the {maximum}-man cap "
                                        "(the game carries up to 65 through the off-season and trims "
                                        "the tail at the season gate)"})
     for player in document.players:
@@ -5681,7 +6818,7 @@ __all__ = [
     "SHOES", "SIG_KEY", "SLEEVES", "TURTLENECKS", "WRISTS", "YES_NO", "Allocation", "Field",
     "Player", "PlayerRecord", "RosterDocument", "RosterPoolFull", "RosterRecordError",
     "SaveContainer", "StringPool", "TeamRecord", "MembershipRefused", "TEAM_MIN_PLAYERS",
-    "TEAM_MAX_PLAYERS", "TEAM_SLOTS", "CLUB_TEAM_COUNT", "FLAG_PROSPECT", "FLAG_NFL_PLAYER",
+    "TEAM_MAX_PLAYERS", "TEAM_SLOTS", "CLUB_TEAM_COUNT", "FLAG_PROSPECT", "FLAG_NFL_PLAYER", "finn_ir_marker",
     "MSG_DRAFT_CLASS", "MSG_FREE_AGENT_IR", "MSG_RELEASE_MAX_FREE_AGENTS", "MSG_RELEASE_MINIMUM",
     "MSG_SIGN_MAX_PLAYERS", "DRAFT_CLASS_WHY", "FREE_AGENT_LIST_CAP", "replay_moves", "validate_membership",
     "REPAIR_KINDS", "plan_repairs", "apply_repairs", "PLAYER_DATA_ENTRY_SIZE", "PLAYER_DATA_TRAILER",
@@ -5693,7 +6830,11 @@ __all__ = [
     "ROOKIE_YEARS_PRO", "YEARS_PRO_MAX", "accrued_seasons", "is_rookie_years_pro", "years_pro_for_season",
     "years_pro_from_years_exp", "years_pro_label",
     "advance_years_pro", "apply", "apply_body",
-    "copy_player", "decode_record", "edits_document", "encode_record", "encoded_size",
+    "body_mass_index", "body_type_apply", "body_type_preview", "changed_ranges", "contract_years_change", "copy_player",
+    "ranges_touch", "neutral_history", "HISTORY_CLEAR_WORDS", "HISTORY_CLEAR_FIELDS", "HISTORY_END_BIT",
+    "HISTORY_POSTSEASON_BIT",
+    "depth_slot_names", "DEPTH_FIELDS", "DEPTH_LOCK_BITS", "PAIRED_DEPTH_CODES",
+    "find_players", "global_edit_preview_many", "player_location", "decode_record", "edits_document", "encode_record", "encoded_size",
     "export_csv", "field_coverage", "find_block_base", "global_edit_apply", "global_edit_preview",
     "import_csv", "load_body", "load_image", "load_save", "read_edits", "read_utf16z",
     "resource_status", "restore_measurements", "save_document", "sign_save", "status",

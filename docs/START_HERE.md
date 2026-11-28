@@ -32,9 +32,10 @@ the NFLPA, ESPN, 2K or any team. The tools and the pack contain no game data: yo
 
    If you already downloaded the source ZIP, see [If you downloaded the source ZIP](#if-you-downloaded-the-source-zip) below.
 
-3. **The SOFTDRINK 2K28 patch**: one file ending in `.2k5patch`, from the
-   [pack releases](https://github.com/cruuz/softdrink-2k28/releases). Keep it exactly as downloaded. Do not unzip it.
-   The `.sha256` file next to it only checks the download; the Studio does not need it.
+3. **One SOFTDRINK 2K28 game patch.** Use v0.10 for xemu at 128 MiB. For a 64 MiB setup, download the published
+   v0.9 experimental pack, `SOFTDRINK-2K28-v0.9-64MB.2k5patch`. A standard-edition franchise may show as
+   Damaged at 64 MiB. Keep the save and open it on the standard edition. Give Studio the `.2k5patch` file exactly
+   as downloaded. The separate `.sha256` file checks the download. [128 MiB game](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.10) · [64 MiB game](https://github.com/cruuz/softdrink-2k28/releases/tag/v0.9)
 4. **xemu**, the original Xbox emulator, from [xemu.app](https://xemu.app). xemu needs its own BIOS files, which neither this project
    nor the Studio supplies. See [xemu's required-files guide](https://xemu.app/docs/required-files/).
 5. **Free disk space** for the new disc image. The finished SOFTDRINK disc is roughly 6 GB, so keep at least 8 GB free on
@@ -70,10 +71,9 @@ For every new SOFTDRINK version, start again from your original untouched image,
 
 ## 3. Point xemu at the disc
 
-1. In xemu, open the settings, set **System Memory** to **128 MiB** and choose the **Complex 4627** BIOS image as the Flash ROM
-   (BIOS), then restart xemu. This is required for SOFTDRINK 2K28 v0.9: the disc uses the bigger roster built for the 128 MiB
-   layout, and its startup patch needs the 4627 BIOS. Do not run this disc at 64 MiB. (For an original Xbox or Android
-   hakuX, see **Memory** under Common settings below.)
+1. Open **Machine → Settings → System** in xemu. For the standard game, set **System Memory** to **128 MiB** and
+   choose the **Complex 4627** BIOS image as the **Flash ROM**. For the experimental v0.9 `64MB` patch, set the memory to
+   **64 MiB**. Quit and reopen xemu after changing either setting.
 2. In xemu choose **Machine, Load Disc** and select the new image. (Or click **Play latest disc in xemu** in the Studio.)
 3. If the picture looks grainy, try **View, Int. Resolution Scale, 2x**.
 4. Start the game. If it sits on the Xbox logo, restart xemu.
@@ -88,14 +88,13 @@ SOFTDRINK's 2026 players and depth charts live on the disc, but a game or save y
 2. Start a **fresh franchise** (or a Quick Game, which uses the disc roster).
 
 The Crib is now the **Trophy Room** only: bought items no longer open, and furniture you placed stays as decoration (to keep
-the whole Crib on a disc you build yourself, see [the FAQ](mod_editor/2k5_mod_studio_faq.md#can-i-keep-the-whole-crib-with-its-shops)). In
-Franchise, the Front Office **Player Progress** row shows your club's rating changes this season (press the Black button on
+the whole Crib on a disc you build yourself, see [the FAQ](mod_editor/2k5_mod_studio_faq.md#can-i-keep-the-whole-crib-with-its-shops)). In a
+standard 128 MiB franchise, the Front Office **Player Progress** row shows your club's rating changes this season (press the Black button on
 that screen to step back through last week, 2 weeks ago and so on, up to 8 weeks); an older save starts a fresh history the
 first time it loads.
 
-If the game looks unchanged or shows 2004 rosters, check in this order: you loaded the new image and not the old one; you
-installed from the untouched image plus the `.2k5patch` file; you started a fresh franchise after loading the disc roster; xemu
-memory is 128 MiB.
+If you see 2004 rosters, check which image xemu loaded. Install the patch on your untouched game image, load the new
+disc roster and start a fresh franchise. Use 128 MiB for the standard pack or 64 MiB for the v0.9 experimental pack.
 
 ## 5. Keep an existing franchise (Franchise, Upgrade)
 
@@ -175,18 +174,17 @@ disc...** (marked experimental).
      cannot tick this and Modern kick spots together.
   5. Make my disc. This puts the extra point back at the 2, and also puts kickoffs back to the 30 and kickoff touchbacks back to
      the 20, with the original kickoff set-ups.
-  A customized build is made from the pack's included sources. The pack notes say a rebuild from those sources has not been
-  checked against the released disc byte for byte, so expect to test it yourself.
+  Customize loads the selected edition's roster, artwork, team playbooks and build settings. Give your edited disc
+  a new filename and play a game to check the changes you chose. [SOFTDRINK release sources and command-line examples](https://github.com/cruuz/softdrink-2k28/tree/v0.10)
 - **Choose what a build changes.** In **Build & Share** choose a preset (Basic, Advanced, Experimental), read the list of changes,
   then **Make my disc**. The presets do not add the SOFTDRINK 2K28 pack itself; use Install SOFTDRINK 2K28 for that.
 - **Play clock.** **Accelerated clock** and **Minimum Play Clock Time** are in Gameplay, Game Fixes. SOFTDRINK 2K28 has the
   accelerated clock on with a 20 second minimum. Its runoff stops at 2:00 in the second quarter, fourth quarter and overtime.
-- **Memory.** Always 128 MiB in xemu for SOFTDRINK. An original Xbox console and the Android emulator hakuX have 64 MB:
-  for them the Studio can make a **64 MB build** (Build tab, **Console memory**, or Share, **Build for**, then **Customize
-  SOFTDRINK 2K28**). It is experimental, estimated, not yet tested on a real Xbox or hakuX, and it leaves out the options
-  that need 128 MB. The 2026 rosters stay, fitted to the original game's roster size (the free agents beyond the original
-  count are left out). For the full experience use xemu at 128 MiB. See
-  [the FAQ](mod_editor/2k5_mod_studio_faq.md#can-i-play-softdrink-2k28-on-android-in-hakux).
+- **Memory.** Match xemu to the patch you installed. The standard **128 MiB** v0.10 edition includes MyCareer, modern IR and
+  the full roster. The experimental **64 MiB** v0.9 edition fits the 2026 teams into the original game’s roster space and
+  has fewer free agents. A later 64 MiB update is planned for selected improvements. Customize uses the selected pack’s edition. To convert a project, choose a different memory
+  target under **Build for** before opening Customize. Compatibility on a physical Xbox or Android hakuX remains
+  unverified. [64 MiB compatibility FAQ](mod_editor/2k5_mod_studio_faq.md#can-i-play-softdrink-2k28-on-android-in-hakux)
 
 ## 8. If something goes wrong
 
@@ -204,9 +202,8 @@ disc...** (marked experimental).
 
 ## 9. Where to report bugs and ask questions
 
-- The project Discord: <https://discord.gg/dpMJCnJZD> (also under **Help, Join the Discord...** in the Studio). Post bugs in the
-  **#2k5-bugs** channel.
-- GitHub issues for the Studio: <https://github.com/cruuz/2k-football-mod-tools/issues>.
+- **Help → Report a bug…** opens the [Studio issue tracker](https://github.com/cruuz/2k-football-mod-tools/issues). For a game-pack problem, use the [SOFTDRINK issue tracker](https://github.com/cruuz/softdrink-2k28/issues).
+- The community Discord: <https://discord.gg/FkNSKRAKch> (also **Help → Join the Discord…** in both Studios). The invite opens **#2k5-help**; post bugs in **#2k5-bugs**.
 - Security problems: see [SECURITY.md](../SECURITY.md).
 
 ## 10. More reading

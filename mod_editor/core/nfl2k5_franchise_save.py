@@ -159,9 +159,8 @@ TEAM_STAT_FIELDS: dict[int, int] = {
     0x1D4: 0x42, 0x1D6: 0x64, 0x1D8: 0x5B, 0x1DA: 0x5C, 0x1DE: 0xB8, 0x1E0: 0x30, 0x1E2: 0x40,
     0x1E4: 0x3F, 0x1E6: 0x16, 0x1E8: 0x17,
 }
-# the stat ids with a proved label (per-game descriptor table .data 0xAE59C0: "Passing Yards Per Game" =
-# 0x4C / games 0x63, "Rushing Yards Per Game" = 0x50, "Yds/Game" = 0x62, "Turnovers Per Game" = 0x42)
-TEAM_STAT_NAMES = {0x4C: "passing_yards", 0x50: "rushing_yards", 0x62: "total_yards", 0x42: "turnovers"}
+# Retail box-score labels at 0xAED668. Total offense (0xD0) is derived by the game.
+TEAM_STAT_NAMES = {0x4C: "passing_yards", 0x50: "rushing_yards", 0x62: "penalty_yards", 0x42: "turnovers"}
 
 COACH_SIZE = 0xA8
 # "body" is the model number (c%02d.iff of the low 16 bits; Finn's map reads a dword, whose upper half is the flag byte at
@@ -339,13 +338,17 @@ class TeamSeason:
     salary: int                     # $1000 units
     record_ring: tuple[int, ...]    # 7 u16 at +0x19C
     games_played: int
-    stats: dict[int, int]           # stat id -> season total (u16)
+    stats: dict[int, int]           # stat id -> raw 16-bit season word
     streak_bytes: tuple[int, ...]
 
     def stat(self, name: str) -> int:
+        if name == "total_yards":
+            return self.stat("rushing_yards") + self.stat("passing_yards")
         for stat_id, label in TEAM_STAT_NAMES.items():
             if label == name:
-                return self.stats.get(stat_id, 0)
+                # The native season readers sign-extend the word. A club can finish with negative yards.
+                word = self.stats.get(stat_id, 0)
+                return word - 0x10000 if word >= 0x8000 else word
         raise KeyError(name)
 
 
@@ -410,9 +413,12 @@ class FranchiseSave:
                  "native save, the 724,140-byte 16-reserve save or the capacity-grown save, optionally "
                  "followed by a 128-byte career block")
         growth = native_size - FRANCHISE_SAVE_SIZE
+        self.kind = "franchise"
+        self.arena_preamble = ARENA_PREAMBLE
+        self.arena_root = ARENA_ROOT
         self.arena_end = ARENA_END + growth
-        self.season_block = SEASON_BLOCK + growth
-        self.front_office_block = FRONT_OFFICE_BLOCK + growth
+        self._season_block: int | None = SEASON_BLOCK + growth
+        self._front_office_block: int | None = FRONT_OFFICE_BLOCK + growth
         _require(data[ARENA_WRAPPER:ARENA_WRAPPER + 4] == b"ROST"
                  and struct.unpack_from("<I", data, ARENA_WRAPPER + 4)[0] == ARENA_DECLARED + growth,
                  "runtime ROST arena wrapper and franchise length disagree")
@@ -430,6 +436,58 @@ class FranchiseSave:
         self.container = container
         self.source = source
         self._roster: rr.RosterDocument | None = None
+
+    @classmethod
+    def roster_save(cls, payload: bytes | bytearray, *, container: rr.SaveContainer | None = None,
+                    source: str = "bytes", base_year: int = DISPLAY_YEAR_BASE) -> "FranchiseSave":
+        """The same typed access over a ROSTER save (b81 R5, Finn edits coaches in any save): the arena, its teams and
+        its coach table, with no franchise season. Every season, schedule, salary-cap and injured-reserve accessor
+        refuses on it (``season_block`` and ``front_office_block`` say why), so only the arena-side edits (coach
+        numbers and the head-coach moves) can run. The arena is found the way the Rosters page finds it."""
+
+        data = bytes(payload)
+        try:
+            base = rr.find_block_base(data)
+        except rr.RosterRecordError as exc:
+            raise FranchiseSaveError(str(exc)) from exc
+        _require(data[base + 0x0C:base + 0x10] == b"ROST"
+                 and struct.unpack_from("<I", data, base + 0x10)[0] in (0, 1),
+                 "this save holds no runtime roster arena (ROST version 0 or 1)")
+        self = cls.__new__(cls)
+        try:
+            self.base_year = validate_franchise_base_year(base_year)
+        except ValueError as exc:
+            raise FranchiseSaveError(str(exc)) from exc
+        self.kind = "roster"
+        self.career_offset = None
+        self.ppg_offset = None
+        self.extension_offset = None
+        self.arena_preamble = base
+        self.arena_root = base + rr.ROST_VERSIONS[0]
+        self.arena_end = len(data)
+        self._season_block = None
+        self._front_office_block = None
+        self.original = data
+        self.buffer = bytearray(data)
+        self.container = container
+        self.source = source
+        self._roster = None
+        count, _table = self.coach_table
+        _require(count > 0, "this roster save has no coach records")
+        return self
+
+    @property
+    def season_block(self) -> int:
+        _require(self._season_block is not None, "a roster save has no franchise season, schedule or standings")
+        assert self._season_block is not None
+        return self._season_block
+
+    @property
+    def front_office_block(self) -> int:
+        _require(self._front_office_block is not None,
+                 "a roster save has no franchise front office (salary cap, injured reserve, transactions)")
+        assert self._front_office_block is not None
+        return self._front_office_block
 
     # ------------------------------------------------------------------ construction / output
     @classmethod
@@ -461,7 +519,7 @@ class FranchiseSave:
         payload = self.to_bytes()
         # the roster codec is consulted only when roster state changed since the load (beta-63.1)
         validate_save_edit(self.original, payload)
-        rr.RosterDocument(payload, base=ARENA_PREAMBLE).check_depth_locks(inherited_from=self.original)
+        rr.RosterDocument(payload, base=self.arena_preamble).check_depth_locks(inherited_from=self.original)
         return self.container.write(target, payload, overwrite=overwrite)
 
     # ------------------------------------------------------------------ raw helpers
@@ -482,7 +540,7 @@ class FranchiseSave:
         if value == 0:
             return None
         target = field + value - 1
-        _require(ARENA_ROOT <= target < self.arena_end, f"relative pointer at 0x{field:x} leaves the arena")
+        _require(self.arena_root <= target < self.arena_end, f"relative pointer at 0x{field:x} leaves the arena")
         return target
 
     def wstr(self, field: int) -> str:
@@ -507,16 +565,17 @@ class FranchiseSave:
         """The ★ Rosters document over the same bytes (parsed lazily from the current bytes)."""
 
         if self._roster is None:
-            self._roster = rr.RosterDocument(self.to_bytes(), base=ARENA_PREAMBLE, source=self.source,
-                                             base_year=self.base_year, reference_year=self.header.display_year)
+            self._roster = rr.RosterDocument(self.to_bytes(), base=self.arena_preamble, source=self.source,
+                                             base_year=self.base_year,
+                                             reference_year=self.header.display_year if self.kind == "franchise" else None)
         return self._roster
 
     @property
     def player_table(self) -> tuple[int, int]:
         """``(count, offset)`` of the primary player pool (root +0x00 / +0x04)."""
 
-        count = self.u32(ARENA_ROOT)
-        table = self.rel(ARENA_ROOT + 4)
+        count = self.u32(self.arena_root)
+        table = self.rel(self.arena_root + 4)
         _require(table is not None and count > 0, "the arena has no primary player table")
         assert table is not None
         return count, table
@@ -540,8 +599,8 @@ class FranchiseSave:
 
     @property
     def team_table(self) -> tuple[int, int]:
-        count = self.u32(ARENA_ROOT + rr.TEAM_COUNT_FIELD - rr.OBJ_OFF)
-        table = self.rel(ARENA_ROOT + rr.TEAM_TABLE_FIELD - rr.OBJ_OFF)
+        count = self.u32(self.arena_root + rr.TEAM_COUNT_FIELD - rr.OBJ_OFF)
+        table = self.rel(self.arena_root + rr.TEAM_TABLE_FIELD - rr.OBJ_OFF)
         _require(table is not None and count > 0, "the arena has no team table")
         assert table is not None
         return count, table
@@ -622,11 +681,13 @@ class FranchiseSave:
         if header.stage == 8 and header.stage_weeks in (17, 18):
             return header.stage_weeks
         count, table = self.template_table
-        if table and table + count * GAME_SIZE <= ARENA_END and count in (256, 272):
+        # b81: the arena end and the season block move with a capacity-grown save; the retail constants read the
+        # wrong bytes there
+        if table and table + count * GAME_SIZE <= self.arena_end and count in (256, 272):
             return 18 if count == 272 else 17
 
         def records(row: int) -> list[bytearray]:
-            start = SEASON_BLOCK + S_GRID + row * GRID_SLOTS * GAME_SIZE
+            start = self.season_block + S_GRID + row * GRID_SLOTS * GAME_SIZE
             return [raw for slot in range(GRID_SLOTS)
                     if (raw := self.buffer[start + slot * GAME_SIZE:start + (slot + 1) * GAME_SIZE])
                     and raw[0] in (GAME_SCHEDULED, GAME_PLAYED) and (raw[1] or raw[2] or raw[3])]
@@ -709,13 +770,189 @@ class FranchiseSave:
         self.buffer[current.offset:current.offset + GAME_SIZE] = record
         return self.game(row, slot)
 
+    # ------------------------------------------------------------------ schedule tools (b81 R8, Finn's Schedule tab)
+    # The save keeps each week as one grid row of 17 cells: its games packed from slot 0, then row-end cells
+    # (type 7, all zero, flags 0) to the end, and every game cell's flags word 0x0101. Adding a game takes the first
+    # row-end cell; removing one moves the later games of that row up a cell (record, flags word and quarter scores
+    # together), so a row never has a hole. Only regular-season weeks: a postseason row encodes the seeds by slot.
+    # The game copies its template into the grid only at a season's start, so these edits change this season alone.
+    def expected_games_per_team(self) -> int:
+        """The NFL formula for this layout: one bye, so 16 games in 17 weeks and 17 in 18."""
+
+        return self.regular_season_weeks - 1
+
+    def _regular_row(self, row: int) -> None:
+        _require(isinstance(row, int) and 0 <= row < self.regular_season_weeks,
+                 f"week {row + 1 if isinstance(row, int) else row} is not a regular-season week of this save; playoff "
+                 "rounds come from the bracket and keep their seeds by position")
+
+    def _row_cells(self, row: int) -> list[bytes]:
+        start = self.season_block + S_GRID + row * GRID_SLOTS * GAME_SIZE
+        return [bytes(self.buffer[start + k * GAME_SIZE:start + (k + 1) * GAME_SIZE]) for k in range(GRID_SLOTS)]
+
+    def _move_cell(self, row: int, source: int | None, target: int) -> None:
+        """Cell ``target`` of ``row`` takes cell ``source``'s record, flags and scores (None = a row-end cell)."""
+
+        cells = self.season_block + S_GRID
+        flags = self.season_block + S_GRID_FLAGS
+        scores = self.season_block + S_SCORES
+        to = self.cell(row, target)
+        if source is None:
+            record, flag, score = bytes([GAME_FILLER]) + bytes(GAME_SIZE - 1), 0, bytes(SCORE_BYTES)
+        else:
+            frm = self.cell(row, source)
+            record = bytes(self.buffer[cells + frm * GAME_SIZE:cells + (frm + 1) * GAME_SIZE])
+            flag = self.u16(flags + frm * 2)
+            score = bytes(self.buffer[scores + frm * SCORE_BYTES:scores + (frm + 1) * SCORE_BYTES])
+        self.buffer[cells + to * GAME_SIZE:cells + (to + 1) * GAME_SIZE] = record
+        struct.pack_into("<H", self.buffer, flags + to * 2, flag)
+        self.buffer[scores + to * SCORE_BYTES:scores + (to + 1) * SCORE_BYTES] = score
+
+    def _row_layout(self, row: int) -> tuple[list[int], list[int]]:
+        """``(game slots, row-end slots)``; refuses a row whose games are not packed ahead of its row-end cells."""
+
+        games, ends = [], []
+        for slot, raw in enumerate(self._row_cells(row)):
+            if raw[0] == GAME_FILLER or not any(raw):          # a row end, or a never-written cell
+                ends.append(slot)
+            elif raw[0] in (GAME_SCHEDULED, GAME_PLAYED) and any(raw[1:]):
+                games.append(slot)
+            else:
+                raise FranchiseSaveError(f"week {row + 1} slot {slot + 1} holds a cell this editor does not know "
+                                         f"(type {raw[0]}); it is left as it is")
+        _require(not games or not ends or max(games) < min(ends),
+                 f"week {row + 1} has a game after its row end; it is left as it is")
+        return games, ends
+
+    def add_game(self, row: int, *, home: int, away: int, month: int, day: int, hour: int, minute: int,
+                 allow_played: bool = False) -> Game:
+        """Finn's Add Game: a new scheduled game in the first free cell of a regular-season week.
+
+        Refused when the week is full, when a team would play itself or twice that week, and in a week that already
+        has a played game unless ``allow_played``. The cell's year byte is taken from the season's own games."""
+
+        self._regular_row(row)
+        games, ends = self._row_layout(row)
+        _require(bool(ends), f"week {row + 1} already holds {GRID_SLOTS} games, the most a week can hold")
+        cells = [self.game(row, slot) for slot in games]
+        _require(allow_played or not any(g.played for g in cells),
+                 f"week {row + 1} has been played; tick Allow editing played games to add to it")
+        values = {"home": home, "away": away, "month": month, "day": day, "hour": hour, "minute": minute}
+        limits = {"home": (0, NFL_TEAMS - 1), "away": (0, NFL_TEAMS - 1), "month": (1, 12), "day": (1, 31),
+                  "hour": (0, 12), "minute": (0, 59)}
+        for name, value in values.items():
+            low, high = limits[name]
+            _require(isinstance(value, int) and low <= value <= high, f"{name}: {value!r} is outside {low}..{high}")
+        _require(home != away, "a team cannot play itself")
+        busy = {team for g in cells for team in (g.home, g.away)}
+        for team in (home, away):
+            _require(team not in busy, f"{self.team_abbreviation(team)} already plays in week {row + 1}")
+        record = bytes([GAME_SCHEDULED, home, away, month, day, self._year_code(row, month), hour, minute])
+        slot = ends[0]
+        index = self.cell(row, slot)
+        self.buffer[self.season_block + S_GRID + index * GAME_SIZE:
+                    self.season_block + S_GRID + (index + 1) * GAME_SIZE] = record
+        struct.pack_into("<H", self.buffer, self.season_block + S_GRID_FLAGS + index * 2, 0x0101)
+        score = self.season_block + S_SCORES + index * SCORE_BYTES
+        self.buffer[score:score + SCORE_BYTES] = bytes(SCORE_BYTES)
+        return self.game(row, slot)
+
+    def _year_code(self, row: int, month: int) -> int:
+        """Byte 5 of a grid record is the game's year minus 2000 (the template's own rule): the same month in this
+        week or the season gives it; otherwise the week's first game, plus one when the date has rolled into the next
+        calendar year (a January game after a December one)."""
+
+        regular = [g for g in self.games(rows=range(self.regular_season_weeks))]
+        for pool in ([g for g in regular if g.row == row], regular):
+            for game in pool:
+                if game.month == month:
+                    return game.slot_code
+        anchor = next((g for g in regular if g.row == row), regular[0] if regular else None)
+        _require(anchor is not None, "this season has no scheduled game to take the year from")
+        assert anchor is not None
+        if month < anchor.month and anchor.month - month > 6:
+            return (anchor.slot_code + 1) & 0xFF
+        if month > anchor.month and month - anchor.month > 6:
+            return (anchor.slot_code - 1) & 0xFF
+        return anchor.slot_code
+
+    def remove_game(self, row: int, slot: int, *, allow_played: bool = False) -> Game:
+        """Finn's Remove Game: the week's later games each move up one cell and the last cell becomes a row end.
+        A played game is refused unless ``allow_played``. Returns the removed game."""
+
+        self._regular_row(row)
+        games, _ends = self._row_layout(row)
+        _require(slot in games, f"week {row + 1} slot {slot + 1} holds no game")
+        removed = self.game(row, slot)
+        _require(allow_played or not removed.played,
+                 f"{self.team_abbreviation(removed.away)} at {self.team_abbreviation(removed.home)} has been played; "
+                 "tick Allow editing played games to remove it")
+        last = games[-1]
+        for target in range(slot, last):
+            self._move_cell(row, target + 1, target)
+        self._move_cell(row, None, last)
+        return removed
+
+    def clear_week(self, row: int, *, allow_played: bool = False) -> int:
+        """Finn's Clear Week: every game of a regular-season week removed; returns how many."""
+
+        self._regular_row(row)
+        games, _ends = self._row_layout(row)
+        played = [self.game(row, slot) for slot in games if self.game(row, slot).played]
+        _require(allow_played or not played,
+                 f"week {row + 1} has {len(played)} played game{'s' if len(played) != 1 else ''}; tick Allow editing "
+                 "played games to clear it")
+        for slot in games:
+            self._move_cell(row, None, slot)
+        return len(games)
+
+    def schedule_integrity(self) -> dict[str, Any]:
+        """Finn's Home/Away table: every club's regular-season games, home and away, with what looks wrong.
+
+        ``expected`` is the layout's games per club (16 in 17 weeks, 17 in 18); a club is flagged when its count
+        differs, when home and away differ by more than one, or when it plays twice in one week."""
+
+        expected = self.expected_games_per_team()
+        rows: list[dict[str, Any]] = []
+        home: dict[int, int] = {t: 0 for t in range(self.league_team_count)}
+        away: dict[int, int] = {t: 0 for t in range(self.league_team_count)}
+        twice: dict[int, list[int]] = {}
+        for week in range(self.regular_season_weeks):
+            seen: dict[int, int] = {}
+            for game in self.games(rows=[week]):
+                for team, tally in ((game.home, home), (game.away, away)):
+                    if team in tally:
+                        tally[team] += 1
+                        seen[team] = seen.get(team, 0) + 1
+            for team, count in seen.items():
+                if count > 1:
+                    twice.setdefault(team, []).append(week + 1)
+        for team in range(self.league_team_count):
+            games = home[team] + away[team]
+            notes = []
+            if games != expected:
+                notes.append(f"{games} games, not {expected}")
+            if abs(home[team] - away[team]) > 1:
+                notes.append(f"{home[team]} home and {away[team]} away")
+            if team in twice:
+                notes.append("plays twice in week " + ", ".join(str(w) for w in twice[team]))
+            rows.append({"team": team, "name": self.team_abbreviation(team), "home": home[team], "away": away[team],
+                         "games": games, "notes": notes})
+        flagged = [row for row in rows if row["notes"]]
+        return {"expected": expected, "weeks": self.regular_season_weeks, "rows": rows, "flagged": flagged,
+                "summary": (f"All {len(rows)} clubs have {expected} games, home and away within one."
+                            if not flagged else
+                            f"{len(flagged)} of {len(rows)} clubs need a look: "
+                            + "; ".join(f"{row['name']} {', '.join(row['notes'])}" for row in flagged[:6])
+                            + (" …" if len(flagged) > 6 else ""))}
+
     # ------------------------------------------------------------------ the template (arena)
     @property
     def template_table(self) -> tuple[int, int]:
         """``(count, offset)`` of the season template the game copies into row 0.. at season start."""
 
-        count = self.u32(ARENA_ROOT + 0x28)
-        table = self.rel(ARENA_ROOT + 0x2C)
+        count = self.u32(self.arena_root + 0x28)
+        table = self.rel(self.arena_root + 0x2C)
         if table is None:
             return 0, 0
         return count, table
@@ -750,10 +987,117 @@ class FranchiseSave:
         """
         from . import nfl2k5_roster_storage as storage
         try:
-            stadiums = storage.read_stadiums(self.buffer, root=ARENA_ROOT, end=self.arena_end)
+            stadiums = storage.read_stadiums(self.buffer, root=self.arena_root, end=self.arena_end)
             return storage.team_stadium(self.buffer, self.team_offset(team), stadiums)
         except storage.RosterStorageError as exc:
             raise FranchiseSaveError(str(exc)) from exc
+
+    # ------------------------------------------------------------------ team settings (b81 R13, Finn's Options tab)
+    # Codex's native witness (finn-facts TEAM_AND_HISTORY.md): six team settings survived signed roster and franchise
+    # cold loads. Offsets are inside one 500-byte team record; pointers are field-relative (+1), 0 = none.
+    TEAM_PLAYBOOK, TEAM_STADIUM, TEAM_FRONT, TEAM_PBP, TEAM_UNIFORM_PAIRS, TEAM_JERSEY, TEAM_LOGO = (
+        0x110, 0x114, 0x150, 0x154, 0x156, 0x192, 0x10C)
+    FRONTS = ("4-3", "3-4", "Both")
+
+    def _team_field(self, team: int, rel: int) -> int:
+        _require(0 <= team < self.league_team_count, f"team {team} is not one of the league's clubs")
+        return self.team_offset(team) + rel
+
+    def _point(self, field: int, target: int) -> None:
+        struct.pack_into("<i", self.buffer, field, target - field + 1)
+
+    def stadium_choices(self) -> list[dict[str, Any]]:
+        """Every stadium record (table at root+0x14, 128 bytes each) with its asset id (+0x7C) and the clubs using it."""
+
+        from . import nfl2k5_roster_storage as storage
+        try:
+            stadiums = storage.read_stadiums(self.buffer, root=self.arena_root, end=self.arena_end)
+        except storage.RosterStorageError as exc:
+            raise FranchiseSaveError(str(exc)) from exc
+        users: dict[int, list[str]] = {}
+        for team in range(self.league_team_count):
+            pointer = self.rel(self.team_offset(team) + self.TEAM_STADIUM)
+            if pointer is not None:
+                users.setdefault(pointer, []).append(self.team_abbreviation(team))
+        return [{"index": s.index, "offset": s.offset, "id": s.asset_id, "home_of": users.get(s.offset, [])}
+                for s in stadiums]
+
+    def playbook_choices(self) -> list[dict[str, Any]]:
+        """Every playbook row (root+0x4C, count root+0x48): its display name and resource key."""
+
+        count = self.u32(self.arena_root + 0x48)
+        table = self.rel(self.arena_root + 0x4C)
+        if table is None or not count:
+            return []
+        _require(count <= 256 and table + count * 8 <= self.arena_end, "the playbook table is outside the arena")
+        users: dict[int, list[str]] = {}
+        for team in range(self.league_team_count):
+            pointer = self.rel(self.team_offset(team) + self.TEAM_PLAYBOOK)
+            if pointer is not None:
+                users.setdefault(pointer, []).append(self.team_abbreviation(team))
+        return [{"index": i, "offset": table + 8 * i, "name": self.wstr(table + 8 * i),
+                 "key": self.wstr(table + 8 * i + 4), "used_by": users.get(table + 8 * i, [])} for i in range(count)]
+
+    def pbp_choices(self) -> list[dict[str, Any]]:
+        """The team announcer ids the league's own clubs carry (a free id makes the game fall back to 99)."""
+
+        seen: dict[int, list[str]] = {}
+        for team in range(self.league_team_count):
+            value = self.u16(self.team_offset(team) + self.TEAM_PBP)
+            seen.setdefault(value, []).append(self.team_abbreviation(team))
+        return [{"id": value, "clubs": clubs} for value, clubs in sorted(seen.items())]
+
+    def jersey_styles(self, team: int) -> list[int]:
+        """Selectable default jersey styles: 0, and every style 1-14 whose u16 pair at +0x156 + 4*style is set (the
+        game's check 0xE2A90)."""
+
+        base = self._team_field(team, self.TEAM_UNIFORM_PAIRS)
+        return [0] + [style for style in range(1, 15) if any(struct.unpack_from("<HH", self.buffer, base + 4 * style))]
+
+    def team_options(self, team: int) -> dict[str, Any]:
+        record = self.team_offset(team)
+        stadium = self.rel(record + self.TEAM_STADIUM)
+        playbook = self.rel(record + self.TEAM_PLAYBOOK)
+        stadiums = {s["offset"]: s for s in self.stadium_choices()}
+        books = {b["offset"]: b for b in self.playbook_choices()}
+        logo = self.rel(record + self.TEAM_LOGO)
+        return {"stadium": stadiums.get(stadium), "playbook": books.get(playbook),
+                "jersey": self.u8(record + self.TEAM_JERSEY), "jersey_styles": self.jersey_styles(team),
+                "pbp": self.u16(record + self.TEAM_PBP), "front": self.u32(record + self.TEAM_FRONT),
+                "logo": self.wstr(record + self.TEAM_LOGO) if logo is not None else ""}
+
+    def set_team_option(self, team: int, option: str, value: int) -> None:
+        """Stadium (a stadium record index), default jersey (a style), playbook (a playbook row index), team play-by-play
+        (an id another club carries) or defensive front (0 4-3, 1 3-4, 2 Both). The logo is not offered: it also
+        switches the club's whole kit family to the donor's (Codex's witness), which a SOFTDRINK disc builds per club."""
+
+        _require(isinstance(value, int), f"{option}: {value!r} is not a whole number")
+        record = self._team_field(team, 0)
+        if option == "stadium":
+            choices = self.stadium_choices()
+            _require(0 <= value < len(choices), f"stadium {value} is not one of the {len(choices)} stadium records")
+            self._point(record + self.TEAM_STADIUM, choices[value]["offset"])
+        elif option == "playbook":
+            choices = self.playbook_choices()
+            _require(0 <= value < len(choices), f"playbook {value} is not one of the {len(choices)} playbook rows")
+            self._point(record + self.TEAM_PLAYBOOK, choices[value]["offset"])
+        elif option == "jersey":
+            styles = self.jersey_styles(team)
+            _require(value in styles, f"style {value} is not one of this club's styles ({', '.join(map(str, styles))})")
+            self.buffer[record + self.TEAM_JERSEY] = value
+        elif option == "pbp":
+            ids = [c["id"] for c in self.pbp_choices()]
+            _require(value in ids, f"announcer id {value} is not one the league's clubs carry")
+            struct.pack_into("<H", self.buffer, record + self.TEAM_PBP, value)
+        elif option == "front":
+            _require(value in (0, 1, 2), "the defensive front is 0 (4-3), 1 (3-4) or 2 (Both)")
+            _require(self.u32(record + self.TEAM_FRONT) in (0, 1, 2), "the stored front is not 0, 1 or 2; left alone")
+            struct.pack_into("<I", self.buffer, record + self.TEAM_FRONT, value)
+        elif option == "logo":
+            raise FranchiseSaveError("the logo also changes the club's whole uniform and helmet set to the donor club's; "
+                                     "it is shown, not edited")
+        else:
+            raise FranchiseSaveError(f"unknown team setting {option!r}")
 
     def team_salaries(self) -> list[int]:
         return [self.team_salary(team) for team in range(self.league_team_count)]
@@ -838,7 +1182,8 @@ class FranchiseSave:
         _require(type(legacy_marker) is bool, "legacy_marker must be boolean")
         _require(type(finn_roles) is bool, "finn_roles must be boolean")
         _require(not legacy_marker or self.buffer[target + 0x28] != IR_MARK,
-                 f"player {player_index} is already marked injured reserve")
+                 f"player {player_index}'s injury code already ends in 0xEE, the byte this older injured reserve "
+                 "writes as its marker (an injury such as id 750 ends in it too)")
         free = None
         for slot in range(IR_SLOTS):
             offset = self.front_office_block + F_INJURED_RESERVE + (team * IR_SLOTS + slot) * IR_ENTRY
@@ -1054,8 +1399,8 @@ class FranchiseSave:
     # ------------------------------------------------------------------ coaches (arena)
     @property
     def coach_table(self) -> tuple[int, int]:
-        count = self.u32(ARENA_ROOT + 0x30)
-        table = self.rel(ARENA_ROOT + 0x34)
+        count = self.u32(self.arena_root + 0x30)
+        table = self.rel(self.arena_root + 0x34)
         if table is None:
             return 0, 0
         return count, table
@@ -1306,7 +1651,7 @@ class FranchiseSave:
         for field in fields:
             value = struct.unpack_from("<i", data, field)[0]
             target = field + value - 1
-            if (not value or target % 2 or not ARENA_ROOT <= target < self.arena_end
+            if (not value or target % 2 or not self.arena_root <= target < self.arena_end
                     or any(low <= target < high for low, high in records)):
                 continue
             end = target
@@ -1354,12 +1699,12 @@ class FranchiseSave:
         strings_end = cursor
         targets = {target for _at, target, _text in slots}
         other_text = self._other_text_mask()
-        words = (self.arena_end - ARENA_ROOT) // 4
-        values = struct.unpack_from(f"<{words}i", self.buffer, ARENA_ROOT)
+        words = (self.arena_end - self.arena_root) // 4
+        values = struct.unpack_from(f"<{words}i", self.buffer, self.arena_root)
         hits: dict[int, int] = {}
         for k, value in enumerate(values):
             if value:
-                field = ARENA_ROOT + 4 * k
+                field = self.arena_root + 4 * k
                 if start <= field < strings_end:
                     continue                      # text bytes, not a pointer field
                 if other_text is not None and other_text[field]:
@@ -1503,6 +1848,9 @@ class FranchiseSave:
         }
 
     def one_line(self) -> str:
+        if self.kind == "roster":
+            count, _table = self.coach_table
+            return f"Roster save · {count} coach records · {self.league_team_count} clubs"
         s = self.summary()
         users = ", ".join(s["user_team_names"]) or "none"
         return (f"{s['display_year']} (season {s['season_ordinal']} = index {s['year_field']}), "

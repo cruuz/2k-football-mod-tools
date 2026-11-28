@@ -51,15 +51,14 @@ class ExportRosterEditsTests(unittest.TestCase):
             self.panel._save_edits()
         return shown
 
-    def test_staff_changes_on_a_roster_with_faces_are_a_dialog_not_an_exception(self) -> None:
+    def test_staff_and_faces_export_together_from_the_button(self) -> None:
         self.panel._appearance_bundle = {"schema": "faces"}
         target = Path(self.temp.name) / "edits.json"
         shown = self.click_export(target)
-        shown.assert_called_once()
-        operation, message = shown.call_args.args[1], shown.call_args.args[2]
-        self.assertEqual(operation, "export the roster edits")
-        self.assertIn("Put every coach back on the Coaches tab", message)
-        self.assertFalse(target.exists())
+        shown.assert_not_called()
+        document = json.loads(target.read_text(encoding="utf-8"))
+        self.assertEqual(document["appearance_assets"], self.panel._appearance_bundle)
+        self.assertEqual(document["staff"], self.panel.coaches_panel.export_staff())
 
     def test_a_path_that_cannot_be_written_is_a_dialog_too(self) -> None:
         shown = self.click_export(Path(self.temp.name) / "no such folder" / "edits.json")

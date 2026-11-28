@@ -14,7 +14,11 @@ choose:
     push edx
     push eax
     mov dword ptr [state], 0
+    .ifdef BETA80
     cmp dword ptr [0xe602c4], 1
+    .else
+    cmp dword ptr [0xe602c4], 0       /* opening toss; period 1 begins after both choices */
+    .endif
     jne original
     cmp dword ptr [0xe602b4], 0
     jne original
@@ -57,7 +61,12 @@ menu:
     pushfd
     cmp dword ptr [state], 0
     je menu_original
+    .ifdef BETA80
     mov dword ptr [esp+16], offset notice
+    .else
+    jmp deferred_menu_arguments
+    .org menu + 18, 0x90              /* keep every entry used by an installed era wrapper */
+    .endif
 menu_original:
     popfd
     jmp native_menu
@@ -96,3 +105,10 @@ result_original:
 game_init:
     mov dword ptr [state], 0
     jmp native_game_init
+
+    .ifndef BETA80
+deferred_menu_arguments:
+    mov dword ptr [esp+16], offset notice
+    mov dword ptr [esp+36], 1         /* eighth menu argument after pushfd: highlight Receive */
+    jmp menu_original
+    .endif

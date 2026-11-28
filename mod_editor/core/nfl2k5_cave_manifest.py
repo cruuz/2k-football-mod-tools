@@ -71,8 +71,8 @@ class Recorder:
 
     def observe(self, module: ModuleType, function: str, before: bytes, after: bytes, receipt: dict):
         owner = module.__name__.split(".")[-1]
-        if owner in ("nfl2k5_qb_spy_runtime", "nfl2k5_my_career_mode"):
-            owner = module.OWNER  # allocator budget retains the research owner name
+        if owner in ("nfl2k5_qb_spy_runtime", "nfl2k5_my_career_mode", "nfl2k5_gadget_play"):
+            owner = module.OWNER  # allocator budget retains the research owner name (beta 81: the gadget slots' name)
         post_image = XbeImage(after)
         allow_append = False
         if len(before) != len(after):
@@ -80,7 +80,7 @@ class Recorder:
             from . import nfl2k5_xbe_space as space
             allow_append = (owner == "nfl2k5_depth_chart_rows" and storage.state(before) == "retail"
                             and storage.state(after) == "applied")
-            allow_append |= (owner in (space.OWNER, "nfl2k5_camera", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist", "nfl2k5_practice_squad_screen", "nfl2k5_abilities_runtime", "nfl2k5_qb_spy", "nfl2k5_calendar_engine", "nfl2k5_read_option_runtime", "nfl2k5_franchise_2026", "nfl2k5_senior_bowl", "nfl2k5_guardian_overlay", "nfl2k5_my_career", "nfl2k5_screen_hooks", "nfl2k5_xbe_space", "nfl2k5_music_metadata", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", "nfl2k5_module_loader", "nfl2k5_roster_arena_growth", "nfl2k5_franchise_autosave", "nfl2k5_coverage_trail", "nfl2k5_deep_zone", "nfl2k5_playbook_pair", "nfl2k5_weekly_prep", "nfl2k5_cpu_money_downs", "nfl2k5_accelerated_clock", "nfl2k5_franchise_edit_player", "nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai", "nfl2k5_cpu_third_down", "nfl2k5_draft_picks", "nfl2k5_hback", "nfl2k5_team_ratings")
+            allow_append |= (owner in (space.OWNER, "nfl2k5_backfield_cards", "nfl2k5_gadget_proof", "nfl2k5_offset_toss", "nfl2k5_camera", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist", "nfl2k5_practice_squad_screen", "nfl2k5_abilities_runtime", "nfl2k5_qb_spy", "nfl2k5_calendar_engine", "nfl2k5_read_option_runtime", "nfl2k5_franchise_2026", "nfl2k5_senior_bowl", "nfl2k5_guardian_overlay", "nfl2k5_my_career", "nfl2k5_screen_hooks", "nfl2k5_xbe_space", "nfl2k5_music_metadata", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", "nfl2k5_module_loader", "nfl2k5_roster_arena_growth", "nfl2k5_franchise_autosave", "nfl2k5_coverage_trail", "nfl2k5_deep_zone", "nfl2k5_playbook_pair", "nfl2k5_weekly_prep", "nfl2k5_cpu_money_downs", "nfl2k5_accelerated_clock", "nfl2k5_franchise_edit_player", "nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai", "nfl2k5_cpu_third_down", "nfl2k5_draft_picks", "nfl2k5_hback", "nfl2k5_team_ratings")
                              and space.status(before) == "retail" and space.status(after) == "applied")
             # b778-xs1: a late owner appended to a sealed image may grow the v4 pool (the last section, end of file).
             allow_append |= (space.is_scaleout(after) and space.scale_version(after) == 4
@@ -132,7 +132,57 @@ class Recorder:
         # them from the final layout, never from a different probe layout.
         # defensive_try is one writer with two named allocator owners. finish()
         # publishes both children, including the immutable stat descriptors.
-        if owner in ("nfl2k5_xbe_space", "nfl2k5_camera", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_music_metadata", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist", "nfl2k5_practice_squad_screen", "nfl2k5_abilities_runtime", "nfl2k5_qb_spy", "nfl2k5_calendar_engine", "nfl2k5_read_option_runtime", "nfl2k5_franchise_2026", "nfl2k5_senior_bowl", "nfl2k5_guardian_overlay", "nfl2k5_my_career", "nfl2k5_screen_hooks", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", "nfl2k5_module_loader", "nfl2k5_roster_arena_growth", "nfl2k5_franchise_autosave", "nfl2k5_coverage_trail", "nfl2k5_deep_zone", "nfl2k5_playbook_pair", "nfl2k5_weekly_prep", "nfl2k5_cpu_money_downs", "nfl2k5_accelerated_clock", "nfl2k5_franchise_edit_player", "nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai", "nfl2k5_cpu_third_down", "nfl2k5_draft_picks", "nfl2k5_hback", "nfl2k5_team_ratings") and space.status(after) == "applied":
+        if owner == "nfl2k5_backfield_cards":
+            from . import nfl2k5_backfield_cards as cards
+            self.reserve(cards.SITE, len(cards.RETAIL), owner, "full owner site")
+        if owner == "nfl2k5_gadget_proof":  # beta 81 Q62: the builder call and the ordinal helper entry, whole
+            from . import nfl2k5_gadget_play as gadget
+            for _label, va, retail_site, _patched in gadget._hooks():
+                self.reserve(va, len(retail_site), owner, "full owner site")
+        if owner == "nfl2k5_franchise_ownership":
+            from . import nfl2k5_franchise_ownership as custody
+            for va, before, _, _ in custody.HOOKS:
+                self.reserve(va, len(before), owner, "full trade, release and contract guard sites")
+        if owner == "nfl2k5_sim_qb_injuries":
+            from . import nfl2k5_sim_qb_injuries_code as qb_runtime
+            for va, width in qb_runtime.FIXED_SPANS:
+                self.reserve(va, width, owner, "full scheduled quarterback instruction")
+            from . import nfl2k5_sim_scoring as kicking  # b81 scoring: in-place simulated kicking, installed by this owner
+            for name, va, retail, _ in kicking.edits():
+                self.reserve(va, len(retail), owner, "full in-place site: " + name)
+        if owner == "nfl2k5_cpu_kick_aim":
+            from . import nfl2k5_cpu_kick_aim as kick_aim  # b81 scoring: in-place CPU place-kick aim
+            self.reserve(kick_aim.SITE_VA, kick_aim.SITE_SIZE, owner, "full owner site")
+        if owner == "nfl2k5_modern_numbers":  # b81 modern numbers: the jersey routine's entry (6 bytes)
+            from . import nfl2k5_modern_numbers as numbers
+            for name, va, retail, _ in numbers.sites(numbers.PLACEHOLDER_VA):
+                self.reserve(va, len(retail), owner, "full owner site: " + name)
+        if owner == "nfl2k5_sim_outcomes":  # b81 game outcomes: three pinned live sites (commit, two-point, tie roll)
+            from . import nfl2k5_sim_outcomes as outcomes
+            for name, va, retail, _ in outcomes.sites(outcomes.PLACEHOLDER_VA):
+                self.reserve(va, len(retail), owner, "full owner site: " + name)
+        if owner == "nfl2k5_qb_room":  # b81 qb34: whole weekly-advance calls, every stage's site
+            from . import nfl2k5_qb_room_code as room_runtime
+            for va, before, _label, _stage in room_runtime.HOOKS:
+                self.reserve(va, len(before), owner, "full weekly advance call")
+        if owner == "nfl2k5_cpu_trades":  # b81 trades-all: every whole call site the owner writes
+            from . import nfl2k5_cpu_trades_code as cpu_trades_runtime, nfl2k5_xbe_space as fixed
+            sites = (cpu_trades_runtime.sites(fixed.CPU_TRADES_VA) if hasattr(cpu_trades_runtime, "sites")
+                     else [cpu_trades_runtime.site(fixed.CPU_TRADES_VA)])
+            for at, before, _after in sites:
+                self.reserve(at, len(before), owner, "full owner site")
+        if owner == "nfl2k5_helmet_side_numbers":  # b81 helmet-sides: the route-table operand and the registration tail
+            from . import nfl2k5_helmet_side_numbers as sides
+            for name, va, retail, _ in sides.sites(0x14DA000):
+                self.reserve(va, len(retail), owner, "full owner site: " + name)
+        if owner == "nfl2k5_sportscenter_news":  # b81 sportscenter: its four whole call/load sites (both modes)
+            from . import nfl2k5_sportscenter_news as news
+            for va, retail in news.ALL_SITES:
+                self.reserve(va, len(retail), owner, "full owner site")
+        if owner == "nfl2k5_offset_toss":
+            from . import nfl2k5_offset_toss as toss
+            self.reserve(toss.SITE, len(toss.RETAIL), owner, "full owner site")
+        if owner in ("nfl2k5_backfield_cards", "nfl2k5_gadget_proof", "nfl2k5_offset_toss", "nfl2k5_xbe_space", "nfl2k5_camera", "nfl2k5_dynamic_kickoff_relocated", "nfl2k5_scorebug_runtime", "nfl2k5_music_metadata", "nfl2k5_momentum", "nfl2k5_defensive_try", "nfl2k5_zone_drop", "nfl2k5_roster_storage", "nfl2k5_coverage_slider", "nfl2k5_scramble_tuning", "nfl2k5_music_playlist", "nfl2k5_practice_squad_screen", "nfl2k5_abilities_runtime", "nfl2k5_qb_spy", "nfl2k5_calendar_engine", "nfl2k5_read_option_runtime", "nfl2k5_franchise_2026", "nfl2k5_senior_bowl", "nfl2k5_guardian_overlay", "nfl2k5_my_career", "nfl2k5_screen_hooks", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", "nfl2k5_module_loader", "nfl2k5_roster_arena_growth", "nfl2k5_franchise_autosave", "nfl2k5_coverage_trail", "nfl2k5_deep_zone", "nfl2k5_playbook_pair", "nfl2k5_weekly_prep", "nfl2k5_cpu_money_downs", "nfl2k5_accelerated_clock", "nfl2k5_franchise_edit_player", "nfl2k5_k128", "nfl2k5_letter_grades", "nfl2k5_period_goalposts", "nfl2k5_honors", "nfl2k5_coach_ai", "nfl2k5_cpu_third_down", "nfl2k5_draft_picks", "nfl2k5_hback", "nfl2k5_team_ratings") and space.status(after) == "applied":
             # Owners that can also run on a retail-space image (seven-on-seven in the
             # gate composition, before the allocator) have no allocator reservations
             # yet; the allocator's planned pages lie outside that image's mapping.
@@ -201,7 +251,7 @@ class Recorder:
                     continue
                 self.reserve(va, size, owner, "declared edit: " + str(edit.get("label", "site")))
         if owner == "nfl2k5_season_length":
-            for group in receipt["groups"]:
+            for group in receipt.get("groups", ()):   # b81 integration: the repairs' receipts name no groups
                 subowner = {"playoffs_14": "nfl2k5_playoffs14", "preseason": "nfl2k5_preseason"}.get(group, owner)
                 for site in module.group_sites(group):
                     self.reserve(site.va, site.size, subowner, "season group site: " + site.label)
@@ -300,6 +350,16 @@ class Recorder:
                 self.reserve(fill.ENTRY, 6, "nfl2k5_roster_fill_composition", "shared roster-fill entry")
                 self.reserve(fill.CONTINUATION, len(fill.CHAIN), "nfl2k5_roster_fill_composition",
                              "shared roster-fill continuation")
+        from . import nfl2k5_team_building as team_building  # b81: whole windows and both branches, padding included
+        if team_building.status(final) == "applied":
+            for va, blob in team_building._code().WINDOWS.items():
+                self.reserve(va, len(blob), "nfl2k5_team_building", "full owner window")
+            for va in (team_building.HEAD_CALL_VA, team_building.WISH_JUMP_VA):
+                self.reserve(va, 5, "nfl2k5_team_building", "retargeted draft-AI branch")
+            # b81 #45: the free-agency day calls (the stage action's and the free-agency screen's three), to the pace
+            # page's day entry (the pages themselves are the allocator's row for nfl2k5_team_building_pace)
+            for va in team_building.DAY_CALL_SITES:
+                self.reserve(va, 5, "nfl2k5_team_building", "free-agency day call to the pace page")
         # Preserve the whole shared host, including alignment padding between owners.
         self.reserve(0xB4A60, 16, "nfl2k5_penalties", "shared host allocation including stub padding")
         self.reserve(0xB4A70, 32, "nfl2k5_prospect_names", "shared host allocation")
@@ -394,9 +454,22 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_preseason_warning as preseason_warning  # b779-rc1: the 16-byte warned flag, observed on the same probe copy
     from . import nfl2k5_pass_rush_stats as pass_rush_stats  # b779-st1 (int1): after pass protection, observed on the same probe copy
     from . import nfl2k5_sim_rb_injuries as sim_rb_injuries  # b779-sim2 (int1): a late owner, observed on the same probe copy
+    from . import nfl2k5_backfield_cards as backfield_cards
+    from . import nfl2k5_gadget_play as gadget_play  # beta 81 Q62: observed by the preset build and on the late-owner copy
+    from . import nfl2k5_offset_toss as offset_toss
+    from . import nfl2k5_franchise_ownership as franchise_ownership
     from . import nfl2k5_injured_reserve as injured_reserve  # b780 IR1: modern injured reserve, the last late owner, same probe copy
     from . import nfl2k5_lineup_roles as lineup_roles  # b780 sub1: the situational lineup roles, observed on the same probe copy
     from . import nfl2k5_sim_realism as sim_realism  # b779-sim2 r4-6 (int1): the last late owner, observed on the same probe copy
+    from . import nfl2k5_sim_qb_injuries as sim_qb_injuries
+    from . import nfl2k5_qb_room as qb_room  # b81 qb34: installed by the observed Experimental build (its preset selects it)
+    from . import nfl2k5_modern_numbers as modern_numbers  # b81 modern numbers: the same (its fixed page)
+    from . import nfl2k5_sim_outcomes as sim_outcomes  # b81 game outcomes: installed with Simulated season realism
+    from . import nfl2k5_helmet_side_numbers as helmet_sides  # b81 helmet-sides: the same (the last late owner)
+    from . import nfl2k5_classic_crowd as classic_crowd  # b81-seamen: its fixed page, observed on the preset build
+    from . import nfl2k5_cpu_trades as cpu_trades  # b81 trades-all: installed by the observed Experimental build (it follows the room)
+    # b81 sportscenter: every 128 MB scale-out build (review S1)
+    from . import nfl2k5_sportscenter_news as sportscenter_news
     from . import nfl2k5_coach_carousel as coach_carousel  # b780-c6: the coaching carousel, the last late owner, same probe copy
     from . import nfl2k5_standings_records as standings_records  # b780-j1: Team Standings records, the last late owner, observed on the same probe copy
     from . import nfl2k5_cpu_passer_iq as cpu_passer_iq  # b780 a-passer: the last late owner, observed on the same probe copy
@@ -455,6 +528,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_period_goalposts as period  # b77-v1b: the late allocator owner of the period uprights
     from . import nfl2k5_honors as honors  # b772-i3: in the union so the later coach AI owner lands where builds put it
     from . import nfl2k5_champions as champions  # b780-b13: installed inside honors.apply, observed as its own step below
+    from . import nfl2k5_awards as awards  # b81 awards: installed inside honors.apply, observed as its own step below
     from . import nfl2k5_team_names_2026 as team_names
     from . import nfl2k5_kick_meter_2026 as kick_meter  # b76-km: the wind digits' font lookup
     from . import nfl2k5_modern_goalposts as goalposts  # b77-v1: the upright lines and collision top
@@ -463,7 +537,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     from . import nfl2k5_return_coverage as return_coverage  # b778-kr1: return coverage pursuit angles, before the module loader (int3)
     from . import nfl2k5_module_loader as module_loader  # b778-xs1: on-demand Career Home, the last late owner
     from . import nfl2k5_cpu_third_down as third_down  # b778-ai8: third-down run preference
-    all_requests = camera.REQUESTS + relocated.REQUESTS + runtime.REQUESTS + momentum.REQUESTS + defensive_try.REQUESTS + zone_drop.REQUESTS + roster_storage.REQUESTS + coverage.REQUESTS + scramble.REQUESTS + playlist.REQUESTS + practice_screen.REQUESTS + abilities.REQUESTS + qb_spy.REQUESTS + calendar.REQUESTS + read_option.REQUESTS + franchise_2026.REQUESTS + senior_bowl.REQUESTS + animation_xbe.REQUESTS + guardian.REQUESTS + my_career.REQUESTS + screen_hooks.REQUESTS + arena_growth.REQUESTS + autosave.REQUESTS + espn25.REQUESTS + coverage_trail.REQUESTS + deep_zone.REQUESTS + seven.REQUESTS + playbook_pair.REQUESTS + weekly_prep.REQUESTS + money_downs.REQUESTS + money_downs.LATE_REQUESTS + edit_player.REQUESTS + accelerated_clock.REQUESTS + coin_defer.REQUESTS + decided_clock.REQUESTS + cpu_scrambles.REQUESTS + historic_quick_game.REQUESTS + more_moments.REQUESTS + stock_books.REQUESTS + moment_venues.REQUESTS + era_rules.REQUESTS + anniversary_kickoff.REQUESTS + widescreen_menus.REQUESTS + team_logo_swap.REQUESTS + k128.REQUESTS + letter_grades.REQUESTS + period.REQUESTS + honors.REQUESTS + coach_ai.REQUESTS + moment_coaches.REQUESTS + draft_picks.REQUESTS + hback.REQUESTS + team_ratings.REQUESTS + moment_context.REQUESTS + classic_teams.REQUESTS + star_career.REQUESTS + third_down.REQUESTS + return_coverage.REQUESTS + module_loader.REQUESTS
+    all_requests = space.dormant_union()
     if type(synthetic_owner_bytes) is not int or synthetic_owner_bytes < 0:
         raise OracleError("synthetic owner size must be a nonnegative integer")
     # Complete synthetic plans exercise the real executable writers without
@@ -490,6 +564,23 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     # b76-vb3: the 25th Anniversary kickoff gate carries the disc's retail special-teams data (read only).
     anniversary_tables = anniversary_kickoff.disc_tables(xiso)
     recorder = Recorder(retail)
+    # New discs use the stock holder reader. Reserve the two sites we still write when upgrading
+    # an older disc, using the actual supported migration and its native section checksum.
+    from . import nfl2k5_punter_holder as holder
+    legacy_holder, _ = holder.apply(retail)
+    restored, migration = holder.use_stored_holder(legacy_holder)
+    if restored != retail:
+        raise OracleError("The older holder override did not restore the retail executable")
+    recorder.observe(holder, "use_stored_holder", legacy_holder, restored, migration)
+    # The standard preset leaves the compact save messages off. Observe the real
+    # writer on a separate copy so its string slots and checksum enter the union.
+    from . import nfl2k5_edition_save_notes as save_notes
+    compact_text, text_receipt = save_notes.apply(retail)
+    if save_notes.status(compact_text) != "applied":
+        raise OracleError("Compact save messages or their references failed readback")
+    recorder.observe(save_notes, "apply", retail, compact_text, text_receipt)
+    for label, va, code in save_notes.DEPENDENCIES:
+        recorder.reserve(va, len(code), save_notes.OWNER, "guarded string reference: " + label)
     modules = {m.__name__: m for m in vars(tt).values() if isinstance(m, ModuleType)
                and m.__name__.startswith("mod_editor.core.nfl2k5_")}
     modules[inbox_standings.__name__] = inbox_standings
@@ -500,7 +591,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
     # b775-int1: the image steps' own executable writers (classic teams' Quick Game helpers, the franchise Super Bowl hosts'
     # season codes) are observed when the preset build runs them, like every other recorded writer.
     from . import nfl2k5_super_bowl_hosts as super_bowl_hosts
-    modules.update({m.__name__: m for m in (franchise_footer, franchise_history_capture, camera, helmet_finish, weather_haze, number_kerning, modern_color, coin_defer, decided_clock, cpu_scrambles, coverage, scramble, flight, playlist, practice_screen, ps, fp, pr, abilities, qb_spy, calendar, read_option, franchise_2026, senior_bowl, animation_xbe, guardian, my_career, crib_reclaim, screen_hooks, arena_growth, autosave, espn25, coverage_trail, deep_zone, seven, playbook_pair, weekly_prep, money_downs, coach_ai, third_down, edit_player, accelerated_clock, lineman, elbow, music_policy, historic_quick_game, more_moments, moment_coaches, cpu_qb_reads, db_ball_play, number_scale, run_blocking, qb_accuracy, art_spacing, force_out, practice_injuries, ball_carriers, star_retention, star_career, sportscenter_lineup, draft_clock, weekly_progression, player_progress, contract_guard, sim_cb_tackles, clock_led, anniversary_kickoff, widescreen_menus, team_logo_swap, k128, letter_grades, letter_grades_progress, period, team_names, kick_meter, goalposts, economy, coach_ai, draft_picks, hback, team_ratings, indicator_names, attributes, moment_context, moment_booth, career_home, return_coverage, pass_protection, pass_rush_stats, protection_calls, intro_autoskip, preseason_warning, sim_rb_injuries, injured_reserve, sim_realism, coach_carousel, standings_records, cpu_clock2, runner_vision, dive_window, catch_snap_limit, module_loader, crib_trophy, classic_teams, super_bowl_hosts, rookie_faces, alien_prospect, team_sleeves)})
+    modules.update({m.__name__: m for m in (franchise_footer, franchise_history_capture, camera, helmet_finish, weather_haze, number_kerning, modern_color, coin_defer, decided_clock, cpu_scrambles, coverage, scramble, flight, playlist, practice_screen, ps, fp, pr, abilities, qb_spy, calendar, read_option, franchise_2026, senior_bowl, animation_xbe, guardian, my_career, crib_reclaim, screen_hooks, arena_growth, autosave, espn25, coverage_trail, deep_zone, seven, playbook_pair, weekly_prep, money_downs, coach_ai, third_down, edit_player, accelerated_clock, lineman, elbow, music_policy, historic_quick_game, more_moments, moment_coaches, cpu_qb_reads, db_ball_play, number_scale, run_blocking, qb_accuracy, art_spacing, force_out, practice_injuries, ball_carriers, star_retention, star_career, sportscenter_lineup, draft_clock, weekly_progression, player_progress, contract_guard, sim_cb_tackles, clock_led, anniversary_kickoff, widescreen_menus, team_logo_swap, k128, letter_grades, letter_grades_progress, period, team_names, kick_meter, goalposts, economy, coach_ai, draft_picks, hback, team_ratings, indicator_names, attributes, moment_context, moment_booth, career_home, return_coverage, pass_protection, pass_rush_stats, protection_calls, intro_autoskip, preseason_warning, sim_rb_injuries, injured_reserve, franchise_ownership, offset_toss, backfield_cards, sim_realism, coach_carousel, standings_records, cpu_clock2, runner_vision, dive_window, catch_snap_limit, module_loader, crib_trophy, classic_teams, super_bowl_hosts, rookie_faces, alien_prospect, team_sleeves)})
     for name in ("nfl2k5_scorebug_layout", "nfl2k5_scorebug_position_patch"):
         module = build._tools_module(name)
         if module is None:
@@ -508,6 +599,22 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
         modules[module.__name__] = module
     hud = importlib.import_module("mod_editor.core.nfl2k5_hud_layout")
     modules[hud.__name__] = hud
+    modules[sim_qb_injuries.__name__] = sim_qb_injuries
+    modules[gadget_play.__name__] = gadget_play
+    modules[qb_room.__name__] = qb_room
+    modules[modern_numbers.__name__] = modern_numbers  # b81 modern numbers: installed by the observed preset build
+    modules[sim_outcomes.__name__] = sim_outcomes  # b81 game outcomes: installed by the observed preset build
+    modules[helmet_sides.__name__] = helmet_sides  # b81 helmet-sides: installed last by the observed Experimental build
+    modules[classic_crowd.__name__] = classic_crowd  # b81-seamen: installed after the classic teams by the same build
+    modules[cpu_trades.__name__] = cpu_trades  # b81 trades-all: right after the room in the observed Experimental build
+    # b81 integration: CPU team building's windows and branches are written by the probe (team_building.apply over the
+    # draft AI and the economy); its writes must be recorded under its owner (the f46b51163 regeneration stopped at
+    # "unattributed final XBE changes" at its windows 0x11C150, 0x137D50, 0x1B8DA0, ...)
+    from . import nfl2k5_team_building as team_building
+    modules[team_building.__name__] = team_building
+    # b81 sportscenter (review S1): the observed Experimental build (128 MB, scale-out) installs SportsCenter news after
+    # every other executable owner; its apply is recorded under its owner, whose hook above reserves its four sites
+    modules[sportscenter_news.__name__] = sportscenter_news
     fingerprints = source_fingerprints()
     with tempfile.TemporaryDirectory(prefix="nfl2k5-oracle-", dir=work_dir) as temp:
         target = (Path(temp) / "stack.xiso.iso").resolve()
@@ -536,6 +643,16 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             # call never changes, so the byte diff cannot see it. Observe the install as its own step: its declared edits
             # reserve both complete 5-byte sites for nfl2k5_champions and its byte diff the two rewritten call operands.
             stack.enter_context(patch.object(champions, "install", recorder.wrapper(champions, "install")))
+            # b81 awards: installed inside honors.apply too (after champions); observed as its own step for the same reason
+            stack.enter_context(patch.object(awards, "install", recorder.wrapper(awards, "install")))
+            # b81 integration: the 2026-season step's repairs outside apply() (SportsCenter review N3/N8's injury season
+            # end, 0x21DA99 and 0x21DA75; v0.6's awards timing) write bytes too; the c071f015f regeneration stopped at
+            # "unattributed final XBE changes at 0x20da75, 0x20da99" (their file offsets). Observe them as season steps.
+            for name in ("repair_injury_season_end", "repair_awards_timing"):
+                stack.enter_context(patch.object(season, name, recorder.wrapper(season, name)))
+            # b81 league-aging (review M1): an in-place aging upgrade re-derives star_career's table through refresh(),
+            # outside apply() (mod_build._league_aging_upgrade); observed as a star_career step. installed_body only reads.
+            stack.enter_context(patch.object(star_career, "refresh", recorder.wrapper(star_career, "refresh")))
             receipt = build.build(plan, progress=lambda message, *_: progress(message))
             preset_xbe = build._xbe_bytes(target)
             # The dormant-owner probe needs an XBE WITHOUT an allocator directory: an installed request
@@ -567,7 +684,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     scramble_tuning=False, music_shuffle=False, music_shuffle_selection=None,
                                     practice_squad_screen=False, abilities=False, abilities_off_week=None, qb_spy=False,
                                     franchise_autosave=False, coverage_trail=False, coverage_hitch_brake=False, franchise_edit_player=False,
-                                    historic_teams_quick_game=False, espn25_more_moments=False, k128_memory=False, k128_roster_heap=False, letter_grades=False, honors_page=False, coach_ai=False, team_ratings=False,
+                                    historic_teams_quick_game=False, espn25_more_moments=False, k128_memory=False, k128_roster_heap=False, k128_early=False, letter_grades=False, honors_page=False, coach_ai=False, team_ratings=False,
                                     # b77-i2: p9 made Advanced/Experimental select Modern 2; the money-downs owner is an allocator
                                     # owner like the others here, so the probe build leaves it off and the union below installs it.
                                     cpu_money_downs="retail",
@@ -601,7 +718,28 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                     # b780-int: MEM1's intro auto-skip (on in every preset) is a late allocator owner too; the
                                     # union below reserves it and the probe copy observes it, so the allocator-free probe build
                                     # leaves it off (the a5f08ea81 regen stopped there: "During Intro auto-skip: patch resized")
-                                    intro_autoskip=False),
+                                    intro_autoskip=False, backfield_cards=False,
+                                    # b81: the Experimental preset now selects Realistic quarterback injuries, which
+                                    # needs K128 and sim realism (both off here). Its fixed bank is a late allocator
+                                    # owner that the separate QB probe below observes, so the probe build leaves it off.
+                                    # beta 81 Q62: the gadget rule (fixed gadget slots) is observed on the late-owner copy.
+                                    sim_qb_injuries=None, gadget_play=False,
+                                    # b81 qb34: the preset names the quarterback room Realistic, whose needs (K128, depth
+                                    # chart locks, SPECIAL rows) are off here; the preset build above observed the room's
+                                    # fixed page and sites, so the allocator-free probe leaves it out.
+                                    qb_room=None,
+                                    # b81 helmet-sides: the side numbers need Hair styles' set E (hair styles are off
+                                    # here); the preset build above observed the route-5 owner, installed last, so the
+                                    # allocator-free probe leaves it off too (the 70cabc00a regeneration stopped there).
+                                    helmet_side_numbers=False,
+                                    # b81 trades-all: computer trades follow the quarterback option (none here, so
+                                    # nothing changes); the preset build observed their fixed pages and site.
+                                    cpu_trades=None,
+                                    # b81 integration: modern jersey numbers follow season_2026 (on in the preset), and their
+                                    # fixed page is not in the union, so installing it here grew the probe's XBE (the
+                                    # a3e0a6fbc regeneration stopped there: "During the modern jersey numbers: patch resized
+                                    # the XBE"); the preset build above observed the owner, so the probe leaves it clear.
+                                    modern_numbers=False),
                             progress=lambda message, *_: progress(message))
             owner_base = build._xbe_bytes(target)
             # All current owners, even the hidden opt-in patch, reserve their space.
@@ -727,6 +865,12 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             # b76-fc3: the 2026 franchise economy (off in the presets) over the practice squad: its guarded windows and
             # the shared roster-fill chain at 0x322BB0 (nfl2k5_roster_fill_composition), observed through apply.
             final, _ = economy.apply(final)
+            # b81 team building (off in the presets but Experimental): its 29 windows and the two draft-AI branches it
+            # retargets, observed through apply over the draft AI and the economy installed above.
+            from . import nfl2k5_team_building as team_building
+            if team_building.needs_met(final):
+                final, _ = team_building.apply(final)
+            final, _ = backfield_cards.apply(final)
             # b776-ai2: the CPU AI late owners (off in every preset). This complete union already holds the
             # allocator's 95-request ceiling, so they are observed on a disposable copy of the allocation base with
             # only their own three requests (like Career Home below): both options of the CPU QB reads owner (its
@@ -758,7 +902,7 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                                           + scramble_blocking.REQUESTS  # b780-int: cv7, a dormant late owner
                                           + lineup_roles.REQUESTS  # b780 sub1: the situational lineup roles (with the SPECIAL rows)
                                           + intro_autoskip.REQUESTS  # b780-mem1: the intro auto-skip (on in every preset)
-                                          + injured_reserve.REQUESTS,  # b780 IR1: modern injured reserve, last
+                                          + injured_reserve.REQUESTS + offset_toss.REQUESTS + backfield_cards.REQUESTS,
                                           scaleout=True)
             # b779-int1: gp1's QB skill tiers (cpu_qb_tiers, on in Advanced/Experimental) ride on the zone-defender option;
             # the allocation base carries all three options, so observe the same set (apply refuses a different one).
@@ -799,6 +943,26 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
             cpu_ai_probe, _ = lineup_roles.apply(cpu_ai_probe)  # b780 sub1: its hooks and owned code (the copy carries the SPECIAL rows)
             cpu_ai_probe, _ = intro_autoskip.apply(cpu_ai_probe)  # b780-mem1: its call at 0x125C37 and the 64 B helper (legacy RX tail)
             cpu_ai_probe, _ = injured_reserve.apply(cpu_ai_probe, "modern")  # b780 IR1: twelve hooks, the Pro Bowl guard, owned code and store
+            cpu_ai_probe, _ = offset_toss.apply(cpu_ai_probe)
+            cpu_ai_probe, _ = backfield_cards.apply(cpu_ai_probe)
+            # beta 81 Q62: the gadget rule in the slots the cards reserved (the copy carries the situational lineup
+            # roles it needs), with the oracle disc's own play books.
+            from . import nfl2k5_depth_roles as depth_roles
+            oracle_books = depth_roles._resources(xiso)
+            cpu_ai_probe, _ = gadget_play.apply(cpu_ai_probe, {k: oracle_books[k] for k in gadget_play.BOOK_ASSETS})
+            # The medical option needs the standard memory boot guard. Observe its
+            # own sparse standard profile without changing the older CPU probe's layout.
+            # b81 slice 2: with the running-back owner installed first (the Build order), the medical option parks
+            # its weekly jump at 0x133CC9, so the probe observes that write too (FIXED_SPANS reserves the site).
+            qb_probe, _ = space.apply(allocation_base, k128.REQUESTS + sim_rb_injuries.REQUESTS + sim_realism.REQUESTS
+                                      + lineup_roles.REQUESTS + sim_qb_injuries.REQUESTS, scaleout=True)
+            qb_probe, _ = k128.apply(qb_probe, require=True)
+            qb_probe, _ = sim_rb_injuries.apply(qb_probe)
+            qb_probe, _ = sim_realism.apply(qb_probe)
+            qb_probe, _ = lineup_roles.apply(qb_probe)
+            qb_probe, _ = sim_qb_injuries.apply(qb_probe)
+            if sim_qb_injuries.status(qb_probe) != 'applied':
+                raise OracleError('Standard simulated quarterback injury settings failed readback')
             # The early form (k128_early) writes only inside these spans: the owned allocation (its entry at +0x1A0)
             # and the XBE entry field; it leaves 0x327D1 retail.
             # Flatter flight and the old relocated high-arc band are mutually
@@ -895,8 +1059,8 @@ def build_manifest(retail: bytes, xiso: Path, *, work_dir: Path, progress=None, 
                 "stack_image_size": stack_extent(XbeImage(final), spans),
                 "model": "observed experimental disc build plus dormant seven-on-seven, grown kickoff, scorebug runtime music metadata, Momentum, defensive try and zone drop; exact diffs union owned pages and named allocations",
                 "preset": "softdrink_experimental", "preset_values": preset,
-                "extra_owners": ["nfl2k5_my_career_home", "nfl2k5_cpu_passer_iq", "nfl2k5_pass_protection", "nfl2k5_pass_rush_stats", "nfl2k5_protection_calls", "nfl2k5_lineup_roles", "nfl2k5_intro_autoskip", "nfl2k5_preseason_warning", "nfl2k5_sim_rb_injuries", "nfl2k5_sim_realism", "nfl2k5_coach_carousel", "nfl2k5_standings_records", "nfl2k5_cpu_clock2", "nfl2k5_runner_vision", "nfl2k5_dive_window", "nfl2k5_catch_snap_limit", "nfl2k5_speed_threshold", "nfl2k5_scramble_blocking", "nfl2k5_audible_legend", "nfl2k5_injured_reserve", "nfl2k5_history_screen", "nfl2k5_module_loader", "nfl2k5_crib_trophy_room", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out", "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", star_career.OWNER, sportscenter_lineup.OWNER, "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_franchise_footer", "nfl2k5_history", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led", "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", draft_picks.OWNER, hback.OWNER, team_ratings.OWNER, attributes.OWNER, "nfl2k5_indicator_names", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER, momentum.OWNER, defensive_try.OWNER, zone_drop.OWNER, roster_storage.OWNER, coverage.OWNER, scramble.OWNER, flight.OWNER, playlist.OWNER, practice_screen.OWNER, abilities.OWNER, qb_spy.OWNER, calendar.OWNER, read_option.OWNER, franchise_2026.OWNER, senior_bowl.OWNER, animation_xbe.OWNER, guardian.OWNER, my_career.OWNER, my_career.EXTRA_OWNER, crib_reclaim.OWNER, screen_hooks.OWNER, arena_growth.OWNER, autosave.OWNER, espn25.OWNER, coverage_trail.OWNER, deep_zone.OWNER, coverage_trail.OWNER, playbook_pair.OWNER, weekly_prep.OWNER, money_downs.OWNER, money_downs.LATE_OWNER, money_downs.LATE_STATE_OWNER, coach_ai.OWNER, third_down.OWNER, edit_player.OWNER, accelerated_clock.OWNER, helmet_finish.OWNER, weather_haze.OWNER, number_kerning.OWNER, team_names.OWNER, modern_color.OWNER, coin_defer.OWNER, decided_clock.OWNER, cpu_scrambles.OWNER, historic_quick_game.OWNER, more_moments.OWNER, anniversary_kickoff.OWNER, widescreen_menus.OWNER, team_logo_swap.OWNER, k128.OWNER, letter_grades.OWNER, letter_grades.PROGRESS_OWNER, kick_meter.OWNER, goalposts.OWNER, period.OWNER, "nfl2k5_franchise_economy", "nfl2k5_roster_fill_composition", lineman.__name__.rsplit(".", 1)[-1], elbow.__name__.rsplit(".", 1)[-1],
-                                 music_policy.__name__.rsplit(".", 1)[-1]],
+                "extra_owners": [space.GADGET_OWNER, backfield_cards.OWNER, franchise_ownership.OWNER, sim_qb_injuries.OWNER, qb_room.OWNER, helmet_sides.OWNER, classic_crowd.OWNER, cpu_trades.OWNER, sportscenter_news.OWNER, space.TEAM_BUILDING_PACE_OWNER, "nfl2k5_offset_toss", "nfl2k5_my_career_home", "nfl2k5_cpu_passer_iq", "nfl2k5_pass_protection", "nfl2k5_pass_rush_stats", "nfl2k5_protection_calls", "nfl2k5_lineup_roles", "nfl2k5_intro_autoskip", "nfl2k5_preseason_warning", "nfl2k5_sim_rb_injuries", "nfl2k5_sim_realism", "nfl2k5_coach_carousel", "nfl2k5_standings_records", "nfl2k5_cpu_clock2", "nfl2k5_runner_vision", "nfl2k5_dive_window", "nfl2k5_catch_snap_limit", "nfl2k5_speed_threshold", "nfl2k5_scramble_blocking", "nfl2k5_audible_legend", "nfl2k5_injured_reserve", "nfl2k5_history_screen", "nfl2k5_module_loader", "nfl2k5_crib_trophy_room", "nfl2k5_play_art_routes", "nfl2k5_team_number_scale", "nfl2k5_run_blocking", "nfl2k5_qb_accuracy", "nfl2k5_formation_art_spacing", "nfl2k5_force_out", "nfl2k5_practice_injuries", "nfl2k5_ball_carrier_ai", "nfl2k5_star_retention", star_career.OWNER, sportscenter_lineup.OWNER, "nfl2k5_draft_clock", "nfl2k5_weekly_progression", "nfl2k5_player_progress_screen", "nfl2k5_franchise_footer", "nfl2k5_history", "nfl2k5_contract_college_guard", "nfl2k5_sim_cb_tackles", "nfl2k5_clock_led", "nfl2k5_cpu_qb_reads", "nfl2k5_db_ball_play", draft_picks.OWNER, hback.OWNER, team_ratings.OWNER, attributes.OWNER, "nfl2k5_indicator_names", "nfl2k5_seven_on_seven", "nfl2k5_seven_on_seven_book", space.OWNER, relocated.OWNER, runtime.OWNER, music.OWNER, momentum.OWNER, defensive_try.OWNER, zone_drop.OWNER, roster_storage.OWNER, coverage.OWNER, scramble.OWNER, flight.OWNER, playlist.OWNER, practice_screen.OWNER, abilities.OWNER, qb_spy.OWNER, calendar.OWNER, read_option.OWNER, franchise_2026.OWNER, senior_bowl.OWNER, animation_xbe.OWNER, guardian.OWNER, my_career.OWNER, my_career.EXTRA_OWNER, crib_reclaim.OWNER, screen_hooks.OWNER, arena_growth.OWNER, autosave.OWNER, espn25.OWNER, coverage_trail.OWNER, deep_zone.OWNER, coverage_trail.OWNER, playbook_pair.OWNER, weekly_prep.OWNER, money_downs.OWNER, money_downs.LATE_OWNER, money_downs.LATE_STATE_OWNER, coach_ai.OWNER, third_down.OWNER, edit_player.OWNER, accelerated_clock.OWNER, helmet_finish.OWNER, weather_haze.OWNER, number_kerning.OWNER, team_names.OWNER, modern_color.OWNER, coin_defer.OWNER, decided_clock.OWNER, cpu_scrambles.OWNER, historic_quick_game.OWNER, more_moments.OWNER, anniversary_kickoff.OWNER, widescreen_menus.OWNER, team_logo_swap.OWNER, k128.OWNER, letter_grades.OWNER, letter_grades.PROGRESS_OWNER, kick_meter.OWNER, goalposts.OWNER, period.OWNER, "nfl2k5_franchise_economy", "nfl2k5_roster_fill_composition", lineman.__name__.rsplit(".", 1)[-1], elbow.__name__.rsplit(".", 1)[-1],
+                                 music_policy.__name__.rsplit(".", 1)[-1], save_notes.OWNER],
                 "alternative_flight_probe": "flatter flight on retail; final stack keeps the selected existing flight mode",
                 "seven_on_seven_book": book_note,
                 "disc_size": xiso.stat().st_size, "disc_xbe_sha256": RETAIL_SHA256,

@@ -35,16 +35,23 @@ def sha(payload):
 
 def restore_base_moves(payload):
     """Composes with other valid allocator owners; refuses unexpected own bytes."""
-    state, settings = abilities._inspect(payload)
+    state, settings, revision = abilities._inspect_revision(payload)
     if state != "applied" or not space.is_scaleout(payload):
         raise ValueError("Expected installed abilities rules v2 and sealed v3 allocator")
     allocation = abilities.allocation(payload)
-    old_code, _ = abilities.code_for(allocation["va"], **settings)
+    def template(options):
+        if revision == "beta-76.5":
+            options = {key: value for key, value in options.items() if key not in abilities.DEFAULT_STARS}
+            return abilities.legacy_code_for(allocation["va"], **options)
+        return abilities.code_for(allocation["va"], **options, _legacy_g2=revision == "star-gate",
+                                  _superstar_charge=revision == "superstar-charge")
+
+    old_code, labels = template(settings)
     new_settings = dict(settings, lock_right_stick=False, lock_special_moves=False)
-    new_code, _ = abilities.code_for(allocation["va"], **new_settings)
+    new_code, _ = template(new_settings)
     if payload[allocation["raw"]:allocation["raw"] + allocation["size"]] != old_code:
         raise ValueError("Unexpected abilities owner bytes")
-    config_at = allocation["raw"] + abilities.assembly.LABELS["unlocked_mask"]
+    config_at = allocation["raw"] + labels["unlocked_mask"] - allocation["va"]
     original_settings = abilities.read_settings(payload)
     requests = space._read_scale_directory(payload)
     buf = bytearray(payload)
@@ -99,19 +106,33 @@ def restore_base_moves(payload):
                         allocator_requests_unchanged=requests == space._read_scale_directory(result))
 
 
+def restore_anniversary_books(payload):
+    """Install D2's season-aware resolver in the original 256-byte prefix and retain the 32 alias rows."""
+    owned = books.allocation(payload)
+    if owned is None or books.status(payload) != "needs_fix":
+        raise ValueError("Expected the installed v0.4 stock-book resolver")
+    installed = XbeImage(payload).read(owned["va"], owned["size"])
+    if installed not in books._previous_bodies(owned["va"]):
+        raise ValueError("Unrecognized v0.4 stock-book body")
+    wanted = books.code_for(owned["va"], legacy=True, first_season=books.LEGACY_FIRST_SEASON, classic_ids=None)
+    if installed[books.LEGACY_TABLE:] != wanted[books.LEGACY_TABLE:]:
+        raise ValueError("The D2 repair would change a stock-book alias")
+    result = payload if installed == wanted else books._write_body(payload, owned, wanted)
+    return result, dict(owner=books.OWNER, status="already_applied" if result == payload else "applied",
+                        changed_bytes=sum(a != b for a, b in zip(payload, result)))
+
+
 def repair_xbe(payload):
     """Apply both d2 XBE fixes without changing the allocator owner union."""
     original_layout = space.layout(payload)
     owned = books.allocation(payload)
-    if owned is None or books.status(payload) not in ("needs_fix", "applied"):
-        raise ValueError("Expected installed, recognized stock-book resolver")
     staged, move_receipt = restore_base_moves(payload)
-    result, book_receipt = books.apply(staged)
+    result, book_receipt = restore_anniversary_books(staged)
     if space.layout(result) != original_layout:
         raise ValueError("Allocator layout changed during d2 repair")
     scopes = [(int(row["file_offset"], 16), int(row["file_offset"], 16) + row["size"], row["label"])
               for row in move_receipt["scopes"]]
-    scopes.append((owned["raw"], owned["raw"] + books.TABLE,
+    scopes.append((owned["raw"], owned["raw"] + books.LEGACY_TABLE,
                    "stock-book resolver instructions; alias table unchanged"))
     scopes.sort()
     cursor = 0

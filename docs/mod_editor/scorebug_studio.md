@@ -67,8 +67,8 @@ near-black. The page warns you when a part will hide the game's text.
    `1x/` and `2x/` PNGs, copies of your pictures in `images/`, and
    `scorebar_studio.json` with your settings, then checks the folder with the
    same compiler Build uses.
-8. Press **Use in Build**. The folder lands in the Build tab's scorebar folder
-   field. Tick **Experimental ESPN scorebar** there and build a disc copy.
+8. Press **Use in Build**. Studio enables **Experimental ESPN scorebar** and
+   fills in the folder. Open Build to make your disc copy.
 
 ![The Fable preset with the banner selected](scorebug_studio/page_fable_down.png)
 

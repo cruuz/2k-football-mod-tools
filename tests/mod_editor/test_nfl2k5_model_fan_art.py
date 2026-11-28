@@ -103,6 +103,9 @@ class ModelStatus(unittest.TestCase):
    with self.subTest(model=name):
     mod=importlib.import_module('mod_editor.core.nfl2k5_'+name+'_model')
     payload=b'composed u4 model';pin=dict(size=100,offset=32,length=len(payload),retail_sha256='retail',model_sha256='base',classic_sha256='classic')
+    # b81-allegiant-shine: Allegiant's pins also carry the helmet reflection span (the other writers ignore the key); here
+    # it reads as the model's, so the stretch alone decides
+    pin['reflection']=dict(offset=32,length=len(payload),retail_sha256='retail',model_sha256=mv.sha(payload))
     receipt=dict(schema='nfl2k5_model_fan_art/v1',offset=32,length=len(payload),before_sha256='base',after_sha256=mv.sha(payload))
     archive=SimpleNamespace(read=lambda offset,size:payload)
     with patch.object(mod,'_pin',return_value=pin),patch.object(mod,'_venue_pins',return_value={'s00dd.iff':{}}),patch.object(mod,'_entry',return_value=SimpleNamespace(size=100,virtual_offset=0)):

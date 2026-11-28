@@ -33,32 +33,30 @@ from mod_editor.core.nfl2k5_cave_oracle import XbeImage
 from tools.b77.g2_repair import read, scope_receipt, sha, write_new
 from tools.b77.sp1_repair import open_binary, digest_disc, require
 
-# b779 re-pin: the two REPAIRED_* hashes are the output of the Studio's CURRENT MyCareer owner on the pinned base, as
-# this tool's name says ("Studio-equal"). The owner changed after the b774 pin (b775 and later), so the b774 hashes
-# (0708249c.../1fb13c22...) were already stale at beta-77.1 (that tree gave 2b431a27...). Derived with `xbe` and the
-# read-only `predict` on the 10-13 base disc; scope: only the owner's regions, hooks and seals change.
-# b780 re-pin (beta-80 MyCareer owner: defensive camera, punt settle, draft need): derived the same way from the
-# current owner on the pinned base, 69 spans and 19,285 changed bytes, every postcondition of build() holding.
-# b780 mc1 re-pin (Play next game without a club, loads of free-agent and draft-day careers, injured MyPlayer, CPU
-# depth management for the career club): the same way, 69 spans and 19,261 changed bytes, build() replays with 0.
+# Beta 80 recorded both hashes from the complete October 13 disc. Its exact owner remains reproducible.
+# Projecting that executable back into any accepted revision verifies every other disc byte before writing.
 BASE_DISC_SHA256 = "520429148f57c29a23f56b5f43c5fe04be39728d01a101210aad8336b60581a4"
 BASE_XBE_SHA256 = "1b41ec19aac6377484b9b30ee7a5c5ab220fb93d61aa3c14bafdb70092a9504f"
-REPAIRED_XBE_SHA256 = "4939def556918bb24ebe2d9075b284fac17c53db9fb8791b759ec2c3206b1b8f"
-REPAIRED_DISC_SHA256 = "9adcb4ef06f0fa7e2c9a9b538dda35ca630ff13c35c3d17a9938260f87803703"
+# Independently recorded by the October 17 repair at 089be5aaa.
+OCTOBER17_XBE_SHA256 = "0708249cd549e8feebf33ae0724cad6f74488a67babf594ed57053288702c5b5"
+OCTOBER17_DISC_SHA256 = "1fb13c220a2df7240a932274a46c817dc9db1039c5b5189f46b02fe7d1ca2704"
+BETA80_XBE_SHA256 = "4939def556918bb24ebe2d9075b284fac17c53db9fb8791b759ec2c3206b1b8f"
+BETA80_DISC_SHA256 = "9adcb4ef06f0fa7e2c9a9b538dda35ca630ff13c35c3d17a9938260f87803703"
+REPAIRED_XBE_SHA256 = "9f2d7b6b5b5f8327f0ca95446d324af9382767350956f0cb20dbf78f52317610"
 DISC_SIZE, XBE_OFFSET, XBE_SIZE = 6004408320, 2398208, 12300288
 
 
-def studio_owner(payload: bytes, code: dict, state: dict) -> tuple[bytes, dict]:
+def studio_owner(payload: bytes, code: dict, state: dict, *, previous=False) -> tuple[bytes, dict]:
     """Exactly what mode.apply would install on this executable (graded or not)."""
     from mod_editor.core import nfl2k5_letter_grades as grades
     graded = XbeImage(payload).read(0x541288, 4) == grades.GRADE_FLAGS
     return mode.code_for(code["va"], state["va"], letter_grades=graded,
-                         grade_bands=grades._owned_state(payload)[2] if graded else None)
+                         grade_bands=grades._owned_state(payload)[2] if graded else None, previous=previous)
 
 
 def repair(payload: bytes) -> tuple[bytes, dict]:
     digest = sha(payload)
-    if digest not in (BASE_XBE_SHA256, REPAIRED_XBE_SHA256):
+    if digest not in (BASE_XBE_SHA256, OCTOBER17_XBE_SHA256, BETA80_XBE_SHA256, REPAIRED_XBE_SHA256):
         raise ValueError(f"unrecognized mc2 executable: {digest}")
     result, receipt = build(payload)
     if sha(result) != REPAIRED_XBE_SHA256:
@@ -66,19 +64,26 @@ def repair(payload: bytes) -> tuple[bytes, dict]:
     return result, receipt
 
 
-def build(payload: bytes) -> tuple[bytes, dict]:
+def build(payload: bytes, *, previous=False) -> tuple[bytes, dict]:
     """The Studio owner on this executable, with every postcondition except the output pin."""
     if space.status(payload) != "applied":
         raise ValueError("invalid allocator seals")
     image = XbeImage(payload)
     code, state = mode.legacy.allocations(payload)
     requests = space._read_scale_directory(payload)
-    content, labels = studio_owner(payload, code, state)
+    content, labels = studio_owner(payload, code, state, previous=previous)
     spans = [(code["raw"], code["size"])]
     buf = bytearray(payload)
     buf[code["raw"]:code["raw"] + code["size"]] = content
     # Relinking the owner's template also moves its native hook destinations.
-    for _name, va, _before, after in mode.sites(code["va"], state["va"], season_birth_dates=True):
+    sites = mode.sites(code["va"], state["va"], season_birth_dates=True, previous=previous)
+    if previous:
+        historical_sites = {va for _, va, _, _ in sites}
+        sites = list(sites)
+        for name, va, before, after in mode.sites(code["va"], state["va"], season_birth_dates=True):
+            if va not in historical_sites:
+                sites.append((name, va, after, before))
+    for _name, va, _before, after in sites:
         at = image.offset(va, len(after))
         spans.append((at, len(after)))
         buf[at:at + len(after)] = after
@@ -94,7 +99,7 @@ def build(payload: bytes) -> tuple[bytes, dict]:
     result = bytes(buf)
     # The shipped (10-13) executable carries older templates of owners revised since (draft AI, economy, honors,
     # overtime), which the whole-image check of the neighbours cannot recognize; the MyCareer owner itself is checked.
-    if mode.status(result, context=False) != "applied":
+    if mode.status(result, context=False) != ("previous" if previous else "applied"):
         raise ValueError("the repaired MyCareer owner does not validate")
     if space.status(result) != "applied" or space._read_scale_directory(result) != requests:
         raise ValueError("allocator postcondition failed")
@@ -127,12 +132,33 @@ def disc_xbe(stream):
     return stream.read(XBE_SIZE)
 
 
+def projected_disc_hash(stream, executable):
+    return digest_disc(stream, [(XBE_OFFSET, executable)])
+
+
+def verify_disc_input(stream, raw, before):
+    """Authenticate the complete disc, including a replay with the current compiler's output."""
+    native_hash = sha(raw)
+    if native_hash == BASE_XBE_SHA256:
+        require(before == BASE_DISC_SHA256, "unknown complete input disc hash")
+    elif native_hash == OCTOBER17_XBE_SHA256:
+        require(before == OCTOBER17_DISC_SHA256, "unknown complete input disc hash")
+    elif native_hash == BETA80_XBE_SHA256:
+        require(before == BETA80_DISC_SHA256, "unknown complete input disc hash")
+    else:
+        require(native_hash == REPAIRED_XBE_SHA256, "unrecognized mc2 executable")
+        historical, _ = build(raw, previous="beta-80")
+        require(sha(historical) == BETA80_XBE_SHA256, "historical executable identity mismatch")
+        require(projected_disc_hash(stream, historical) == BETA80_DISC_SHA256, "unknown complete input disc hash")
+
+
 def repair_disc(path):
     with open_binary(path, writable=True) as stream:
         before = digest_disc(stream)
-        require(before in (BASE_DISC_SHA256, REPAIRED_DISC_SHA256), "unknown complete input disc hash")
         raw = disc_xbe(stream)
+        verify_disc_input(stream, raw, before)
         fixed, receipt = repair(raw)
+        expected = before if fixed == raw else projected_disc_hash(stream, fixed)
         written = 0
         for row in receipt["scope"]["scope"]:
             lo, size = row["offset"], row["size"]
@@ -145,7 +171,7 @@ def repair_disc(path):
         os.fsync(stream.fileno())
         require(disc_xbe(stream) == fixed, "disc readback mismatch")
         after = digest_disc(stream)
-        require(after == REPAIRED_DISC_SHA256, "unexpected complete output disc hash")
+        require(after == expected, "unexpected complete output disc hash")
         receipt.update(disc_before_sha256=before, disc_after_sha256=after,
                        bytes_written=written, disc_size=DISC_SIZE)
         return receipt
@@ -157,6 +183,7 @@ def compare_discs(before, after):
         require(digest_disc(a) == BASE_DISC_SHA256, "comparison source is not the pinned base")
         raw = disc_xbe(a)
         fixed, receipt = repair(raw)
+        expected = projected_disc_hash(a, fixed)
         spans = sorted((XBE_OFFSET + r["offset"], r["size"]) for r in receipt["scope"]["scope"])
         require(disc_xbe(b) == fixed, "disc differs from the Studio compiler output")
         a.seek(0)
@@ -175,9 +202,9 @@ def compare_discs(before, after):
                 changed += sum(x != y for x, y in zip(old, new))
             at += len(old)
         require(at == DISC_SIZE and not b.read(1), "unexpected disc size")
-        require(digest_disc(b) == REPAIRED_DISC_SHA256, "unknown output disc hash")
+        require(digest_disc(b) == expected, "unknown output disc hash")
     return dict(schema="b774/mc2-disc-scope/v1", changed_bytes=changed,
-                outside_scope_changed_bytes=0, studio_equal=True, size=at,
+                outside_scope_changed_bytes=0, studio_equal=True, size=at, disc_after_sha256=expected,
                 scope=[dict(offset=lo, size=size) for lo, size in spans])
 
 
@@ -187,12 +214,9 @@ def predict(base):
         require(digest_disc(stream) == BASE_DISC_SHA256, "prediction source is not the pinned base")
         raw = disc_xbe(stream)
         fixed, receipt = repair(raw)
-        replacements = [(XBE_OFFSET + r["offset"], fixed[r["offset"]:r["offset"] + r["size"]])
-                        for r in receipt["scope"]["scope"]]
-        after = digest_disc(stream, replacements)
-    return dict(schema="b774/mc2-disc-prediction/v1", base_sha256=BASE_DISC_SHA256, predicted_sha256=after,
-                pinned_sha256=REPAIRED_DISC_SHA256, matches_pin=after == REPAIRED_DISC_SHA256,
-                xbe_sha256=sha(fixed), spans=len(replacements),
+        after = projected_disc_hash(stream, fixed)
+    return dict(schema="b774/mc2-disc-prediction/v2", base_sha256=BASE_DISC_SHA256, predicted_sha256=after,
+                xbe_sha256=sha(fixed), spans=len(receipt["scope"]["scope"]),
                 changed_bytes=receipt["scope"]["changed_bytes"])
 
 

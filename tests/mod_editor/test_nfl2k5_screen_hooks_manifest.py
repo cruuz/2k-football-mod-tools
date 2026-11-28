@@ -142,7 +142,12 @@ class ManifestTests(unittest.TestCase):
         function = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "build_manifest")
         attrs = [n.attr for n in ast.walk(function) if isinstance(n, ast.Attribute)
                  and isinstance(n.value, ast.Name) and n.value.id == "screen_hooks"]
-        self.assertTrue({"REQUESTS", "apply", "OWNER"}.issubset(attrs))
+        self.assertTrue({"apply", "OWNER"}.issubset(attrs))
+        # Since f2338d527 the generator allocates space.dormant_union(), the one request list it shares with the
+        # default allocator proof; the owner's requests must be in it.
+        from mod_editor.core import nfl2k5_xbe_space as space
+        self.assertIn("all_requests = space.dormant_union()", ast.get_source_segment(Path(builder.__file__).read_text(encoding="utf-8"), function))
+        self.assertTrue(set(patch.REQUESTS) <= set(space.dormant_union()))
         tuples = [n for n in ast.walk(function) if isinstance(n, ast.Tuple)
                   and any(isinstance(item, ast.Name) and item.id == "screen_hooks" for item in n.elts)]
         self.assertGreaterEqual(len(tuples), 3)  # wrapper registry, synthetic probe, status list

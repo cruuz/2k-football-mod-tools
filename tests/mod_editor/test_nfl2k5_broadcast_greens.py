@@ -290,9 +290,18 @@ class OwnershipTests(unittest.TestCase):
 
     def test_build_pass_follows_anniversary_fields_and_precedes_compaction(self):
         text = (ROOT / "mod_editor/core/mod_build.py").read_text()
-        fields = text.index('receipt["steps"].append({"step": "espn25_fields"')
-        greens = text.index('receipt["steps"].append({"step": "broadcast_greens"')
-        compact = text.index('compacted = finish_private', fields)
+
+        def top_level(name):
+            start = text.index("\ndef " + name + "(")
+            return text[start:text.index("\ndef ", start + 1)]
+
+        # Beta 81 moved the disc compaction into _compact_build_disc (shared with the single-option QB and v0.9
+        # update routes). Inside _build the greens pass still follows the fields and precedes that compaction.
+        self.assertIn("compacted = finish_private(target", top_level("_compact_build_disc"))
+        body = top_level("_build")
+        fields = body.index('receipt["steps"].append({"step": "espn25_fields"')
+        greens = body.index('receipt["steps"].append({"step": "broadcast_greens"')
+        compact = body.index("compacted = _compact_build_disc(target", fields)
         self.assertLess(fields, greens)
         self.assertLess(greens, compact)
 
